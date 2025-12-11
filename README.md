@@ -107,9 +107,18 @@ cd gamma_smc && make bin/gamma_smc
 # Minimal Usage
 A minimal command line is:
 <pre>
-$ bin/gamma_smc 
+$ bin/gamma_smc
     -t <i>recombination_to_mutation_ratio</i>
     -i <i>input_file.vcf</i>
+    -o <i>output_file.zst</i>
+</pre>
+
+Tree sequence inputs are also supported. To stream a compressed tree sequence directly, decompress with `tszip` and pipe to
+`gamma_smc`:
+<pre>
+$ python -m tszip -c <i>input.tsz</i> | bin/gamma_smc \
+    -t <i>recombination_to_mutation_ratio</i> \
+    -i /dev/stdin \
     -o <i>output_file.zst</i>
 </pre>
 
