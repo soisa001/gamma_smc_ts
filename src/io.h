@@ -7,6 +7,11 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 
+#include <cstdio>
+#include <limits>
+#include <random>
+#include <sstream>
+
 #include <htslib/vcf.h>
 
 // bool has_missing_data(const string& raw_alleles, const pair<int, int>& indices) {
@@ -109,7 +114,7 @@ bool has_missing_data_all(const string& raw_alleles) {
 }
 
 void readSegSitesAll(
-    string filename, 
+    string filename,
     vector<SegSite_t>& ret
     ) {
     // format: chr position nr_calledSites [alleles] -> tab separated
@@ -189,6 +194,52 @@ void readSegSitesAll(
     }
 }
 
+inline std::string create_temp_filename(const std::string& suffix) {
+    auto temp_dir = std::filesystem::temp_directory_path();
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(0, std::numeric_limits<int>::max());
+    auto temp_path = temp_dir / ("gamma_smc_" + std::to_string(dis(gen)) + suffix);
+    return temp_path.string();
+}
+
+inline bool is_tree_sequence_file(const std::string& filename) {
+    const std::vector<std::string> extensions{".trees", ".ts", ".tsz"};
+    for (const auto& ext : extensions) {
+        if (boost::iends_with(filename, ext)) {
+            return true;
+        }
+    }
+    return filename == "/dev/stdin";
+}
+
+inline std::string materialize_tree_sequence(const std::string& filename) {
+    if (filename == "/dev/stdin") {
+        auto temp_ts = create_temp_filename(".trees");
+        std::ofstream out(temp_ts, std::ios::binary);
+        out << std::cin.rdbuf();
+        out.close();
+        return temp_ts;
+    }
+
+    return filename;
+}
+
+inline std::string convert_tree_sequence_to_vcf(const std::string& ts_filename) {
+    auto temp_vcf = create_temp_filename(".vcf");
+    std::stringstream cmd;
+    cmd << "python3 -c \"import sys,tszip; ts = tszip.load(sys.argv[1]); "
+           "ts.write_vcf(open(sys.argv[2],'w'), ploidy=2)\" '"
+        << ts_filename << "' '" << temp_vcf << "'";
+    int retcode = std::system(cmd.str().c_str());
+    if (retcode != 0) {
+        std::cerr << "Error: Failed to convert tree sequence to VCF using tskit." << std::endl;
+        exit(-1);
+    }
+
+    return temp_vcf;
+}
+
 // void chop_segsites(
 //     const vector<SegSite_t>& segsites, 
 //     long maxDistance,
@@ -262,7 +313,7 @@ void read_flow_field_raw(
 // Open vcf
 //
 void readVcf(
-    string filename, 
+    string filename,
     vector<unique_ptr<SegregatingSite>>& ret,
     vector<string>& samples_in_order,
     string samples_filename,
@@ -270,6 +321,27 @@ void readVcf(
     string samples_filename_against,
     vector<int>& samples_against_indices
     ) {
+    if (is_tree_sequence_file(filename)) {
+        auto ts_path = materialize_tree_sequence(filename);
+        auto vcf_path = convert_tree_sequence_to_vcf(ts_path);
+        readVcf(
+            vcf_path,
+            ret,
+            samples_in_order,
+            samples_filename,
+            samples_indices,
+            samples_filename_against,
+            samples_against_indices
+        );
+        if (vcf_path != filename) {
+            std::filesystem::remove(vcf_path);
+        }
+        if ((ts_path != filename) && (filename == "/dev/stdin" || boost::iends_with(filename, ".tsz"))) {
+            std::filesystem::remove(ts_path);
+        }
+        return;
+    }
+
     vector<string> samples_names;
 
     vector<string> required_samples;
