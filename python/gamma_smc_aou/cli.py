@@ -174,6 +174,7 @@ def command_container_study(args):
         runtime=args.runtime,
         image=args.image,
         keep_vcfs=args.keep_vcfs,
+        workers=args.workers,
     )
 
 
@@ -395,6 +396,7 @@ def parser() -> argparse.ArgumentParser:
     )
     study.add_argument("--image", default=DEFAULT_IMAGE)
     study.add_argument("--keep-vcfs", action="store_true")
+    study.add_argument("--workers", type=int, default=1)
     study.set_defaults(func=command_container_study)
 
     evaluate = commands.add_parser("evaluate-decoder", help="compare decoded simulations with tree-sequence truth")

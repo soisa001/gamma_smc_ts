@@ -89,7 +89,7 @@ pointwise Monte Carlo p-values, breakpoints, plots, runtime, and truth error) is
 scripts/aou.sh run-container-study \
   --source-dir sim_results/two_epoch_growth_s0p05_n2000 \
   --output-dir sim_results/gamma_smc_container_stride1000 \
-  --neutral-replicates 100 --output-at-stride 1000
+  --neutral-replicates 100 --output-at-stride 1000 --workers 4
 ```
 
 The GitHub Actions workflow `Gamma-SMC container stride study` exposes the null

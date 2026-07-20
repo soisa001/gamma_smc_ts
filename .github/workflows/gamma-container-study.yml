@@ -1,10 +1,6 @@
 name: Gamma-SMC container stride study
 
 on:
-  push:
-    branches: [AOU_run]
-    paths:
-      - ".github/workflows/gamma-container-study.yml"
   workflow_dispatch:
     inputs:
       neutral_replicates:
@@ -15,6 +11,10 @@ on:
         description: Posterior output stride in bp
         required: true
         default: "1000"
+      workers:
+        description: Concurrent neutral simulation/decode workers
+        required: true
+        default: "4"
 
 jobs:
   decode:
@@ -23,6 +23,7 @@ jobs:
     env:
       NEUTRAL_REPLICATES: ${{ inputs.neutral_replicates || '1' }}
       OUTPUT_AT_STRIDE: ${{ inputs.output_at_stride || '1000' }}
+      NULL_WORKERS: ${{ inputs.workers || '4' }}
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -46,6 +47,7 @@ jobs:
             --output-dir sim_results/gamma_smc_container_stride1000 \
             --neutral-replicates "$NEUTRAL_REPLICATES" \
             --output-at-stride "$OUTPUT_AT_STRIDE" \
+            --workers "$NULL_WORKERS" \
             --runtime docker
       - name: Upload profiles, plots, metrics, and logs
         if: always()

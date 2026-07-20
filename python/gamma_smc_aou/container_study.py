@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from time import perf_counter
 
@@ -73,10 +74,11 @@ def run_container_stride_study(
     runtime: str = "auto",
     image: str = DEFAULT_IMAGE,
     keep_vcfs: bool = False,
+    workers: int = 1,
 ) -> dict:
     """Decode a retained sweep and matched nulls with official Gamma-SMC v0.2."""
-    if neutral_replicates < 1 or stride < 1:
-        raise ValueError("replicate count and stride must be positive")
+    if neutral_replicates < 1 or stride < 1 or workers < 1:
+        raise ValueError("replicate count, stride, and workers must be positive")
     source_dir = Path(source_dir).resolve()
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -148,9 +150,7 @@ def run_container_stride_study(
         compression="gzip",
     )
 
-    neutral_profiles = []
-    neutral_runs = []
-    for replicate in range(neutral_replicates):
+    def neutral_task(replicate: int) -> tuple[pd.DataFrame, dict]:
         tree_path = work_dir / f"neutral_{replicate:04d}.trees"
         neutral_ts, _ = _simulate(
             tree_path,
@@ -176,8 +176,6 @@ def run_container_stride_study(
         )
         profile = pd.read_csv(summary_path, sep="\t")
         profile["replicate"] = replicate
-        neutral_profiles.append(profile)
-        neutral_runs.append({"replicate": replicate, **run})
         if not keep_vcfs:
             vcf_path.unlink(missing_ok=True)
             tree_path.unlink(missing_ok=True)
@@ -185,6 +183,15 @@ def run_container_stride_study(
             summary_path.with_name(summary_path.name + ".run.json").unlink(
                 missing_ok=True
             )
+        return profile, {"replicate": replicate, **run}
+
+    if workers == 1:
+        neutral_results = [neutral_task(value) for value in range(neutral_replicates)]
+    else:
+        with ThreadPoolExecutor(max_workers=min(workers, neutral_replicates)) as executor:
+            neutral_results = list(executor.map(neutral_task, range(neutral_replicates)))
+    neutral_profiles = [result[0] for result in neutral_results]
+    neutral_runs = [result[1] for result in neutral_results]
 
     neutral = pd.concat(neutral_profiles, ignore_index=True)
     neutral.to_csv(
@@ -246,6 +253,7 @@ def run_container_stride_study(
         "sample_diploids": design["sample_diploids"],
         "within_individual_pairs": design["sample_diploids"],
         "neutral_replicates": int(neutral_replicates),
+        "neutral_workers": int(min(workers, neutral_replicates)),
         "scaled_mutation_rate": float(theta),
         "recombination_to_mutation_ratio": float(rho_over_theta),
         "threshold_years": float(threshold_years),
