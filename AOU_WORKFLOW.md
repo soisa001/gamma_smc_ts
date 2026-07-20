@@ -226,6 +226,50 @@ summary reports both estimands explicitly. Future rejection sampling on allele
 retention would estimate power conditional on presence in the present-day
 sample, not unconditional evolutionary power.
 
+To separate conditional calibration from the within-selected carrier effect,
+the first 10 retained `s=0.1` replicate IDs can be analyzed against all 100
+saved neutral replicates:
+
+```bash
+gamma-smc-aou analyze-retained-sweeps \
+  --source-dir sim_results/recent_sweep_s0p1_n2000 \
+  --output-dir sim_results/recent_sweep_s0p1_retained10_n2000 \
+  --selection-coefficient 0.1 --retained-replicates 10 \
+  --workers 20 --seed 424242
+```
+
+The source run stripped the selected mutation before overlaying neutral
+mutations and did not retain its tree files. The command therefore
+deterministically reconstructs only the selected replicate IDs `0, 2, 14, 17,
+32, 34, 35, 41, 44, 62` from their original seeds. It fails unless both the
+saved population allele frequency and exact-center statistic are reproduced.
+This reconstructs the same trajectories; it does not draw 10 replacement
+mutations. With 20 workers requested, 10 workers were active because there are
+only 10 trajectories, and reconstruction took 22.0 seconds.
+
+In the resulting calibration, the 100 neutral simulations contained 8--29 of
+2,000 pairs with TMRCA below 180 generations (mean 18.37). The 10 retained
+selected trajectories contained 39--1,703 recent pairs. No neutral replicate
+equaled or exceeded any selected result, so each has upper-tail Monte Carlo
+`p=(1+0)/(100+1)=0.009901`. The retained trajectories were chosen conditional
+on allele survival, so these p-values demonstrate separation for that
+conditional set; they are not an estimate of unconditional evolutionary
+power.
+
+The within-selected comparison distinguishes three pair classes: neither
+haplotype carries the focal mutation, one haplotype carries it, or both carry
+it. The primary carrier comparison is two-copy carrier--carrier versus
+zero-copy noncarrier--noncarrier; mixed pairs are shown separately rather than
+being pooled with carrier pairs. All carrier--carrier pairs had TMRCA below
+180 generations, mixed pairs had none, and the noncarrier recent fraction was
+0--0.0164. For a single-origin allele introduced 180 generations ago, this is
+partly a genealogical identity: two present-day carriers must share the
+mutation-bearing ancestral lineage within that age. Consequently, the
+carrier--carrier contrast alone is not independent evidence of selection. The
+selection test is the excess *all-pair* recent coalescence against the neutral
+simulation null; an empirical carrier contrast should additionally use
+frequency-, age-, and recombination-matched neutral alleles for calibration.
+
 `validate-null` performs an exchangeable leave-one-replicate-out rank test at a
 fixed relative position. Its JSON reports mean p-value, KS uniformity p-value,
 and the empirical fraction below 0.05; the QQ plot makes tail problems visible.

@@ -15,7 +15,11 @@ from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
 from .plotting import plot_scan, plot_truth_tmrca_relationship
 from .simulation import SimulationConfig, simulate_replicates
-from .selection import validate_recent_sweep_grid, validate_slim_hard_sweep
+from .selection import (
+    analyze_retained_recent_sweeps,
+    validate_recent_sweep_grid,
+    validate_slim_hard_sweep,
+)
 from .tree_sequence import tree_sequence_to_vcf
 
 
@@ -196,6 +200,18 @@ def command_validate_recent_sweep(args):
     )
 
 
+def command_analyze_retained_sweeps(args):
+    analyze_retained_recent_sweeps(
+        args.source_dir,
+        args.output_dir,
+        executable=args.slim,
+        selection_coefficient=args.selection_coefficient,
+        retained_replicates=args.retained_replicates,
+        workers=args.workers,
+        seed=args.seed,
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
@@ -308,6 +324,24 @@ def parser() -> argparse.ArgumentParser:
     recent.add_argument("--no-save-trees", action="store_true")
     recent.add_argument("--seed", type=int, default=271828)
     recent.set_defaults(func=command_validate_recent_sweep)
+
+    retained = commands.add_parser(
+        "analyze-retained-sweeps",
+        help="compare retained sweeps to a saved null and reconstruct carrier TMRCAs",
+    )
+    retained.add_argument("--source-dir", required=True)
+    retained.add_argument("--output-dir", required=True)
+    retained.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
+    retained.add_argument("--selection-coefficient", type=float, default=0.1)
+    retained.add_argument("--retained-replicates", type=int, default=10)
+    retained.add_argument("--workers", type=int, default=20)
+    retained.add_argument(
+        "--seed",
+        type=int,
+        default=424242,
+        help="base seed used for the source validate-recent-sweep run",
+    )
+    retained.set_defaults(func=command_analyze_retained_sweeps)
     return root
 
 

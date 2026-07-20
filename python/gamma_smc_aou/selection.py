@@ -9,6 +9,7 @@ import warnings
 from concurrent.futures import ThreadPoolExecutor
 from importlib import resources
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from time import perf_counter
 
 import matplotlib
@@ -50,6 +51,62 @@ def within_individual_tmrca_grid(
             "mean_tmrca_generations": float(np.mean(times)),
         })
     return pd.DataFrame(rows)
+
+
+def within_individual_tmrca_details(
+    ts,
+    position: float,
+    threshold_generations: float,
+    focal_carrier_counts: np.ndarray | None = None,
+) -> pd.DataFrame:
+    """Return one exact-position TMRCA row per sampled diploid individual."""
+    sample_nodes = set(ts.samples())
+    tree = ts.at(float(position))
+    rows = []
+    for individual in ts.individuals():
+        nodes = [node for node in individual.nodes if node in sample_nodes]
+        if len(nodes) != 2:
+            continue
+        tmrca = float(tree.tmrca(*nodes))
+        row = {
+            "individual_id": int(individual.id),
+            "tmrca_generations": tmrca,
+            "tmrca_lt_threshold": bool(tmrca < threshold_generations),
+        }
+        if focal_carrier_counts is not None:
+            row["focal_carrier_copies"] = int(focal_carrier_counts[individual.id])
+        rows.append(row)
+    if not rows:
+        raise ValueError("tree sequence has no sampled diploid individuals")
+    return pd.DataFrame(rows)
+
+
+def _focal_carrier_counts(ts, sweep_position: int) -> np.ndarray:
+    """Count focal derived copies in each sampled diploid before site removal."""
+    focal_variants = [
+        variant
+        for variant in ts.variants()
+        if np.isclose(variant.site.position, sweep_position)
+    ]
+    if len(focal_variants) != 1:
+        raise ValueError(
+            f"expected one retained focal variant at {sweep_position}, "
+            f"found {len(focal_variants)}"
+        )
+    variant = focal_variants[0]
+    node_genotype = {
+        int(node): int(genotype)
+        for node, genotype in zip(ts.samples(), variant.genotypes)
+    }
+    sample_nodes = set(node_genotype)
+    counts = np.full(ts.num_individuals, -1, dtype=np.int8)
+    for individual in ts.individuals():
+        nodes = [node for node in individual.nodes if node in sample_nodes]
+        if len(nodes) == 2:
+            counts[individual.id] = sum(node_genotype[node] > 0 for node in nodes)
+    if np.any(counts < 0):
+        raise ValueError("not every retained individual has two focal genotypes")
+    return counts
 
 
 def run_slim_hard_sweep(
@@ -138,6 +195,7 @@ def run_slim_recent_sweep(
     mutation_rate: float = 1.25e-8,
     recombination_rate: float = 1e-8,
     seed: int = 24681357,
+    capture_focal_genotypes: bool = False,
 ):
     """Simulate one unconditional recent single-origin selected trajectory.
 
@@ -205,6 +263,11 @@ def run_slim_recent_sweep(
     allele_frequency = float(match.group(1))
     focal_allele_outcome = match.group(2)
     sampled = _sample_diploids(tskit.load(raw_path), sample_diploids, seed + 2)
+    focal_carrier_counts = (
+        _focal_carrier_counts(sampled, sweep_position)
+        if capture_focal_genotypes
+        else None
+    )
     tables = sampled.dump_tables()
     tables.sites.clear()
     tables.mutations.clear()
@@ -220,7 +283,7 @@ def run_slim_recent_sweep(
     sampled.dump(output_path)
     for path in (initial_path, raw_path):
         path.unlink(missing_ok=True)
-    return sampled, {
+    run = {
         "selection_coefficient": selection_coefficient,
         "age_generations": age_generations,
         "population_size": population_size,
@@ -233,6 +296,12 @@ def run_slim_recent_sweep(
         "n_trees": sampled.num_trees,
         "slim_stdout": completed.stdout,
     }
+    if focal_carrier_counts is not None:
+        run["focal_carrier_counts"] = focal_carrier_counts
+        run["sample_focal_allele_frequency"] = float(
+            focal_carrier_counts.sum() / (2 * len(focal_carrier_counts))
+        )
+    return sampled, run
 
 
 def _sweep_grid(sequence_length: int, sweep_position: int) -> np.ndarray:
@@ -640,6 +709,7 @@ def validate_recent_sweep_grid(
         "neutral_replicates": neutral_replicates,
         "selected_replicates_per_s": selected_replicates,
         "trajectory_workers": workers,
+        "seed": int(seed),
         "neutral_reused_from": (
             str(reused_null_path) if reused_null_path is not None else None
         ),
@@ -655,6 +725,407 @@ def validate_recent_sweep_grid(
         age_generations=age_generations,
     )
     return metrics
+
+
+def retained_sweep_calibration_table(
+    stats: pd.DataFrame,
+    *,
+    selection_coefficient: float,
+    retained_replicates: int,
+    sample_diploids: int,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Select retained trajectories and compare each with the full neutral null."""
+    neutral = stats[np.isclose(stats["selection_coefficient"], 0)].copy()
+    eligible = stats[
+        np.isclose(stats["selection_coefficient"], selection_coefficient)
+        & stats["focal_allele_outcome"].isin(("segregating", "fixed"))
+    ].sort_values("replicate")
+    if len(neutral) < 2:
+        raise ValueError("at least two neutral replicates are required")
+    if len(eligible) < retained_replicates:
+        raise ValueError(
+            f"requested {retained_replicates} retained trajectories but only "
+            f"{len(eligible)} are available"
+        )
+    selected = eligible.head(retained_replicates).copy()
+    neutral["n_pairs_tmrca_lt_threshold"] = np.rint(
+        neutral["center_fraction_recent"] * sample_diploids
+    ).astype(int)
+    rows = []
+    null_values = neutral["center_fraction_recent"].to_numpy(dtype=float)
+    for row in selected.itertuples(index=False):
+        value = float(row.center_fraction_recent)
+        exceedances = int(np.count_nonzero(null_values >= value))
+        rows.append({
+            "replicate": int(row.replicate),
+            "realized_population_allele_frequency": float(
+                row.realized_population_allele_frequency
+            ),
+            "center_fraction_recent": value,
+            "n_pairs_tmrca_lt_threshold": int(round(value * sample_diploids)),
+            "neutral_exceedances": exceedances,
+            "neutral_replicates": int(len(neutral)),
+            "mc_p_upper": float((1 + exceedances) / (1 + len(neutral))),
+        })
+    return neutral, pd.DataFrame(rows)
+
+
+def _plot_retained_calibration(
+    neutral: pd.DataFrame,
+    selected: pd.DataFrame,
+    *,
+    threshold_generations: int,
+    output_path: Path,
+) -> None:
+    null_counts = neutral["n_pairs_tmrca_lt_threshold"].to_numpy(dtype=int)
+    selected_counts = selected["n_pairs_tmrca_lt_threshold"].to_numpy(dtype=int)
+    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8), constrained_layout=True)
+
+    bins = np.arange(null_counts.min() - 0.5, null_counts.max() + 1.5)
+    axes[0].hist(null_counts, bins=bins, color="0.55", edgecolor="white")
+    axes[0].axvline(
+        np.quantile(null_counts, 0.95), color="#dc2626", ls="--", lw=1.2,
+        label="neutral 95th percentile",
+    )
+    axes[0].set(
+        xlabel=f"Number of pairs with TMRCA < {threshold_generations}",
+        ylabel="Neutral simulations",
+        title=f"Full neutral null (n={len(neutral)})",
+    )
+    axes[0].legend(fontsize=8)
+
+    thresholds = np.unique(np.r_[1, null_counts, selected_counts])
+    exceedance_curve = np.asarray([
+        np.count_nonzero(null_counts >= threshold) for threshold in thresholds
+    ])
+    axes[1].step(thresholds, exceedance_curve, where="post", color="0.25")
+    axes[1].scatter(
+        selected_counts,
+        selected["neutral_exceedances"],
+        color="#7c3aed",
+        s=34,
+        zorder=3,
+        label="retained s=0.1",
+    )
+    axes[1].set_xscale("log")
+    axes[1].set(
+        xlabel=f"Observed number of pairs with TMRCA < {threshold_generations}",
+        ylabel=f"Number of {len(neutral)} neutral simulations >= observed",
+        title="Empirical upper-tail count",
+    )
+    axes[1].legend(fontsize=8)
+
+    x = np.arange(len(selected))
+    axes[2].axhspan(
+        null_counts.min(), null_counts.max(), color="0.75", alpha=0.45,
+        label="neutral range",
+    )
+    axes[2].scatter(x, selected_counts, color="#7c3aed", s=42, zorder=3)
+    for index, row in enumerate(selected.itertuples(index=False)):
+        axes[2].annotate(
+            f"{row.neutral_exceedances}/{row.neutral_replicates}\n"
+            f"p={row.mc_p_upper:.4f}",
+            (index, row.n_pairs_tmrca_lt_threshold),
+            xytext=(0, 6),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            fontsize=7,
+        )
+    axes[2].set_yscale("log")
+    axes[2].set_ylim(
+        max(1, min(null_counts) * 0.7),
+        max(selected_counts) * 1.8,
+    )
+    axes[2].set_xticks(x, [str(value) for value in selected["replicate"]])
+    axes[2].set(
+        xlabel="Retained selected replicate",
+        ylabel=f"Pairs with TMRCA < {threshold_generations}",
+        title="Selected statistics and Monte Carlo p-values",
+    )
+    axes[2].legend(fontsize=8)
+    fig.savefig(output_path, dpi=180)
+    plt.close(fig)
+
+
+def _plot_carrier_tmrca(
+    details: pd.DataFrame,
+    selected: pd.DataFrame,
+    *,
+    threshold_generations: int,
+    output_path: Path,
+) -> None:
+    fig, axes = plt.subplots(5, 2, figsize=(13, 17), sharex=True, sharey=True)
+    axes = axes.ravel()
+    for axis, selected_row in zip(axes, selected.itertuples(index=False)):
+        group = details[details["replicate"] == selected_row.replicate]
+        for copies, label, color in (
+            (0, "noncarrier / noncarrier", "0.4"),
+            (1, "carrier / noncarrier", "#60a5fa"),
+            (2, "carrier / carrier", "#7c3aed"),
+        ):
+            values = np.sort(
+                group.loc[
+                    group["focal_carrier_copies"] == copies,
+                    "tmrca_generations",
+                ].to_numpy(dtype=float)
+            )
+            if not len(values):
+                continue
+            ecdf = np.arange(1, len(values) + 1) / len(values)
+            axis.step(values, ecdf, where="post", color=color, lw=1.4, label=label)
+        recent_by_copy = group.groupby("focal_carrier_copies")[
+            "tmrca_lt_threshold"
+        ].mean()
+        n_by_copy = group["focal_carrier_copies"].value_counts()
+        axis.axvline(threshold_generations, color="#dc2626", ls="--", lw=0.9)
+        axis.text(
+            0.98,
+            0.04,
+            "P(recent), copies 0/1/2: "
+            + "/".join(f"{recent_by_copy.get(i, np.nan):.3f}" for i in range(3))
+            + "\nn, copies 0/1/2: "
+            + "/".join(str(int(n_by_copy.get(i, 0))) for i in range(3)),
+            transform=axis.transAxes,
+            ha="right",
+            va="bottom",
+            fontsize=8,
+        )
+        axis.set_title(
+            f"replicate {selected_row.replicate}; population AF="
+            f"{selected_row.realized_population_allele_frequency:.3f}"
+        )
+        axis.grid(alpha=0.15)
+    for axis in axes:
+        axis.set_xscale("log")
+        axis.set_ylim(0, 1)
+    for axis in axes[::2]:
+        axis.set_ylabel("Cumulative fraction of pairs")
+    for axis in axes[-2:]:
+        axis.set_xlabel("Within-diploid TMRCA (generations, log scale)")
+    axes[0].legend(loc="upper left", fontsize=8)
+    fig.suptitle(
+        "Within each selected simulation: carrier-carrier versus noncarrier pairs",
+        fontsize=14,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.98))
+    fig.savefig(output_path, dpi=180)
+    plt.close(fig)
+
+
+def summarize_carrier_tmrca(
+    details: pd.DataFrame,
+    selected: pd.DataFrame,
+    *,
+    threshold_generations: int,
+    output_dir: str | Path,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Write carrier-copy summaries and the direct 2-copy versus 0-copy test."""
+    from scipy.stats import mannwhitneyu
+
+    output_dir = Path(output_dir)
+    genotype_summary = (
+        details.groupby(["replicate", "focal_carrier_copies"], as_index=False)
+        .agg(
+            n_pairs=("tmrca_generations", "size"),
+            mean_tmrca_generations=("tmrca_generations", "mean"),
+            median_tmrca_generations=("tmrca_generations", "median"),
+            fraction_tmrca_lt_threshold=("tmrca_lt_threshold", "mean"),
+        )
+    )
+    genotype_summary["pair_class"] = genotype_summary[
+        "focal_carrier_copies"
+    ].map({
+        0: "noncarrier_noncarrier",
+        1: "carrier_noncarrier",
+        2: "carrier_carrier",
+    })
+    genotype_summary.to_csv(
+        output_dir / "carrier_copy_summary.tsv", sep="\t", index=False
+    )
+    direct_summary = genotype_summary[
+        genotype_summary["focal_carrier_copies"].isin((0, 2))
+    ].copy()
+    direct_summary.to_csv(
+        output_dir / "carrier_vs_noncarrier_summary.tsv", sep="\t", index=False
+    )
+    effect_rows = []
+    for replicate, group in details.groupby("replicate"):
+        noncarrier = group.loc[
+            group["focal_carrier_copies"] == 0, "tmrca_generations"
+        ]
+        mixed = group.loc[
+            group["focal_carrier_copies"] == 1, "tmrca_generations"
+        ]
+        carrier = group.loc[
+            group["focal_carrier_copies"] == 2, "tmrca_generations"
+        ]
+        u_result = mannwhitneyu(
+            carrier, noncarrier, alternative="less", method="auto"
+        )
+        effect_rows.append({
+            "replicate": int(replicate),
+            "n_noncarrier_noncarrier_pairs": int(len(noncarrier)),
+            "n_mixed_pairs": int(len(mixed)),
+            "n_carrier_carrier_pairs": int(len(carrier)),
+            "noncarrier_fraction_tmrca_lt_threshold": float(
+                np.mean(noncarrier < threshold_generations)
+            ),
+            "carrier_fraction_tmrca_lt_threshold": float(
+                np.mean(carrier < threshold_generations)
+            ),
+            "mann_whitney_u": float(u_result.statistic),
+            "mann_whitney_p_carrier_lower": float(u_result.pvalue),
+        })
+    effects = pd.DataFrame(effect_rows)
+    effects.to_csv(output_dir / "carrier_tmrca_effect_tests.tsv", sep="\t", index=False)
+    _plot_carrier_tmrca(
+        details,
+        selected,
+        threshold_generations=threshold_generations,
+        output_path=output_dir / "carrier_vs_noncarrier_tmrca_ecdf.png",
+    )
+    return genotype_summary, direct_summary, effects
+
+
+def analyze_retained_recent_sweeps(
+    source_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    executable: str | Path | None = None,
+    selection_coefficient: float = 0.1,
+    retained_replicates: int = 10,
+    workers: int = 20,
+    seed: int = 424242,
+) -> dict:
+    """Calibrate retained sweeps and reconstruct carrier-resolved pair TMRCAs."""
+    if workers < 1 or retained_replicates < 1:
+        raise ValueError("workers and retained_replicates must be positive")
+    source_dir = Path(source_dir).resolve()
+    output_dir = Path(output_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with (source_dir / "metrics.json").open(encoding="utf-8") as handle:
+        source_metrics = json.load(handle)
+    if source_metrics.get("seed") is not None and int(source_metrics["seed"]) != seed:
+        raise ValueError(
+            f"source seed is {source_metrics['seed']}, but reconstruction seed is {seed}"
+        )
+    stats = pd.read_csv(source_dir / "replicate_statistics.tsv", sep="\t")
+    sample_diploids = int(source_metrics["sample_diploids"])
+    threshold_generations = int(source_metrics["age_generations"])
+    neutral, selected = retained_sweep_calibration_table(
+        stats,
+        selection_coefficient=selection_coefficient,
+        retained_replicates=retained_replicates,
+        sample_diploids=sample_diploids,
+    )
+    neutral.to_csv(output_dir / "neutral_center_statistics.tsv", sep="\t", index=False)
+    selected.to_csv(
+        output_dir / "retained_selected_calibration.tsv", sep="\t", index=False
+    )
+    _plot_retained_calibration(
+        neutral,
+        selected,
+        threshold_generations=threshold_generations,
+        output_path=output_dir / "neutral_vs_retained_selected_calibration.png",
+    )
+
+    started = perf_counter()
+    selected_by_replicate = selected.set_index("replicate")
+    center = int(source_metrics["sweep_position"])
+
+    with TemporaryDirectory(prefix="gamma_smc_retained_") as temporary_directory:
+        temporary_directory = Path(temporary_directory)
+
+        def reconstruct(replicate: int) -> pd.DataFrame:
+            expected = selected_by_replicate.loc[replicate]
+            run_seed = (
+                seed
+                + 1_000_000
+                + int(selection_coefficient * 1e8)
+                + int(replicate) * 10
+            )
+            ts, run = run_slim_recent_sweep(
+                temporary_directory / f"replicate_{replicate}.trees",
+                executable=executable,
+                population_size=int(source_metrics["population_size"]),
+                sample_diploids=sample_diploids,
+                sequence_length=int(source_metrics["sequence_length"]),
+                sweep_position=center,
+                selection_coefficient=selection_coefficient,
+                age_generations=threshold_generations,
+                mutation_rate=float(source_metrics["mutation_rate"]),
+                recombination_rate=float(source_metrics["recombination_rate"]),
+                seed=run_seed,
+                capture_focal_genotypes=True,
+            )
+            if run["focal_allele_outcome"] not in ("segregating", "fixed"):
+                raise RuntimeError(
+                    f"replicate {replicate} did not reproduce a retained mutation"
+                )
+            if not np.isclose(
+                run["realized_population_allele_frequency"],
+                expected["realized_population_allele_frequency"],
+                atol=1e-9,
+                rtol=0,
+            ):
+                raise RuntimeError(f"replicate {replicate} allele frequency changed")
+            details = within_individual_tmrca_details(
+                ts,
+                center,
+                threshold_generations,
+                focal_carrier_counts=run["focal_carrier_counts"],
+            )
+            observed_recent = float(details["tmrca_lt_threshold"].mean())
+            if not np.isclose(
+                observed_recent, expected["center_fraction_recent"], atol=1e-12, rtol=0
+            ):
+                raise RuntimeError(f"replicate {replicate} center statistic changed")
+            details["replicate"] = int(replicate)
+            details["population_focal_allele_frequency"] = float(
+                run["realized_population_allele_frequency"]
+            )
+            details["sample_focal_allele_frequency"] = float(
+                run["sample_focal_allele_frequency"]
+            )
+            details["pair_has_focal_allele"] = details["focal_carrier_copies"] > 0
+            return details
+
+        replicate_ids = selected["replicate"].astype(int).tolist()
+        if workers == 1:
+            detail_tables = [reconstruct(replicate) for replicate in replicate_ids]
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                detail_tables = list(executor.map(reconstruct, replicate_ids))
+
+    details = pd.concat(detail_tables, ignore_index=True)
+    details.to_csv(output_dir / "carrier_pair_tmrca.tsv", sep="\t", index=False)
+    _, _, effects = summarize_carrier_tmrca(
+        details,
+        selected,
+        threshold_generations=threshold_generations,
+        output_dir=output_dir,
+    )
+
+    result = {
+        "source_dir": str(source_dir),
+        "selection_coefficient": float(selection_coefficient),
+        "retained_replicates": replicate_ids,
+        "neutral_replicates": int(len(neutral)),
+        "sample_diploids": sample_diploids,
+        "threshold_generations": threshold_generations,
+        "threshold_years": int(source_metrics["threshold_years"]),
+        "workers_requested": int(workers),
+        "workers_used": int(min(workers, retained_replicates)),
+        "base_seed": int(seed),
+        "deterministic_reconstruction_verified": True,
+        "elapsed_seconds": float(perf_counter() - started),
+        "calibration": selected.to_dict("records"),
+        "carrier_effect_tests": effects.to_dict("records"),
+    }
+    with (output_dir / "metrics.json").open("w", encoding="utf-8") as handle:
+        json.dump(result, handle, indent=2)
+    return result
 
 
 def validate_slim_hard_sweep(

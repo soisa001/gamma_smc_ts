@@ -7,8 +7,11 @@ import pandas as pd
 import pytest
 
 from gamma_smc_aou.selection import (
+    retained_sweep_calibration_table,
+    summarize_carrier_tmrca,
     validate_recent_sweep_grid,
     validate_slim_hard_sweep,
+    within_individual_tmrca_details,
     within_individual_tmrca_grid,
 )
 
@@ -23,6 +26,62 @@ def test_tmrca_grid_uses_one_pair_per_diploid():
     assert len(result) == 3
     assert result["n_pairs"].eq(6).all()
     assert result["mean_p_tmrca_lt_threshold"].between(0, 1).all()
+
+
+def test_pair_details_attach_focal_carrier_counts():
+    ts = msprime.sim_ancestry(
+        samples=[msprime.SampleSet(4, ploidy=2)], population_size=100,
+        sequence_length=1_000, recombination_rate=1e-7,
+        model=msprime.StandardCoalescent(), random_seed=121,
+    )
+    counts = np.asarray([0, 1, 2, 0], dtype=np.int8)
+    result = within_individual_tmrca_details(ts, 500, 150, counts)
+    assert len(result) == 4
+    assert result["focal_carrier_copies"].tolist() == counts.tolist()
+    assert result["tmrca_lt_threshold"].dtype == bool
+
+
+def test_retained_calibration_uses_full_null_and_first_retained_replicates():
+    stats = pd.DataFrame({
+        "selection_coefficient": [0.0, 0.0, 0.0, 0.1, 0.1, 0.1],
+        "replicate": [0, 1, 2, 8, 2, 5],
+        "focal_allele_outcome": [
+            "lost", "lost", "lost", "segregating", "lost", "segregating"
+        ],
+        "realized_population_allele_frequency": [0, 0, 0, 0.8, 0, 0.5],
+        "center_fraction_recent": [0.01, 0.02, 0.03, 0.8, 0.02, 0.5],
+    })
+    neutral, retained = retained_sweep_calibration_table(
+        stats,
+        selection_coefficient=0.1,
+        retained_replicates=2,
+        sample_diploids=2_000,
+    )
+    assert len(neutral) == 3
+    assert retained["replicate"].tolist() == [5, 8]
+    assert retained["neutral_exceedances"].eq(0).all()
+    assert retained["mc_p_upper"].eq(0.25).all()
+
+
+def test_carrier_summary_compares_two_copy_with_zero_copy_pairs(tmp_path):
+    details = pd.DataFrame({
+        "replicate": [7] * 6,
+        "focal_carrier_copies": [0, 0, 1, 1, 2, 2],
+        "tmrca_generations": [1_000, 2_000, 800, 900, 10, 20],
+        "tmrca_lt_threshold": [False, False, False, False, True, True],
+    })
+    selected = pd.DataFrame({
+        "replicate": [7],
+        "realized_population_allele_frequency": [0.5],
+    })
+    copies, direct, effects = summarize_carrier_tmrca(
+        details, selected, threshold_generations=180, output_dir=tmp_path
+    )
+    assert copies["focal_carrier_copies"].tolist() == [0, 1, 2]
+    assert direct["focal_carrier_copies"].tolist() == [0, 2]
+    assert effects.iloc[0]["carrier_fraction_tmrca_lt_threshold"] == 1
+    assert effects.iloc[0]["noncarrier_fraction_tmrca_lt_threshold"] == 0
+    assert (tmp_path / "carrier_vs_noncarrier_tmrca_ecdf.png").exists()
 
 
 @pytest.mark.skipif(

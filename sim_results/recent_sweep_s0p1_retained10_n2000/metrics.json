@@ -1,0 +1,219 @@
+{
+  "source_dir": "C:\\Users\\Lenovo\\OneDrive\\Documents\\cxt_demo\\gamma_smc_ts\\sim_results\\recent_sweep_s0p1_n2000",
+  "selection_coefficient": 0.1,
+  "retained_replicates": [
+    0,
+    2,
+    14,
+    17,
+    32,
+    34,
+    35,
+    41,
+    44,
+    62
+  ],
+  "neutral_replicates": 100,
+  "sample_diploids": 2000,
+  "threshold_generations": 180,
+  "threshold_years": 4500,
+  "workers_requested": 20,
+  "workers_used": 10,
+  "base_seed": 424242,
+  "deterministic_reconstruction_verified": true,
+  "elapsed_seconds": 22.012593000021297,
+  "calibration": [
+    {
+      "replicate": 0,
+      "realized_population_allele_frequency": 0.4353,
+      "center_fraction_recent": 0.185,
+      "n_pairs_tmrca_lt_threshold": 370,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 2,
+      "realized_population_allele_frequency": 0.8833,
+      "center_fraction_recent": 0.785,
+      "n_pairs_tmrca_lt_threshold": 1570,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 14,
+      "realized_population_allele_frequency": 0.55955,
+      "center_fraction_recent": 0.32,
+      "n_pairs_tmrca_lt_threshold": 640,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 17,
+      "realized_population_allele_frequency": 0.6192,
+      "center_fraction_recent": 0.3845,
+      "n_pairs_tmrca_lt_threshold": 769,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 32,
+      "realized_population_allele_frequency": 0.73725,
+      "center_fraction_recent": 0.5395,
+      "n_pairs_tmrca_lt_threshold": 1079,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 34,
+      "realized_population_allele_frequency": 0.77355,
+      "center_fraction_recent": 0.599,
+      "n_pairs_tmrca_lt_threshold": 1198,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 35,
+      "realized_population_allele_frequency": 0.4749,
+      "center_fraction_recent": 0.2275,
+      "n_pairs_tmrca_lt_threshold": 455,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 41,
+      "realized_population_allele_frequency": 0.09965,
+      "center_fraction_recent": 0.0195,
+      "n_pairs_tmrca_lt_threshold": 39,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 44,
+      "realized_population_allele_frequency": 0.9215,
+      "center_fraction_recent": 0.8515,
+      "n_pairs_tmrca_lt_threshold": 1703,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    },
+    {
+      "replicate": 62,
+      "realized_population_allele_frequency": 0.5048,
+      "center_fraction_recent": 0.2515,
+      "n_pairs_tmrca_lt_threshold": 503,
+      "neutral_exceedances": 0,
+      "neutral_replicates": 100,
+      "mc_p_upper": 0.009900990099009901
+    }
+  ],
+  "carrier_effect_tests": [
+    {
+      "replicate": 0,
+      "n_noncarrier_noncarrier_pairs": 604,
+      "n_mixed_pairs": 1030,
+      "n_carrier_carrier_pairs": 366,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0066225165562913,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 808.5,
+      "mann_whitney_p_carrier_lower": 9.449286832227642e-151
+    },
+    {
+      "replicate": 2,
+      "n_noncarrier_noncarrier_pairs": 34,
+      "n_mixed_pairs": 396,
+      "n_carrier_carrier_pairs": 1570,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 0.0,
+      "mann_whitney_p_carrier_lower": 9.410383876302015e-25
+    },
+    {
+      "replicate": 14,
+      "n_noncarrier_noncarrier_pairs": 385,
+      "n_mixed_pairs": 976,
+      "n_carrier_carrier_pairs": 639,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0025974025974025,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 632.0,
+      "mann_whitney_p_carrier_lower": 1.9337330781417865e-161
+    },
+    {
+      "replicate": 17,
+      "n_noncarrier_noncarrier_pairs": 291,
+      "n_mixed_pairs": 944,
+      "n_carrier_carrier_pairs": 765,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0137457044673539,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 2886.5,
+      "mann_whitney_p_carrier_lower": 2.4180372866813582e-138
+    },
+    {
+      "replicate": 32,
+      "n_noncarrier_noncarrier_pairs": 122,
+      "n_mixed_pairs": 801,
+      "n_carrier_carrier_pairs": 1077,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0163934426229508,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 1074.0,
+      "mann_whitney_p_carrier_lower": 6.094455610291612e-76
+    },
+    {
+      "replicate": 34,
+      "n_noncarrier_noncarrier_pairs": 103,
+      "n_mixed_pairs": 699,
+      "n_carrier_carrier_pairs": 1198,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 0.0,
+      "mann_whitney_p_carrier_lower": 1.0672264955423395e-69
+    },
+    {
+      "replicate": 35,
+      "n_noncarrier_noncarrier_pairs": 544,
+      "n_mixed_pairs": 1007,
+      "n_carrier_carrier_pairs": 449,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0110294117647058,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 2606.0,
+      "mann_whitney_p_carrier_lower": 3.650296090846377e-159
+    },
+    {
+      "replicate": 41,
+      "n_noncarrier_noncarrier_pairs": 1624,
+      "n_mixed_pairs": 357,
+      "n_carrier_carrier_pairs": 19,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0123152709359605,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 75.0,
+      "mann_whitney_p_carrier_lower": 3.1716205556666403e-15
+    },
+    {
+      "replicate": 44,
+      "n_noncarrier_noncarrier_pairs": 17,
+      "n_mixed_pairs": 280,
+      "n_carrier_carrier_pairs": 1703,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.0,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 0.0,
+      "mann_whitney_p_carrier_lower": 3.0464460802084955e-14
+    },
+    {
+      "replicate": 62,
+      "n_noncarrier_noncarrier_pairs": 500,
+      "n_mixed_pairs": 1003,
+      "n_carrier_carrier_pairs": 497,
+      "noncarrier_fraction_tmrca_lt_threshold": 0.012,
+      "carrier_fraction_tmrca_lt_threshold": 1.0,
+      "mann_whitney_u": 2353.0,
+      "mann_whitney_p_carrier_lower": 6.234017941452267e-162
+    }
+  ]
+}
