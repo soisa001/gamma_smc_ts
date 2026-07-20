@@ -1,0 +1,2 @@
+attempt	seed	accepted	focal_allele_outcome	population_allele_frequency	sample_allele_frequency	n_hom_ref_pairs	n_heterozygous_pairs	n_hom_alt_pairs	center_fraction_recent	center_n_pairs_recent	center_mean_tmrca_generations	ancestry_seconds	slim_seconds
+2514	935381	True	segregating	0.379525	0.38275	743	983	274	0.138	276	16690.27946857534	2.4900014977902174e-05	2.6716282999841496

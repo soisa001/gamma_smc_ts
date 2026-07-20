@@ -15,6 +15,7 @@ from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalu
 from .carrier_profiles import plot_retained_carrier_tmrca_profiles
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
 from .container_study import finalize_container_stride_study, run_container_stride_study
+from .high_af_study import finalize_high_af_selected, prepare_high_af_selected
 from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
 from .plotting import plot_scan, plot_truth_tmrca_relationship
@@ -184,6 +185,29 @@ def command_finalize_container_study(args):
         args.output_dir,
         stride=args.output_at_stride,
         workflow_elapsed_seconds=args.workflow_elapsed_seconds,
+        neutral_profiles_path=args.neutral_profiles,
+    )
+
+
+def command_prepare_high_af_selected(args):
+    prepare_high_af_selected(
+        args.null_truth_dir,
+        args.output_dir,
+        executable=args.slim,
+        minimum_population_af=args.minimum_population_af,
+        selection_coefficient=args.selection_coefficient,
+        workers=args.workers,
+        max_attempts=args.max_attempts,
+        seed=args.seed,
+        stride=args.output_at_stride,
+    )
+
+
+def command_finalize_high_af_selected(args):
+    finalize_high_af_selected(
+        args.source_dir,
+        args.neutral_decoded_profiles,
+        stride=args.output_at_stride,
     )
 
 
@@ -416,7 +440,32 @@ def parser() -> argparse.ArgumentParser:
     finalize.add_argument("--output-dir", required=True)
     finalize.add_argument("--output-at-stride", type=int, default=1000)
     finalize.add_argument("--workflow-elapsed-seconds", type=float)
+    finalize.add_argument("--neutral-profiles")
     finalize.set_defaults(func=command_finalize_container_study)
+
+    high_af = commands.add_parser(
+        "prepare-high-af-selected",
+        help="rejection-sample one high-frequency selected replicate and prepare its VCF",
+    )
+    high_af.add_argument("--null-truth-dir", required=True)
+    high_af.add_argument("--output-dir", required=True)
+    high_af.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
+    high_af.add_argument("--minimum-population-af", type=float, default=0.30)
+    high_af.add_argument("--selection-coefficient", type=float, default=0.05)
+    high_af.add_argument("--workers", type=int, default=20)
+    high_af.add_argument("--max-attempts", type=int, default=2_000)
+    high_af.add_argument("--seed", type=int, default=910_241)
+    high_af.add_argument("--output-at-stride", type=int, default=1_000)
+    high_af.set_defaults(func=command_prepare_high_af_selected)
+
+    finish_high_af = commands.add_parser(
+        "finalize-high-af-selected",
+        help="calibrate one selected container decode against an existing decoded null",
+    )
+    finish_high_af.add_argument("--source-dir", required=True)
+    finish_high_af.add_argument("--neutral-decoded-profiles", required=True)
+    finish_high_af.add_argument("--output-at-stride", type=int, default=1_000)
+    finish_high_af.set_defaults(func=command_finalize_high_af_selected)
 
     evaluate = commands.add_parser("evaluate-decoder", help="compare decoded simulations with tree-sequence truth")
     evaluate.add_argument("--truth-dir", required=True)

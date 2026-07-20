@@ -1,0 +1,47 @@
+name: Decode high-AF selected simulation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [AOU_run]
+    paths:
+      - .github/workflows/gamma-decode-high-af-selected.yml
+      - sim_results/gamma_smc_container_stride1000_s0p05_af30/selected_s0p05_af30.vcf.gz
+
+jobs:
+  decode:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv environment
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: "3.11"
+          enable-cache: true
+      - run: bash scripts/bootstrap_uv.sh --simulation-only --skip-tests
+      - name: Decode the retained selected VCF with official Gamma-SMC v0.2
+        run: |
+          RESULT=sim_results/gamma_smc_container_stride1000_s0p05_af30
+          lscpu > "$RESULT/selected_decode_environment.txt"
+          docker pull docker.io/regevsch/gamma_smc:v0.2
+          scripts/aou.sh decode-container \
+            --input "$RESULT/selected_s0p05_af30.vcf.gz" \
+            --output "$RESULT/selected_decoded_recent_probability_profile.tsv" \
+            --theta 0.0005 \
+            --rho-over-theta 0.8 \
+            --mutation-rate 1.25e-8 \
+            --threshold-years 4500 \
+            --generation-time 25 \
+            --output-at-stride 1000 \
+            --runtime docker
+      - name: Upload selected decode
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamma-smc-high-af-selected-decode
+          path: |
+            sim_results/gamma_smc_container_stride1000_s0p05_af30/selected_decoded_recent_probability_profile.tsv
+            sim_results/gamma_smc_container_stride1000_s0p05_af30/selected_decoded_recent_probability_profile.tsv.run.json
+            sim_results/gamma_smc_container_stride1000_s0p05_af30/selected_decode_environment.txt
+          if-no-files-found: error
+          retention-days: 14

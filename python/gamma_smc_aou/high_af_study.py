@@ -1,0 +1,469 @@
+from __future__ import annotations
+
+import json
+import os
+import shutil
+from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from time import perf_counter
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import msprime
+import numpy as np
+import pandas as pd
+import pyslim
+import tskit
+
+from .carrier_profiles import (
+    _position_grids,
+    pair_tmrca_profile_by_focal_copy,
+    plot_carrier_profile_figure,
+)
+from .container_study import finalize_container_stride_study
+from .selection import (
+    run_slim_recent_sweep,
+    within_individual_tmrca_details,
+    within_individual_tmrca_grid,
+)
+from .spatial_scan import _plot_observed_profile
+from .tree_sequence import tree_sequence_to_vcf
+from .two_epoch import (
+    _plot_allele_frequency_trajectory,
+    _plot_demography_and_variant,
+    _plot_null_calibration,
+    two_epoch_recent_probability,
+)
+
+
+def _simulate_high_af_attempt(task: dict) -> dict:
+    """Run one independent trajectory in a worker process."""
+    attempt = int(task["attempt"])
+    run_seed = int(task["seed"] + attempt * 10)
+    tree_path = Path(task["temporary"]) / f"selected_attempt_{attempt:04d}.trees"
+    ts, run = run_slim_recent_sweep(
+        tree_path,
+        executable=task["executable"],
+        population_size=task["ancestral_population_size"],
+        present_population_size=task["present_population_size"],
+        size_change_generations_ago=task["size_change_generations_ago"],
+        sample_diploids=task["sample_diploids"],
+        sequence_length=task["sequence_length"],
+        sweep_position=task["center"],
+        selection_coefficient=task["selection_coefficient"],
+        age_generations=task["variant_age_generations"],
+        mutation_rate=task["mutation_rate"],
+        recombination_rate=task["recombination_rate"],
+        seed=run_seed,
+        capture_focal_genotypes=not task["screen_only"],
+        initial_annotated_path=task["initial_annotated_path"],
+        screen_only=task["screen_only"],
+    )
+    population_af = float(run["realized_population_allele_frequency"])
+    if task["screen_only"]:
+        return {
+            "row": {
+                "attempt": attempt,
+                "seed": run_seed,
+                "accepted": bool(
+                    population_af >= task["minimum_population_af"]
+                    and run["focal_allele_outcome"] == "segregating"
+                ),
+                "focal_allele_outcome": run["focal_allele_outcome"],
+                "population_allele_frequency": population_af,
+                "ancestry_seconds": float(run["ancestry_seconds"]),
+                "slim_seconds": float(run["slim_seconds"]),
+            },
+            "trajectory": run["allele_frequency_trajectory"],
+        }
+    counts = np.asarray(run["focal_carrier_counts"], dtype=np.int8)
+    details = within_individual_tmrca_details(
+        ts,
+        task["center"],
+        task["variant_age_generations"],
+        focal_carrier_counts=counts,
+    )
+    row = {
+        "attempt": attempt,
+        "seed": run_seed,
+        "accepted": bool(
+            population_af >= task["minimum_population_af"]
+            and np.count_nonzero(counts == 0) >= 2
+            and np.count_nonzero(counts == 2) >= 2
+        ),
+        "focal_allele_outcome": run["focal_allele_outcome"],
+        "population_allele_frequency": population_af,
+        "sample_allele_frequency": float(run["sample_focal_allele_frequency"]),
+        "n_hom_ref_pairs": int(np.count_nonzero(counts == 0)),
+        "n_heterozygous_pairs": int(np.count_nonzero(counts == 1)),
+        "n_hom_alt_pairs": int(np.count_nonzero(counts == 2)),
+        "center_fraction_recent": float(details["tmrca_lt_threshold"].mean()),
+        "center_n_pairs_recent": int(details["tmrca_lt_threshold"].sum()),
+        "center_mean_tmrca_generations": float(details["tmrca_generations"].mean()),
+        "ancestry_seconds": float(run["ancestry_seconds"]),
+        "slim_seconds": float(run["slim_seconds"]),
+    }
+    return {
+        "row": row,
+        "tree_path": str(tree_path),
+        "carrier_counts": counts,
+        "trajectory": run["allele_frequency_trajectory"],
+    }
+
+
+def _check_null_compatibility(null_metrics: dict, design: dict) -> None:
+    checks = {
+        "sample_diploids": design["sample_diploids"],
+        "sequence_length": design["sequence_length"],
+        "variant_age_generations": design["variant_age_generations"],
+        "generation_time_years": design["generation_time_years"],
+        "mutation_rate": design["mutation_rate"],
+        "recombination_rate": design["recombination_rate"],
+    }
+    for key, expected in checks.items():
+        if not np.isclose(
+            float(null_metrics[key]), float(expected), rtol=1e-12, atol=0.0
+        ):
+            raise ValueError(
+                f"null design mismatch for {key}: {null_metrics[key]} != {expected}"
+            )
+    demography = null_metrics["demography"]
+    for key, expected in {
+        "ancestral_population_size": design["ancestral_population_size"],
+        "present_population_size": design["present_population_size"],
+        "size_change_generations_ago": design["size_change_generations_ago"],
+    }.items():
+        if int(demography[key]) != int(expected):
+            raise ValueError(
+                f"null demography mismatch for {key}: {demography[key]} != {expected}"
+            )
+
+
+def prepare_high_af_selected(
+    null_truth_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    executable: str | Path | None = None,
+    minimum_population_af: float = 0.30,
+    selection_coefficient: float = 0.05,
+    workers: int = 20,
+    max_attempts: int = 2_000,
+    seed: int = 910_241,
+    stride: int = 1_000,
+    full_step: int = 50_000,
+    zoom_half_width: int = 500_000,
+    zoom_step: int = 5_000,
+) -> dict:
+    """Rejection-sample one high-frequency sweep while reusing a fixed null."""
+    if not 0 < minimum_population_af <= 1:
+        raise ValueError("minimum_population_af must be in (0, 1]")
+    if workers < 1 or max_attempts < 1 or stride < 1:
+        raise ValueError("workers, max_attempts, and stride must be positive")
+    null_truth_dir = Path(null_truth_dir).resolve()
+    output_dir = Path(output_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with (null_truth_dir / "metrics.json").open(encoding="utf-8") as handle:
+        null_metrics = json.load(handle)
+    design = {
+        "ancestral_population_size": int(
+            null_metrics["demography"]["ancestral_population_size"]
+        ),
+        "present_population_size": int(
+            null_metrics["demography"]["present_population_size"]
+        ),
+        "size_change_generations_ago": int(
+            null_metrics["demography"]["size_change_generations_ago"]
+        ),
+        "sample_diploids": int(null_metrics["sample_diploids"]),
+        "sequence_length": int(null_metrics["sequence_length"]),
+        "variant_age_generations": int(null_metrics["variant_age_generations"]),
+        "generation_time_years": float(null_metrics["generation_time_years"]),
+        "mutation_rate": float(null_metrics["mutation_rate"]),
+        "recombination_rate": float(null_metrics["recombination_rate"]),
+    }
+    _check_null_compatibility(null_metrics, design)
+    neutral = pd.read_csv(null_truth_dir / "neutral_statistics.tsv", sep="\t")
+    if len(neutral) != 100:
+        raise ValueError(f"expected the saved 100-replicate null; found {len(neutral)}")
+    center = design["sequence_length"] // 2
+    _, _, carrier_positions = _position_grids(
+        design["sequence_length"],
+        center,
+        full_step=full_step,
+        zoom_half_width=zoom_half_width,
+        zoom_step=zoom_step,
+    )
+    started = perf_counter()
+    accepted = None
+    attempt_rows: list[dict] = []
+
+    with TemporaryDirectory(prefix="gamma_smc_high_af_") as temporary:
+        temporary = Path(temporary)
+        initial_annotated_path = temporary / "shared_neutral_ancestry.trees"
+        ancestry_started = perf_counter()
+        initial = msprime.sim_ancestry(
+            samples=[
+                msprime.SampleSet(
+                    design["ancestral_population_size"], ploidy=2
+                )
+            ],
+            population_size=design["ancestral_population_size"],
+            sequence_length=design["sequence_length"],
+            recombination_rate=design["recombination_rate"],
+            model=msprime.StandardCoalescent(),
+            random_seed=seed - 1,
+        )
+        pyslim.annotate(initial, model_type="WF", tick=1, stage="early").dump(
+            initial_annotated_path
+        )
+        shared_ancestry_seconds = perf_counter() - ancestry_started
+
+        next_attempt = 0
+        while accepted is None and next_attempt < max_attempts:
+            batch = list(range(next_attempt, min(next_attempt + workers, max_attempts)))
+            tasks = [{
+                "attempt": attempt,
+                "seed": seed,
+                "temporary": str(temporary),
+                "executable": None if executable is None else str(executable),
+                "ancestral_population_size": design["ancestral_population_size"],
+                "present_population_size": design["present_population_size"],
+                "size_change_generations_ago": design["size_change_generations_ago"],
+                "sample_diploids": design["sample_diploids"],
+                "sequence_length": design["sequence_length"],
+                "center": center,
+                "selection_coefficient": selection_coefficient,
+                "variant_age_generations": design["variant_age_generations"],
+                "mutation_rate": design["mutation_rate"],
+                "recombination_rate": design["recombination_rate"],
+                "minimum_population_af": minimum_population_af,
+                "initial_annotated_path": str(initial_annotated_path),
+                "screen_only": True,
+            } for attempt in batch]
+            if workers == 1:
+                results = [_simulate_high_af_attempt(task) for task in tasks]
+            else:
+                with ProcessPoolExecutor(max_workers=workers) as executor:
+                    results = list(executor.map(_simulate_high_af_attempt, tasks))
+            for result in results:
+                attempt_rows.append(result["row"])
+                if accepted is None and result["row"]["accepted"]:
+                    accepted = result
+            pd.DataFrame(attempt_rows).sort_values("attempt").to_csv(
+                output_dir / "selected_rejection_screen_checkpoint.tsv",
+                sep="\t",
+                index=False,
+            )
+            next_attempt += len(batch)
+        if accepted is None:
+            failed = pd.DataFrame(attempt_rows).sort_values("attempt")
+            failed["used_for_rejection_decision"] = True
+            failed.to_csv(
+                output_dir / "selected_rejection_attempts.tsv", sep="\t", index=False
+            )
+            raise RuntimeError(
+                f"no s={selection_coefficient:g} trajectory reached population AF "
+                f">={minimum_population_af:g} in {max_attempts} attempts"
+            )
+        materialize_task = {
+            **tasks[batch.index(int(accepted["row"]["attempt"]))],
+            "screen_only": False,
+        }
+        accepted = _simulate_high_af_attempt(materialize_task)
+        if not accepted["row"]["accepted"]:
+            raise RuntimeError("accepted trajectory was not reproducible on materialization")
+        selected_tree = output_dir / "selected_s0p05_af30.trees"
+        shutil.copy2(Path(accepted["tree_path"]), selected_tree)
+
+    accepted_row = accepted["row"]
+    attempts = pd.DataFrame(attempt_rows).sort_values("attempt")
+    attempts["used_for_rejection_decision"] = (
+        attempts["attempt"] <= int(accepted_row["attempt"])
+    )
+    attempts.to_csv(output_dir / "selected_rejection_attempts.tsv", sep="\t", index=False)
+    pd.DataFrame([accepted_row]).to_csv(
+        output_dir / "selected_observation.tsv", sep="\t", index=False
+    )
+    trajectory = pd.DataFrame(accepted["trajectory"])
+    trajectory["selected_attempt"] = int(accepted_row["attempt"])
+    trajectory.to_csv(
+        output_dir / "selected_allele_frequency_trajectory.tsv", sep="\t", index=False
+    )
+    ts = tskit.load(selected_tree)
+    carrier_profile = pair_tmrca_profile_by_focal_copy(
+        ts, carrier_positions, accepted["carrier_counts"]
+    )
+    carrier_profile.to_csv(
+        output_dir / "selected_hom_alt_vs_hom_ref_tmrca_profile.tsv",
+        sep="\t",
+        index=False,
+    )
+    truth_positions = np.arange(0, design["sequence_length"], stride, dtype=float)
+    truth = within_individual_tmrca_grid(
+        ts, truth_positions, design["variant_age_generations"]
+    )
+    truth.to_csv(
+        output_dir / "selected_truth_recent_probability_profile.tsv.gz",
+        sep="\t",
+        index=False,
+    )
+    truth_scan = truth.rename(
+        columns={"mean_p_tmrca_lt_threshold": "observed_fraction_recent"}
+    )
+    _plot_observed_profile(
+        truth_scan,
+        center=center,
+        sequence_length=design["sequence_length"],
+        zoom_half_width=zoom_half_width,
+        threshold_years=(
+            design["variant_age_generations"] * design["generation_time_years"]
+        ),
+        window_size=stride,
+        output_path=output_dir / "selected_truth_recent_probability_spatial.png",
+        pair_count=design["sample_diploids"],
+        series_label="tree-sequence truth",
+        statistic_label="True P",
+    )
+    _plot_demography_and_variant(
+        output_dir / "demography_and_variant_timing.png",
+        ancestral_population_size=design["ancestral_population_size"],
+        present_population_size=design["present_population_size"],
+        size_change_generations_ago=design["size_change_generations_ago"],
+        variant_age_generations=design["variant_age_generations"],
+        generation_time_years=design["generation_time_years"],
+        selection_coefficient=selection_coefficient,
+    )
+    _plot_allele_frequency_trajectory(
+        trajectory,
+        population_allele_frequency=accepted_row["population_allele_frequency"],
+        sample_allele_frequency=accepted_row["sample_allele_frequency"],
+        variant_age_generations=design["variant_age_generations"],
+        size_change_generations_ago=design["size_change_generations_ago"],
+        generation_time_years=design["generation_time_years"],
+        selection_coefficient=selection_coefficient,
+        output_path=output_dir / "selected_allele_frequency_trajectory.png",
+    )
+    plot_carrier_profile_figure(
+        carrier_profile,
+        replicate=int(accepted_row["attempt"]),
+        population_allele_frequency=accepted_row["population_allele_frequency"],
+        sequence_length=design["sequence_length"],
+        center=center,
+        zoom_half_width=zoom_half_width,
+        output_path=output_dir / "selected_hom_alt_vs_hom_ref_tmrca.png",
+    )
+    theoretical = two_epoch_recent_probability(
+        ancestral_population_size=design["ancestral_population_size"],
+        present_population_size=design["present_population_size"],
+        size_change_generations_ago=design["size_change_generations_ago"],
+        threshold_generations=design["variant_age_generations"],
+    )
+    exceedances, truth_p = _plot_null_calibration(
+        neutral,
+        accepted_row["center_fraction_recent"],
+        theoretical_fraction_recent=theoretical,
+        threshold_generations=design["variant_age_generations"],
+        generation_time_years=design["generation_time_years"],
+        selection_coefficient=selection_coefficient,
+        output_path=output_dir / "truth_null_and_selected_pvalue.png",
+    )
+    selected_vcf = output_dir / "selected_s0p05_af30.vcf.gz"
+    tree_sequence_to_vcf(selected_tree, selected_vcf)
+    metrics = {
+        "demography": {
+            "ancestral_population_size": design["ancestral_population_size"],
+            "present_population_size": design["present_population_size"],
+            "size_change_generations_ago": design["size_change_generations_ago"],
+        },
+        **{key: value for key, value in design.items() if key not in {
+            "ancestral_population_size", "present_population_size",
+            "size_change_generations_ago",
+        }},
+        "selection_coefficient": float(selection_coefficient),
+        "minimum_population_allele_frequency": float(minimum_population_af),
+        "neutral_replicates": int(len(neutral)),
+        "neutral_truth_source": os.path.relpath(null_truth_dir, output_dir),
+        "neutral_theoretical_fraction_recent": float(theoretical),
+        "selected_rejection": {
+            "accepted_attempt_zero_based": int(accepted_row["attempt"]),
+            "attempts_to_accept_in_seed_order": int(accepted_row["attempt"] + 1),
+            "trajectories_computed_in_parallel_batches": int(len(attempts)),
+            "population_allele_frequency": float(
+                accepted_row["population_allele_frequency"]
+            ),
+            "sample_allele_frequency": float(accepted_row["sample_allele_frequency"]),
+            "n_hom_ref_pairs": int(accepted_row["n_hom_ref_pairs"]),
+            "n_heterozygous_pairs": int(accepted_row["n_heterozygous_pairs"]),
+            "n_hom_alt_pairs": int(accepted_row["n_hom_alt_pairs"]),
+            "truth_center_fraction_recent": float(
+                accepted_row["center_fraction_recent"]
+            ),
+            "truth_center_neutral_exceedances": int(exceedances),
+            "truth_center_monte_carlo_p_upper": float(truth_p),
+        },
+        "workers_requested": int(workers),
+        "workers_used": int(workers),
+        "shared_neutral_ancestry_seconds": float(shared_ancestry_seconds),
+        "base_seed": int(seed),
+        "stride_bp": int(stride),
+        "elapsed_seconds": float(perf_counter() - started),
+    }
+    with (output_dir / "metrics.json").open("w", encoding="utf-8") as handle:
+        json.dump(metrics, handle, indent=2)
+    return metrics
+
+
+def finalize_high_af_selected(
+    source_dir: str | Path,
+    neutral_decoded_profiles: str | Path,
+    *,
+    stride: int = 1_000,
+) -> dict:
+    """Join the selected official decode to truth and reuse decoded nulls."""
+    source_dir = Path(source_dir).resolve()
+    observed_path = source_dir / "selected_decoded_recent_probability_profile.tsv"
+    observed = pd.read_csv(observed_path, sep="\t")
+    truth = pd.read_csv(
+        source_dir / "selected_truth_recent_probability_profile.tsv.gz", sep="\t"
+    )
+    comparison = observed.merge(
+        truth.rename(columns={
+            "mean_p_tmrca_lt_threshold": "truth_fraction_recent",
+            "mean_tmrca_generations": "mean_tmrca_generations_truth",
+        }),
+        on=["position_0based", "n_pairs"],
+        how="inner",
+        validate="one_to_one",
+    ).rename(columns={
+        "mean_tmrca_generations": "mean_tmrca_generations_decoded"
+    })
+    comparison.to_csv(
+        source_dir / "selected_decoded_vs_truth.tsv.gz", sep="\t", index=False
+    )
+    result = finalize_container_stride_study(
+        source_dir,
+        source_dir,
+        stride=stride,
+        neutral_profiles_path=neutral_decoded_profiles,
+    )
+    with (source_dir / "metrics.json").open(encoding="utf-8") as handle:
+        preparation = json.load(handle)
+    result["truth_center_fraction_recent"] = preparation["selected_rejection"][
+        "truth_center_fraction_recent"
+    ]
+    result["truth_center_monte_carlo_p_upper"] = preparation[
+        "selected_rejection"
+    ]["truth_center_monte_carlo_p_upper"]
+    result["population_allele_frequency"] = preparation["selected_rejection"][
+        "population_allele_frequency"
+    ]
+    result["sample_allele_frequency"] = preparation["selected_rejection"][
+        "sample_allele_frequency"
+    ]
+    with (source_dir / "decoded_study_metrics.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
+        json.dump(result, handle, indent=2)
+    return result

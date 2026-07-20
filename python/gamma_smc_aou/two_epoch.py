@@ -125,9 +125,16 @@ def _plot_demography_and_variant(
     axis.set_xlabel("Generations before present", fontsize=LARGE_FONTS["axis"])
     axis.set_ylabel("Population size", fontsize=LARGE_FONTS["axis"])
     axis.tick_params(axis="both", labelsize=LARGE_FONTS["tick"])
-    axis.legend(loc="lower right", fontsize=LARGE_FONTS["legend"])
+    handles, labels = axis.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.92),
+        fontsize=LARGE_FONTS["legend"],
+    )
     axis.grid(axis="y", alpha=0.18)
-    fig.savefig(output_path, dpi=190)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -168,7 +175,14 @@ def _plot_null_calibration(
         ylabel="Neutral simulations",
         title=f"Two-epoch neutral null (n={len(neutral)})",
     )
-    axes[0].legend(fontsize=LARGE_FONTS["legend"])
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.92),
+        fontsize=LARGE_FONTS["legend"],
+    )
 
     thresholds = np.unique(np.r_[values, selected_fraction_recent])
     counts = np.asarray([np.count_nonzero(values >= value) for value in thresholds])
@@ -200,7 +214,7 @@ def _plot_null_calibration(
         axis.xaxis.label.set_fontsize(LARGE_FONTS["axis"])
         axis.yaxis.label.set_fontsize(LARGE_FONTS["axis"])
         axis.tick_params(axis="both", labelsize=LARGE_FONTS["tick"])
-    fig.savefig(output_path, dpi=190)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
     return exceedances, pvalue
 
@@ -277,9 +291,16 @@ def _plot_allele_frequency_trajectory(
     )
     axis.set_ylabel("Selected-allele frequency", fontsize=LARGE_FONTS["axis"])
     axis.tick_params(axis="both", labelsize=LARGE_FONTS["tick"])
-    axis.legend(loc="upper left", fontsize=LARGE_FONTS["legend"])
+    handles, labels = axis.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.92),
+        fontsize=LARGE_FONTS["legend"],
+    )
     axis.grid(alpha=0.18)
-    fig.savefig(output_path, dpi=190)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
 
 

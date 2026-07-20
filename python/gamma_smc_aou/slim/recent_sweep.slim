@@ -48,6 +48,10 @@ s3 99997 late() {
     catn("SWEEP_TRAJECTORY tick=" + community.tick +
         " generations_ago=" + (AGE_GENERATIONS + 1 - community.tick) +
         " frequency=" + frequency);
+    if (SCREEN_ONLY & (size(muts) == 0)) {
+        catn("SWEEP_COMPLETE frequency=0.0 outcome=lost tick=" + community.tick);
+        sim.simulationFinished();
+    }
 }
 
 s1 99999 late() {
@@ -62,6 +66,7 @@ s1 99999 late() {
     }
     catn("SWEEP_COMPLETE frequency=" + frequency + " outcome=" + outcome +
         " tick=" + community.tick);
-    sim.treeSeqOutput(OUT);
+    if (!SCREEN_ONLY)
+        sim.treeSeqOutput(OUT);
     sim.simulationFinished();
 }

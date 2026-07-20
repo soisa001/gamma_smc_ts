@@ -89,7 +89,16 @@ def scan_density_calibration(
         axis.set_xlabel("Windows with pointwise p<0.05", fontsize=20)
         axis.set_ylabel("Neutral leave-one-out scans", fontsize=20)
         axis.tick_params(axis="both", labelsize=17)
-        axis.legend(fontsize=16)
+        axis.annotate(
+            f"selected: {observed_count:,} windows",
+            xy=(observed_count, axis.get_ylim()[1]),
+            xytext=(8, -8),
+            textcoords="offset points",
+            ha="left",
+            va="top",
+            fontsize=16,
+            color="#7c3aed",
+        )
         axis.text(
             0.97,
             0.78,
@@ -105,7 +114,11 @@ def scan_density_calibration(
         "Simulation-calibrated density of recent-coalescence windows",
         fontsize=25,
     )
-    fig.savefig(output_dir / "decoded_scan_density_calibration.png", dpi=190)
+    fig.savefig(
+        output_dir / "decoded_scan_density_calibration.png",
+        dpi=190,
+        bbox_inches="tight",
+    )
     plt.close(fig)
     return {
         "global": {
@@ -124,6 +137,51 @@ def scan_density_calibration(
             "monte_carlo_p_upper": local_p,
         },
     }
+
+
+def _plot_decoded_center_calibration(
+    neutral: pd.DataFrame,
+    *,
+    center_position: float,
+    observed_value: float,
+    pvalue: float,
+    output_path: Path,
+) -> None:
+    center_rows = neutral[np.isclose(neutral["position_0based"], center_position)]
+    values = center_rows["mean_p_tmrca_lt_threshold"].to_numpy(dtype=float)
+    exceedances = int(np.count_nonzero(values >= observed_value))
+    fig, axis = plt.subplots(figsize=(14, 7.5), constrained_layout=True)
+    axis.hist(values, bins=16, color="0.55", edgecolor="white", alpha=0.9)
+    axis.axvline(
+        observed_value,
+        color="#7c3aed",
+        lw=2.8,
+        label=f"selected Gamma-SMC estimate={observed_value:.4f}",
+    )
+    axis.set_title("Gamma-SMC center statistic versus decoded neutral null", fontsize=24)
+    axis.set_xlabel("Inferred P(TMRCA < 4,500 years) across 2,000 pairs", fontsize=20)
+    axis.set_ylabel("Decoded neutral simulations", fontsize=20)
+    axis.tick_params(axis="both", labelsize=17)
+    axis.text(
+        0.97,
+        0.93,
+        f"{exceedances}/{len(values)} neutral >= selected\nMonte Carlo p={pvalue:.4f}",
+        transform=axis.transAxes,
+        ha="right",
+        va="top",
+        fontsize=18,
+    )
+    handles, labels = axis.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.88),
+        fontsize=16,
+    )
+    axis.grid(axis="y", alpha=0.16)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
+    plt.close(fig)
 
 
 def _load_design(source_dir: Path) -> dict:
@@ -409,6 +467,7 @@ def finalize_container_stride_study(
     *,
     stride: int = 1_000,
     workflow_elapsed_seconds: float | None = None,
+    neutral_profiles_path: str | Path | None = None,
 ) -> dict:
     """Finalize plots and p-values from already decoded selected/null profiles."""
     source_dir = Path(source_dir).resolve()
@@ -419,9 +478,12 @@ def finalize_container_stride_study(
     observed = pd.read_csv(
         output_dir / "selected_decoded_recent_probability_profile.tsv", sep="\t"
     )
-    neutral = pd.read_csv(
-        output_dir / "neutral_decoded_recent_probability_profiles.tsv.gz", sep="\t"
+    neutral_profiles_path = (
+        output_dir / "neutral_decoded_recent_probability_profiles.tsv.gz"
+        if neutral_profiles_path is None
+        else Path(neutral_profiles_path).resolve()
     )
+    neutral = pd.read_csv(neutral_profiles_path, sep="\t")
     comparison = pd.read_csv(
         output_dir / "selected_decoded_vs_truth.tsv.gz", sep="\t"
     )
@@ -472,6 +534,13 @@ def finalize_container_stride_study(
     center_row = scan.iloc[
         np.argmin(np.abs(scan["position_0based"].to_numpy(dtype=float) - center))
     ]
+    _plot_decoded_center_calibration(
+        neutral,
+        center_position=float(center_row["position_0based"]),
+        observed_value=float(center_row["observed_fraction_recent"]),
+        pvalue=float(center_row["p_upper"]),
+        output_path=output_dir / "gamma_smc_center_null_and_selected_pvalue.png",
+    )
     error = (
         comparison["mean_p_tmrca_lt_threshold"]
         - comparison["truth_fraction_recent"]
@@ -491,6 +560,7 @@ def finalize_container_stride_study(
         "sample_diploids": design["sample_diploids"],
         "within_individual_pairs": design["sample_diploids"],
         "neutral_replicates": int(neutral["replicate"].nunique()),
+        "neutral_decoded_profiles_source": str(neutral_profiles_path),
         "observed_output_positions": int(len(observed)),
         "calibrated_complete_positions": int(len(scan)),
         "dropped_incomplete_null_positions": int(len(observed) - len(scan)),

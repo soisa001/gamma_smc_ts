@@ -191,14 +191,21 @@ def plot_carrier_profile_figure(
     n_alt = int(
         profile.loc[profile["focal_carrier_copies"] == 2, "n_pairs"].iloc[0]
     )
-    axes[0].legend(loc="best", fontsize=PLOT_FONTS["legend"])
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.90),
+        fontsize=PLOT_FONTS["legend"],
+    )
     fig.suptitle(
         f"Selected replicate {replicate}: hom-alt versus hom-ref pairwise TMRCA "
         f"(population AF={population_allele_frequency:.3f}; "
         f"n alt={n_alt}, n ref={n_ref}; mean +/- 95% CI)",
         fontsize=PLOT_FONTS["suptitle"],
     )
-    fig.savefig(output_path, dpi=190)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
 
 

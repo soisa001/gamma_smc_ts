@@ -202,6 +202,8 @@ def run_slim_recent_sweep(
     capture_focal_genotypes: bool = False,
     present_population_size: int | None = None,
     size_change_generations_ago: int | None = None,
+    initial_annotated_path: str | Path | None = None,
+    screen_only: bool = False,
 ):
     """Simulate one unconditional recent single-origin selected trajectory.
 
@@ -246,19 +248,29 @@ def run_slim_recent_sweep(
     output_path = Path(output_path).resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     sweep_position = sequence_length // 2 if sweep_position is None else sweep_position
-    initial_path = output_path.with_suffix(".initial.trees")
+    owns_initial_path = initial_annotated_path is None
+    initial_path = (
+        output_path.with_suffix(".initial.trees")
+        if owns_initial_path
+        else Path(initial_annotated_path).resolve()
+    )
     raw_path = output_path.with_suffix(".raw.trees")
 
     started = perf_counter()
-    initial = msprime.sim_ancestry(
-        samples=[msprime.SampleSet(population_size, ploidy=2)],
-        population_size=population_size,
-        sequence_length=sequence_length,
-        recombination_rate=recombination_rate,
-        model=msprime.StandardCoalescent(),
-        random_seed=seed,
-    )
-    pyslim.annotate(initial, model_type="WF", tick=1, stage="early").dump(initial_path)
+    if owns_initial_path:
+        initial = msprime.sim_ancestry(
+            samples=[msprime.SampleSet(population_size, ploidy=2)],
+            population_size=population_size,
+            sequence_length=sequence_length,
+            recombination_rate=recombination_rate,
+            model=msprime.StandardCoalescent(),
+            random_seed=seed,
+        )
+        pyslim.annotate(initial, model_type="WF", tick=1, stage="early").dump(
+            initial_path
+        )
+    elif not initial_path.exists():
+        raise FileNotFoundError(initial_path)
     ancestry_seconds = perf_counter() - started
 
     script = resources.files("gamma_smc_aou").joinpath("slim/recent_sweep.slim")
@@ -272,19 +284,25 @@ def run_slim_recent_sweep(
         "AGE_GENERATIONS": age_generations,
         "PRESENT_POPULATION_SIZE": present_population_size,
         "SIZE_CHANGE_TICK": size_change_tick,
+        "SCREEN_ONLY": "T" if screen_only else "F",
     }
     command = [str(executable), "-s", str(seed + 1)]
     for key, value in definitions.items():
         command.extend(["-d", f"{key}={value}"])
     command.append(str(script))
     slim_started = perf_counter()
-    completed = subprocess.run(command, check=True, capture_output=True, text=True)
+    completed = subprocess.run(command, check=False, capture_output=True, text=True)
     slim_seconds = perf_counter() - slim_started
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"SLiM exited with status {completed.returncode}:\n"
+            f"STDOUT:\n{completed.stdout}\nSTDERR:\n{completed.stderr}"
+        )
     match = re.search(
         r"SWEEP_COMPLETE frequency=([0-9.eE+-]+) outcome=([a-z]+)",
         completed.stdout,
     )
-    if match is None or not raw_path.exists():
+    if match is None or (not screen_only and not raw_path.exists()):
         raise RuntimeError(
             f"SLiM did not produce a recent-sweep trajectory:\n"
             f"{completed.stdout}\n{completed.stderr}"
@@ -303,7 +321,9 @@ def run_slim_recent_sweep(
             completed.stdout,
         )
     ]
-    if len(trajectory) != age_generations + 1:
+    if len(trajectory) != age_generations + 1 and not (
+        screen_only and focal_allele_outcome == "lost"
+    ):
         raise RuntimeError(
             f"SLiM logged {len(trajectory)} trajectory points; expected "
             f"{age_generations + 1}"
@@ -312,6 +332,27 @@ def run_slim_recent_sweep(
         trajectory[-1]["population_allele_frequency"], allele_frequency
     ):
         raise RuntimeError("final trajectory frequency differs from SLiM summary")
+    run = {
+        "selection_coefficient": selection_coefficient,
+        "age_generations": age_generations,
+        "population_size": population_size,
+        "ancestral_population_size": population_size,
+        "present_population_size": present_population_size,
+        "size_change_generations_ago": size_change_generations_ago,
+        "sample_diploids": sample_diploids,
+        "realized_population_allele_frequency": allele_frequency,
+        "focal_allele_outcome": focal_allele_outcome,
+        "allele_frequency_trajectory": trajectory,
+        "ancestry_seconds": ancestry_seconds,
+        "slim_seconds": slim_seconds,
+        "slim_stdout": completed.stdout,
+    }
+    if screen_only:
+        raw_path.unlink(missing_ok=True)
+        if owns_initial_path:
+            initial_path.unlink(missing_ok=True)
+        return None, run
+
     sampled = _sample_diploids(tskit.load(raw_path), sample_diploids, seed + 2)
     focal_carrier_counts = (
         _focal_carrier_counts(sampled, sweep_position, allow_absent=True)
@@ -331,25 +372,11 @@ def run_slim_recent_sweep(
             random_seed=seed + 3,
         )
     sampled.dump(output_path)
-    for path in (initial_path, raw_path):
-        path.unlink(missing_ok=True)
-    run = {
-        "selection_coefficient": selection_coefficient,
-        "age_generations": age_generations,
-        "population_size": population_size,
-        "ancestral_population_size": population_size,
-        "present_population_size": present_population_size,
-        "size_change_generations_ago": size_change_generations_ago,
-        "sample_diploids": sample_diploids,
-        "realized_population_allele_frequency": allele_frequency,
-        "focal_allele_outcome": focal_allele_outcome,
-        "allele_frequency_trajectory": trajectory,
-        "ancestry_seconds": ancestry_seconds,
-        "slim_seconds": slim_seconds,
-        "n_sites": sampled.num_sites,
-        "n_trees": sampled.num_trees,
-        "slim_stdout": completed.stdout,
-    }
+    raw_path.unlink(missing_ok=True)
+    if owns_initial_path:
+        initial_path.unlink(missing_ok=True)
+    run["n_sites"] = sampled.num_sites
+    run["n_trees"] = sampled.num_trees
     if focal_carrier_counts is not None:
         run["focal_carrier_counts"] = focal_carrier_counts
         run["sample_focal_allele_frequency"] = float(

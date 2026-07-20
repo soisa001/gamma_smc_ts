@@ -4,6 +4,8 @@ import shutil
 import numpy as np
 import pandas as pd
 import pytest
+import msprime
+import pyslim
 
 from gamma_smc_aou.selection import run_slim_recent_sweep
 from gamma_smc_aou.two_epoch import (
@@ -100,3 +102,38 @@ def test_recent_sweep_changes_population_size_at_requested_time(tmp_path):
     assert trajectory[-1]["population_allele_frequency"] == pytest.approx(
         run["realized_population_allele_frequency"]
     )
+
+
+@pytest.mark.skipif(
+    not (os.environ.get("SLIM_BIN") or shutil.which("slim")),
+    reason="SLiM executable not available",
+)
+def test_screen_only_reuses_ancestry_and_skips_tree_output(tmp_path):
+    initial = msprime.sim_ancestry(
+        samples=[msprime.SampleSet(100, ploidy=2)],
+        population_size=100,
+        sequence_length=20_000,
+        recombination_rate=1e-7,
+        random_seed=714,
+    )
+    initial_path = tmp_path / "shared.trees"
+    pyslim.annotate(initial, model_type="WF", tick=1, stage="early").dump(
+        initial_path
+    )
+    output_path = tmp_path / "screen.trees"
+    ts, run = run_slim_recent_sweep(
+        output_path,
+        population_size=100,
+        sample_diploids=20,
+        sequence_length=20_000,
+        selection_coefficient=0.0,
+        age_generations=30,
+        recombination_rate=1e-7,
+        seed=715,
+        initial_annotated_path=initial_path,
+        screen_only=True,
+    )
+    assert ts is None
+    assert run["focal_allele_outcome"] == "lost"
+    assert len(run["allele_frequency_trajectory"]) < 31
+    assert not output_path.exists()

@@ -181,12 +181,19 @@ def _plot_observed_profile(
                 else None
             ),
         )
-    axes[0].legend(fontsize=FONTS["legend"], loc="best")
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.90),
+        fontsize=FONTS["legend"],
+    )
     fig.suptitle(
         f"Recent-coalescence probability profile ({window_size / 1e3:g} kb grid)",
         fontsize=FONTS["suptitle"],
     )
-    fig.savefig(output_path, dpi=190)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -295,12 +302,19 @@ def _plot_null_spatial_calibration(
                 va="top",
                 fontsize=FONTS["annotation"],
             )
-    axes[0, 0].legend(fontsize=FONTS["legend"], loc="best")
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.005, 0.93),
+        fontsize=FONTS["legend"],
+    )
     fig.suptitle(
         f"Selected decode versus neutral decoded simulations ({window_size / 1e3:g} kb grid)",
         fontsize=FONTS["suptitle"],
     )
-    fig.savefig(output_path, dpi=190)
+    fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
 
 
