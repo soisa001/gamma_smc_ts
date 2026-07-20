@@ -1,6 +1,10 @@
 name: Gamma-SMC container stride study
 
 on:
+  push:
+    branches: [AOU_run]
+    paths:
+      - ".github/workflows/gamma-container-study.yml"
   workflow_dispatch:
     inputs:
       neutral_replicates:
@@ -16,6 +20,9 @@ jobs:
   decode:
     runs-on: ubuntu-22.04
     timeout-minutes: 360
+    env:
+      NEUTRAL_REPLICATES: ${{ inputs.neutral_replicates || '1' }}
+      OUTPUT_AT_STRIDE: ${{ inputs.output_at_stride || '1000' }}
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -37,14 +44,14 @@ jobs:
           scripts/aou.sh run-container-study \
             --source-dir sim_results/two_epoch_growth_s0p05_n2000 \
             --output-dir sim_results/gamma_smc_container_stride1000 \
-            --neutral-replicates "${{ inputs.neutral_replicates }}" \
-            --output-at-stride "${{ inputs.output_at_stride }}" \
+            --neutral-replicates "$NEUTRAL_REPLICATES" \
+            --output-at-stride "$OUTPUT_AT_STRIDE" \
             --runtime docker
       - name: Upload profiles, plots, metrics, and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gamma-smc-stride-${{ inputs.output_at_stride }}-null-${{ inputs.neutral_replicates }}
+          name: gamma-smc-stride-${{ env.OUTPUT_AT_STRIDE }}-null-${{ env.NEUTRAL_REPLICATES }}
           path: sim_results/gamma_smc_container_stride1000
           if-no-files-found: error
           retention-days: 14
