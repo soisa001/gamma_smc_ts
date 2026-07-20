@@ -22,6 +22,7 @@ from .selection import (
     validate_slim_hard_sweep,
 )
 from .tree_sequence import tree_sequence_to_vcf
+from .two_epoch import validate_two_epoch_growth
 
 
 def _histories(path: str | None):
@@ -228,6 +229,31 @@ def command_plot_retained_carrier_profiles(args):
     )
 
 
+def command_validate_two_epoch_growth(args):
+    validate_two_epoch_growth(
+        args.output_dir,
+        executable=args.slim,
+        ancestral_population_size=args.ancestral_population_size,
+        present_population_size=args.present_population_size,
+        size_change_generations_ago=args.size_change_generations_ago,
+        sample_diploids=args.sample_diploids,
+        sequence_length=args.sequence_length,
+        variant_age_generations=args.variant_age_generations,
+        generation_time_years=args.generation_time_years,
+        selection_coefficient=args.selection_coefficient,
+        mutation_rate=args.mutation_rate,
+        recombination_rate=args.recombination_rate,
+        neutral_replicates=args.neutral_replicates,
+        workers=args.workers,
+        max_selected_attempts=args.max_selected_attempts,
+        minimum_hom_alt_pairs=args.minimum_hom_alt_pairs,
+        full_step=args.full_step,
+        zoom_half_width=args.zoom_half_width,
+        zoom_step=args.zoom_step,
+        seed=args.seed,
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
@@ -376,6 +402,34 @@ def parser() -> argparse.ArgumentParser:
     carrier_profiles.add_argument("--zoom-half-width", type=int, default=500_000)
     carrier_profiles.add_argument("--zoom-step", type=int, default=5_000)
     carrier_profiles.set_defaults(func=command_plot_retained_carrier_profiles)
+
+    two_epoch = commands.add_parser(
+        "validate-two-epoch-growth",
+        help="run a two-epoch neutral null and rejection-sampled selected validation",
+    )
+    two_epoch.add_argument("--output-dir", required=True)
+    two_epoch.add_argument(
+        "--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH"
+    )
+    two_epoch.add_argument("--ancestral-population-size", type=int, default=10_000)
+    two_epoch.add_argument("--present-population-size", type=int, default=20_000)
+    two_epoch.add_argument("--size-change-generations-ago", type=int, default=100)
+    two_epoch.add_argument("--sample-diploids", type=int, default=2_000)
+    two_epoch.add_argument("--sequence-length", type=int, default=10_000_000)
+    two_epoch.add_argument("--variant-age-generations", type=int, default=180)
+    two_epoch.add_argument("--generation-time-years", type=float, default=25)
+    two_epoch.add_argument("--selection-coefficient", type=float, default=0.05)
+    two_epoch.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    two_epoch.add_argument("--recombination-rate", type=float, default=1e-8)
+    two_epoch.add_argument("--neutral-replicates", type=int, default=100)
+    two_epoch.add_argument("--workers", type=int, default=20)
+    two_epoch.add_argument("--max-selected-attempts", type=int, default=1_000)
+    two_epoch.add_argument("--minimum-hom-alt-pairs", type=int, default=2)
+    two_epoch.add_argument("--full-step", type=int, default=50_000)
+    two_epoch.add_argument("--zoom-half-width", type=int, default=500_000)
+    two_epoch.add_argument("--zoom-step", type=int, default=5_000)
+    two_epoch.add_argument("--seed", type=int, default=515151)
+    two_epoch.set_defaults(func=command_validate_two_epoch_growth)
     return root
 
 

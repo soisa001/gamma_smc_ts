@@ -303,6 +303,58 @@ records sample sizes in every title, writes all profile points to one TSV, and
 also creates a 20-panel overview plus one full-resolution two-panel PNG per
 replicate.
 
+## Two-epoch recent-growth validation
+
+The constant-size experiment remains unchanged. A separate experiment models
+forward growth from 10,000 to 20,000 individuals 100 generations before the
+present, with the selected mutation introduced 180 generations (4,500 years)
+ago while the population was still 10,000:
+
+```bash
+gamma-smc-aou validate-two-epoch-growth \
+  --output-dir sim_results/two_epoch_growth_s0p05_n2000 \
+  --ancestral-population-size 10000 --present-population-size 20000 \
+  --size-change-generations-ago 100 \
+  --sample-diploids 2000 --sequence-length 10000000 \
+  --variant-age-generations 180 --generation-time-years 25 \
+  --selection-coefficient 0.05 \
+  --mutation-rate 1.25e-8 --recombination-rate 1e-8 \
+  --neutral-replicates 100 --workers 20 \
+  --max-selected-attempts 1000 --minimum-hom-alt-pairs 2 \
+  --full-step 50000 --zoom-half-width 500000 --zoom-step 5000 \
+  --seed 515151
+```
+
+Backward in time, the coalescent population size is therefore 20,000 from 0
+to 100 generations and 10,000 earlier. The analytical neutral probability of
+coalescing within 180 generations is
+`1-exp[-100/(2*20000)-80/(2*10000)]=0.006479`. Across the 100 neutral
+simulations, the observed mean was 0.006555 (13.11 of 2,000 pairs), with range
+0.0030--0.0115, bias 0.000076, and RMSE 0.001669. This is 28.6% lower than the
+0.009185 mean from the separate constant-10,000 null. Leave-one-out rejection
+was 0.04 at p <= 0.05. Because the statistic is discrete, the raw-rank KS test
+was conservative; randomized-tie ranks had mean p=0.498, KS p=0.960, and
+exactly 0.05 at p <= 0.05.
+
+Selected trajectories were evaluated in deterministic seed order and rejected
+when the `s=0.05` allele was lost or when fewer than two sampled hom-alt pairs
+were available for a confidence interval. Attempts 0--7 were lost; attempt 8
+was the first accepted trajectory, so nine seed-ordered attempts were needed.
+The 20-worker batch computed attempts 0--19, but later attempts did not affect
+which trajectory was accepted. The retained allele had population frequency
+0.1021 and sample frequency 0.10275, producing 21 hom-alt, 369 heterozygous,
+and 1,610 hom-ref diploids.
+
+The retained selected observation had 37/2,000 recent pairs,
+`P(TMRCA<4500 years)=0.0185`. No neutral simulation reached that value, giving
+`p=(1+0)/(100+1)=0.009901`. At the selected site, hom-alt mean TMRCA was 130.9
+generations (95% CI 117.8--145.4), versus 28,163 generations for hom ref (95%
+CI 27,170--29,193). The output includes separate demographic-timing, neutral
+calibration, and full/zoom carrier-profile plots. This selected p-value is
+conditional on rejection sampling an allele that survives and has an
+analyzable hom-alt class; it is not unconditional power for a newly arising
+`s=0.05` mutation.
+
 `validate-null` performs an exchangeable leave-one-replicate-out rank test at a
 fixed relative position. Its JSON reports mean p-value, KS uniformity p-value,
 and the empirical fraction below 0.05; the QQ plot makes tail problems visible.

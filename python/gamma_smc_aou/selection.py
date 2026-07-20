@@ -81,13 +81,17 @@ def within_individual_tmrca_details(
     return pd.DataFrame(rows)
 
 
-def _focal_carrier_counts(ts, sweep_position: int) -> np.ndarray:
+def _focal_carrier_counts(
+    ts, sweep_position: int, *, allow_absent: bool = False
+) -> np.ndarray:
     """Count focal derived copies in each sampled diploid before site removal."""
     focal_variants = [
         variant
         for variant in ts.variants()
         if np.isclose(variant.site.position, sweep_position)
     ]
+    if len(focal_variants) == 0 and allow_absent:
+        return np.zeros(ts.num_individuals, dtype=np.int8)
     if len(focal_variants) != 1:
         raise ValueError(
             f"expected one retained focal variant at {sweep_position}, "
@@ -196,6 +200,8 @@ def run_slim_recent_sweep(
     recombination_rate: float = 1e-8,
     seed: int = 24681357,
     capture_focal_genotypes: bool = False,
+    present_population_size: int | None = None,
+    size_change_generations_ago: int | None = None,
 ):
     """Simulate one unconditional recent single-origin selected trajectory.
 
@@ -208,6 +214,27 @@ def run_slim_recent_sweep(
         raise ValueError("selection_coefficient must be nonnegative")
     if age_generations < 1 or population_size < 2 or sample_diploids < 1:
         raise ValueError("age and population/sample sizes must be positive")
+    present_population_size = (
+        population_size
+        if present_population_size is None
+        else int(present_population_size)
+    )
+    if present_population_size < 2:
+        raise ValueError("present population size must be at least two")
+    if size_change_generations_ago is None:
+        if present_population_size != population_size:
+            raise ValueError(
+                "size_change_generations_ago is required when population size changes"
+            )
+        size_change_tick = age_generations + 1
+        size_change_generations_ago = 0
+    else:
+        size_change_generations_ago = int(size_change_generations_ago)
+        if not 0 < size_change_generations_ago < age_generations:
+            raise ValueError(
+                "size change must be between variant addition and the present"
+            )
+        size_change_tick = age_generations - size_change_generations_ago + 1
     executable = slim_executable(executable)
     if executable is None:
         raise RuntimeError("SLiM executable not found; set SLIM_BIN or install SLiM")
@@ -243,6 +270,8 @@ def run_slim_recent_sweep(
         "SELECTION_COEFFICIENT": selection_coefficient,
         "RECOMBINATION_RATE": recombination_rate,
         "AGE_GENERATIONS": age_generations,
+        "PRESENT_POPULATION_SIZE": present_population_size,
+        "SIZE_CHANGE_TICK": size_change_tick,
     }
     command = [str(executable), "-s", str(seed + 1)]
     for key, value in definitions.items():
@@ -264,7 +293,7 @@ def run_slim_recent_sweep(
     focal_allele_outcome = match.group(2)
     sampled = _sample_diploids(tskit.load(raw_path), sample_diploids, seed + 2)
     focal_carrier_counts = (
-        _focal_carrier_counts(sampled, sweep_position)
+        _focal_carrier_counts(sampled, sweep_position, allow_absent=True)
         if capture_focal_genotypes
         else None
     )
@@ -287,6 +316,9 @@ def run_slim_recent_sweep(
         "selection_coefficient": selection_coefficient,
         "age_generations": age_generations,
         "population_size": population_size,
+        "ancestral_population_size": population_size,
+        "present_population_size": present_population_size,
+        "size_change_generations_ago": size_change_generations_ago,
         "sample_diploids": sample_diploids,
         "realized_population_allele_frequency": allele_frequency,
         "focal_allele_outcome": focal_allele_outcome,

@@ -17,12 +17,20 @@ initialize() {
 1 early() {
     sim.readFromPopulationFile(IN);
     sim.recalculateFitness();
+    community.rescheduleScriptBlock(s2, start=SIZE_CHANGE_TICK,
+        end=SIZE_CHANGE_TICK);
     community.rescheduleScriptBlock(s1, start=AGE_GENERATIONS + 1,
         end=AGE_GENERATIONS + 1);
 }
 
 1 late() {
     sample(p0.haplosomes, 1).addNewDrawnMutation(m2, SWEEP_POSITION);
+}
+
+s2 99998 early() {
+    p0.setSubpopulationSize(PRESENT_POPULATION_SIZE);
+    catn("SIZE_CHANGE population_size=" + PRESENT_POPULATION_SIZE +
+        " tick=" + community.tick);
 }
 
 s1 99999 late() {
