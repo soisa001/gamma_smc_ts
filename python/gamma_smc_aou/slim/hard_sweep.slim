@@ -1,0 +1,40 @@
+// Conditional hard sweep with tree-sequence recording.
+// Adapted from the official SLiM 5.2 recipe 18.3.
+
+initialize() {
+    initializeSLiMOptions(keepPedigrees=T);
+    initializeTreeSeq();
+    initializeMutationRate(0.0);
+    initializeMutationType("m1", 0.5, "f", 0.0);
+    initializeMutationType("m2", 1.0, "f", SELECTION_COEFFICIENT);
+    initializeGenomicElementType("g1", m1, 1.0);
+    initializeGenomicElement(g1, 0, LENGTH - 1);
+    initializeRecombinationRate(RECOMBINATION_RATE);
+}
+
+1 early() {
+    defineConstant("simID", getSeed());
+    defineConstant("CHECKPOINT", tempdir() + "gamma_smc_sweep_" + simID + ".trees");
+    sim.addSubpop("p1", POPULATION_SIZE);
+}
+
+BURNIN late() {
+    // Checkpoint immediately before introducing a single beneficial copy.
+    sim.treeSeqOutput(CHECKPOINT);
+    target = sample(p1.haplosomes, 1);
+    target.addNewDrawnMutation(m2, SWEEP_POSITION);
+}
+
+BURNIN:MAX_TICK late() {
+    if (sim.countOfMutationsOfType(m2) == 0) {
+        fixed = (sum(sim.substitutions.mutationType == m2) == 1);
+        if (fixed) {
+            catn("SWEEP_FIXED tick=" + community.tick);
+            sim.treeSeqOutput(OUT);
+            sim.simulationFinished();
+        } else {
+            catn("SWEEP_LOST_RESTARTING");
+            sim.readFromPopulationFile(CHECKPOINT);
+        }
+    }
+}

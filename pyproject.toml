@@ -19,12 +19,16 @@ dependencies = [
 [project.optional-dependencies]
 tszip = ["tszip>=0.2"]
 test = ["pytest>=8"]
+selection = ["pyslim>=1.1"]
 
 [project.scripts]
 gamma-smc-aou = "gamma_smc_aou.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["python"]
+
+[tool.setuptools.package-data]
+gamma_smc_aou = ["slim/*.slim"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

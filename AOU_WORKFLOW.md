@@ -114,6 +114,39 @@ for final locus-level inference.
 
 ## Verification and error summaries
 
+For the 2,000-diploid neutral truth comparison:
+
+```bash
+gamma-smc-aou plot-truth \
+  --summary-dir sim_results/n2000_sensitivity/truth_summaries \
+  --sequence-length 200000 --ne 10000 \
+  --output-dir sim_results/n2000_sensitivity/truth_plot
+```
+
+This compares each replicate's true midpoint recent fraction and mean TMRCA to
+the unascertained random-locus standard-coalescent references `2Ne` and
+`1 - exp(-threshold_generations / (2Ne))`. Because the plotted point is the
+nearest segregating site, those lines are references rather than exact
+segregating-site-conditioned expectations.
+
+An optional SLiM 5 hard-sweep validation follows the official conditional-
+fixation/tree-sequence recipe. It introduces one strongly beneficial copy,
+restores the pre-introduction checkpoint whenever that copy is lost, outputs on
+fixation, and recapitates only remaining roots:
+
+```bash
+python -m pip install -e '.[selection]'
+gamma-smc-aou validate-sweep --output-dir sim_results/hard_sweep \
+  --population-size 200 --sequence-length 100000 \
+  --selection-coefficient 0.5 --neutral-replicates 39
+```
+
+The validation requires SLiM on `PATH` or in `SLIM_BIN`. It plots the local true
+TMRCA trough, the corresponding excess of recent within-individual pairs, and
+the matched fixed-standard-coalescent null. The automated integration test
+requires the selected center to have lower mean TMRCA than its flanks, a
+center-to-flank ratio below 0.5, and a one-sided Monte Carlo p-value at most 0.05.
+
 `validate-null` performs an exchangeable leave-one-replicate-out rank test at a
 fixed relative position. Its JSON reports mean p-value, KS uniformity p-value,
 and the empirical fraction below 0.05; the QQ plot makes tail problems visible.

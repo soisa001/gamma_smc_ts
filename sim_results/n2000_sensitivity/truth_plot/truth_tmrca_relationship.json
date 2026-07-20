@@ -1,0 +1,9 @@
+{
+  "n_replicates": 100,
+  "random_locus_expected_mean_tmrca_generations": 20000.0,
+  "simulated_mean_tmrca_generations": 18842.163648812366,
+  "random_locus_expected_fraction_recent": 0.007471945180861583,
+  "simulated_mean_fraction_recent": 0.007944999999999999,
+  "spearman_rho": 0.0591999596230031,
+  "spearman_p": 0.5585005255535793
+}

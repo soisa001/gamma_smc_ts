@@ -13,8 +13,9 @@ import pandas as pd
 from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
 from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
-from .plotting import plot_scan
+from .plotting import plot_scan, plot_truth_tmrca_relationship
 from .simulation import SimulationConfig, simulate_replicates
+from .selection import validate_slim_hard_sweep
 from .tree_sequence import tree_sequence_to_vcf
 
 
@@ -147,6 +148,34 @@ def command_evaluate(args):
     evaluate_pairs([(truth_by_name[name], decoded_by_name[name]) for name in names], args.output_dir)
 
 
+def command_plot_truth(args):
+    summaries = sorted(Path(args.summary_dir).glob("*.tsv"))
+    if not summaries:
+        raise FileNotFoundError("no truth summary TSVs")
+    plot_truth_tmrca_relationship(
+        summaries,
+        sequence_length=args.sequence_length,
+        effective_size=args.ne,
+        threshold_generations=args.threshold_years / args.generation_time,
+        relative_position=args.relative_position,
+        output_dir=args.output_dir,
+    )
+
+
+def command_validate_sweep(args):
+    validate_slim_hard_sweep(
+        args.output_dir,
+        executable=args.slim,
+        population_size=args.population_size,
+        sequence_length=args.sequence_length,
+        selection_coefficient=args.selection_coefficient,
+        recombination_rate=args.recombination_rate,
+        threshold_generations=args.threshold_years / args.generation_time,
+        neutral_replicates=args.neutral_replicates,
+        seed=args.seed,
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
@@ -210,6 +239,29 @@ def parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--decoded-dir", required=True)
     evaluate.add_argument("--output-dir", required=True)
     evaluate.set_defaults(func=command_evaluate)
+
+    truth_plot = commands.add_parser("plot-truth", help="plot true recent fraction against simulated mean TMRCA")
+    truth_plot.add_argument("--summary-dir", required=True)
+    truth_plot.add_argument("--sequence-length", type=float, required=True)
+    truth_plot.add_argument("--ne", type=float, required=True)
+    truth_plot.add_argument("--threshold-years", type=float, default=4500)
+    truth_plot.add_argument("--generation-time", type=float, default=30)
+    truth_plot.add_argument("--relative-position", type=float, default=0.5)
+    truth_plot.add_argument("--output-dir", required=True)
+    truth_plot.set_defaults(func=command_plot_truth)
+
+    sweep = commands.add_parser("validate-sweep", help="validate recent-coalescence power with a SLiM hard sweep")
+    sweep.add_argument("--output-dir", required=True)
+    sweep.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
+    sweep.add_argument("--population-size", type=int, default=200)
+    sweep.add_argument("--sequence-length", type=int, default=100_000)
+    sweep.add_argument("--selection-coefficient", type=float, default=0.5)
+    sweep.add_argument("--recombination-rate", type=float, default=1e-7)
+    sweep.add_argument("--threshold-years", type=float, default=4500)
+    sweep.add_argument("--generation-time", type=float, default=30)
+    sweep.add_argument("--neutral-replicates", type=int, default=39)
+    sweep.add_argument("--seed", type=int, default=24681357)
+    sweep.set_defaults(func=command_validate_sweep)
     return root
 
 

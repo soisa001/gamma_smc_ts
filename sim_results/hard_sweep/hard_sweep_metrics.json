@@ -1,0 +1,14 @@
+{
+  "population_size": 100,
+  "selection_coefficient": 0.75,
+  "sweep_position": 25000,
+  "center_mean_tmrca_generations": 34.98,
+  "flank_mean_tmrca_generations": 90.31444966203685,
+  "center_to_flank_tmrca_ratio": 0.3873134380035273,
+  "center_fraction_recent": 1.0,
+  "flank_fraction_recent": 0.8141975308641975,
+  "neutral_mean_fraction_recent": 0.49769230769230777,
+  "neutral_replicates": 39,
+  "mc_p_upper": 0.05,
+  "slim_stdout": "// Initial random seed:\n97531\n\n// RunInitializeCallbacks():\ninitializeSLiMOptions(keepPedigrees = T);\ninitializeTreeSeq();\ninitializeMutationRate(0);\ninitializeMutationType(1, 0.5, \"f\", 0);\ninitializeMutationType(2, 1, \"f\", 0.75);\ninitializeGenomicElementType(1, m1, 1);\ninitializeGenomicElement(g1, 0, 49999);\ninitializeRecombinationRate(2e-06);\n\n// Starting run at tick <start>:\n1 \n\nSWEEP_FIXED tick=541\n"
+}
