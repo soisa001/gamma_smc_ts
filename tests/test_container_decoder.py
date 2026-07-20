@@ -6,9 +6,15 @@ import zstandard
 from scipy.special import gammainc
 
 from gamma_smc_aou.container_decoder import (
+    _concise_log,
     build_container_command,
     summarize_posteriors,
 )
+
+
+def test_concise_log_drops_progress_frames_and_ansi():
+    value = "\x1b[0;34m--- Reading input\x1b[0m\n[====] 50%\n  * Read 2000 samples.\n"
+    assert _concise_log(value) == "--- Reading input\n  * Read 2000 samples."
 
 
 def test_docker_command_uses_official_stride_interface(tmp_path):

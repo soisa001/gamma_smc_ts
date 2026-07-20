@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -13,6 +14,7 @@ from scipy.special import gammainc
 
 
 DEFAULT_IMAGE = "docker.io/regevsch/gamma_smc:v0.2"
+ANSI_ESCAPE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 
 def find_container_runtime(requested: str = "auto") -> str:
@@ -83,6 +85,17 @@ def _read_exact(reader, n_bytes: int) -> bytes:
         chunks.append(chunk)
         remaining -= len(chunk)
     return b"".join(chunks)
+
+
+def _concise_log(value: str) -> str:
+    """Keep informational lines while dropping animated progress-bar frames."""
+    clean = ANSI_ESCAPE.sub("", value).replace("\r", "\n")
+    lines = [
+        line.rstrip()
+        for line in clean.splitlines()
+        if line.strip() and not line.lstrip().startswith("[")
+    ]
+    return "\n".join(lines[-200:])
 
 
 def summarize_posteriors(
@@ -206,8 +219,8 @@ def run_container_decoder(
         "decode_seconds": float(decode_seconds),
         "summary_seconds": float(summary_seconds),
         "posterior_bytes": int(raw_bytes),
-        "stdout": completed.stdout,
-        "stderr": completed.stderr,
+        "stdout_summary": _concise_log(completed.stdout),
+        "stderr_summary": _concise_log(completed.stderr),
     }
     with output_summary.with_name(output_summary.name + ".run.json").open(
         "w", encoding="utf-8"

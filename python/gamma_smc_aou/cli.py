@@ -144,6 +144,8 @@ def command_decode(args):
         raw_output=args.raw_output,
         mask=args.mask,
         masks_per_sample=args.masks_per_sample,
+        output_at_stride=args.output_at_stride,
+        output_at_hets=not args.no_output_at_hets,
     )
 
 
@@ -357,6 +359,8 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--mutation-rate", type=float, required=True)
     decode.add_argument("--threshold-years", type=float, default=4500)
     decode.add_argument("--generation-time", type=float, default=30)
+    decode.add_argument("--output-at-stride", type=int, default=-1)
+    decode.add_argument("--no-output-at-hets", action="store_true")
     decode.set_defaults(func=command_decode)
 
     container = commands.add_parser(

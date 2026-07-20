@@ -181,6 +181,10 @@ def run_container_stride_study(
         if not keep_vcfs:
             vcf_path.unlink(missing_ok=True)
             tree_path.unlink(missing_ok=True)
+            summary_path.unlink(missing_ok=True)
+            summary_path.with_name(summary_path.name + ".run.json").unlink(
+                missing_ok=True
+            )
 
     neutral = pd.concat(neutral_profiles, ignore_index=True)
     neutral.to_csv(

@@ -19,6 +19,8 @@ def run_within_decoder(
     raw_output: str | Path | None = None,
     mask: str | Path | None = None,
     masks_per_sample: str | Path | None = None,
+    output_at_stride: int = -1,
+    output_at_hets: bool = True,
 ) -> dict:
     output_summary = Path(output_summary)
     output_summary.parent.mkdir(parents=True, exist_ok=True)
@@ -30,7 +32,8 @@ def run_within_decoder(
         "--recent_threshold_years", str(threshold_years),
         "--generation_time", str(generation_time),
         "--recent_summary", str(output_summary),
-        "--output_at_hets", "true", "--output_at_stride", "-1",
+        "--output_at_hets", str(output_at_hets).lower(),
+        "--output_at_stride", str(output_at_stride),
     ]
     if raw_output is not None:
         command.extend(["--output", str(raw_output)])
