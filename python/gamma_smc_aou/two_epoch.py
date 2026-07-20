@@ -250,29 +250,29 @@ def _plot_allele_frequency_trajectory(
             variant_age_generations,
             ordered.iloc[0]["population_allele_frequency"],
         ),
-        xytext=(18, 20),
+        xytext=(-18, 20),
         textcoords="offset points",
-        ha="left",
+        ha="right",
         fontsize=LARGE_FONTS["annotation"],
     )
     axis.annotate(
         f"present population AF={population_allele_frequency:.4f}\n"
         f"sample AF={sample_allele_frequency:.4f}",
         (0, population_allele_frequency),
-        xytext=(-18, -6),
+        xytext=(18, -6),
         textcoords="offset points",
-        ha="right",
+        ha="left",
         va="center",
         fontsize=LARGE_FONTS["annotation"],
     )
-    axis.set_xlim(variant_age_generations + 5, -15)
+    axis.set_xlim(-15, variant_age_generations + 5)
     axis.set_ylim(0, max(0.12, population_allele_frequency * 1.35))
     axis.set_title(
         f"Realized selected-allele trajectory (s={selection_coefficient:g})",
         fontsize=LARGE_FONTS["title"],
     )
     axis.set_xlabel(
-        "Generations before present (time proceeds left to right)",
+        "Generations before present",
         fontsize=LARGE_FONTS["axis"],
     )
     axis.set_ylabel("Selected-allele frequency", fontsize=LARGE_FONTS["axis"])
