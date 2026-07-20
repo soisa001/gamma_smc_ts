@@ -29,7 +29,13 @@ int main(int argc, char** argv) {
 
     options.add_options()
         ("i,input", "Input file", cxxopts::value<std::string>())
+        ("input_format", "Input format: auto, vcf, trees, or tsz (required for tree sequence stdin)", cxxopts::value<std::string>()->default_value("auto"))
+        ("allow_unphased", "Allow unphased heterozygotes (not recommended for haplotype scans)")
         ("o,output", "Output file", cxxopts::value<std::string>())
+        ("recent_summary", "Write an across-pair recent-coalescence TSV (use with --only_within)", cxxopts::value<std::string>())
+        ("recent_threshold_years", "Recent-coalescence threshold in years", cxxopts::value<double>()->default_value("4500"))
+        ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("30"))
+        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time", cxxopts::value<double>())
         ("m,scaled_mutation_rate", "Scaled mutation rate", cxxopts::value<float>())
         ("r,scaled_recombination_rate", "Scaled recombination rate", cxxopts::value<float>())
         ("t,recombination_to_mutation_ratio", "Recombination to mutation rates ratio", cxxopts::value<float>())
@@ -116,14 +122,48 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    if (vm.count("output") == 0) {
-        cout << boost::format("Error: --output required.\n");
+    string input_format = vm["input_format"].as<string>();
+    const vector<string> valid_input_formats{"auto", "vcf", "trees", "tsz"};
+    if (std::find(valid_input_formats.begin(), valid_input_formats.end(), input_format) == valid_input_formats.end()) {
+        cout << "Error: --input_format must be auto, vcf, trees, or tsz." << endl;
         exit(-1);
     }
-    auto output_filename = vm["output"].as<string>();
-    auto output_directory = std::filesystem::path(output_filename).parent_path();
-    if (!output_directory.empty()) {
-        std::filesystem::create_directories(output_directory);
+    if (input_filename == "/dev/stdin" && input_format == "auto") {
+        cout << "Error: --input_format is required when reading /dev/stdin." << endl;
+        exit(-1);
+    }
+
+    if (vm.count("output") == 0 && vm.count("recent_summary") == 0) {
+        cout << boost::format("Error: At least one of --output or --recent_summary is required.\n");
+        exit(-1);
+    }
+    string output_filename;
+    if (vm.count("output")) {
+        output_filename = vm["output"].as<string>();
+        auto output_directory = std::filesystem::path(output_filename).parent_path();
+        if (!output_directory.empty()) {
+            std::filesystem::create_directories(output_directory);
+        }
+    }
+    string recent_summary_filename;
+    if (vm.count("recent_summary")) {
+        recent_summary_filename = vm["recent_summary"].as<string>();
+        auto summary_directory = std::filesystem::path(recent_summary_filename).parent_path();
+        if (!summary_directory.empty()) {
+            std::filesystem::create_directories(summary_directory);
+        }
+        if (!vm.count("only_within")) {
+            cout << "Error: --recent_summary currently requires --only_within." << endl;
+            exit(-1);
+        }
+        if (!vm.count("unscaled_mutation_rate") || vm["unscaled_mutation_rate"].as<double>() <= 0.0) {
+            cout << "Error: --recent_summary requires a positive --unscaled_mutation_rate." << endl;
+            exit(-1);
+        }
+        if (vm["recent_threshold_years"].as<double>() <= 0.0 || vm["generation_time"].as<double>() <= 0.0) {
+            cout << "Error: --recent_threshold_years and --generation_time must be positive." << endl;
+            exit(-1);
+        }
     }
     
     if (vm.count("only_within") && vm.count("samples_against")) {
@@ -149,10 +189,10 @@ int main(int argc, char** argv) {
     }
 
     string masks_per_sample_filename;
-    if (vm.count("masks_per_filename")) {
-        masks_per_sample_filename = vm["masks_per_filename"].as<string>();
+    if (vm.count("masks_per_sample")) {
+        masks_per_sample_filename = vm["masks_per_sample"].as<string>();
         if (!std::filesystem::exists(masks_per_sample_filename)) {
-            cout << boost::format("Error: Cannot open --masks_per_filename file: %s\n") % masks_per_sample_filename;
+            cout << boost::format("Error: Cannot open --masks_per_sample file: %s\n") % masks_per_sample_filename;
             exit(-1);
         }
     }
@@ -207,11 +247,17 @@ int main(int argc, char** argv) {
         samples_filename, 
         samples_indices,
         samples_against_filename,
-        samples_against_indices
+        samples_against_indices,
+        input_format,
+        vm.count("allow_unphased") > 0
     ); 
 
     screen.print_item(boost::str(boost::format("Read %d samples.") % sample_names.size()));
     screen.print_item(boost::str(boost::format("Read %d segregating sites.") % input_sites.size()));
+    if (input_sites.empty()) {
+        cout << "Error: Input contains no segregating SNP sites after filtering." << endl;
+        exit(-1);
+    }
     screen.print_done();
 
     //
@@ -230,6 +276,11 @@ int main(int argc, char** argv) {
     unordered_map<string, vector<pair<int, int>>> mask_map;
     if (vm.count("masks_per_sample")) {
         readMasks(masks_per_sample_filename, mask_map, sample_names);
+        if (mask_map.size() != sample_names.size()) {
+            cout << boost::format("Error: Expected one mask for each of %d samples, but read %d.\n")
+                    % sample_names.size() % mask_map.size();
+            exit(-1);
+        }
         screen.print_item(boost::str(boost::format("Read %d masks.") % mask_map.size()));
     }
     
@@ -344,6 +395,20 @@ int main(int argc, char** argv) {
         output_file_raw = new ofstream(output_filename, ios_base::out | ios_base::binary);        
         output_file_raw_meta = new ofstream(output_filename + ".meta", ios_base::out);        
     }
+    ofstream* recent_summary_file = NULL;
+    if (recent_summary_filename.size() > 0) {
+        recent_summary_file = new ofstream(recent_summary_filename, ios_base::out);
+    }
+
+    double recent_threshold_scaled = -1.0;
+    double two_ne_generations = -1.0;
+    if (recent_summary_file != NULL) {
+        const double mutation_rate = vm["unscaled_mutation_rate"].as<double>();
+        two_ne_generations = scaled_mutation_rate / (2.0 * mutation_rate);
+        const double threshold_generations =
+            vm["recent_threshold_years"].as<double>() / vm["generation_time"].as<double>();
+        recent_threshold_scaled = threshold_generations / two_ne_generations;
+    }
 
     //
     // Construct flow field
@@ -382,7 +447,10 @@ int main(int argc, char** argv) {
         only_backward,
         output_file_raw_meta,
         output_file_raw,
-        vm["zstd_compression_level"].as<int>()
+        vm["zstd_compression_level"].as<int>(),
+        recent_summary_file,
+        recent_threshold_scaled,
+        two_ne_generations
     );
 
     PPC.calculate_posteriors();
@@ -393,6 +461,9 @@ int main(int argc, char** argv) {
     if (output_file_raw != NULL) {
         output_file_raw->close();
         output_file_raw_meta->close();
+    }
+    if (recent_summary_file != NULL) {
+        recent_summary_file->close();
     }
 
     double total_processing_time = PPC._timer_emissions + PPC._timer_forward + PPC._timer_backward;  // Excludes output time

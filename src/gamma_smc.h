@@ -4,6 +4,8 @@
 #include "flow_field.h"
 #include "data_processor.h"
 
+#include <boost/math/special_functions/gamma.hpp>
+
 // https://gist.github.com/andersx/8057b2a6fd3d715d35eb
 
 // Approximation for EXP(x) -- very fast, but not super accurate
@@ -47,6 +49,12 @@ class CachedPairwiseGammaSMC {
 
     ofstream* _output_file_raw_header;
     ostream* _output_file_raw;
+    ostream* _recent_summary_output;
+    double _recent_threshold_scaled;
+    double _two_ne_generations;
+    vector<double> _sum_p_recent;
+    vector<double> _sum_tmrca_generations;
+    vector<long> _n_summary_pairs;
 
     // TODO: allocate less memory
     float* _scaled_forwards_mean = NULL;
@@ -87,7 +95,10 @@ class CachedPairwiseGammaSMC {
         bool only_backward,
         ofstream* output_file_raw_header,
         ostream* output_file_raw,
-        int zstd_compression_level
+        int zstd_compression_level,
+        ostream* recent_summary_output = NULL,
+        double recent_threshold_scaled = -1.0,
+        double two_ne_generations = -1.0
     ) : 
         _sites(sites), 
         _haplotype_pairs(haplotype_pairs),
@@ -109,6 +120,9 @@ class CachedPairwiseGammaSMC {
         _seq_length(data_processor._seq_length),
         _output_file_raw_header(output_file_raw_header),
         _output_file_raw(output_file_raw),
+        _recent_summary_output(recent_summary_output),
+        _recent_threshold_scaled(recent_threshold_scaled),
+        _two_ne_generations(two_ne_generations),
         _zstd_cctx(ZSTD_createCCtx()),        
         _zstd_compressed_buffer_size(ZSTD_CStreamOutSize()),         
         _zstd_compression_level(zstd_compression_level)
@@ -147,6 +161,12 @@ class CachedPairwiseGammaSMC {
         _zstd_compressed_buffer = malloc(_zstd_compressed_buffer_size);
         ZSTD_CCtx_setParameter(_zstd_cctx, ZSTD_c_compressionLevel, _zstd_compression_level);
         ZSTD_CCtx_setParameter(_zstd_cctx, ZSTD_c_checksumFlag, 1);
+
+        if (_recent_summary_output != NULL) {
+            _sum_p_recent.assign(_seq_length, 0.0);
+            _sum_tmrca_generations.assign(_seq_length, 0.0);
+            _n_summary_pairs.assign(_seq_length, 0);
+        }
     }
 
     virtual ~CachedPairwiseGammaSMC() {
@@ -216,7 +236,7 @@ class CachedPairwiseGammaSMC {
                     bool is_missing_i = _data_processor._is_seg_site_missing[i >> 1][seg_site_index];                
                     bool is_missing_j = _data_processor._is_seg_site_missing[j >> 1][seg_site_index];
 
-                    if (is_missing_i || is_missing_j) {
+                    if (is_missing_i || is_missing_j || alleles[i] < 0 || alleles[j] < 0) {
                         (*cur_ptr) = HOM_STRETCH;
                     } else {                            
                         (*cur_ptr) = ((alleles[i] ^ alleles[j]) ? HOM_STRETCH_HET_SITE : HOM_STRETCH_HOM_SITE);
@@ -513,6 +533,39 @@ class CachedPairwiseGammaSMC {
         (*_output_file_raw_header) << ("}\n");
     }
 
+    void accumulate_recent_summary(long starting_n_pair) {
+        const long real_pairs = min(_n_pairs_in_chunk, _n_pairs - starting_n_pair);
+        for (position_t pos_index = 0; pos_index < _seq_length; ++pos_index) {
+            const long offset = pos_index * _n_pairs_in_chunk;
+            for (long pair_index = 0; pair_index < real_pairs; ++pair_index) {
+                const double alpha = _posteriors_alpha[offset + pair_index];
+                const double beta = _posteriors_beta[offset + pair_index];
+                if (!(alpha > 0.0) || !(beta > 0.0)) {
+                    continue;
+                }
+                _sum_p_recent[pos_index] += boost::math::gamma_p(
+                    alpha, beta * _recent_threshold_scaled
+                );
+                _sum_tmrca_generations[pos_index] += (alpha / beta) * _two_ne_generations;
+                _n_summary_pairs[pos_index] += 1;
+            }
+        }
+    }
+
+    void output_recent_summary() {
+        (*_recent_summary_output)
+            << "position_0based\tposition_1based\tn_pairs\tmean_p_tmrca_lt_threshold"
+            << "\tmean_tmrca_generations\n";
+        for (position_t i = 0; i < _seq_length; ++i) {
+            const double denom = static_cast<double>(_n_summary_pairs[i]);
+            (*_recent_summary_output)
+                << _output_positions[i] << '\t' << (_output_positions[i] + 1) << '\t'
+                << _n_summary_pairs[i] << '\t'
+                << (denom > 0.0 ? _sum_p_recent[i] / denom : NAN) << '\t'
+                << (denom > 0.0 ? _sum_tmrca_generations[i] / denom : NAN) << '\n';
+        }
+    }
+
     // This just dumps the memory, so it later needs to be loaded in a particular way
     void output_raw_chunk(long starting_n_pair, long num_pairs, bool last_chunk) { 
         int finished;
@@ -601,6 +654,14 @@ class CachedPairwiseGammaSMC {
                 _timer_backward += (ms_float.count()/1000);
             }
 
+            if (_recent_summary_output != NULL) {
+                t1 = std::chrono::high_resolution_clock::now();
+                accumulate_recent_summary(n_pair);
+                t2 = std::chrono::high_resolution_clock::now();
+                ms_float = t2 - t1;
+                _timer_output += (ms_float.count()/1000);
+            }
+
             if (_output_file_raw != NULL) {
                 t1 = std::chrono::high_resolution_clock::now();
                 output_raw_chunk(n_pair, _n_pairs_in_chunk, last_chunk);
@@ -622,6 +683,10 @@ class CachedPairwiseGammaSMC {
         bar.set_progress(_n_pairs);
         bar.mark_as_completed();
         indicators::show_console_cursor(true);
+
+        if (_recent_summary_output != NULL) {
+            output_recent_summary();
+        }
     }
 
 };

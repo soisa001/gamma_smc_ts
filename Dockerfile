@@ -3,11 +3,14 @@ FROM ubuntu:22.04
 # Install packages and set the g++/gcc defaults
 RUN apt-get update && \
     apt-get -y upgrade && \
-    apt-get -y -qq install wget unzip make gcc-12 g++-12 bzip2 zlib1g-dev libbz2-dev liblzma-dev && \
+    apt-get -y -qq install wget unzip make gcc-12 g++-12 bzip2 zlib1g-dev libbz2-dev liblzma-dev python3 python3-pip && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
     update-alternatives --install /usr/bin/cc gcc /usr/bin/gcc-12 100 && \
     apt-get -y clean all
+
+# Tree-sequence input support. tszip is used only for compressed .tsz files.
+RUN python3 -m pip install --no-cache-dir 'tskit>=0.5' 'tszip>=0.2'
 
 # Download and install boost
 RUN wget -q https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.tar.bz2 && \

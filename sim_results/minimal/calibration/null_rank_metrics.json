@@ -1,0 +1,15 @@
+{
+  "conservative_upper_tail": {
+    "n": 200,
+    "mean_p": 0.679975,
+    "ks_uniform_p": 3.078191866310904e-39,
+    "fraction_p_lt_0_05": 0.025
+  },
+  "randomized_tie_diagnostic": {
+    "n": 200,
+    "mean_p": 0.5031047626032905,
+    "ks_uniform_p": 0.999535748270054,
+    "fraction_p_lt_0_05": 0.035
+  },
+  "n_unique_statistics": 5
+}

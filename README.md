@@ -1,5 +1,9 @@
 # Getting Started
 
+For the AoU within-individual selection scan, fixed-standard-coalescent
+simulations, tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries,
+and simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).
+
 # Installation
 
 ## Requirements

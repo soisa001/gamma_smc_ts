@@ -12,6 +12,10 @@
 #include <random>
 #include <sstream>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include <htslib/vcf.h>
 
 // bool has_missing_data(const string& raw_alleles, const pair<int, int>& indices) {
@@ -203,14 +207,20 @@ inline std::string create_temp_filename(const std::string& suffix) {
     return temp_path.string();
 }
 
-inline bool is_tree_sequence_file(const std::string& filename) {
+inline bool is_tree_sequence_file(const std::string& filename, const std::string& input_format = "auto") {
+    if (input_format == "vcf") {
+        return false;
+    }
+    if (input_format == "trees" || input_format == "tsz") {
+        return true;
+    }
     const std::vector<std::string> extensions{".trees", ".ts", ".tsz"};
     for (const auto& ext : extensions) {
         if (boost::iends_with(filename, ext)) {
             return true;
         }
     }
-    return filename == "/dev/stdin";
+    return false;
 }
 
 inline std::string materialize_tree_sequence(const std::string& filename) {
@@ -225,15 +235,51 @@ inline std::string materialize_tree_sequence(const std::string& filename) {
     return filename;
 }
 
-inline std::string convert_tree_sequence_to_vcf(const std::string& ts_filename) {
+inline std::string convert_tree_sequence_to_vcf(
+    const std::string& ts_filename,
+    const std::string& input_format = "auto"
+) {
     auto temp_vcf = create_temp_filename(".vcf");
-    std::stringstream cmd;
-    cmd << "python3 -c \"import sys,tszip; ts = tszip.load(sys.argv[1]); "
-           "ts.write_vcf(open(sys.argv[2],'w'), ploidy=2)\" '"
-        << ts_filename << "' '" << temp_vcf << "'";
-    int retcode = std::system(cmd.str().c_str());
-    if (retcode != 0) {
-        std::cerr << "Error: Failed to convert tree sequence to VCF using tskit." << std::endl;
+    const char* script =
+        "import pathlib,sys,tskit\n"
+        "src,dst,fmt=sys.argv[1:4]\n"
+        "is_tsz = fmt == 'tsz' or (fmt == 'auto' and pathlib.Path(src).suffix.lower() == '.tsz')\n"
+        "if is_tsz:\n"
+        " import tszip\n"
+        " ts=tszip.load(src)\n"
+        "else:\n"
+        " ts=tskit.load(src)\n"
+        "sample_set=set(ts.samples())\n"
+        "individuals=[]\n"
+        "assigned=set()\n"
+        "for ind in ts.individuals():\n"
+        " nodes=[u for u in ind.nodes if u in sample_set]\n"
+        " if nodes:\n"
+        "  if len(nodes)!=2: raise ValueError(f'individual {ind.id} is not diploid')\n"
+        "  individuals.append(ind.id); assigned.update(nodes)\n"
+        "if assigned and assigned != sample_set: raise ValueError('unassigned sample nodes')\n"
+        "if not assigned and ts.num_samples % 2: raise ValueError('odd unassigned sample count')\n"
+        "with open(dst,'w',encoding='utf-8') as out:\n"
+        " ts.write_vcf(out,individuals=individuals) if individuals else ts.write_vcf(out,ploidy=2)\n";
+
+    pid_t pid = fork();
+    if (pid == -1) {
+        std::cerr << "Error: fork failed while converting tree sequence." << std::endl;
+        exit(-1);
+    }
+    if (pid == 0) {
+        execlp(
+            "python3", "python3", "-c", script,
+            ts_filename.c_str(), temp_vcf.c_str(), input_format.c_str(),
+            static_cast<char*>(NULL)
+        );
+        _exit(127);
+    }
+    int status = 0;
+    if (waitpid(pid, &status, 0) == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        std::filesystem::remove(temp_vcf);
+        std::cerr << "Error: Failed to convert tree sequence to VCF. Install tskit"
+                  << " (and tszip for .tsz input)." << std::endl;
         exit(-1);
     }
 
@@ -319,11 +365,13 @@ void readVcf(
     string samples_filename,
     vector<int>& samples_indices,
     string samples_filename_against,
-    vector<int>& samples_against_indices
+    vector<int>& samples_against_indices,
+    const string& input_format = "auto",
+    bool allow_unphased = false
     ) {
-    if (is_tree_sequence_file(filename)) {
+    if (is_tree_sequence_file(filename, input_format)) {
         auto ts_path = materialize_tree_sequence(filename);
-        auto vcf_path = convert_tree_sequence_to_vcf(ts_path);
+        auto vcf_path = convert_tree_sequence_to_vcf(ts_path, input_format);
         readVcf(
             vcf_path,
             ret,
@@ -331,7 +379,9 @@ void readVcf(
             samples_filename,
             samples_indices,
             samples_filename_against,
-            samples_against_indices
+            samples_against_indices,
+            "vcf",
+            allow_unphased
         );
         if (vcf_path != filename) {
             std::filesystem::remove(vcf_path);
@@ -479,8 +529,8 @@ void readVcf(
 
         bcf_unpack(record, BCF_UN_ALL);
 
-        // If not SNP, skip
-        if (!bcf_is_snp(record)) {
+        // Gamma-SMC's emissions are binary, so retain only biallelic SNPs.
+        if (!bcf_is_snp(record) || record->n_allele != 2) {
             continue;
         }
 
@@ -496,14 +546,20 @@ void readVcf(
             return;
         }
 
-        bool het = false;
+        bool has_reference = false;
+        bool has_alternate = false;
         int max_ploidy = ngt / n_samples;
+        if (max_ploidy != 2) {
+            cout << "Error: Gamma-SMC requires diploid genotypes." << std::endl;
+            exit(-1);
+        }
         for (int i = 0; i < n_samples; i++) {
             if (!sample_is_required[i]) {
                 continue;
             }
 
             int32_t *ptr = gt_arr + i*max_ploidy;
+            int sample_alleles[2] = {-1, -1};
             for (int j = 0; j < max_ploidy; j++)
             {
                 // if true, the sample has smaller ploidy
@@ -520,18 +576,24 @@ void readVcf(
                     //int_alleles.push_back(al);
                     int_alleles[int_alleles_index] = al;
                     int_alleles_index++;
-
-                    if (al > 0) {
-                        het = true;
-                    }
+                    sample_alleles[j] = al;
+                    has_reference = has_reference || (al == 0);
+                    has_alternate = has_alternate || (al == 1);
                 }
 
                 // is phased?
                 // int is_phased = bcf_gt_is_phased(ptr[j]);                
             }            
+            if (!allow_unphased && sample_alleles[0] >= 0 && sample_alleles[1] >= 0
+                    && sample_alleles[0] != sample_alleles[1] && !bcf_gt_is_phased(ptr[1])) {
+                cout << boost::format("Error: Unphased heterozygous genotype at %s:%d. "
+                                      "Use phased input or --allow_unphased.\n")
+                        % bcf_hdr_id2name(header, record->rid) % (record->pos + 1);
+                exit(-1);
+            }
         }
 
-        if (het) {
+        if (has_reference && has_alternate) {
             ret.push_back(make_unique<SegregatingSite>());
             ret.back()->pos = record->pos;
             ret.back()->alleles = int_alleles;        

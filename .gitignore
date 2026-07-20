@@ -2,3 +2,9 @@
 bin/*
 *.o
 *.sif
+__pycache__/
+.pytest_cache/
+*.egg-info/
+sim_results/**/truth_summaries/
+sim_results/**/trees/
+sim_results/history_smoke/
