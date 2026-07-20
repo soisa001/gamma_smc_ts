@@ -4,6 +4,42 @@ For the AoU within-individual selection scan, fixed-standard-coalescent
 simulations, tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries,
 and simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).
 
+## Reproducible one-command environment
+
+The `AOU_run` workflow is self-contained apart from network access during the
+first installation and your own empirical/PHLASH input files. Python and all
+Python packages are pinned in `uv.lock`; SLiM is pinned to 5.2 in a local
+`.native` environment. On Linux x86_64, the bootstrap also installs a local C++
+toolchain plus Boost, htslib, and zstd and builds Gamma-SMC without root access.
+
+Linux/HPC, including the decoder:
+
+```bash
+git clone --branch AOU_run https://github.com/soisa001/gamma_smc_ts.git
+cd gamma_smc_ts
+bash scripts/bootstrap_uv.sh
+scripts/aou.sh --help
+```
+
+Windows, for msprime/SLiM simulation and truth analyses:
+
+```powershell
+git clone --branch AOU_run https://github.com/soisa001/gamma_smc_ts.git
+cd gamma_smc_ts
+powershell -ExecutionPolicy Bypass -File scripts/bootstrap_uv.ps1
+scripts/aou.ps1 --help
+```
+
+The C++ decoder remains Linux x86_64/AVX2 software. Use Linux, WSL2, or the
+container for empirical Gamma-SMC decoding; Windows can run the complete
+simulation, selection, calibration, and plotting stack. The bootstrap runs an
+installation audit and the test suite. Use `--simulation-only` on Linux or
+`-SkipTests`/`--skip-tests` for a faster installation.
+
+After installation, use `scripts/aou.sh` or `scripts/aou.ps1` instead of
+activating an environment. The wrappers select the locked uv environment and
+the repository-local SLiM/Gamma-SMC binaries automatically.
+
 # Installation
 
 ## Requirements

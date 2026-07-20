@@ -4,6 +4,9 @@ bin/*
 *.sif
 __pycache__/
 .pytest_cache/
+.venv/
+.native/
+.tools/
 *.egg-info/
 sim_results/**/truth_summaries/
 sim_results/**/trees/

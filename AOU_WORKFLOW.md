@@ -17,18 +17,28 @@ back by genomic position after candidate loci are defined.
 
 ## Install and test
 
-The C++ decoder remains Linux/AVX2 software. Tree-sequence input additionally
-needs Python with `tskit`, and `.tsz` needs `tszip`.
+The supported installation is repository-local and locked. It needs network
+access once, but does not need root or an existing Python/Conda environment.
+On Linux x86_64/AVX2 it installs uv, Python 3.11, SLiM 5.2, the native build
+stack, builds Gamma-SMC, audits every executable/import, and runs the tests:
 
 ```bash
-python -m pip install -e '.[test,tszip]'
-make clean && make
-pytest -q
+bash scripts/bootstrap_uv.sh
+scripts/aou.sh --help
 ```
 
-The Dockerfile installs the tree-sequence dependencies. Ordinary `.trees`/`.ts`
-files are loaded with `tskit.load`; only `.tsz` files use `tszip.load`. Conversion
-uses an argument-safe process launch rather than interpolating paths into a shell
+For simulation/calibration/plotting without the C++ decoder, use
+`bash scripts/bootstrap_uv.sh --simulation-only`. On Windows, run
+`powershell -ExecutionPolicy Bypass -File scripts/bootstrap_uv.ps1`; the C++
+decoder itself must run under Linux/WSL2 or in the container. All subsequent
+examples may replace `gamma-smc-aou` with the portable wrapper
+`scripts/aou.sh` (Linux) or `scripts/aou.ps1` (Windows).
+
+`uv.lock` pins the complete cross-platform Python graph. SLiM is pinned to 5.2
+in `.native`; the Linux bootstrap also supplies the compiler, Boost, htslib,
+and zstd from conda-forge. Ordinary `.trees`/`.ts` files are loaded with
+`tskit.load`; only `.tsz` files use `tszip.load`. Conversion uses an
+argument-safe process launch rather than interpolating paths into a shell
 command. For stdin, specify `--input_format`; auto-detection is deliberately not
 attempted on a byte stream.
 

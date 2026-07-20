@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 import matplotlib
@@ -298,7 +299,11 @@ def parser() -> argparse.ArgumentParser:
     convert.set_defaults(func=command_convert)
 
     decode = commands.add_parser("decode", help="run streaming within-individual Gamma-SMC summary")
-    decode.add_argument("--executable", default="gamma_smc")
+    decode.add_argument(
+        "--executable",
+        default=os.environ.get("GAMMA_SMC_BIN", "gamma_smc"),
+        help="Gamma-SMC binary (default: GAMMA_SMC_BIN or gamma_smc on PATH)",
+    )
     decode.add_argument("--input", required=True)
     decode.add_argument("--input-format", choices=["auto", "vcf", "trees", "tsz"], default="auto")
     decode.add_argument("--output", required=True)

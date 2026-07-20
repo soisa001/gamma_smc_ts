@@ -3,6 +3,8 @@ set -euo pipefail
 
 # Override these through the scheduler environment for each population/region.
 REPO="${REPO:-$PWD}"
+AOU="${AOU:-$REPO/scripts/aou.sh}"
+GAMMA_SMC="${GAMMA_SMC:-$REPO/bin/gamma_smc}"
 OUT="${OUT:-$REPO/sim_results/full}"
 N_SIMS="${N_SIMS:-1000}"
 N_DIPLOIDS="${N_DIPLOIDS:-2000}"
@@ -18,14 +20,14 @@ extra_sim_args=()
 [[ -n "${MUTATION_MAP:-}" ]] && extra_sim_args+=(--mutation-map "$MUTATION_MAP")
 [[ -n "${RECOMBINATION_MAP:-}" ]] && extra_sim_args+=(--recombination-map "$RECOMBINATION_MAP")
 
-python -m gamma_smc_aou.cli simulate \
+"$AOU" simulate \
   --output-dir "$OUT" --replicates "$N_SIMS" --diploids "$N_DIPLOIDS" \
   --length "$LENGTH" --mutation-rate "$MU" --recombination-rate "$R" \
   --ne "$NE" --seed "$SEED" --workers "$SIM_WORKERS" --save-trees "${extra_sim_args[@]}"
 
 # Decode empirical data (one within-individual pair per diploid).
-python -m gamma_smc_aou.cli decode \
-  --executable "${GAMMA_SMC:-gamma_smc}" --input "$EMPIRICAL_VCF" --input-format vcf \
+"$AOU" decode \
+  --executable "$GAMMA_SMC" --input "$EMPIRICAL_VCF" --input-format vcf \
   --output "$OUT/empirical.within.tsv" --theta "$THETA" \
   --rho-over-theta "$RHO_OVER_THETA" --mutation-rate "$MU"
 

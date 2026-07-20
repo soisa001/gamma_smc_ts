@@ -1,6 +1,11 @@
 .vscode/*
 .git/*
+.native/*
+.tools/*
+.venv/*
+.pytest_cache/*
 bin/*
+sim_results/*
 *.o
 src/*.o
 *.sif
