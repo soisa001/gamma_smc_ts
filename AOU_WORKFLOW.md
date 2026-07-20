@@ -270,6 +270,39 @@ selection test is the excess *all-pair* recent coalescence against the neutral
 simulation null; an empirical carrier contrast should additionally use
 frequency-, age-, and recombination-matched neutral alleles for calibration.
 
+The same retained trajectories can be plotted as hom-alt versus hom-ref
+within-diploid TMRCA profiles across the full chromosome segment and around the
+selected site:
+
+```bash
+gamma-smc-aou plot-retained-carrier-profiles \
+  --source-dir sim_results/recent_sweep_s0p1_n2000 \
+  --output-dir \
+    sim_results/recent_sweep_s0p1_retained10_n2000/hom_alt_vs_hom_ref_profiles \
+  --selection-coefficient 0.1 --retained-replicates 10 \
+  --workers 20 --seed 424242 \
+  --full-step 50000 --zoom-half-width 500000 --zoom-step 5000
+```
+
+Each of the 10 figures contains a 10-Mb panel and a selected-site +/-500-kb
+panel. Curves are the mean within-diploid TMRCA among individuals with two
+focal alternate haplotypes (hom alt) or two focal reference haplotypes (hom
+ref); heterozygous pairs are excluded. Shading is a two-sided 95% log-Wald
+confidence interval for the positive mean, using a Student-t critical value.
+The log-scale interval avoids the negative lower limits produced by an
+additive normal interval for these heavy-tailed TMRCA distributions. Full
+profiles are evaluated every 50 kb and the zoom every 5 kb.
+
+At the 5-Mb selected site, mean hom-alt TMRCA ranged from 64.0 to 168.9
+generations across the 10 retained replicates, whereas mean hom-ref TMRCA
+ranged from 11,680 to 31,492 generations. Every replicate shows the expected
+central hom-alt trough, with variable width from recombination and realized
+trajectory. Replicate 41 has only 19 hom-alt individuals and therefore visibly
+wider intervals; replicate 44 has only 17 hom-ref individuals. The command
+records sample sizes in every title, writes all profile points to one TSV, and
+also creates a 20-panel overview plus one full-resolution two-panel PNG per
+replicate.
+
 `validate-null` performs an exchangeable leave-one-replicate-out rank test at a
 fixed relative position. Its JSON reports mean p-value, KS uniformity p-value,
 and the empirical fraction below 0.05; the QQ plot makes tail problems visible.

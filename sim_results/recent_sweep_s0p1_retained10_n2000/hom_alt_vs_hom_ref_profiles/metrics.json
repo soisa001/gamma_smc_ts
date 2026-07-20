@@ -1,0 +1,31 @@
+{
+  "source_dir": "C:\\Users\\Lenovo\\OneDrive\\Documents\\cxt_demo\\gamma_smc_ts\\sim_results\\recent_sweep_s0p1_n2000",
+  "selection_coefficient": 0.1,
+  "retained_replicates": [
+    0,
+    2,
+    14,
+    17,
+    32,
+    34,
+    35,
+    41,
+    44,
+    62
+  ],
+  "sample_diploids": 2000,
+  "sequence_length": 10000000,
+  "sweep_position": 5000000,
+  "full_step_bp": 50000,
+  "zoom_half_width_bp": 500000,
+  "zoom_step_bp": 5000,
+  "full_positions": 201,
+  "zoom_positions": 201,
+  "unique_positions_evaluated": 381,
+  "confidence_interval": "two-sided 95% log-Wald interval for the positive mean across diploid pairs, using a Student-t critical value",
+  "workers_requested": 20,
+  "workers_used": 10,
+  "base_seed": 424242,
+  "deterministic_reconstruction_verified": true,
+  "elapsed_seconds": 33.51293219998479
+}

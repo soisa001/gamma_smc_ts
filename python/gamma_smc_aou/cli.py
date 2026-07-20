@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
+from .carrier_profiles import plot_retained_carrier_tmrca_profiles
 from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
 from .plotting import plot_scan, plot_truth_tmrca_relationship
@@ -212,6 +213,21 @@ def command_analyze_retained_sweeps(args):
     )
 
 
+def command_plot_retained_carrier_profiles(args):
+    plot_retained_carrier_tmrca_profiles(
+        args.source_dir,
+        args.output_dir,
+        executable=args.slim,
+        selection_coefficient=args.selection_coefficient,
+        retained_replicates=args.retained_replicates,
+        workers=args.workers,
+        seed=args.seed,
+        full_step=args.full_step,
+        zoom_half_width=args.zoom_half_width,
+        zoom_step=args.zoom_step,
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
@@ -342,6 +358,24 @@ def parser() -> argparse.ArgumentParser:
         help="base seed used for the source validate-recent-sweep run",
     )
     retained.set_defaults(func=command_analyze_retained_sweeps)
+
+    carrier_profiles = commands.add_parser(
+        "plot-retained-carrier-profiles",
+        help="plot hom-alt and hom-ref TMRCA profiles for retained sweeps",
+    )
+    carrier_profiles.add_argument("--source-dir", required=True)
+    carrier_profiles.add_argument("--output-dir", required=True)
+    carrier_profiles.add_argument(
+        "--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH"
+    )
+    carrier_profiles.add_argument("--selection-coefficient", type=float, default=0.1)
+    carrier_profiles.add_argument("--retained-replicates", type=int, default=10)
+    carrier_profiles.add_argument("--workers", type=int, default=20)
+    carrier_profiles.add_argument("--seed", type=int, default=424242)
+    carrier_profiles.add_argument("--full-step", type=int, default=50_000)
+    carrier_profiles.add_argument("--zoom-half-width", type=int, default=500_000)
+    carrier_profiles.add_argument("--zoom-step", type=int, default=5_000)
+    carrier_profiles.set_defaults(func=command_plot_retained_carrier_profiles)
     return root
 
 
