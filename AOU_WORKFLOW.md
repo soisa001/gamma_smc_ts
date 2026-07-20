@@ -62,7 +62,7 @@ not used. A constant demography is the baseline:
 gamma-smc-aou simulate --output-dir sims/AFR/region_001 \
   --replicates 1000 --diploids 2000 --length 1000000 \
   --ne 10000 --mutation-rate 1.25e-8 --recombination-rate 1e-8 \
-  --save-trees --seed 1729
+  --save-trees --seed 1729 --workers 20
 ```
 
 Mutation and recombination maps are tab-separated files with `position` and

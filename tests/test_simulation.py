@@ -57,10 +57,11 @@ def test_simulation_records_fixed_standard_coalescent(tmp_path):
         n_replicates=2, n_diploids=4, sequence_length=20_000,
         effective_size=1_000, mutation_rate=2e-7, seed=7,
     )
-    manifest = simulate_replicates(config, tmp_path)
+    manifest = simulate_replicates(config, tmp_path, workers=2)
     assert manifest["model"].eq("StandardCoalescent").all()
     assert len(list((tmp_path / "truth_summaries").glob("*.tsv"))) == 2
     saved = json.loads((tmp_path / "config.json").read_text())
     assert saved["ancestry_model"] == "StandardCoalescent"
+    assert saved["workers"] == 2
     assert (tmp_path / "plots" / "simulation_qc.png").exists()
     assert all(len(pd.read_csv(path, sep="\t")) > 0 for path in (tmp_path / "truth_summaries").glob("*.tsv"))

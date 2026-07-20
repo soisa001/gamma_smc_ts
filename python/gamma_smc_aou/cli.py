@@ -47,6 +47,7 @@ def command_simulate(args):
     simulate_replicates(
         config, args.output_dir, histories=_histories(args.histories),
         mutation_map=args.mutation_map, recombination_map=args.recombination_map,
+        workers=args.workers,
     )
 
 
@@ -164,6 +165,7 @@ def parser() -> argparse.ArgumentParser:
     sim.add_argument("--generation-time", type=float, default=30)
     sim.add_argument("--seed", type=int, default=1729)
     sim.add_argument("--save-trees", action="store_true")
+    sim.add_argument("--workers", type=int, default=1, help="independent simulation processes")
     sim.set_defaults(func=command_simulate)
 
     cal = commands.add_parser("calibrate", help="calculate site-level simulation p-values")

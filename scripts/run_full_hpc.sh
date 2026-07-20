@@ -11,6 +11,7 @@ MU="${MU:-1.25e-8}"
 R="${R:-1e-8}"
 NE="${NE:-10000}"
 SEED="${SEED:-1729}"
+SIM_WORKERS="${SIM_WORKERS:-20}"
 
 extra_sim_args=()
 [[ -n "${HISTORIES:-}" ]] && extra_sim_args+=(--histories "$HISTORIES")
@@ -20,7 +21,7 @@ extra_sim_args=()
 python -m gamma_smc_aou.cli simulate \
   --output-dir "$OUT" --replicates "$N_SIMS" --diploids "$N_DIPLOIDS" \
   --length "$LENGTH" --mutation-rate "$MU" --recombination-rate "$R" \
-  --ne "$NE" --seed "$SEED" --save-trees "${extra_sim_args[@]}"
+  --ne "$NE" --seed "$SEED" --workers "$SIM_WORKERS" --save-trees "${extra_sim_args[@]}"
 
 # Decode empirical data (one within-individual pair per diploid).
 python -m gamma_smc_aou.cli decode \

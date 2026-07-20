@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from time import perf_counter
@@ -142,6 +143,56 @@ def _plot_qc(ts, summary: pd.DataFrame, demography, destination: Path) -> None:
     plt.close(fig)
 
 
+def _simulate_one(task):
+    (
+        replicate, config, output_dir, histories, mutation_map,
+        recombination_map, ancestry_seed, mutation_seed,
+    ) = task
+    output_dir = Path(output_dir)
+    if histories:
+        times, sizes = histories[replicate % len(histories)]
+        demography = demography_from_history(times, sizes)
+        history_id = replicate % len(histories)
+    else:
+        demography = msprime.Demography.isolated_model([config.effective_size])
+        demography.populations[0].name = "pop"
+        history_id = -1
+    ts = msprime.sim_ancestry(
+        samples=[msprime.SampleSet(config.n_diploids, population="pop", ploidy=2)],
+        demography=demography,
+        sequence_length=config.sequence_length,
+        recombination_rate=_rate_map(
+            recombination_map, config.recombination_rate, config.sequence_length
+        ),
+        model=msprime.StandardCoalescent(),
+        random_seed=ancestry_seed,
+    )
+    mts = msprime.sim_mutations(
+        ts,
+        rate=_rate_map(mutation_map, config.mutation_rate, config.sequence_length),
+        model=msprime.BinaryMutationModel(),
+        random_seed=mutation_seed,
+    )
+    summary = within_individual_truth(mts, config.threshold_generations)
+    summary_path = output_dir / "truth_summaries" / f"replicate_{replicate:05d}.tsv"
+    summary.to_csv(summary_path, sep="\t", index=False)
+    if config.save_trees:
+        mts.dump(output_dir / "trees" / f"replicate_{replicate:05d}.trees")
+    if replicate == 0:
+        _plot_qc(mts, summary, demography, output_dir / "plots" / "simulation_qc.png")
+    return {
+        "replicate": replicate,
+        "model": "StandardCoalescent",
+        "history_id": history_id,
+        "ancestry_seed": ancestry_seed,
+        "mutation_seed": mutation_seed,
+        "n_diploids": config.n_diploids,
+        "n_sites": mts.num_sites,
+        "n_trees": mts.num_trees,
+        "summary": str(summary_path),
+    }
+
+
 def simulate_replicates(
     config: SimulationConfig,
     output_dir: str | Path,
@@ -149,6 +200,7 @@ def simulate_replicates(
     histories: list[tuple[list[float], list[float]]] | None = None,
     mutation_map: str | Path | None = None,
     recombination_map: str | Path | None = None,
+    workers: int = 1,
 ) -> pd.DataFrame:
     """Simulate neutral replicates using only ``msprime.StandardCoalescent``."""
     output_dir = Path(output_dir)
@@ -160,53 +212,25 @@ def simulate_replicates(
     if config.save_trees:
         tree_dir.mkdir(parents=True, exist_ok=True)
 
-    mutation_rate = _rate_map(mutation_map, config.mutation_rate, config.sequence_length)
-    recombination_rate = _rate_map(recombination_map, config.recombination_rate, config.sequence_length)
+    if workers < 1:
+        raise ValueError("workers must be positive")
     seed_sequence = np.random.SeedSequence(config.seed)
     seeds = seed_sequence.generate_state(config.n_replicates * 2, dtype=np.uint32).reshape(-1, 2)
-    manifest_rows = []
     started = perf_counter()
-    for replicate in range(config.n_replicates):
-        if histories:
-            times, sizes = histories[replicate % len(histories)]
-            demography = demography_from_history(times, sizes)
-            history_id = replicate % len(histories)
-        else:
-            demography = msprime.Demography.isolated_model([config.effective_size])
-            demography.populations[0].name = "pop"
-            history_id = -1
-        ancestry_seed, mutation_seed = (int(x) for x in seeds[replicate])
-        ts = msprime.sim_ancestry(
-            samples=[msprime.SampleSet(config.n_diploids, population="pop", ploidy=2)],
-            demography=demography,
-            sequence_length=config.sequence_length,
-            recombination_rate=recombination_rate,
-            model=msprime.StandardCoalescent(),
-            random_seed=ancestry_seed,
+    tasks = [
+        (
+            replicate, config, str(output_dir), histories,
+            str(mutation_map) if mutation_map is not None else None,
+            str(recombination_map) if recombination_map is not None else None,
+            int(seeds[replicate, 0]), int(seeds[replicate, 1]),
         )
-        mts = msprime.sim_mutations(
-            ts, rate=mutation_rate, model=msprime.BinaryMutationModel(), random_seed=mutation_seed
-        )
-        summary = within_individual_truth(mts, config.threshold_generations)
-        summary_path = summary_dir / f"replicate_{replicate:05d}.tsv"
-        summary.to_csv(summary_path, sep="\t", index=False)
-        if config.save_trees:
-            mts.dump(tree_dir / f"replicate_{replicate:05d}.trees")
-        if replicate == 0:
-            _plot_qc(mts, summary, demography, plot_dir / "simulation_qc.png")
-        manifest_rows.append(
-            {
-                "replicate": replicate,
-                "model": "StandardCoalescent",
-                "history_id": history_id,
-                "ancestry_seed": ancestry_seed,
-                "mutation_seed": mutation_seed,
-                "n_diploids": config.n_diploids,
-                "n_sites": mts.num_sites,
-                "n_trees": mts.num_trees,
-                "summary": str(summary_path),
-            }
-        )
+        for replicate in range(config.n_replicates)
+    ]
+    if workers == 1:
+        manifest_rows = [_simulate_one(task) for task in tasks]
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            manifest_rows = list(executor.map(_simulate_one, tasks))
     manifest = pd.DataFrame(manifest_rows)
     manifest["elapsed_seconds_total"] = perf_counter() - started
     manifest.to_csv(output_dir / "manifest.tsv", sep="\t", index=False)
@@ -216,6 +240,7 @@ def simulate_replicates(
                 **asdict(config),
                 "ancestry_model": "StandardCoalescent",
                 "mutation_model": "BinaryMutationModel",
+                "workers": workers,
             },
             handle,
             indent=2,

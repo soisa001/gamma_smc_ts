@@ -10,5 +10,6 @@
   "seed": 1729,
   "save_trees": false,
   "ancestry_model": "StandardCoalescent",
-  "mutation_model": "JC69 (msprime default at time of recorded run)"
+  "mutation_model": "BinaryMutationModel",
+  "workers": 20
 }

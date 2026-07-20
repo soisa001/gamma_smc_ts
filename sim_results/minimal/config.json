@@ -10,5 +10,6 @@
   "seed": 1729,
   "save_trees": false,
   "ancestry_model": "StandardCoalescent",
-  "mutation_model": "BinaryMutationModel"
+  "mutation_model": "BinaryMutationModel",
+  "workers": 20
 }
