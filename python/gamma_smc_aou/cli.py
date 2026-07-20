@@ -190,6 +190,7 @@ def command_validate_recent_sweep(args):
         neutral_replicates=args.neutral_replicates,
         selected_replicates=args.selected_replicates,
         workers=args.workers,
+        reuse_null_from=args.reuse_null_from,
         save_trees=not args.no_save_trees,
         seed=args.seed,
     )
@@ -300,6 +301,10 @@ def parser() -> argparse.ArgumentParser:
     recent.add_argument("--neutral-replicates", type=int, default=100)
     recent.add_argument("--selected-replicates", type=int, default=1)
     recent.add_argument("--workers", type=int, default=1, help="parallel selected SLiM trajectories")
+    recent.add_argument(
+        "--reuse-null-from",
+        help="reuse compatible s=0 replicate statistics/profiles from this result directory",
+    )
     recent.add_argument("--no-save-trees", action="store_true")
     recent.add_argument("--seed", type=int, default=271828)
     recent.set_defaults(func=command_validate_recent_sweep)

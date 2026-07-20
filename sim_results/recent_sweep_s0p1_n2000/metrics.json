@@ -1,0 +1,55 @@
+{
+  "population_size": 10000,
+  "sample_diploids": 2000,
+  "sequence_length": 10000000,
+  "sweep_position": 5000000,
+  "selection_coefficients": [
+    0.0,
+    0.1
+  ],
+  "age_generations": 180,
+  "generation_time_years": 25,
+  "threshold_years": 4500,
+  "mutation_rate": 1.25e-08,
+  "recombination_rate": 1e-08,
+  "neutral_replicates": 100,
+  "selected_replicates_per_s": 100,
+  "trajectory_workers": 20,
+  "neutral_reused_from": "C:\\Users\\Lenovo\\OneDrive\\Documents\\cxt_demo\\gamma_smc_ts\\sim_results\\recent_sweep_10mb_n2000",
+  "conditioning": "matched unconditional single-origin SLiM trajectories for s=0 and s>0; lost alleles remain frequency 0 and are still scanned at 5 Mb",
+  "elapsed_seconds": 284.1994548999937,
+  "results_by_s": [
+    {
+      "selection_coefficient": 0.0,
+      "replicate": 49.5,
+      "realized_population_allele_frequency": 0.0,
+      "ancestry_seconds": 14.73424685500213,
+      "slim_seconds": 3.006538615999743,
+      "center_fraction_recent": 0.009185,
+      "center_mean_tmrca_generations": 19832.121298145943,
+      "window_10000_fraction_recent": 0.009184999999999954,
+      "window_100000_fraction_recent": 0.009156683168316781,
+      "neutral_plateau_fraction_recent": 0.00906768595041318,
+      "neutral_plateau_mean_tmrca_generations": 20004.696408851963,
+      "center_fraction_recent_mc_p_upper": NaN,
+      "window_10000_fraction_recent_mc_p_upper": NaN,
+      "window_100000_fraction_recent_mc_p_upper": NaN
+    },
+    {
+      "selection_coefficient": 0.1,
+      "replicate": 49.5,
+      "realized_population_allele_frequency": 0.095231,
+      "ancestry_seconds": 32.514938369002195,
+      "slim_seconds": 4.324612873001606,
+      "center_fraction_recent": 0.07399499999999999,
+      "center_mean_tmrca_generations": 18544.699242097147,
+      "window_10000_fraction_recent": 0.07332272727272728,
+      "window_100000_fraction_recent": 0.06989792079207921,
+      "neutral_plateau_fraction_recent": 0.009336322314049586,
+      "neutral_plateau_mean_tmrca_generations": 19970.085075764626,
+      "center_fraction_recent_mc_p_upper": 0.5154455445544555,
+      "window_10000_fraction_recent_mc_p_upper": 0.48188118811881187,
+      "window_100000_fraction_recent_mc_p_upper": 0.49
+    }
+  ]
+}

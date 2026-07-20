@@ -320,6 +320,10 @@ def summarize_recent_sweep_results(
     power_rows = []
     selected = stats[stats["selection_coefficient"] > 0]
     for coefficient, group in selected.groupby("selection_coefficient"):
+        lost_group = group[group["focal_allele_outcome"] == "lost"]
+        present_group = group[
+            group["focal_allele_outcome"].isin(("segregating", "fixed"))
+        ]
         frequency = group["realized_population_allele_frequency"].to_numpy(dtype=float)
         recent = group["center_fraction_recent"].to_numpy(dtype=float)
         if np.unique(frequency).size > 1 and np.unique(recent).size > 1:
@@ -330,6 +334,8 @@ def summarize_recent_sweep_results(
         base = {
             "selection_coefficient": float(coefficient),
             "n_replicates": int(len(group)),
+            "n_focal_allele_lost": int(len(lost_group)),
+            "n_focal_allele_present": int(len(present_group)),
             "median_realized_allele_frequency": float(np.median(frequency)),
             "range_realized_allele_frequency_min": float(np.min(frequency)),
             "range_realized_allele_frequency_max": float(np.max(frequency)),
@@ -350,6 +356,37 @@ def summarize_recent_sweep_results(
                 np.mean(group[p_column] <= 0.05)
             )
             base[f"{column}_auc"] = float(u / (len(group) * len(null)))
+            if len(present_group):
+                present_u = mannwhitneyu(
+                    present_group[column],
+                    null[column],
+                    alternative="greater",
+                    method="auto",
+                ).statistic
+                base[f"{column}_mean_given_focal_allele_present"] = float(
+                    present_group[column].mean()
+                )
+                base[f"{column}_median_p_given_focal_allele_present"] = float(
+                    present_group[p_column].median()
+                )
+                base[
+                    f"{column}_power_p_le_0_05_given_focal_allele_present"
+                ] = float(np.mean(present_group[p_column] <= 0.05))
+                base[f"{column}_auc_given_focal_allele_present"] = float(
+                    present_u / (len(present_group) * len(null))
+                )
+            else:
+                base[f"{column}_mean_given_focal_allele_present"] = np.nan
+                base[f"{column}_median_p_given_focal_allele_present"] = np.nan
+                base[
+                    f"{column}_power_p_le_0_05_given_focal_allele_present"
+                ] = np.nan
+                base[f"{column}_auc_given_focal_allele_present"] = np.nan
+            base[f"{column}_false_positive_p_le_0_05_given_focal_allele_lost"] = (
+                float(np.mean(lost_group[p_column] <= 0.05))
+                if len(lost_group)
+                else np.nan
+            )
         power_rows.append(base)
     power = pd.DataFrame(power_rows)
     power.to_csv(output_dir / "power_summary.tsv", sep="\t", index=False)
@@ -377,6 +414,7 @@ def validate_recent_sweep_grid(
     neutral_replicates: int = 100,
     selected_replicates: int = 1,
     workers: int = 1,
+    reuse_null_from: str | Path | None = None,
     save_trees: bool = True,
     seed: int = 271828,
 ) -> dict:
@@ -393,6 +431,48 @@ def validate_recent_sweep_grid(
     started = perf_counter()
     if workers < 1:
         raise ValueError("workers must be positive")
+    if reuse_null_from is None and not any(x == 0 for x in selection_coefficients):
+        raise ValueError("selection_coefficients must include 0 unless reusing a null")
+
+    reused_null_path = None
+    if reuse_null_from is not None:
+        reused_null_path = Path(reuse_null_from).resolve()
+        if reused_null_path == output_dir.resolve():
+            raise ValueError("reuse_null_from must differ from output_dir")
+        with (reused_null_path / "metrics.json").open(encoding="utf-8") as handle:
+            source_metrics = json.load(handle)
+        expected = {
+            "population_size": population_size,
+            "sample_diploids": sample_diploids,
+            "sequence_length": sequence_length,
+            "age_generations": age_generations,
+        }
+        for key, value in expected.items():
+            if source_metrics.get(key) != value:
+                raise ValueError(
+                    f"reused null {key}={source_metrics.get(key)!r}, expected {value!r}"
+                )
+        for key, value in {
+            "mutation_rate": mutation_rate,
+            "recombination_rate": recombination_rate,
+        }.items():
+            if not np.isclose(float(source_metrics.get(key, np.nan)), value):
+                raise ValueError(
+                    f"reused null {key}={source_metrics.get(key)!r}, expected {value!r}"
+                )
+        source_stats = pd.read_csv(
+            reused_null_path / "replicate_statistics.tsv", sep="\t"
+        )
+        source_profiles = pd.read_csv(reused_null_path / "truth_profiles.tsv", sep="\t")
+        source_stats = source_stats[source_stats["selection_coefficient"] == 0].copy()
+        source_profiles = source_profiles[
+            source_profiles["selection_coefficient"] == 0
+        ].copy()
+        if source_stats.empty or source_profiles.empty:
+            raise ValueError("reuse_null_from contains no s=0 replicates")
+        neutral_replicates = int(source_stats["replicate"].nunique())
+        profiles.append(source_profiles)
+        rows.extend(source_stats.to_dict("records"))
 
     def _trajectory_task(task):
         coefficient, replicate = task
@@ -432,6 +512,7 @@ def validate_recent_sweep_grid(
     trajectory_tasks = [
         (float(coefficient), replicate)
         for coefficient in selection_coefficients
+        if not (reuse_null_from is not None and coefficient == 0)
         for replicate in range(
             neutral_replicates if coefficient == 0 else selected_replicates
         )
@@ -478,7 +559,9 @@ def validate_recent_sweep_grid(
     summary.to_csv(output_dir / "profile_summary.tsv", sep="\t", index=False)
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8), constrained_layout=True)
-    colors = {0.0: "0.35", 0.001: "#3b82f6", 0.01: "#dc2626"}
+    colors = {
+        0.0: "0.35", 0.001: "#3b82f6", 0.01: "#dc2626", 0.1: "#7c3aed"
+    }
     for coefficient, group in summary.groupby("selection_coefficient"):
         label = f"s={coefficient:g}"
         color = colors.get(float(coefficient))
@@ -546,7 +629,9 @@ def validate_recent_sweep_grid(
         "sample_diploids": sample_diploids,
         "sequence_length": sequence_length,
         "sweep_position": center,
-        "selection_coefficients": list(selection_coefficients),
+        "selection_coefficients": sorted(
+            float(x) for x in stats["selection_coefficient"].unique()
+        ),
         "age_generations": age_generations,
         "generation_time_years": 25,
         "threshold_years": age_generations * 25,
@@ -555,6 +640,9 @@ def validate_recent_sweep_grid(
         "neutral_replicates": neutral_replicates,
         "selected_replicates_per_s": selected_replicates,
         "trajectory_workers": workers,
+        "neutral_reused_from": (
+            str(reused_null_path) if reused_null_path is not None else None
+        ),
         "conditioning": "matched unconditional single-origin SLiM trajectories for s=0 and s>0; lost alleles remain frequency 0 and are still scanned at 5 Mb",
         "elapsed_seconds": perf_counter() - started,
         "results_by_s": stats.groupby("selection_coefficient").mean(numeric_only=True).reset_index().to_dict("records"),

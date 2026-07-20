@@ -79,3 +79,24 @@ def test_recent_sweep_grid_records_full_region_and_mc_test(tmp_path):
     assert len(neutral) == 9
     assert neutral["focal_allele_outcome"].eq("lost").any()
     assert neutral["center_fraction_recent"].notna().all()
+
+    reused = validate_recent_sweep_grid(
+        tmp_path / "reused",
+        population_size=100,
+        sample_diploids=50,
+        sequence_length=200_000,
+        selection_coefficients=(0.75,),
+        age_generations=30,
+        mutation_rate=1.25e-8,
+        recombination_rate=2e-7,
+        selected_replicates=1,
+        workers=2,
+        reuse_null_from=tmp_path,
+        save_trees=False,
+        seed=271828,
+    )
+    assert reused["neutral_replicates"] == 9
+    assert reused["neutral_reused_from"] == str(tmp_path.resolve())
+    power = pd.read_csv(tmp_path / "reused" / "power_summary.tsv", sep="\t").iloc[0]
+    assert power["n_focal_allele_lost"] + power["n_focal_allele_present"] == 1
+    assert "center_fraction_recent_power_p_le_0_05_given_focal_allele_present" in power

@@ -195,6 +195,37 @@ reliable sweep signal. Null leave-one-out rejection was 0.04 for p < 0.05 in
 the 10-kb and 100-kb tests; the exact-center statistic is more discrete and had
 0.01 below 0.05 (0.05 at or below 0.05).
 
+Compatible neutral results can be reused for another selection coefficient
+without rerunning `s=0`:
+
+```bash
+gamma-smc-aou validate-recent-sweep \
+  --output-dir sim_results/recent_sweep_s0p1_n2000 \
+  --reuse-null-from sim_results/recent_sweep_10mb_n2000 \
+  --population-size 10000 --sample-diploids 2000 \
+  --sequence-length 10000000 --selection-coefficients 0.1 \
+  --age-generations 180 --mutation-rate 1.25e-8 \
+  --recombination-rate 1e-8 --selected-replicates 100 --workers 20 \
+  --seed 424242 --no-save-trees
+```
+
+The command rejects a reused null if population size, sample size, sequence
+length, sweep age, or mutation/recombination rate differs.
+
+With seed 424242, the 20-worker `s=0.1` run finished in 284.2 seconds without
+rerunning the neutral simulations. The focal allele was lost in 84/100
+replicates, segregating in 16/100, and fixed in none. The unconditional
+exact-center mean fraction with TMRCA below 180 generations increased from
+0.009185 under neutrality to 0.073995, but the unconditional power was only
+0.17 because losses remain in the denominator. All 16 replicates in which the
+focal allele was present were significant at the minimum attainable Monte
+Carlo p-value, 1/101 = 0.009901; one of the 84 loss replicates was also
+significant (false-positive fraction 0.0119). Thus conditional power in this
+run was 16/16, while unconditional power was 17/100. The checked-in power
+summary reports both estimands explicitly. Future rejection sampling on allele
+retention would estimate power conditional on presence in the present-day
+sample, not unconditional evolutionary power.
+
 `validate-null` performs an exchangeable leave-one-replicate-out rank test at a
 fixed relative position. Its JSON reports mean p-value, KS uniformity p-value,
 and the empirical fraction below 0.05; the QQ plot makes tail problems visible.

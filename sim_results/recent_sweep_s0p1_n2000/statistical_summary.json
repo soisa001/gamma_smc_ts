@@ -1,0 +1,78 @@
+{
+  "null_leave_one_out_calibration": {
+    "center_fraction_recent": {
+      "n": 100,
+      "mean_p": 0.5337,
+      "ks_uniform_p": 0.16496264039322728,
+      "fraction_p_lt_0_05": 0.01,
+      "fraction_p_le_0_05": 0.05
+    },
+    "window_10000_fraction_recent": {
+      "n": 100,
+      "mean_p": 0.5135000000000001,
+      "ks_uniform_p": 0.8428847956274123,
+      "fraction_p_lt_0_05": 0.04,
+      "fraction_p_le_0_05": 0.05
+    },
+    "window_100000_fraction_recent": {
+      "n": 100,
+      "mean_p": 0.5052,
+      "ks_uniform_p": 0.999999999978262,
+      "fraction_p_lt_0_05": 0.04,
+      "fraction_p_le_0_05": 0.05
+    }
+  },
+  "null_truth_error": {
+    "theoretical_center_fraction_recent": 0.008959621227116354,
+    "observed_center_fraction_recent_mean": 0.009184999999999999,
+    "center_fraction_recent_bias": 0.0002253787728836456,
+    "center_fraction_recent_rmse": 0.002212254639788679,
+    "theoretical_mean_tmrca_generations": 20000.0,
+    "observed_center_mean_tmrca_generations": 19832.12129814594,
+    "center_mean_tmrca_bias_generations": -167.87870185405637,
+    "center_mean_tmrca_rmse_generations": 10357.877783235195
+  },
+  "selected_power": [
+    {
+      "selection_coefficient": 0.1,
+      "n_replicates": 100,
+      "n_focal_allele_lost": 84,
+      "n_focal_allele_present": 16,
+      "median_realized_allele_frequency": 0.0,
+      "range_realized_allele_frequency_min": 0.0,
+      "range_realized_allele_frequency_max": 0.95,
+      "fraction_lost": 0.84,
+      "fraction_segregating": 0.16,
+      "fraction_fixed": 0.0,
+      "spearman_frequency_vs_center_recent": 0.6395152224264378,
+      "spearman_p": 7.976578185740267e-13,
+      "center_fraction_recent_mean": 0.073995,
+      "center_fraction_recent_median_p": 0.5841584158415841,
+      "center_fraction_recent_power_p_le_0_05": 0.17,
+      "center_fraction_recent_auc": 0.5159,
+      "center_fraction_recent_mean_given_focal_allele_present": 0.4170625,
+      "center_fraction_recent_median_p_given_focal_allele_present": 0.0099009900990099,
+      "center_fraction_recent_power_p_le_0_05_given_focal_allele_present": 1.0,
+      "center_fraction_recent_auc_given_focal_allele_present": 1.0,
+      "center_fraction_recent_false_positive_p_le_0_05_given_focal_allele_lost": 0.011904761904761904,
+      "window_10000_fraction_recent_mean": 0.07332272727272722,
+      "window_10000_fraction_recent_median_p": 0.5247524752475248,
+      "window_10000_fraction_recent_power_p_le_0_05": 0.18,
+      "window_10000_fraction_recent_auc": 0.5153,
+      "window_10000_fraction_recent_mean_given_focal_allele_present": 0.41286931818181816,
+      "window_10000_fraction_recent_median_p_given_focal_allele_present": 0.0099009900990099,
+      "window_10000_fraction_recent_power_p_le_0_05_given_focal_allele_present": 1.0,
+      "window_10000_fraction_recent_auc_given_focal_allele_present": 1.0,
+      "window_10000_fraction_recent_false_positive_p_le_0_05_given_focal_allele_lost": 0.023809523809523808,
+      "window_100000_fraction_recent_mean": 0.06989792079207915,
+      "window_100000_fraction_recent_median_p": 0.5544554455445545,
+      "window_100000_fraction_recent_power_p_le_0_05": 0.2,
+      "window_100000_fraction_recent_auc": 0.51495,
+      "window_100000_fraction_recent_mean_given_focal_allele_present": 0.39144183168316826,
+      "window_100000_fraction_recent_median_p_given_focal_allele_present": 0.0099009900990099,
+      "window_100000_fraction_recent_power_p_le_0_05_given_focal_allele_present": 1.0,
+      "window_100000_fraction_recent_auc_given_focal_allele_present": 1.0,
+      "window_100000_fraction_recent_false_positive_p_le_0_05_given_focal_allele_lost": 0.047619047619047616
+    }
+  ]
+}
