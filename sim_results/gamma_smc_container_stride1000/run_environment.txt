@@ -1,0 +1,114 @@
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           48 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  4
+On-line CPU(s) list:                     0-3
+Vendor ID:                               AuthenticAMD
+Model name:                              AMD EPYC 7763 64-Core Processor
+CPU family:                              25
+Model:                                   1
+Thread(s) per core:                      2
+Core(s) per socket:                      2
+Socket(s):                               1
+Stepping:                                1
+BogoMIPS:                                4890.85
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl tsc_reliable nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves user_shstk clzero xsaveerptr rdpru arat npt nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload umip vaes vpclmulqdq rdpid fsrm
+Virtualization:                          AMD-V
+Hypervisor vendor:                       Microsoft
+Virtualization type:                     full
+L1d cache:                               64 KiB (2 instances)
+L1i cache:                               64 KiB (2 instances)
+L2 cache:                                1 MiB (2 instances)
+L3 cache:                                32 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0-3
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Vulnerable: Safe RET, no microcode
+Vulnerability Spec store bypass:         Vulnerable
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Retpolines; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Vulnerable: Clear CPU buffers attempted, no microcode
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
+[
+    {
+        "Id": "sha256:5d15184b5c8067600e3ec7c78f9c7b9cab7fc767c605857d81745f8a26e74abd",
+        "RepoTags": [
+            "regevsch/gamma_smc:v0.2"
+        ],
+        "RepoDigests": [
+            "regevsch/gamma_smc@sha256:739f5ce1b06a4de75da1b9865747cc0d6375d9443390ca969b2e4320a4714274"
+        ],
+        "Parent": "",
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2024-01-10T13:17:33.207822355Z",
+        "DockerVersion": "",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "CPATH=/zstd-1.5.4/lib:/htslib-1.17",
+                "LIBRARY_PATH=/zstd-1.5.4/lib:/usr/local/lib",
+                "LD_LIBRARY_PATH=/zstd-1.5.4/lib:/usr/local/lib"
+            ],
+            "Cmd": null,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "",
+            "Entrypoint": [
+                "gamma_smc"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.version": "22.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 1645356088,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/705aa02bcd4ef2c3eeb240fa90e542a33b4a2e4cce3e31bb459eeae639ce5898/diff:/var/lib/docker/overlay2/229e0fe2a4ec2ee99e9dfe6d182c573c38275baba0ff0fc3cefca79ce02e0536/diff:/var/lib/docker/overlay2/354aa057e2c9a1bf3002a834dba7d5375bc0267280e0890dc00cbc9d2be889ef/diff:/var/lib/docker/overlay2/16def811e6c538ef46e934fb045b975df7a193414f5cc9e60127e59a764e1791/diff:/var/lib/docker/overlay2/a6f364dcf5937023313c55d6c31a89d078bef3c3c6dbf4ebd1bf29d7a0d1f624/diff:/var/lib/docker/overlay2/c4b62281cd0ff90981d300c4cae39d2818e3592bad32278fc836b23c11819bb8/diff",
+                "MergedDir": "/var/lib/docker/overlay2/67c6dc7c26bd769957b70b5b8b29e4c980684c81995b6f1574ecf5720afcfe5d/merged",
+                "UpperDir": "/var/lib/docker/overlay2/67c6dc7c26bd769957b70b5b8b29e4c980684c81995b6f1574ecf5720afcfe5d/diff",
+                "WorkDir": "/var/lib/docker/overlay2/67c6dc7c26bd769957b70b5b8b29e4c980684c81995b6f1574ecf5720afcfe5d/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:256d88da41857db513b95b50ba9a9b28491b58c954e25477d5dad8abb465430b",
+                "sha256:c3342995036c31a565fa44325b577655b1d67579ed832f3b87806a1871bff38f",
+                "sha256:ffd1fb68bf5d6c9644b132c78eb210d138c0ea2a206cd72e37204dc26928f2c5",
+                "sha256:1b571e7aa55653b36b5a55913f4f56014840607e3bfa0802715349c860d7e9ef",
+                "sha256:587b687a0433d7567d3167d50b7a2d8a1d85051e6645d7482639a6bae441c43c",
+                "sha256:2ab58baa15105f646e95e135f39a67e59eb372b9346b1b4759250c272acfafea",
+                "sha256:e569fb3d9555f66ad1693ea78ee55a7114aa9d27dd5ca96feee703ed6c2e9edd"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]

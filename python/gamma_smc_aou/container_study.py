@@ -7,6 +7,9 @@ from time import perf_counter
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
 from .selection import run_slim_recent_sweep, within_individual_tmrca_grid
@@ -17,6 +20,110 @@ from .spatial_scan import (
     significant_regions,
 )
 from .tree_sequence import tree_sequence_to_vcf
+
+
+def scan_density_calibration(
+    scan: pd.DataFrame,
+    neutral: pd.DataFrame,
+    *,
+    center: int,
+    local_half_width: int,
+    output_dir: Path,
+) -> dict:
+    """Calibrate the number of pointwise-positive windows against null scans."""
+    positions = scan["position_0based"].to_numpy(dtype=float)
+    pivot = neutral[neutral["position_0based"].isin(positions)].pivot(
+        index="replicate",
+        columns="position_0based",
+        values="mean_p_tmrca_lt_threshold",
+    ).reindex(columns=positions)
+    if pivot.isna().any().any():
+        raise ValueError("scan-density calibration requires a complete null grid")
+    n_null = len(pivot)
+    # Leave-one-out upper-tail p-values. With minimum ranks, ties are conservative.
+    ranks = pivot.rank(axis=0, method="min").to_numpy(dtype=float)
+    null_pvalues = (1 + n_null - ranks) / n_null
+    local = np.abs(positions - center) <= local_half_width
+    null_global_counts = np.count_nonzero(null_pvalues < 0.05, axis=1)
+    null_local_counts = np.count_nonzero(null_pvalues[:, local] < 0.05, axis=1)
+    observed_global = int(np.count_nonzero(scan["p_upper"].to_numpy() < 0.05))
+    observed_local = int(
+        np.count_nonzero(scan.loc[local, "p_upper"].to_numpy() < 0.05)
+    )
+    global_p = float(
+        (1 + np.count_nonzero(null_global_counts >= observed_global))
+        / (1 + n_null)
+    )
+    local_p = float(
+        (1 + np.count_nonzero(null_local_counts >= observed_local))
+        / (1 + n_null)
+    )
+    table = pd.DataFrame({
+        "replicate": pivot.index.to_numpy(dtype=int),
+        "global_n_pointwise_p_lt_0_05": null_global_counts,
+        "local_n_pointwise_p_lt_0_05": null_local_counts,
+    })
+    table.to_csv(
+        output_dir / "neutral_leave_one_out_scan_density.tsv", sep="\t", index=False
+    )
+    fig, axes = plt.subplots(1, 2, figsize=(18, 7), constrained_layout=True)
+    panels = [
+        (axes[0], null_global_counts, observed_global, global_p, "Full 10 Mb region"),
+        (
+            axes[1],
+            null_local_counts,
+            observed_local,
+            local_p,
+            f"Selected-site +/-{local_half_width / 1e3:g} kb",
+        ),
+    ]
+    for axis, null_counts, observed_count, pvalue, title in panels:
+        axis.hist(null_counts, bins=18, color="0.55", edgecolor="white")
+        axis.axvline(
+            observed_count,
+            color="#7c3aed",
+            lw=2.6,
+            label=f"selected pseudo-data: {observed_count:,} windows",
+        )
+        axis.set_title(title, fontsize=23)
+        axis.set_xlabel("Windows with pointwise p<0.05", fontsize=20)
+        axis.set_ylabel("Neutral leave-one-out scans", fontsize=20)
+        axis.tick_params(axis="both", labelsize=17)
+        axis.legend(fontsize=16)
+        axis.text(
+            0.97,
+            0.78,
+            f"regional-density p={pvalue:.4f}\n"
+            f"null median={np.median(null_counts):,.0f}",
+            transform=axis.transAxes,
+            ha="right",
+            va="top",
+            fontsize=18,
+        )
+        axis.grid(axis="y", alpha=0.16)
+    fig.suptitle(
+        "Simulation-calibrated density of recent-coalescence windows",
+        fontsize=25,
+    )
+    fig.savefig(output_dir / "decoded_scan_density_calibration.png", dpi=190)
+    plt.close(fig)
+    return {
+        "global": {
+            "n_windows": int(len(positions)),
+            "selected_positive_windows": observed_global,
+            "null_mean_positive_windows": float(null_global_counts.mean()),
+            "null_median_positive_windows": float(np.median(null_global_counts)),
+            "monte_carlo_p_upper": global_p,
+        },
+        "local": {
+            "half_width_bp": int(local_half_width),
+            "n_windows": int(np.count_nonzero(local)),
+            "selected_positive_windows": observed_local,
+            "null_mean_positive_windows": float(null_local_counts.mean()),
+            "null_median_positive_windows": float(np.median(null_local_counts)),
+            "monte_carlo_p_upper": local_p,
+        },
+    }
 
 
 def _load_design(source_dir: Path) -> dict:
@@ -237,6 +344,13 @@ def run_container_stride_study(
         output_path=output_dir / "selected_decoded_vs_neutral_pvalues.png",
         pair_count=design["sample_diploids"],
     )
+    density_calibration = scan_density_calibration(
+        scan,
+        neutral,
+        center=center,
+        local_half_width=500_000,
+        output_dir=output_dir,
+    )
     center_row = scan.iloc[
         np.argmin(np.abs(scan["position_0based"].to_numpy(dtype=float) - center))
     ]
@@ -254,6 +368,9 @@ def run_container_stride_study(
         "within_individual_pairs": design["sample_diploids"],
         "neutral_replicates": int(neutral_replicates),
         "neutral_workers": int(min(workers, neutral_replicates)),
+        "observed_output_positions": int(len(observed)),
+        "calibrated_complete_positions": int(len(scan)),
+        "dropped_incomplete_null_positions": int(len(observed) - len(scan)),
         "scaled_mutation_rate": float(theta),
         "recombination_to_mutation_ratio": float(rho_over_theta),
         "threshold_years": float(threshold_years),
@@ -272,6 +389,7 @@ def run_container_stride_study(
         "n_pointwise_p_lt_0_05_windows": int(np.count_nonzero(scan["p_upper"] < 0.05)),
         "n_significant_regions": int(len(regions)),
         "significant_regions": regions.to_dict("records"),
+        "scan_density_calibration": density_calibration,
         "multiple_testing_note": "regions use raw pointwise p<0.05; BH q-values are in the calibration TSV",
         "elapsed_seconds": float(perf_counter() - started),
     }
@@ -282,4 +400,134 @@ def run_container_stride_study(
     if not keep_vcfs:
         selected_vcf.unlink(missing_ok=True)
         selected_tree_path.unlink(missing_ok=True)
+    return result
+
+
+def finalize_container_stride_study(
+    source_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    stride: int = 1_000,
+    workflow_elapsed_seconds: float | None = None,
+) -> dict:
+    """Finalize plots and p-values from already decoded selected/null profiles."""
+    source_dir = Path(source_dir).resolve()
+    output_dir = Path(output_dir).resolve()
+    design = _load_design(source_dir)
+    center = design["sequence_length"] // 2
+    threshold_years = design["variant_age"] * design["generation_time"]
+    observed = pd.read_csv(
+        output_dir / "selected_decoded_recent_probability_profile.tsv", sep="\t"
+    )
+    neutral = pd.read_csv(
+        output_dir / "neutral_decoded_recent_probability_profiles.tsv.gz", sep="\t"
+    )
+    comparison = pd.read_csv(
+        output_dir / "selected_decoded_vs_truth.tsv.gz", sep="\t"
+    )
+    scan = calibrate_spatial_windows(observed, neutral)
+    regions = significant_regions(
+        scan,
+        sequence_length=design["sequence_length"],
+        window_size=stride,
+    )
+    scan.to_csv(
+        output_dir / "decoded_spatial_pointwise_calibration.tsv",
+        sep="\t",
+        index=False,
+    )
+    regions.to_csv(
+        output_dir / "decoded_spatial_significant_regions.tsv",
+        sep="\t",
+        index=False,
+    )
+    _plot_observed_profile(
+        scan,
+        center=center,
+        sequence_length=design["sequence_length"],
+        zoom_half_width=500_000,
+        threshold_years=threshold_years,
+        window_size=stride,
+        output_path=output_dir / "selected_decoded_recent_probability_spatial.png",
+        pair_count=design["sample_diploids"],
+    )
+    _plot_null_spatial_calibration(
+        scan,
+        regions,
+        center=center,
+        sequence_length=design["sequence_length"],
+        zoom_half_width=500_000,
+        threshold_years=threshold_years,
+        window_size=stride,
+        output_path=output_dir / "selected_decoded_vs_neutral_pvalues.png",
+        pair_count=design["sample_diploids"],
+    )
+    density_calibration = scan_density_calibration(
+        scan,
+        neutral,
+        center=center,
+        local_half_width=500_000,
+        output_dir=output_dir,
+    )
+    center_row = scan.iloc[
+        np.argmin(np.abs(scan["position_0based"].to_numpy(dtype=float) - center))
+    ]
+    error = (
+        comparison["mean_p_tmrca_lt_threshold"]
+        - comparison["truth_fraction_recent"]
+    )
+    selected_run_path = output_dir / "work" / "selected.tsv.run.json"
+    selected_run = {}
+    if selected_run_path.exists():
+        with selected_run_path.open(encoding="utf-8") as handle:
+            selected_run = json.load(handle)
+    result = {
+        "data_interpretation": "retained selected simulation treated as pseudo-empirical data",
+        "recovered_from_complete_decoded_profiles": True,
+        "container_image": selected_run.get("image", DEFAULT_IMAGE),
+        "container_runtime": selected_run.get("runtime"),
+        "stride_bp": int(stride),
+        "sequence_length": design["sequence_length"],
+        "sample_diploids": design["sample_diploids"],
+        "within_individual_pairs": design["sample_diploids"],
+        "neutral_replicates": int(neutral["replicate"].nunique()),
+        "observed_output_positions": int(len(observed)),
+        "calibrated_complete_positions": int(len(scan)),
+        "dropped_incomplete_null_positions": int(len(observed) - len(scan)),
+        "scaled_mutation_rate": float(
+            4 * design["ancestral_size"] * design["mutation_rate"]
+        ),
+        "recombination_to_mutation_ratio": float(
+            design["recombination_rate"] / design["mutation_rate"]
+        ),
+        "threshold_years": float(threshold_years),
+        "selected_decode_seconds": selected_run.get("decode_seconds"),
+        "selected_profile_truth_bias": float(np.mean(error)),
+        "selected_profile_truth_mae": float(np.mean(np.abs(error))),
+        "selected_profile_truth_rmse": float(np.sqrt(np.mean(error**2))),
+        "selected_profile_truth_correlation": float(
+            np.corrcoef(
+                comparison["mean_p_tmrca_lt_threshold"],
+                comparison["truth_fraction_recent"],
+            )[0, 1]
+        ),
+        "center_position_0based": int(center_row["position_0based"]),
+        "center_observed_mean_p_recent": float(center_row["observed_fraction_recent"]),
+        "center_null_mean_p_recent": float(center_row["neutral_mean_fraction_recent"]),
+        "center_null_ci95_lower": float(center_row["neutral_ci95_lower"]),
+        "center_null_ci95_upper": float(center_row["neutral_ci95_upper"]),
+        "center_neutral_exceedances": int(center_row["neutral_exceedances"]),
+        "center_monte_carlo_p_upper": float(center_row["p_upper"]),
+        "n_pointwise_p_lt_0_05_windows": int(np.count_nonzero(scan["p_upper"] < 0.05)),
+        "n_bh_q_lt_0_05_windows": int(np.count_nonzero(scan["q_bh"] < 0.05)),
+        "n_significant_regions": int(len(regions)),
+        "significant_regions": regions.to_dict("records"),
+        "scan_density_calibration": density_calibration,
+        "multiple_testing_note": "regions use raw pointwise p<0.05; BH q-values are in the calibration TSV",
+        "workflow_elapsed_seconds_to_postprocessing_error": workflow_elapsed_seconds,
+    }
+    with (output_dir / "decoded_study_metrics.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
+        json.dump(result, handle, indent=2)
     return result

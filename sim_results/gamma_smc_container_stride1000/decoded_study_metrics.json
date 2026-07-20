@@ -1,0 +1,563 @@
+{
+  "data_interpretation": "retained selected simulation treated as pseudo-empirical data",
+  "recovered_from_complete_decoded_profiles": true,
+  "container_image": "docker.io/regevsch/gamma_smc:v0.2",
+  "container_runtime": "docker",
+  "stride_bp": 1000,
+  "sequence_length": 10000000,
+  "sample_diploids": 2000,
+  "within_individual_pairs": 2000,
+  "neutral_replicates": 100,
+  "observed_output_positions": 10000,
+  "calibrated_complete_positions": 9999,
+  "dropped_incomplete_null_positions": 1,
+  "scaled_mutation_rate": 0.0005,
+  "recombination_to_mutation_ratio": 0.8,
+  "threshold_years": 4500.0,
+  "selected_decode_seconds": 15.608722742000026,
+  "selected_profile_truth_bias": 0.0172975433155574,
+  "selected_profile_truth_mae": 0.01729966243192631,
+  "selected_profile_truth_rmse": 0.018056313568131522,
+  "selected_profile_truth_correlation": 0.3580375988222144,
+  "center_position_0based": 5000000,
+  "center_observed_mean_p_recent": 0.0305023913780933,
+  "center_null_mean_p_recent": 0.023461553284794868,
+  "center_null_ci95_lower": 0.015308988211831952,
+  "center_null_ci95_upper": 0.03704740904365835,
+  "center_neutral_exceedances": 13,
+  "center_monte_carlo_p_upper": 0.13861386138613863,
+  "n_pointwise_p_lt_0_05_windows": 872,
+  "n_bh_q_lt_0_05_windows": 0,
+  "n_significant_regions": 51,
+  "significant_regions": [
+    {
+      "region_id": 1,
+      "start_0based": 649500,
+      "end_0based_exclusive": 663500,
+      "start_mb": 0.6495,
+      "end_mb": 0.6635,
+      "n_windows": 14,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.040835668624245
+    },
+    {
+      "region_id": 2,
+      "start_0based": 743500,
+      "end_0based_exclusive": 756500,
+      "start_mb": 0.7435,
+      "end_mb": 0.7565,
+      "n_windows": 13,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0346795770286832
+    },
+    {
+      "region_id": 3,
+      "start_0based": 1270500,
+      "end_0based_exclusive": 1280500,
+      "start_mb": 1.2705,
+      "end_mb": 1.2805,
+      "n_windows": 10,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0326335515579878
+    },
+    {
+      "region_id": 4,
+      "start_0based": 1440500,
+      "end_0based_exclusive": 1456500,
+      "start_mb": 1.4405,
+      "end_mb": 1.4565,
+      "n_windows": 16,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0358993175801557
+    },
+    {
+      "region_id": 5,
+      "start_0based": 1734500,
+      "end_0based_exclusive": 1736500,
+      "start_mb": 1.7345,
+      "end_mb": 1.7365,
+      "n_windows": 2,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0317988716579447
+    },
+    {
+      "region_id": 6,
+      "start_0based": 1744500,
+      "end_0based_exclusive": 1745500,
+      "start_mb": 1.7445,
+      "end_mb": 1.7455,
+      "n_windows": 1,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.03324060044625
+    },
+    {
+      "region_id": 7,
+      "start_0based": 1746500,
+      "end_0based_exclusive": 1762500,
+      "start_mb": 1.7465,
+      "end_mb": 1.7625,
+      "n_windows": 16,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0391498503735443
+    },
+    {
+      "region_id": 8,
+      "start_0based": 2688500,
+      "end_0based_exclusive": 2712500,
+      "start_mb": 2.6885,
+      "end_mb": 2.7125,
+      "n_windows": 24,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0368273128666922
+    },
+    {
+      "region_id": 9,
+      "start_0based": 3098500,
+      "end_0based_exclusive": 3107500,
+      "start_mb": 3.0985,
+      "end_mb": 3.1075,
+      "n_windows": 9,
+      "minimum_p": 0.039603960396039604,
+      "maximum_observed_fraction_recent": 0.0336126350000186
+    },
+    {
+      "region_id": 10,
+      "start_0based": 3150500,
+      "end_0based_exclusive": 3156500,
+      "start_mb": 3.1505,
+      "end_mb": 3.1565,
+      "n_windows": 6,
+      "minimum_p": 0.039603960396039604,
+      "maximum_observed_fraction_recent": 0.0343701848363811
+    },
+    {
+      "region_id": 11,
+      "start_0based": 3403500,
+      "end_0based_exclusive": 3430500,
+      "start_mb": 3.4035,
+      "end_mb": 3.4305,
+      "n_windows": 27,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0346022142452384
+    },
+    {
+      "region_id": 12,
+      "start_0based": 3433500,
+      "end_0based_exclusive": 3434500,
+      "start_mb": 3.4335,
+      "end_mb": 3.4345,
+      "n_windows": 1,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0312723527056118
+    },
+    {
+      "region_id": 13,
+      "start_0based": 3435500,
+      "end_0based_exclusive": 3454500,
+      "start_mb": 3.4355,
+      "end_mb": 3.4545,
+      "n_windows": 19,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0351218734024335
+    },
+    {
+      "region_id": 14,
+      "start_0based": 3517500,
+      "end_0based_exclusive": 3533500,
+      "start_mb": 3.5175,
+      "end_mb": 3.5335,
+      "n_windows": 16,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.034977006422943
+    },
+    {
+      "region_id": 15,
+      "start_0based": 3563500,
+      "end_0based_exclusive": 3574500,
+      "start_mb": 3.5635,
+      "end_mb": 3.5745,
+      "n_windows": 11,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0358460511399393
+    },
+    {
+      "region_id": 16,
+      "start_0based": 3580500,
+      "end_0based_exclusive": 3605500,
+      "start_mb": 3.5805,
+      "end_mb": 3.6055,
+      "n_windows": 25,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.038123273272555
+    },
+    {
+      "region_id": 17,
+      "start_0based": 4216500,
+      "end_0based_exclusive": 4229500,
+      "start_mb": 4.2165,
+      "end_mb": 4.2295,
+      "n_windows": 13,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0349079372628875
+    },
+    {
+      "region_id": 18,
+      "start_0based": 4234500,
+      "end_0based_exclusive": 4248500,
+      "start_mb": 4.2345,
+      "end_mb": 4.2485,
+      "n_windows": 14,
+      "minimum_p": 0.039603960396039604,
+      "maximum_observed_fraction_recent": 0.0339898419003765
+    },
+    {
+      "region_id": 19,
+      "start_0based": 4298500,
+      "end_0based_exclusive": 4302500,
+      "start_mb": 4.2985,
+      "end_mb": 4.3025,
+      "n_windows": 4,
+      "minimum_p": 0.039603960396039604,
+      "maximum_observed_fraction_recent": 0.0294246117133035
+    },
+    {
+      "region_id": 20,
+      "start_0based": 4316500,
+      "end_0based_exclusive": 4338500,
+      "start_mb": 4.3165,
+      "end_mb": 4.3385,
+      "n_windows": 22,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0340015195513894
+    },
+    {
+      "region_id": 21,
+      "start_0based": 4352500,
+      "end_0based_exclusive": 4387500,
+      "start_mb": 4.3525,
+      "end_mb": 4.3875,
+      "n_windows": 35,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0362328344789222
+    },
+    {
+      "region_id": 22,
+      "start_0based": 4434500,
+      "end_0based_exclusive": 4441500,
+      "start_mb": 4.4345,
+      "end_mb": 4.4415,
+      "n_windows": 7,
+      "minimum_p": 0.039603960396039604,
+      "maximum_observed_fraction_recent": 0.0325110957631975
+    },
+    {
+      "region_id": 23,
+      "start_0based": 4510500,
+      "end_0based_exclusive": 4516500,
+      "start_mb": 4.5105,
+      "end_mb": 4.5165,
+      "n_windows": 6,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0327829815470996
+    },
+    {
+      "region_id": 24,
+      "start_0based": 4570500,
+      "end_0based_exclusive": 4586500,
+      "start_mb": 4.5705,
+      "end_mb": 4.5865,
+      "n_windows": 16,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0366929992399537
+    },
+    {
+      "region_id": 25,
+      "start_0based": 4589500,
+      "end_0based_exclusive": 4592500,
+      "start_mb": 4.5895,
+      "end_mb": 4.5925,
+      "n_windows": 3,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0326962807573897
+    },
+    {
+      "region_id": 26,
+      "start_0based": 4593500,
+      "end_0based_exclusive": 4637500,
+      "start_mb": 4.5935,
+      "end_mb": 4.6375,
+      "n_windows": 44,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.037663282444415
+    },
+    {
+      "region_id": 27,
+      "start_0based": 4642500,
+      "end_0based_exclusive": 4661500,
+      "start_mb": 4.6425,
+      "end_mb": 4.6615,
+      "n_windows": 19,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0352188264359195
+    },
+    {
+      "region_id": 28,
+      "start_0based": 4678500,
+      "end_0based_exclusive": 4688500,
+      "start_mb": 4.6785,
+      "end_mb": 4.6885,
+      "n_windows": 10,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0342564896554959
+    },
+    {
+      "region_id": 29,
+      "start_0based": 4694500,
+      "end_0based_exclusive": 4781500,
+      "start_mb": 4.6945,
+      "end_mb": 4.7815,
+      "n_windows": 87,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0518680036381502
+    },
+    {
+      "region_id": 30,
+      "start_0based": 4813500,
+      "end_0based_exclusive": 4840500,
+      "start_mb": 4.8135,
+      "end_mb": 4.8405,
+      "n_windows": 27,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0424016369254831
+    },
+    {
+      "region_id": 31,
+      "start_0based": 4848500,
+      "end_0based_exclusive": 4868500,
+      "start_mb": 4.8485,
+      "end_mb": 4.8685,
+      "n_windows": 20,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0418490592720553
+    },
+    {
+      "region_id": 32,
+      "start_0based": 4948500,
+      "end_0based_exclusive": 4978500,
+      "start_mb": 4.9485,
+      "end_mb": 4.9785,
+      "n_windows": 30,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0396443292811062
+    },
+    {
+      "region_id": 33,
+      "start_0based": 5087500,
+      "end_0based_exclusive": 5090500,
+      "start_mb": 5.0875,
+      "end_mb": 5.0905,
+      "n_windows": 3,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0336060838979179
+    },
+    {
+      "region_id": 34,
+      "start_0based": 5205500,
+      "end_0based_exclusive": 5206500,
+      "start_mb": 5.2055,
+      "end_mb": 5.2065,
+      "n_windows": 1,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0313786430370613
+    },
+    {
+      "region_id": 35,
+      "start_0based": 5227500,
+      "end_0based_exclusive": 5237500,
+      "start_mb": 5.2275,
+      "end_mb": 5.2375,
+      "n_windows": 10,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0323780094732115
+    },
+    {
+      "region_id": 36,
+      "start_0based": 5352500,
+      "end_0based_exclusive": 5360500,
+      "start_mb": 5.3525,
+      "end_mb": 5.3605,
+      "n_windows": 8,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0329201344537639
+    },
+    {
+      "region_id": 37,
+      "start_0based": 5366500,
+      "end_0based_exclusive": 5390500,
+      "start_mb": 5.3665,
+      "end_mb": 5.3905,
+      "n_windows": 24,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0322794302100612
+    },
+    {
+      "region_id": 38,
+      "start_0based": 5455500,
+      "end_0based_exclusive": 5456500,
+      "start_mb": 5.4555,
+      "end_mb": 5.4565,
+      "n_windows": 1,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.02903446584028
+    },
+    {
+      "region_id": 39,
+      "start_0based": 5627500,
+      "end_0based_exclusive": 5681500,
+      "start_mb": 5.6275,
+      "end_mb": 5.6815,
+      "n_windows": 54,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0521654579473361
+    },
+    {
+      "region_id": 40,
+      "start_0based": 5805500,
+      "end_0based_exclusive": 5864500,
+      "start_mb": 5.8055,
+      "end_mb": 5.8645,
+      "n_windows": 59,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0428664345237269
+    },
+    {
+      "region_id": 41,
+      "start_0based": 6192500,
+      "end_0based_exclusive": 6195500,
+      "start_mb": 6.1925,
+      "end_mb": 6.1955,
+      "n_windows": 3,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0323174256203629
+    },
+    {
+      "region_id": 42,
+      "start_0based": 6378500,
+      "end_0based_exclusive": 6388500,
+      "start_mb": 6.3785,
+      "end_mb": 6.3885,
+      "n_windows": 10,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0356873742960071
+    },
+    {
+      "region_id": 43,
+      "start_0based": 6403500,
+      "end_0based_exclusive": 6412500,
+      "start_mb": 6.4035,
+      "end_mb": 6.4125,
+      "n_windows": 9,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0387394134233634
+    },
+    {
+      "region_id": 44,
+      "start_0based": 6770500,
+      "end_0based_exclusive": 6774500,
+      "start_mb": 6.7705,
+      "end_mb": 6.7745,
+      "n_windows": 4,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.0339560336815932
+    },
+    {
+      "region_id": 45,
+      "start_0based": 8178500,
+      "end_0based_exclusive": 8219500,
+      "start_mb": 8.1785,
+      "end_mb": 8.2195,
+      "n_windows": 41,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0439765905410714
+    },
+    {
+      "region_id": 46,
+      "start_0based": 8945500,
+      "end_0based_exclusive": 8962500,
+      "start_mb": 8.9455,
+      "end_mb": 8.9625,
+      "n_windows": 17,
+      "minimum_p": 0.019801980198019802,
+      "maximum_observed_fraction_recent": 0.0472711629057471
+    },
+    {
+      "region_id": 47,
+      "start_0based": 9005500,
+      "end_0based_exclusive": 9012500,
+      "start_mb": 9.0055,
+      "end_mb": 9.0125,
+      "n_windows": 7,
+      "minimum_p": 0.039603960396039604,
+      "maximum_observed_fraction_recent": 0.0360902531550369
+    },
+    {
+      "region_id": 48,
+      "start_0based": 9340500,
+      "end_0based_exclusive": 9351500,
+      "start_mb": 9.3405,
+      "end_mb": 9.3515,
+      "n_windows": 11,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.0330080981731534
+    },
+    {
+      "region_id": 49,
+      "start_0based": 9362500,
+      "end_0based_exclusive": 9366500,
+      "start_mb": 9.3625,
+      "end_mb": 9.3665,
+      "n_windows": 4,
+      "minimum_p": 0.04950495049504951,
+      "maximum_observed_fraction_recent": 0.029783460058196
+    },
+    {
+      "region_id": 50,
+      "start_0based": 9403500,
+      "end_0based_exclusive": 9415500,
+      "start_mb": 9.4035,
+      "end_mb": 9.4155,
+      "n_windows": 12,
+      "minimum_p": 0.0297029702970297,
+      "maximum_observed_fraction_recent": 0.033483796302548
+    },
+    {
+      "region_id": 51,
+      "start_0based": 9597500,
+      "end_0based_exclusive": 9624500,
+      "start_mb": 9.5975,
+      "end_mb": 9.6245,
+      "n_windows": 27,
+      "minimum_p": 0.009900990099009901,
+      "maximum_observed_fraction_recent": 0.0511475245376207
+    }
+  ],
+  "scan_density_calibration": {
+    "global": {
+      "n_windows": 9999,
+      "selected_positive_windows": 872,
+      "null_mean_positive_windows": 399.96,
+      "null_median_positive_windows": 369.0,
+      "monte_carlo_p_upper": 0.0297029702970297
+    },
+    "local": {
+      "half_width_bp": 500000,
+      "n_windows": 1001,
+      "selected_positive_windows": 309,
+      "null_mean_positive_windows": 40.04,
+      "null_median_positive_windows": 29.0,
+      "monte_carlo_p_upper": 0.009900990099009901
+    }
+  },
+  "multiple_testing_note": "regions use raw pointwise p<0.05; BH q-values are in the calibration TSV",
+  "workflow_elapsed_seconds_to_postprocessing_error": 3290.3
+}

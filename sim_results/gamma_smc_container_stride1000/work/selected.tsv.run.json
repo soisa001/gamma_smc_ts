@@ -1,0 +1,32 @@
+{
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "-v",
+    "/home/runner/work/gamma_smc_ts/gamma_smc_ts/sim_results/gamma_smc_container_stride1000/work:/work",
+    "docker.io/regevsch/gamma_smc:v0.2",
+    "--input",
+    "/work/selected.vcf.gz",
+    "--output",
+    "/work/selected.posteriors.zst",
+    "--only_within",
+    "--scaled_mutation_rate",
+    "0.0005",
+    "--recombination_to_mutation_ratio",
+    "0.8",
+    "--output_at_hets=false",
+    "--output_at_stride",
+    "1000"
+  ],
+  "runtime": "docker",
+  "image": "docker.io/regevsch/gamma_smc:v0.2",
+  "stride_bp": 1000,
+  "n_output_positions": 10000,
+  "n_pairs": 2000,
+  "decode_seconds": 15.608722742000026,
+  "summary_seconds": 1.799010586999998,
+  "posterior_bytes": 125467705,
+  "stdout_summary": "Gamma-SMC\n--- Command line:\ngamma_smc --input /work/selected.vcf.gz --output /work/selected.posteriors.zst --only_within --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 --output_at_hets=false --output_at_stride 1000\n--- Reading input file...\n  * Read 2000 samples.\n  * Read 52127 segregating sites.\n                                             ..done (4.13 secs).\n--- Reading mask(s) file...\n                                             ..done (0.00 secs).\n--- Creating segments...\n  * Created 62080 segments, with 10000 output positions.\n                                             ..done (0.33 secs).\n--- Calculating rates...\n  * Scaled mutation rate: 0.000500\n  * Scaled recombination rate: 0.000400\n                                             ..done (0.00 secs).\n  * Applying to 2000 haplotype pairs\n                                             ..done (0.00 secs).\n--- Building flow field cache...\n                                             ..done (6.90 secs).\n--- Running...\n  * Emissions preparation time:\t1.117 secs\n  * Forward pass time:\t\t1.182 secs\n  * Backward pass time:\t\t1.176 secs\n  * Output time:\t\t0.305 secs\n                                             ..done (3.80 secs).\n--- Summary:\n  * Time per Gbp per pair\t0.174 secs\n  * Overall time:\t\t15.191 secs\n  * Peak memory:\t\t0.791 GB\n                                             ..done (0.00 secs).",
+  "stderr_summary": ""
+}

@@ -14,7 +14,7 @@ import pandas as pd
 from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
 from .carrier_profiles import plot_retained_carrier_tmrca_profiles
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
-from .container_study import run_container_stride_study
+from .container_study import finalize_container_stride_study, run_container_stride_study
 from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
 from .plotting import plot_scan, plot_truth_tmrca_relationship
@@ -175,6 +175,15 @@ def command_container_study(args):
         image=args.image,
         keep_vcfs=args.keep_vcfs,
         workers=args.workers,
+    )
+
+
+def command_finalize_container_study(args):
+    finalize_container_stride_study(
+        args.source_dir,
+        args.output_dir,
+        stride=args.output_at_stride,
+        workflow_elapsed_seconds=args.workflow_elapsed_seconds,
     )
 
 
@@ -398,6 +407,16 @@ def parser() -> argparse.ArgumentParser:
     study.add_argument("--keep-vcfs", action="store_true")
     study.add_argument("--workers", type=int, default=1)
     study.set_defaults(func=command_container_study)
+
+    finalize = commands.add_parser(
+        "finalize-container-study",
+        help="calculate plots and p-values from existing selected/null decoded profiles",
+    )
+    finalize.add_argument("--source-dir", required=True)
+    finalize.add_argument("--output-dir", required=True)
+    finalize.add_argument("--output-at-stride", type=int, default=1000)
+    finalize.add_argument("--workflow-elapsed-seconds", type=float)
+    finalize.set_defaults(func=command_finalize_container_study)
 
     evaluate = commands.add_parser("evaluate-decoder", help="compare decoded simulations with tree-sequence truth")
     evaluate.add_argument("--truth-dir", required=True)

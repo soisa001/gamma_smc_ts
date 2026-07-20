@@ -42,7 +42,16 @@ def calibrate_spatial_windows(
     """Calculate pointwise Monte Carlo p-values at matched spatial windows."""
     rows = []
     replicate_count = neutral["replicate"].nunique()
-    for row in observed.sort_values("position_0based").itertuples(index=False):
+    coverage = neutral.groupby("position_0based")["replicate"].nunique()
+    complete_positions = coverage.index[coverage.eq(replicate_count)].to_numpy(
+        dtype=float
+    )
+    matched_observed = observed[
+        observed["position_0based"].isin(complete_positions)
+    ]
+    if matched_observed.empty:
+        raise ValueError("no output position is present in every neutral replicate")
+    for row in matched_observed.sort_values("position_0based").itertuples(index=False):
         values = neutral.loc[
             np.isclose(neutral["position_0based"], row.position_0based),
             "mean_p_tmrca_lt_threshold",
@@ -270,6 +279,22 @@ def _plot_null_spatial_calibration(
         bottom.axvline(center / 1e6, color="#e69f00", ls="--", lw=1.5)
         bottom.set_xlim(left / 1e6, right / 1e6)
         _format_axis(bottom, ylabel="-log10(pointwise p)" if column == 0 else None)
+        if column == 1:
+            center_row = scan.iloc[
+                np.argmin(
+                    np.abs(scan["position_0based"].to_numpy(dtype=float) - center)
+                )
+            ]
+            bottom.text(
+                0.97,
+                0.94,
+                f"selected base: p={center_row['p_upper']:.4f}\n"
+                f"BH q={center_row['q_bh']:.4f}",
+                transform=bottom.transAxes,
+                ha="right",
+                va="top",
+                fontsize=FONTS["annotation"],
+            )
     axes[0, 0].legend(fontsize=FONTS["legend"], loc="best")
     fig.suptitle(
         f"Selected decode versus neutral decoded simulations ({window_size / 1e3:g} kb grid)",

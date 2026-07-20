@@ -71,3 +71,19 @@ def test_spatial_pvalues_and_breakpoints_are_replicate_based(tmp_path):
     )
     assert observed_plot.exists()
     assert null_plot.exists()
+
+
+def test_spatial_calibration_drops_positions_missing_from_any_null():
+    observed = pd.DataFrame({
+        "position_0based": [0.0, 1000.0],
+        "n_pairs": [2, 2],
+        "mean_p_tmrca_lt_threshold": [0.2, 0.3],
+    })
+    neutral = pd.DataFrame({
+        "position_0based": [0.0, 1000.0, 0.0],
+        "n_pairs": [2, 2, 2],
+        "mean_p_tmrca_lt_threshold": [0.1, 0.1, 0.1],
+        "replicate": [0, 0, 1],
+    })
+    scan = calibrate_spatial_windows(observed, neutral)
+    assert scan["position_0based"].tolist() == [0.0]
