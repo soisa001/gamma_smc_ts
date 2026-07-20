@@ -291,6 +291,27 @@ def run_slim_recent_sweep(
         )
     allele_frequency = float(match.group(1))
     focal_allele_outcome = match.group(2)
+    trajectory = [
+        {
+            "tick": int(tick),
+            "generations_ago": int(generations_ago),
+            "population_allele_frequency": float(frequency),
+        }
+        for tick, generations_ago, frequency in re.findall(
+            r"SWEEP_TRAJECTORY tick=(\d+) generations_ago=(\d+) "
+            r"frequency=([0-9.eE+-]+)",
+            completed.stdout,
+        )
+    ]
+    if len(trajectory) != age_generations + 1:
+        raise RuntimeError(
+            f"SLiM logged {len(trajectory)} trajectory points; expected "
+            f"{age_generations + 1}"
+        )
+    if not np.isclose(
+        trajectory[-1]["population_allele_frequency"], allele_frequency
+    ):
+        raise RuntimeError("final trajectory frequency differs from SLiM summary")
     sampled = _sample_diploids(tskit.load(raw_path), sample_diploids, seed + 2)
     focal_carrier_counts = (
         _focal_carrier_counts(sampled, sweep_position, allow_absent=True)
@@ -322,6 +343,7 @@ def run_slim_recent_sweep(
         "sample_diploids": sample_diploids,
         "realized_population_allele_frequency": allele_frequency,
         "focal_allele_outcome": focal_allele_outcome,
+        "allele_frequency_trajectory": trajectory,
         "ancestry_seconds": ancestry_seconds,
         "slim_seconds": slim_seconds,
         "n_sites": sampled.num_sites,

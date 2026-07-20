@@ -36,7 +36,10 @@
     "n_hom_alt_pairs": 21,
     "observed_fraction_recent": 0.0185,
     "neutral_exceedances": 0,
-    "monte_carlo_p_upper": 0.009900990099009901
+    "monte_carlo_p_upper": 0.009900990099009901,
+    "trajectory_file": "selected_allele_frequency_trajectory.tsv",
+    "trajectory_generations_logged": 181,
+    "initial_population_allele_frequency": 5e-05
   },
   "confidence_interval": "two-sided 95% log-Wald interval for the positive mean across diploid pairs, using a Student-t critical value",
   "workers_requested": 20,

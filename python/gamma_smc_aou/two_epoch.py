@@ -25,6 +25,15 @@ from .carrier_profiles import (
 from .selection import run_slim_recent_sweep, within_individual_tmrca_details
 
 
+LARGE_FONTS = {
+    "title": 24,
+    "axis": 20,
+    "tick": 17,
+    "legend": 16,
+    "annotation": 18,
+}
+
+
 def two_epoch_recent_probability(
     *,
     ancestral_population_size: int,
@@ -60,7 +69,7 @@ def _plot_demography_and_variant(
         ancestral_population_size,
         ancestral_population_size,
     ])
-    fig, axis = plt.subplots(figsize=(9, 4.8), constrained_layout=True)
+    fig, axis = plt.subplots(figsize=(14, 7.5), constrained_layout=True)
     axis.plot(x, y, color="#0072b2", lw=2.1, label="population size")
     axis.fill_between(x, y, step="pre", alpha=0.12, color="#56b4e9")
     axis.axvline(
@@ -92,6 +101,7 @@ def _plot_demography_and_variant(
         f"present epoch: N={present_population_size:,}",
         ha="center",
         va="bottom",
+        fontsize=LARGE_FONTS["annotation"],
     )
     axis.text(
         (size_change_generations_ago + oldest) / 2,
@@ -99,6 +109,7 @@ def _plot_demography_and_variant(
         f"ancestral epoch: N={ancestral_population_size:,}",
         ha="center",
         va="top",
+        fontsize=LARGE_FONTS["annotation"],
     )
     axis.set(
         xlim=(0, oldest),
@@ -107,7 +118,14 @@ def _plot_demography_and_variant(
         ylabel="Population size",
         title=f"Two-epoch recent growth and selected-variant timing (s={selection_coefficient:g})",
     )
-    axis.legend(loc="lower right", fontsize=9)
+    axis.set_title(
+        f"Two-epoch recent growth and selected-variant timing (s={selection_coefficient:g})",
+        fontsize=LARGE_FONTS["title"],
+    )
+    axis.set_xlabel("Generations before present", fontsize=LARGE_FONTS["axis"])
+    axis.set_ylabel("Population size", fontsize=LARGE_FONTS["axis"])
+    axis.tick_params(axis="both", labelsize=LARGE_FONTS["tick"])
+    axis.legend(loc="lower right", fontsize=LARGE_FONTS["legend"])
     axis.grid(axis="y", alpha=0.18)
     fig.savefig(output_path, dpi=190)
     plt.close(fig)
@@ -126,7 +144,7 @@ def _plot_null_calibration(
     values = neutral["center_fraction_recent"].to_numpy(dtype=float)
     exceedances = int(np.count_nonzero(values >= selected_fraction_recent))
     pvalue = float((1 + exceedances) / (1 + len(values)))
-    fig, axes = plt.subplots(1, 2, figsize=(13, 4.8), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(18, 7), constrained_layout=True)
     axes[0].hist(values, bins=16, color="0.55", edgecolor="white", alpha=0.9)
     axes[0].axvline(
         theoretical_fraction_recent,
@@ -150,7 +168,7 @@ def _plot_null_calibration(
         ylabel="Neutral simulations",
         title=f"Two-epoch neutral null (n={len(neutral)})",
     )
-    axes[0].legend(fontsize=8)
+    axes[0].legend(fontsize=LARGE_FONTS["legend"])
 
     thresholds = np.unique(np.r_[values, selected_fraction_recent])
     counts = np.asarray([np.count_nonzero(values >= value) for value in thresholds])
@@ -169,6 +187,7 @@ def _plot_null_calibration(
         textcoords="offset points",
         ha="right",
         va="bottom",
+        fontsize=LARGE_FONTS["annotation"],
     )
     axes[1].set(
         xlabel=f"Observed P(TMRCA < {threshold_years:g} years)",
@@ -176,9 +195,92 @@ def _plot_null_calibration(
         title="Empirical upper-tail Monte Carlo test",
     )
     axes[1].grid(alpha=0.15)
+    for axis in axes:
+        axis.title.set_fontsize(LARGE_FONTS["title"])
+        axis.xaxis.label.set_fontsize(LARGE_FONTS["axis"])
+        axis.yaxis.label.set_fontsize(LARGE_FONTS["axis"])
+        axis.tick_params(axis="both", labelsize=LARGE_FONTS["tick"])
     fig.savefig(output_path, dpi=190)
     plt.close(fig)
     return exceedances, pvalue
+
+
+def _plot_allele_frequency_trajectory(
+    trajectory: pd.DataFrame,
+    *,
+    population_allele_frequency: float,
+    sample_allele_frequency: float,
+    variant_age_generations: int,
+    size_change_generations_ago: int,
+    generation_time_years: float,
+    selection_coefficient: float,
+    output_path: Path,
+) -> None:
+    """Plot the realized selected-allele frequency from origin to sampling."""
+    ordered = trajectory.sort_values("generations_ago", ascending=False)
+    fig, axis = plt.subplots(figsize=(14, 7.5), constrained_layout=True)
+    axis.plot(
+        ordered["generations_ago"],
+        ordered["population_allele_frequency"],
+        color="#7c3aed",
+        lw=2.8,
+        label="population allele frequency",
+    )
+    axis.axvline(
+        size_change_generations_ago,
+        color="#009e73",
+        ls="--",
+        lw=1.8,
+        label=f"growth: {size_change_generations_ago} generations ago",
+    )
+    axis.scatter(
+        [variant_age_generations, 0],
+        [
+            ordered.iloc[0]["population_allele_frequency"],
+            population_allele_frequency,
+        ],
+        color=["#e69f00", "#7c3aed"],
+        s=90,
+        zorder=3,
+    )
+    axis.annotate(
+        "single-copy origin\n"
+        f"{variant_age_generations * generation_time_years:g} years ago",
+        (
+            variant_age_generations,
+            ordered.iloc[0]["population_allele_frequency"],
+        ),
+        xytext=(18, 20),
+        textcoords="offset points",
+        ha="left",
+        fontsize=LARGE_FONTS["annotation"],
+    )
+    axis.annotate(
+        f"present population AF={population_allele_frequency:.4f}\n"
+        f"sample AF={sample_allele_frequency:.4f}",
+        (0, population_allele_frequency),
+        xytext=(-18, -6),
+        textcoords="offset points",
+        ha="right",
+        va="center",
+        fontsize=LARGE_FONTS["annotation"],
+    )
+    axis.set_xlim(variant_age_generations + 5, -15)
+    axis.set_ylim(0, max(0.12, population_allele_frequency * 1.35))
+    axis.set_title(
+        f"Realized selected-allele trajectory (s={selection_coefficient:g})",
+        fontsize=LARGE_FONTS["title"],
+    )
+    axis.set_xlabel(
+        "Generations before present (time proceeds left to right)",
+        fontsize=LARGE_FONTS["axis"],
+    )
+    axis.set_ylabel("Selected-allele frequency", fontsize=LARGE_FONTS["axis"])
+    axis.tick_params(axis="both", labelsize=LARGE_FONTS["tick"])
+    axis.legend(loc="upper left", fontsize=LARGE_FONTS["legend"])
+    axis.grid(alpha=0.18)
+    fig.savefig(output_path, dpi=190)
+    plt.close(fig)
 
 
 def validate_two_epoch_growth(
@@ -272,7 +374,9 @@ def validate_two_epoch_growth(
         neutral = pd.DataFrame(neutral_rows).sort_values("replicate")
         neutral.to_csv(output_dir / "neutral_statistics.tsv", sep="\t", index=False)
 
-        def simulate_selected(attempt: int) -> tuple[dict, pd.DataFrame | None]:
+        def simulate_selected(
+            attempt: int,
+        ) -> tuple[dict, pd.DataFrame | None, pd.DataFrame]:
             run_seed = seed + 10_000_000 + attempt * 10
             ts, run = run_slim_recent_sweep(
                 temporary_directory / f"selected_attempt_{attempt}.trees",
@@ -342,11 +446,14 @@ def validate_two_epoch_growth(
                 profile["sample_focal_allele_frequency"] = float(
                     run["sample_focal_allele_frequency"]
                 )
-            return row, profile
+            trajectory = pd.DataFrame(run["allele_frequency_trajectory"])
+            trajectory["selected_attempt"] = int(attempt)
+            return row, profile, trajectory
 
         attempts = []
         accepted_row = None
         accepted_profile = None
+        accepted_trajectory = None
         next_attempt = 0
         while accepted_row is None and next_attempt < max_selected_attempts:
             batch = list(
@@ -360,13 +467,18 @@ def validate_two_epoch_growth(
             else:
                 with ThreadPoolExecutor(max_workers=workers) as executor:
                     results = list(executor.map(simulate_selected, batch))
-            for row, profile in results:
+            for row, profile, trajectory in results:
                 attempts.append(row)
                 if accepted_row is None and row["accepted"]:
                     accepted_row = row
                     accepted_profile = profile
+                    accepted_trajectory = trajectory
             next_attempt += len(batch)
-        if accepted_row is None or accepted_profile is None:
+        if (
+            accepted_row is None
+            or accepted_profile is None
+            or accepted_trajectory is None
+        ):
             raise RuntimeError(
                 f"no analyzable retained s={selection_coefficient:g} allele in "
                 f"{max_selected_attempts} attempts"
@@ -384,6 +496,11 @@ def validate_two_epoch_growth(
     )
     accepted_profile.to_csv(
         output_dir / "selected_hom_alt_vs_hom_ref_tmrca_profile.tsv",
+        sep="\t",
+        index=False,
+    )
+    accepted_trajectory.to_csv(
+        output_dir / "selected_allele_frequency_trajectory.tsv",
         sep="\t",
         index=False,
     )
@@ -422,6 +539,18 @@ def validate_two_epoch_growth(
         center=center,
         zoom_half_width=zoom_half_width,
         output_path=output_dir / "selected_hom_alt_vs_hom_ref_tmrca.png",
+    )
+    _plot_allele_frequency_trajectory(
+        accepted_trajectory,
+        population_allele_frequency=float(
+            accepted_row["population_allele_frequency"]
+        ),
+        sample_allele_frequency=float(accepted_row["sample_allele_frequency"]),
+        variant_age_generations=variant_age_generations,
+        size_change_generations_ago=size_change_generations_ago,
+        generation_time_years=generation_time_years,
+        selection_coefficient=selection_coefficient,
+        output_path=output_dir / "selected_allele_frequency_trajectory.png",
     )
 
     null_values = neutral["center_fraction_recent"].to_numpy(dtype=float)
@@ -479,6 +608,11 @@ def validate_two_epoch_growth(
             ),
             "sample_allele_frequency": float(
                 accepted_row["sample_allele_frequency"]
+            ),
+            "trajectory_file": "selected_allele_frequency_trajectory.tsv",
+            "trajectory_generations_logged": int(len(accepted_trajectory)),
+            "initial_population_allele_frequency": float(
+                accepted_trajectory.iloc[0]["population_allele_frequency"]
             ),
             "n_hom_ref_pairs": int(accepted_row["n_hom_ref_pairs"]),
             "n_heterozygous_pairs": int(

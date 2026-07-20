@@ -19,18 +19,35 @@ initialize() {
     sim.recalculateFitness();
     community.rescheduleScriptBlock(s2, start=SIZE_CHANGE_TICK,
         end=SIZE_CHANGE_TICK);
+    community.rescheduleScriptBlock(s3, start=2,
+        end=AGE_GENERATIONS + 1);
     community.rescheduleScriptBlock(s1, start=AGE_GENERATIONS + 1,
         end=AGE_GENERATIONS + 1);
 }
 
 1 late() {
     sample(p0.haplosomes, 1).addNewDrawnMutation(m2, SWEEP_POSITION);
+    frequency = sim.mutationFrequencies(p0, sim.mutationsOfType(m2));
+    catn("SWEEP_TRAJECTORY tick=" + community.tick +
+        " generations_ago=" + AGE_GENERATIONS +
+        " frequency=" + frequency);
 }
 
 s2 99998 early() {
     p0.setSubpopulationSize(PRESENT_POPULATION_SIZE);
     catn("SIZE_CHANGE population_size=" + PRESENT_POPULATION_SIZE +
         " tick=" + community.tick);
+}
+
+s3 99997 late() {
+    muts = sim.mutationsOfType(m2);
+    if (size(muts) == 0)
+        frequency = 0.0;
+    else
+        frequency = sim.mutationFrequencies(p0, muts);
+    catn("SWEEP_TRAJECTORY tick=" + community.tick +
+        " generations_ago=" + (AGE_GENERATIONS + 1 - community.tick) +
+        " frequency=" + frequency);
 }
 
 s1 99999 late() {

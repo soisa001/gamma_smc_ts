@@ -24,6 +24,14 @@ PAIR_STYLES = {
     2: ("hom alt", "#0072b2", "#56b4e9"),
 }
 
+PLOT_FONTS = {
+    "suptitle": 22,
+    "title": 20,
+    "axis": 18,
+    "tick": 15,
+    "legend": 15,
+}
+
 
 def pair_tmrca_profile_by_focal_copy(
     ts,
@@ -116,6 +124,7 @@ def _draw_profile_panel(
     xlim: tuple[float, float],
     title: str,
     show_ylabel: bool,
+    font_scale: float = 1.0,
 ) -> None:
     for copies in (0, 2):
         label, line_color, fill_color = PAIR_STYLES[copies]
@@ -131,10 +140,14 @@ def _draw_profile_panel(
     axis.axvline(center / 1e6, color="#e69f00", lw=1.0, ls="--", label="selected site")
     axis.set_yscale("log")
     axis.set_xlim(xlim[0] / 1e6, xlim[1] / 1e6)
-    axis.set_xlabel("Position (Mb)")
+    axis.set_xlabel("Position (Mb)", fontsize=PLOT_FONTS["axis"] * font_scale)
     if show_ylabel:
-        axis.set_ylabel("Mean pairwise TMRCA (generations)")
-    axis.set_title(title)
+        axis.set_ylabel(
+            "Mean pairwise TMRCA (generations)",
+            fontsize=PLOT_FONTS["axis"] * font_scale,
+        )
+    axis.set_title(title, fontsize=PLOT_FONTS["title"] * font_scale)
+    axis.tick_params(axis="both", labelsize=PLOT_FONTS["tick"] * font_scale)
     axis.grid(alpha=0.16, linewidth=0.6)
 
 
@@ -150,7 +163,7 @@ def plot_carrier_profile_figure(
 ) -> None:
     """Draw a two-panel full-region and selected-site zoom profile."""
     output_path = Path(output_path)
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.2), sharey=True, constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(19, 7.2), sharey=True, constrained_layout=True)
     _draw_profile_panel(
         axes[0],
         profile,
@@ -178,12 +191,12 @@ def plot_carrier_profile_figure(
     n_alt = int(
         profile.loc[profile["focal_carrier_copies"] == 2, "n_pairs"].iloc[0]
     )
-    axes[0].legend(loc="best", fontsize=8)
+    axes[0].legend(loc="best", fontsize=PLOT_FONTS["legend"])
     fig.suptitle(
         f"Selected replicate {replicate}: hom-alt versus hom-ref pairwise TMRCA "
         f"(population AF={population_allele_frequency:.3f}; "
         f"n alt={n_alt}, n ref={n_ref}; mean +/- 95% CI)",
-        fontsize=12,
+        fontsize=PLOT_FONTS["suptitle"],
     )
     fig.savefig(output_path, dpi=190)
     plt.close(fig)
@@ -198,7 +211,7 @@ def _plot_profile_overview(
     zoom_half_width: int,
     output_path: Path,
 ) -> None:
-    fig, axes = plt.subplots(5, 4, figsize=(18, 21), sharey=True, constrained_layout=True)
+    fig, axes = plt.subplots(5, 4, figsize=(26, 30), sharey=True, constrained_layout=True)
     for index, selected_row in enumerate(selected.itertuples(index=False)):
         row = index // 2
         column = (index % 2) * 2
@@ -210,6 +223,7 @@ def _plot_profile_overview(
             xlim=(0, sequence_length),
             title=f"rep {selected_row.replicate}: full 10 Mb",
             show_ylabel=column == 0,
+            font_scale=0.72,
         )
         zoom_start = max(0, center - zoom_half_width)
         zoom_end = min(sequence_length, center + zoom_half_width)
@@ -223,11 +237,12 @@ def _plot_profile_overview(
             xlim=(zoom_start, zoom_end),
             title=f"rep {selected_row.replicate}: +/-{zoom_half_width / 1e3:g} kb",
             show_ylabel=False,
+            font_scale=0.72,
         )
-    axes[0, 0].legend(loc="best", fontsize=8)
+    axes[0, 0].legend(loc="best", fontsize=PLOT_FONTS["legend"] * 0.72)
     fig.suptitle(
         "Hom-alt versus hom-ref within-diploid TMRCA: mean and 95% CI",
-        fontsize=14,
+        fontsize=PLOT_FONTS["suptitle"],
     )
     fig.savefig(output_path, dpi=170)
     plt.close(fig)

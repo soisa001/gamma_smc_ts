@@ -7,6 +7,7 @@ import pytest
 
 from gamma_smc_aou.selection import run_slim_recent_sweep
 from gamma_smc_aou.two_epoch import (
+    _plot_allele_frequency_trajectory,
     _plot_demography_and_variant,
     _plot_null_calibration,
     two_epoch_recent_probability,
@@ -52,6 +53,25 @@ def test_two_epoch_plots_show_timing_and_upper_tail_pvalue(tmp_path):
     assert pvalue == 0.25
     assert calibration_path.exists()
 
+    trajectory_path = tmp_path / "trajectory.png"
+    trajectory = pd.DataFrame(
+        {
+            "generations_ago": [180, 100, 0],
+            "population_allele_frequency": [0.000025, 0.01, 0.102125],
+        }
+    )
+    _plot_allele_frequency_trajectory(
+        trajectory,
+        population_allele_frequency=0.102125,
+        sample_allele_frequency=0.10275,
+        variant_age_generations=180,
+        size_change_generations_ago=100,
+        generation_time_years=25,
+        selection_coefficient=0.05,
+        output_path=trajectory_path,
+    )
+    assert trajectory_path.exists()
+
 
 @pytest.mark.skipif(
     not (os.environ.get("SLIM_BIN") or shutil.which("slim")),
@@ -73,3 +93,10 @@ def test_recent_sweep_changes_population_size_at_requested_time(tmp_path):
     assert run["ancestral_population_size"] == 100
     assert run["present_population_size"] == 200
     assert "SIZE_CHANGE population_size=200 tick=21" in run["slim_stdout"]
+    trajectory = run["allele_frequency_trajectory"]
+    assert len(trajectory) == 31
+    assert trajectory[0]["generations_ago"] == 30
+    assert trajectory[-1]["generations_ago"] == 0
+    assert trajectory[-1]["population_allele_frequency"] == pytest.approx(
+        run["realized_population_allele_frequency"]
+    )
