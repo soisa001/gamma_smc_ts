@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from time import perf_counter
@@ -545,11 +546,16 @@ def finalize_container_stride_study(
         comparison["mean_p_tmrca_lt_threshold"]
         - comparison["truth_fraction_recent"]
     )
-    selected_run_path = output_dir / "work" / "selected.tsv.run.json"
     selected_run = {}
-    if selected_run_path.exists():
-        with selected_run_path.open(encoding="utf-8") as handle:
-            selected_run = json.load(handle)
+    selected_run_paths = [
+        output_dir / "work" / "selected.tsv.run.json",
+        output_dir / "selected_decoded_recent_probability_profile.tsv.run.json",
+    ]
+    for selected_run_path in selected_run_paths:
+        if selected_run_path.exists():
+            with selected_run_path.open(encoding="utf-8") as handle:
+                selected_run = json.load(handle)
+            break
     result = {
         "data_interpretation": "retained selected simulation treated as pseudo-empirical data",
         "recovered_from_complete_decoded_profiles": True,
@@ -560,7 +566,9 @@ def finalize_container_stride_study(
         "sample_diploids": design["sample_diploids"],
         "within_individual_pairs": design["sample_diploids"],
         "neutral_replicates": int(neutral["replicate"].nunique()),
-        "neutral_decoded_profiles_source": str(neutral_profiles_path),
+        "neutral_decoded_profiles_source": os.path.relpath(
+            neutral_profiles_path, output_dir
+        ),
         "observed_output_positions": int(len(observed)),
         "calibrated_complete_positions": int(len(scan)),
         "dropped_incomplete_null_positions": int(len(observed) - len(scan)),
