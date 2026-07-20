@@ -36,7 +36,7 @@ examples may replace `gamma-smc-aou` with the portable wrapper
 
 `uv.lock` pins the complete cross-platform Python graph. SLiM is pinned to 5.2
 in `.native`; the Linux bootstrap also supplies the compiler, Boost, htslib,
-and zstd from conda-forge. Ordinary `.trees`/`.ts` files are loaded with
+and zstd from conda-forge/bioconda. Ordinary `.trees`/`.ts` files are loaded with
 `tskit.load`; only `.tsz` files use `tszip.load`. Conversion uses an
 argument-safe process launch rather than interpolating paths into a shell
 command. For stdin, specify `--input_format`; auto-detection is deliberately not

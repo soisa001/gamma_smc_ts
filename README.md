@@ -10,7 +10,8 @@ The `AOU_run` workflow is self-contained apart from network access during the
 first installation and your own empirical/PHLASH input files. Python and all
 Python packages are pinned in `uv.lock`; SLiM is pinned to 5.2 in a local
 `.native` environment. On Linux x86_64, the bootstrap also installs a local C++
-toolchain plus Boost, htslib, and zstd and builds Gamma-SMC without root access.
+toolchain plus Boost, htslib, and zstd from conda-forge/bioconda and builds
+Gamma-SMC without root access.
 
 Linux/HPC, including the decoder:
 

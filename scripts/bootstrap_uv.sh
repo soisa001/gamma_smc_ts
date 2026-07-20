@@ -77,10 +77,12 @@ if [[ "$INSTALL_NATIVE" -eq 1 ]]; then
         native_packages+=("gxx_linux-64" "make" "boost-cpp" "htslib" "zstd")
     fi
     if [[ -d "$NATIVE/conda-meta" ]]; then
-        "$MAMBA" install -y -p "$NATIVE" -c conda-forge --strict-channel-priority \
+        "$MAMBA" install -y -p "$NATIVE" -c conda-forge -c bioconda \
+            --strict-channel-priority \
             "${native_packages[@]}"
     else
-        "$MAMBA" create -y -p "$NATIVE" -c conda-forge --strict-channel-priority \
+        "$MAMBA" create -y -p "$NATIVE" -c conda-forge -c bioconda \
+            --strict-channel-priority \
             "${native_packages[@]}"
     fi
     SLIM="$NATIVE/bin/slim"
