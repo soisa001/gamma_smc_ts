@@ -3,9 +3,11 @@ import shutil
 
 import msprime
 import numpy as np
+import pandas as pd
 import pytest
 
 from gamma_smc_aou.selection import (
+    validate_recent_sweep_grid,
     validate_slim_hard_sweep,
     within_individual_tmrca_grid,
 )
@@ -44,3 +46,36 @@ def test_slim_hard_sweep_has_recent_local_genealogy(tmp_path):
     assert metrics["center_fraction_recent"] > metrics["neutral_mean_fraction_recent"]
     assert metrics["mc_p_upper"] <= 0.05
     assert (tmp_path / "hard_sweep_validation.png").exists()
+
+
+@pytest.mark.skipif(
+    not (os.environ.get("SLIM_BIN") or shutil.which("slim")),
+    reason="SLiM executable not available",
+)
+def test_recent_sweep_grid_records_full_region_and_mc_test(tmp_path):
+    metrics = validate_recent_sweep_grid(
+        tmp_path,
+        population_size=100,
+        sample_diploids=50,
+        sequence_length=200_000,
+        selection_coefficients=(0.0, 0.5),
+        age_generations=30,
+        mutation_rate=1.25e-8,
+        recombination_rate=2e-7,
+        neutral_replicates=9,
+        selected_replicates=1,
+        workers=2,
+        seed=314159,
+    )
+    assert metrics["threshold_years"] == 750
+    assert metrics["neutral_replicates"] == 9
+    assert (tmp_path / "recent_sweep_10mb_validation.png").exists()
+    assert (tmp_path / "replicate_statistics.tsv").exists()
+    assert (tmp_path / "truth_profiles.tsv").exists()
+    assert (tmp_path / "statistical_summary.json").exists()
+    assert (tmp_path / "power_summary.tsv").exists()
+    rows = pd.read_csv(tmp_path / "replicate_statistics.tsv", sep="\t")
+    neutral = rows[rows["selection_coefficient"] == 0]
+    assert len(neutral) == 9
+    assert neutral["focal_allele_outcome"].eq("lost").any()
+    assert neutral["center_fraction_recent"].notna().all()

@@ -1,0 +1,42 @@
+// Recent hard sweep from a single copy, whether lost, segregating, or fixed now.
+// Initial neutral diversity is supplied by an msprime StandardCoalescent tree
+// sequence annotated for SLiM with pyslim.
+
+initialize() {
+    initializeSLiMOptions(keepPedigrees=T);
+    initializeTreeSeq();
+    initializeMutationRate(0.0);  // neutral mutations are overlaid in Python
+    initializeMutationType("m1", 0.5, "f", 0.0);
+    initializeMutationType("m2", 0.5, "f", SELECTION_COEFFICIENT);
+    m2.convertToSubstitution = F;
+    initializeGenomicElementType("g1", m1, 1.0);
+    initializeGenomicElement(g1, 0, LENGTH - 1);
+    initializeRecombinationRate(RECOMBINATION_RATE);
+}
+
+1 early() {
+    sim.readFromPopulationFile(IN);
+    sim.recalculateFitness();
+    community.rescheduleScriptBlock(s1, start=AGE_GENERATIONS + 1,
+        end=AGE_GENERATIONS + 1);
+}
+
+1 late() {
+    sample(p0.haplosomes, 1).addNewDrawnMutation(m2, SWEEP_POSITION);
+}
+
+s1 99999 late() {
+    muts = sim.mutationsOfType(m2);
+    if (size(muts) == 0) {
+        frequency = 0.0;
+        outcome = "lost";
+    }
+    else {
+        frequency = sim.mutationFrequencies(p0, muts);
+        outcome = ifelse(frequency == 1.0, "fixed", "segregating");
+    }
+    catn("SWEEP_COMPLETE frequency=" + frequency + " outcome=" + outcome +
+        " tick=" + community.tick);
+    sim.treeSeqOutput(OUT);
+    sim.simulationFinished();
+}

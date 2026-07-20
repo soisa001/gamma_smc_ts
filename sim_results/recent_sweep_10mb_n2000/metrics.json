@@ -1,0 +1,71 @@
+{
+  "population_size": 10000,
+  "sample_diploids": 2000,
+  "sequence_length": 10000000,
+  "sweep_position": 5000000,
+  "selection_coefficients": [
+    0.0,
+    0.001,
+    0.01
+  ],
+  "age_generations": 180,
+  "generation_time_years": 25,
+  "threshold_years": 4500,
+  "mutation_rate": 1.25e-08,
+  "recombination_rate": 1e-08,
+  "neutral_replicates": 100,
+  "selected_replicates_per_s": 100,
+  "trajectory_workers": 8,
+  "conditioning": "matched unconditional single-origin SLiM trajectories for s=0 and s>0; lost alleles remain frequency 0 and are still scanned at 5 Mb",
+  "elapsed_seconds": 898.4099846999743,
+  "results_by_s": [
+    {
+      "selection_coefficient": 0.0,
+      "replicate": 49.5,
+      "realized_population_allele_frequency": 0.0,
+      "ancestry_seconds": 14.73424685500213,
+      "slim_seconds": 3.006538615999743,
+      "center_fraction_recent": 0.009185,
+      "center_mean_tmrca_generations": 19832.121298145943,
+      "window_10000_fraction_recent": 0.009185,
+      "window_100000_fraction_recent": 0.00915668316831683,
+      "neutral_plateau_fraction_recent": 0.009067685950413223,
+      "neutral_plateau_mean_tmrca_generations": 20004.69640885196,
+      "center_fraction_recent_mc_p_upper": NaN,
+      "window_10000_fraction_recent_mc_p_upper": NaN,
+      "window_100000_fraction_recent_mc_p_upper": NaN
+    },
+    {
+      "selection_coefficient": 0.001,
+      "replicate": 49.5,
+      "realized_population_allele_frequency": 0.000155,
+      "ancestry_seconds": 11.310410426004092,
+      "slim_seconds": 2.6598542109970005,
+      "center_fraction_recent": 0.008635,
+      "center_mean_tmrca_generations": 20601.35485616343,
+      "window_10000_fraction_recent": 0.008643636363636364,
+      "window_100000_fraction_recent": 0.008637475247524751,
+      "neutral_plateau_fraction_recent": 0.008815743801652893,
+      "neutral_plateau_mean_tmrca_generations": 19956.16890896913,
+      "center_fraction_recent_mc_p_upper": 0.6169306930693069,
+      "window_10000_fraction_recent_mc_p_upper": 0.5949504950495049,
+      "window_100000_fraction_recent_mc_p_upper": 0.5806930693069307
+    },
+    {
+      "selection_coefficient": 0.01,
+      "replicate": 49.5,
+      "realized_population_allele_frequency": 0.000333,
+      "ancestry_seconds": 12.747948274001828,
+      "slim_seconds": 2.703750358999823,
+      "center_fraction_recent": 0.009225,
+      "center_mean_tmrca_generations": 18173.39101631062,
+      "window_10000_fraction_recent": 0.009226363636363637,
+      "window_100000_fraction_recent": 0.009242376237623761,
+      "neutral_plateau_fraction_recent": 0.008874793388429753,
+      "neutral_plateau_mean_tmrca_generations": 20029.995385244638,
+      "center_fraction_recent_mc_p_upper": 0.5232673267326733,
+      "window_10000_fraction_recent_mc_p_upper": 0.5034653465346535,
+      "window_100000_fraction_recent_mc_p_upper": 0.4906930693069307
+    }
+  ]
+}

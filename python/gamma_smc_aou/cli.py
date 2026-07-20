@@ -15,7 +15,7 @@ from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
 from .plotting import plot_scan, plot_truth_tmrca_relationship
 from .simulation import SimulationConfig, simulate_replicates
-from .selection import validate_slim_hard_sweep
+from .selection import validate_recent_sweep_grid, validate_slim_hard_sweep
 from .tree_sequence import tree_sequence_to_vcf
 
 
@@ -176,6 +176,25 @@ def command_validate_sweep(args):
     )
 
 
+def command_validate_recent_sweep(args):
+    validate_recent_sweep_grid(
+        args.output_dir,
+        executable=args.slim,
+        population_size=args.population_size,
+        sample_diploids=args.sample_diploids,
+        sequence_length=args.sequence_length,
+        selection_coefficients=tuple(args.selection_coefficients),
+        age_generations=args.age_generations,
+        mutation_rate=args.mutation_rate,
+        recombination_rate=args.recombination_rate,
+        neutral_replicates=args.neutral_replicates,
+        selected_replicates=args.selected_replicates,
+        workers=args.workers,
+        save_trees=not args.no_save_trees,
+        seed=args.seed,
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
@@ -262,6 +281,28 @@ def parser() -> argparse.ArgumentParser:
     sweep.add_argument("--neutral-replicates", type=int, default=39)
     sweep.add_argument("--seed", type=int, default=24681357)
     sweep.set_defaults(func=command_validate_sweep)
+
+    recent = commands.add_parser(
+        "validate-recent-sweep",
+        help="validate a 10-Mb, age-controlled recent SLiM sweep against a neutral null",
+    )
+    recent.add_argument("--output-dir", required=True)
+    recent.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
+    recent.add_argument("--population-size", type=int, default=10_000)
+    recent.add_argument("--sample-diploids", type=int, default=2_000)
+    recent.add_argument("--sequence-length", type=int, default=10_000_000)
+    recent.add_argument(
+        "--selection-coefficients", type=float, nargs="+", default=[0.0, 0.001, 0.01]
+    )
+    recent.add_argument("--age-generations", type=int, default=180)
+    recent.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    recent.add_argument("--recombination-rate", type=float, default=1e-8)
+    recent.add_argument("--neutral-replicates", type=int, default=100)
+    recent.add_argument("--selected-replicates", type=int, default=1)
+    recent.add_argument("--workers", type=int, default=1, help="parallel selected SLiM trajectories")
+    recent.add_argument("--no-save-trees", action="store_true")
+    recent.add_argument("--seed", type=int, default=271828)
+    recent.set_defaults(func=command_validate_recent_sweep)
     return root
 
 

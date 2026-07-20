@@ -1,0 +1,85 @@
+{
+  "null_leave_one_out_calibration": {
+    "center_fraction_recent": {
+      "n": 100,
+      "mean_p": 0.5337,
+      "ks_uniform_p": 0.16496264039322728,
+      "fraction_p_lt_0_05": 0.01,
+      "fraction_p_le_0_05": 0.05
+    },
+    "window_10000_fraction_recent": {
+      "n": 100,
+      "mean_p": 0.5135000000000001,
+      "ks_uniform_p": 0.8428847956274123,
+      "fraction_p_lt_0_05": 0.04,
+      "fraction_p_le_0_05": 0.05
+    },
+    "window_100000_fraction_recent": {
+      "n": 100,
+      "mean_p": 0.5052,
+      "ks_uniform_p": 0.999999999978262,
+      "fraction_p_lt_0_05": 0.04,
+      "fraction_p_le_0_05": 0.05
+    }
+  },
+  "null_truth_error": {
+    "theoretical_center_fraction_recent": 0.008959621227116354,
+    "observed_center_fraction_recent_mean": 0.009184999999999999,
+    "center_fraction_recent_bias": 0.0002253787728836456,
+    "center_fraction_recent_rmse": 0.002212254639788679,
+    "theoretical_mean_tmrca_generations": 20000.0,
+    "observed_center_mean_tmrca_generations": 19832.12129814594,
+    "center_mean_tmrca_bias_generations": -167.87870185405646,
+    "center_mean_tmrca_rmse_generations": 10357.877783235195
+  },
+  "selected_power": [
+    {
+      "selection_coefficient": 0.001,
+      "n_replicates": 100,
+      "median_realized_allele_frequency": 0.0,
+      "range_realized_allele_frequency_min": 0.0,
+      "range_realized_allele_frequency_max": 0.01515,
+      "fraction_lost": 0.98,
+      "fraction_segregating": 0.02,
+      "fraction_fixed": 0.0,
+      "spearman_frequency_vs_center_recent": 0.11931424869015508,
+      "spearman_p": 0.23705860639837603,
+      "center_fraction_recent_mean": 0.008635,
+      "center_fraction_recent_median_p": 0.6435643564356436,
+      "center_fraction_recent_power_p_le_0_05": 0.02,
+      "center_fraction_recent_auc": 0.4183,
+      "window_10000_fraction_recent_mean": 0.008643636363636324,
+      "window_10000_fraction_recent_median_p": 0.6336633663366337,
+      "window_10000_fraction_recent_power_p_le_0_05": 0.07,
+      "window_10000_fraction_recent_auc": 0.4197,
+      "window_100000_fraction_recent_mean": 0.008637475247524699,
+      "window_100000_fraction_recent_median_p": 0.6485148514851485,
+      "window_100000_fraction_recent_power_p_le_0_05": 0.05,
+      "window_100000_fraction_recent_auc": 0.42375
+    },
+    {
+      "selection_coefficient": 0.01,
+      "n_replicates": 100,
+      "median_realized_allele_frequency": 0.0,
+      "range_realized_allele_frequency_min": 0.0,
+      "range_realized_allele_frequency_max": 0.02545,
+      "fraction_lost": 0.97,
+      "fraction_segregating": 0.03,
+      "fraction_fixed": 0.0,
+      "spearman_frequency_vs_center_recent": -0.17245283942409756,
+      "spearman_p": 0.08621213121745086,
+      "center_fraction_recent_mean": 0.009224999999999997,
+      "center_fraction_recent_median_p": 0.5247524752475248,
+      "center_fraction_recent_power_p_le_0_05": 0.01,
+      "center_fraction_recent_auc": 0.51135,
+      "window_10000_fraction_recent_mean": 0.009226363636363583,
+      "window_10000_fraction_recent_median_p": 0.4851485148514851,
+      "window_10000_fraction_recent_power_p_le_0_05": 0.04,
+      "window_10000_fraction_recent_auc": 0.51115,
+      "window_100000_fraction_recent_mean": 0.00924237623762371,
+      "window_100000_fraction_recent_median_p": 0.4653465346534653,
+      "window_100000_fraction_recent_power_p_le_0_05": 0.09,
+      "window_100000_fraction_recent_auc": 0.5147
+    }
+  ]
+}

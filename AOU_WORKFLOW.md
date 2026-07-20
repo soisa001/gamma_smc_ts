@@ -147,6 +147,54 @@ the matched fixed-standard-coalescent null. The automated integration test
 requires the selected center to have lower mean TMRCA than its flanks, a
 center-to-flank ratio below 0.5, and a one-sided Monte Carlo p-value at most 0.05.
 
+For an age-controlled, paper-scale experiment, use the separate recent-sweep
+command. It initializes the full population with an msprime
+`StandardCoalescent`, annotates that tree sequence with `pyslim`, introduces one
+selected copy at 5 Mb, and runs exactly 180 forward Wright-Fisher generations.
+The trajectory is unconditional: the focal allele may be lost, segregating, or
+fixed. A lost allele remains at frequency zero, but its 5-Mb coordinate is still
+scanned normally. The outcome and realized frequency are written to the results
+and must be reported with the p-value. The `s=0` null uses the same 180-generation
+SLiM path; every condition starts from an independent msprime
+`StandardCoalescent` ancestry, so the p-value does not confound selection with a
+different simulator path.
+
+```bash
+gamma-smc-aou validate-recent-sweep \
+  --output-dir sim_results/recent_sweep_10mb_n2000 \
+  --population-size 10000 --sample-diploids 2000 \
+  --sequence-length 10000000 --selection-coefficients 0 0.001 0.01 \
+  --age-generations 180 --mutation-rate 1.25e-8 \
+  --recombination-rate 1e-8 --neutral-replicates 100 \
+  --selected-replicates 100 --workers 8
+```
+
+The exact-center primary statistic is the fraction of the 2,000 within-diploid
+pairs with true TMRCA below 180 generations. The command also evaluates 10-kb
+and 100-kb averages, plots the full 10-Mb region so the neutral plateaus are
+visible, performs upper-tail Monte Carlo tests, and writes leave-one-out null
+calibration, theoretical neutral bias/RMSE, AUC, and power. These are genealogy
+truth tests; decoder error still requires `evaluate-decoder` after Gamma-SMC is
+run on the mutated tree sequences.
+
+The checked-in 100-neutral/100-per-selected-condition run is an unconditional
+power experiment, not a forced-success hard-sweep demonstration. It includes
+lost focal alleles in the denominator. This is the relevant design for asking
+whether a new selected mutation beginning 180 generations ago creates a
+detectable all-sample within-diploid signal; a forced-fixation 50-kb fixture
+must not be used to claim that power.
+
+With seed 8675309, the focal allele was lost in 98/100 `s=0.001` replicates and
+97/100 `s=0.01` replicates; none fixed. The exact-center statistic had neutral
+mean 0.009185, selected means 0.008635 and 0.009225, AUC 0.418 and 0.511, and
+power at p < 0.05 of 0.02 and 0.01, respectively. Every exact-center selected
+hit at p < 0.05 occurred in a replicate where the focal allele was lost. The
+100-kb statistic reached 0.05 and 0.09, but its AUC values were only 0.424 and
+0.515, so the latter is compatible with Monte Carlo fluctuation rather than a
+reliable sweep signal. Null leave-one-out rejection was 0.04 for p < 0.05 in
+the 10-kb and 100-kb tests; the exact-center statistic is more discrete and had
+0.01 below 0.05 (0.05 at or below 0.05).
+
 `validate-null` performs an exchangeable leave-one-replicate-out rank test at a
 fixed relative position. Its JSON reports mean p-value, KS uniformity p-value,
 and the empirical fraction below 0.05; the QQ plot makes tail problems visible.
