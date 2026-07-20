@@ -63,6 +63,39 @@ Use exactly the same callable-region rule for empirical and simulated decoding.
 Raw alpha/beta output is optional (`--raw-output`). Omitting it is important at
 AoU scale: only five aggregate columns per segregating site are written.
 
+### Official v0.2 container at 1 kb resolution
+
+The locked uv application also wraps the upstream
+`docker.io/regevsch/gamma_smc:v0.2` image. It auto-detects Apptainer,
+Singularity, or Docker, requests within-individual pairs only, disables output
+at every heterozygous site, and uses `--output_at_stride 1000`:
+
+```bash
+scripts/aou.sh decode-container \
+  --input AFR.phased.vcf.gz --output AFR.within.stride1000.tsv \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
+  --generation-time 25 --threshold-years 4500 --output-at-stride 1000
+```
+
+The postprocessor reads one Gamma-SMC pair chunk at a time, evaluates the Gamma
+posterior CDF at 4,500 years, and averages it across diploids. It then deletes
+the large raw posterior by default. Input and output must share a host directory
+so one directory can be mounted at `/work`.
+
+The complete retained-sweep validation (selected pseudo-data plus matched nulls,
+pointwise Monte Carlo p-values, breakpoints, plots, runtime, and truth error) is:
+
+```bash
+scripts/aou.sh run-container-study \
+  --source-dir sim_results/two_epoch_growth_s0p05_n2000 \
+  --output-dir sim_results/gamma_smc_container_stride1000 \
+  --neutral-replicates 100 --output-at-stride 1000
+```
+
+The GitHub Actions workflow `Gamma-SMC container stride study` exposes the null
+count and stride as manual inputs for machines without a local Linux container
+runtime.
+
 ## 2. Neutral simulations
 
 All ancestry simulations explicitly use `msprime.StandardCoalescent()`; DTWF is

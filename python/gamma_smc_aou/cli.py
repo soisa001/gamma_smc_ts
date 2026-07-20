@@ -13,6 +13,8 @@ import pandas as pd
 
 from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
 from .carrier_profiles import plot_retained_carrier_tmrca_profiles
+from .container_decoder import DEFAULT_IMAGE, run_container_decoder
+from .container_study import run_container_stride_study
 from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
 from .plotting import plot_scan, plot_truth_tmrca_relationship
@@ -22,6 +24,7 @@ from .selection import (
     validate_recent_sweep_grid,
     validate_slim_hard_sweep,
 )
+from .spatial_scan import analyze_two_epoch_spatial_truth
 from .tree_sequence import tree_sequence_to_vcf
 from .two_epoch import validate_two_epoch_growth
 
@@ -144,6 +147,34 @@ def command_decode(args):
     )
 
 
+def command_decode_container(args):
+    run_container_decoder(
+        args.input,
+        args.output,
+        scaled_mutation_rate=args.theta,
+        recombination_to_mutation_ratio=args.rho_over_theta,
+        mutation_rate=args.mutation_rate,
+        threshold_years=args.threshold_years,
+        generation_time=args.generation_time,
+        stride=args.output_at_stride,
+        runtime=args.runtime,
+        image=args.image,
+        keep_raw=args.keep_raw,
+    )
+
+
+def command_container_study(args):
+    run_container_stride_study(
+        args.source_dir,
+        args.output_dir,
+        neutral_replicates=args.neutral_replicates,
+        stride=args.output_at_stride,
+        runtime=args.runtime,
+        image=args.image,
+        keep_vcfs=args.keep_vcfs,
+    )
+
+
 def command_evaluate(args):
     truth = sorted(Path(args.truth_dir).glob("*.tsv"))
     decoded = sorted(Path(args.decoded_dir).glob("*.tsv"))
@@ -255,6 +286,17 @@ def command_validate_two_epoch_growth(args):
     )
 
 
+def command_two_epoch_spatial_truth(args):
+    analyze_two_epoch_spatial_truth(
+        args.source_dir,
+        args.output_dir,
+        executable=args.slim,
+        workers=args.workers,
+        window_size=args.window_size,
+        zoom_half_width=args.zoom_half_width,
+    )
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
@@ -316,6 +358,40 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--threshold-years", type=float, default=4500)
     decode.add_argument("--generation-time", type=float, default=30)
     decode.set_defaults(func=command_decode)
+
+    container = commands.add_parser(
+        "decode-container",
+        help="decode a VCF with the official Gamma-SMC v0.2 container",
+    )
+    container.add_argument("--input", required=True)
+    container.add_argument("--output", required=True)
+    container.add_argument("--theta", type=float, required=True)
+    container.add_argument("--rho-over-theta", type=float, required=True)
+    container.add_argument("--mutation-rate", type=float, required=True)
+    container.add_argument("--threshold-years", type=float, default=4500)
+    container.add_argument("--generation-time", type=float, default=25)
+    container.add_argument("--output-at-stride", type=int, default=1000)
+    container.add_argument(
+        "--runtime", choices=["auto", "apptainer", "singularity", "docker"], default="auto"
+    )
+    container.add_argument("--image", default=DEFAULT_IMAGE)
+    container.add_argument("--keep-raw", action="store_true")
+    container.set_defaults(func=command_decode_container)
+
+    study = commands.add_parser(
+        "run-container-study",
+        help="decode the retained selected simulation and matched nulls at fixed stride",
+    )
+    study.add_argument("--source-dir", required=True)
+    study.add_argument("--output-dir", required=True)
+    study.add_argument("--neutral-replicates", type=int, default=100)
+    study.add_argument("--output-at-stride", type=int, default=1000)
+    study.add_argument(
+        "--runtime", choices=["auto", "apptainer", "singularity", "docker"], default="auto"
+    )
+    study.add_argument("--image", default=DEFAULT_IMAGE)
+    study.add_argument("--keep-vcfs", action="store_true")
+    study.set_defaults(func=command_container_study)
 
     evaluate = commands.add_parser("evaluate-decoder", help="compare decoded simulations with tree-sequence truth")
     evaluate.add_argument("--truth-dir", required=True)
@@ -435,6 +511,20 @@ def parser() -> argparse.ArgumentParser:
     two_epoch.add_argument("--zoom-step", type=int, default=5_000)
     two_epoch.add_argument("--seed", type=int, default=515151)
     two_epoch.set_defaults(func=command_validate_two_epoch_growth)
+
+    spatial = commands.add_parser(
+        "analyze-two-epoch-spatial-truth",
+        help="reconstruct two-epoch selected/null truth profiles and spatial p-values",
+    )
+    spatial.add_argument("--source-dir", required=True)
+    spatial.add_argument("--output-dir")
+    spatial.add_argument(
+        "--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH"
+    )
+    spatial.add_argument("--workers", type=int, default=20)
+    spatial.add_argument("--window-size", type=int, default=20_000)
+    spatial.add_argument("--zoom-half-width", type=int, default=500_000)
+    spatial.set_defaults(func=command_two_epoch_spatial_truth)
     return root
 
 

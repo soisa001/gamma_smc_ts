@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 from pathlib import Path
 
 import tskit
@@ -39,7 +40,11 @@ def tree_sequence_to_vcf(source: str | Path, destination: str | Path) -> Path:
     individuals = diploid_individuals(ts)
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    with destination.open("w", encoding="utf-8") as output:
+    if destination.suffix.lower() == ".gz":
+        output_handle = gzip.open(destination, "wt", encoding="utf-8")
+    else:
+        output_handle = destination.open("w", encoding="utf-8")
+    with output_handle as output:
         if individuals:
             ts.write_vcf(output, individuals=individuals)
         else:

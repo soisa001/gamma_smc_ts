@@ -41,6 +41,21 @@ After installation, use `scripts/aou.sh` or `scripts/aou.ps1` instead of
 activating an environment. The wrappers select the locked uv environment and
 the repository-local SLiM/Gamma-SMC binaries automatically.
 
+The uv CLI can also launch the official `regevsch/gamma_smc:v0.2` image through
+Apptainer, Singularity, or Docker and stream its large alpha/beta output into a
+small across-pair probability profile. For a 1 kb within-individual scan:
+
+```bash
+scripts/aou.sh decode-container \
+  --input AFR.phased.vcf.gz --output AFR.within.stride1000.tsv \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
+  --generation-time 25 --threshold-years 4500 --output-at-stride 1000
+```
+
+The input and output must be in the same directory because that directory is
+mounted into the container. The default runtime is auto-detected. Raw posterior
+files are deleted after aggregation unless `--keep-raw` is supplied.
+
 # Installation
 
 ## Requirements

@@ -1,4 +1,5 @@
 import json
+import gzip
 
 import msprime
 import pandas as pd
@@ -41,6 +42,17 @@ def test_tsz_conversion_uses_tszip_loader(tmp_path):
     tszip.compress(ts, source)
     tree_sequence_to_vcf(source, vcf)
     records = [line for line in vcf.read_text().splitlines() if not line.startswith("#")]
+    assert len(records) == ts.num_sites
+
+
+def test_tree_sequence_can_write_gzipped_vcf(tmp_path):
+    ts = diploid_ts()
+    source = tmp_path / "input.trees"
+    vcf = tmp_path / "input.vcf.gz"
+    ts.dump(source)
+    tree_sequence_to_vcf(source, vcf)
+    with gzip.open(vcf, "rt", encoding="utf-8") as handle:
+        records = [line for line in handle if not line.startswith("#")]
     assert len(records) == ts.num_sites
 
 

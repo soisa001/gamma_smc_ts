@@ -1,0 +1,50 @@
+name: Gamma-SMC container stride study
+
+on:
+  workflow_dispatch:
+    inputs:
+      neutral_replicates:
+        description: Number of matched neutral decodes
+        required: true
+        default: "1"
+      output_at_stride:
+        description: Posterior output stride in bp
+        required: true
+        default: "1000"
+
+jobs:
+  decode:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: "3.11"
+          enable-cache: true
+      - name: Install locked simulation environment
+        run: bash scripts/bootstrap_uv.sh --simulation-only --skip-tests
+      - name: Record runner and container
+        run: |
+          mkdir -p sim_results/gamma_smc_container_stride1000
+          lscpu > sim_results/gamma_smc_container_stride1000/run_environment.txt
+          docker pull docker.io/regevsch/gamma_smc:v0.2
+          docker image inspect docker.io/regevsch/gamma_smc:v0.2 \
+            >> sim_results/gamma_smc_container_stride1000/run_environment.txt
+      - name: Decode selected pseudo-data and neutral simulations
+        run: |
+          scripts/aou.sh run-container-study \
+            --source-dir sim_results/two_epoch_growth_s0p05_n2000 \
+            --output-dir sim_results/gamma_smc_container_stride1000 \
+            --neutral-replicates "${{ inputs.neutral_replicates }}" \
+            --output-at-stride "${{ inputs.output_at_stride }}" \
+            --runtime docker
+      - name: Upload profiles, plots, metrics, and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamma-smc-stride-${{ inputs.output_at_stride }}-null-${{ inputs.neutral_replicates }}
+          path: sim_results/gamma_smc_container_stride1000
+          if-no-files-found: error
+          retention-days: 14
