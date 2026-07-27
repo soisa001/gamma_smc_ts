@@ -42,7 +42,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/python:${{ github.workspace }}/tests
         run: |
           python -m pytest tests/test_bitmatrix.py tests/test_source_regressions.py -q
-          python -m pytest tests/test_cpp_integration.py tests/test_cpp_bitmatrix_integration.py -q
+          python -m pytest tests/test_cpp_integration.py tests/test_cpp_bitmatrix_integration.py -q -s
 
       - name: Upload binary
         if: always()

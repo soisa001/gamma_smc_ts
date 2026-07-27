@@ -10,13 +10,12 @@ import json
 import os
 import subprocess
 
+import msprime
 import numpy as np
 import pandas as pd
 import pytest
 
 from gamma_smc_aou import bitmatrix
-
-from test_simulation import diploid_ts
 
 
 pytestmark = pytest.mark.skipif(
@@ -27,7 +26,27 @@ THRESHOLDS = (4500.0, 10000.0)
 STRIDE = 1000
 
 
-def decode(tmp_path, ts, *, name, extra=(), n_random_pairs=0, threads=1, bits=True):
+def panel_ts(n_individuals=24, length=60_000):
+    """A panel big enough that C(2N, 2) comfortably exceeds the sampled pairs.
+
+    24 diploids give 48 haplotypes and 1,128 distinct pairs, so a 64-pair sample
+    spans several 8-pair chunks and more than one default block.
+    """
+    ancestry = msprime.sim_ancestry(
+        samples=[msprime.SampleSet(n_individuals, ploidy=2)],
+        population_size=1_000,
+        sequence_length=length,
+        recombination_rate=1e-8,
+        model=msprime.StandardCoalescent(),
+        random_seed=42,
+    )
+    return msprime.sim_mutations(
+        ancestry, rate=2e-7, model=msprime.BinaryMutationModel(), random_seed=43
+    )
+
+
+def decode(tmp_path, ts, *, name, extra=(), n_random_pairs=0, threads=1, bits=True,
+           only_within=None):
     source = tmp_path / f"{name}.trees"
     ts.dump(source)
     summary = tmp_path / f"{name}.tsv"
@@ -44,9 +63,11 @@ def decode(tmp_path, ts, *, name, extra=(), n_random_pairs=0, threads=1, bits=Tr
         "--output_at_stride", str(STRIDE),
         "--threads", str(threads),
     ]
+    if only_within is None:
+        only_within = (n_random_pairs == 0) and not any("--pairs_file" in str(a) for a in extra)
     if n_random_pairs:
         command += ["--n_random_pairs", str(n_random_pairs), "--pairs_seed", "20240727"]
-    else:
+    elif only_within:
         command += ["--only_within"]
     if bits:
         command += ["--recent_bitmatrix", str(tmp_path / f"{name}.bits")]
@@ -57,7 +78,7 @@ def decode(tmp_path, ts, *, name, extra=(), n_random_pairs=0, threads=1, bits=Tr
 
 
 def test_bitmatrix_counts_match_the_summary_tsv(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     summary, bits_path, _ = decode(tmp_path, ts, name="within", n_random_pairs=0)
 
     frame = pd.read_csv(summary, sep="\t")
@@ -74,7 +95,7 @@ def test_bitmatrix_counts_match_the_summary_tsv(tmp_path):
 
 
 def test_summary_keeps_the_legacy_schema(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     summary, _, _ = decode(tmp_path, ts, name="legacy")
     frame = pd.read_csv(summary, sep="\t")
 
@@ -98,7 +119,7 @@ def test_summary_keeps_the_legacy_schema(tmp_path):
 
 
 def test_thread_count_does_not_change_the_result(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     one, bits_one, _ = decode(tmp_path, ts, name="t1", n_random_pairs=64, threads=1)
     many, bits_many, _ = decode(tmp_path, ts, name="t8", n_random_pairs=64, threads=8)
 
@@ -112,7 +133,7 @@ def test_thread_count_does_not_change_the_result(tmp_path):
 
 
 def test_pair_block_does_not_change_the_result(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     small, bits_small, _ = decode(
         tmp_path, ts, name="b8", n_random_pairs=50, threads=4, extra=("--pair_block", "8")
     )
@@ -126,7 +147,7 @@ def test_pair_block_does_not_change_the_result(tmp_path):
 
 
 def test_random_pairs_are_reproducible_and_well_formed(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     _, bits_a, _ = decode(tmp_path, ts, name="ra", n_random_pairs=20)
     _, bits_b, _ = decode(tmp_path, ts, name="rb", n_random_pairs=20)
 
@@ -143,7 +164,7 @@ def test_random_pairs_are_reproducible_and_well_formed(tmp_path):
 
 
 def test_exclude_within_drops_same_individual_pairs(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     _, bits_path, _ = decode(
         tmp_path, ts, name="xw", n_random_pairs=20, extra=("--exclude_within",)
     )
@@ -152,7 +173,7 @@ def test_exclude_within_drops_same_individual_pairs(tmp_path):
 
 
 def test_pairs_file_is_honoured(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     wanted = [(0, 3), (1, 6), (2, 7)]
     pairs_file = tmp_path / "pairs.txt"
     pairs_file.write_text(
@@ -166,26 +187,27 @@ def test_pairs_file_is_honoured(tmp_path):
 
 
 def test_asking_for_more_pairs_than_exist_fails_cleanly(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     with pytest.raises(subprocess.CalledProcessError) as excinfo:
         decode(tmp_path, ts, name="toomany", n_random_pairs=10_000)
     assert "exceeds" in excinfo.value.stdout
 
 
 def test_lookup_tables_self_check_within_tolerance(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     _, _, completed = decode(tmp_path, ts, name="selfcheck")
     log = completed.stdout
 
     error = float(log.split("max abs error vs Boost")[1].split()[0])
-    assert error < 1e-3, f"P(T<t) table error {error:g} is worse than expected"
-
     disagreement = float(log.split("disagreement with Boost")[1].split()[0])
+    print(f"\nP(T<t) table max abs error vs Boost: {error:.3e}")
+    print(f"hard-call disagreement vs Boost:     {disagreement:.3e}")
+    assert error < 1e-3, f"P(T<t) table error {error:g} is worse than expected"
     assert disagreement < 1e-4, f"call table disagreement {disagreement:g} is too high"
 
 
 def test_mean_call_rule_is_a_threshold_on_the_posterior_mean(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     summary, _, _ = decode(
         tmp_path, ts, name="meanrule", extra=("--recent_call", "mean"), bits=False
     )
@@ -196,7 +218,7 @@ def test_mean_call_rule_is_a_threshold_on_the_posterior_mean(tmp_path):
 
 
 def test_raw_posteriors_still_round_trip(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     raw = tmp_path / "posteriors.zst"
     summary, _, _ = decode(
         tmp_path, ts, name="raw", n_random_pairs=20, threads=4,
@@ -217,7 +239,7 @@ def test_raw_posteriors_still_round_trip(tmp_path):
 
 
 def test_pair_subset_counts_agree_with_the_whole(tmp_path):
-    ts = diploid_ts(length=60_000)
+    ts = panel_ts()
     _, bits_path, _ = decode(tmp_path, ts, name="subset", n_random_pairs=40, threads=4)
     meta = bitmatrix.read_meta(bits_path)
     total = bitmatrix.position_counts(bits_path, meta)

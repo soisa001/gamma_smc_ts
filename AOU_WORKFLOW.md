@@ -96,6 +96,110 @@ The GitHub Actions workflow `Gamma-SMC container stride study` exposes the null
 count and stride as manual inputs for machines without a local Linux container
 runtime.
 
+## 1b. Whole-genome scan over ~100,000 sampled haplotype pairs
+
+The within-individual scan is capped at one pair per diploid. To reach ~100,000
+pairs, sample them uniformly from every haplotype pair in the panel and keep the
+per-pair record as one bit per position instead of a Gamma posterior.
+
+```bash
+for chrom in $(seq 1 22); do
+  scripts/aou.sh decode \
+    --executable bin/gamma_smc \
+    --input AFR.chr${chrom}.phased.bcf --input-format vcf \
+    --output scan/chr${chrom}.tsv \
+    --bitmatrix scan/chr${chrom}.bits \
+    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
+    --generation-time 25 --threshold-years 4500 10000 \
+    --no-output-at-hets --output-at-stride 1000 \
+    --n-random-pairs 100000 --pairs-seed 1729 \
+    --threads 32 --mask callable.chr${chrom}.bed
+done
+```
+
+`--n-random-pairs` draws distinct unordered pairs uniformly from all
+`C(2N, 2)` haplotype pairs, within-individual pairs included; add
+`--exclude-within` to drop them. The same `--pairs-seed` reproduces the same
+list, and the list is written into the bit matrix metadata. Use `--pairs-file`
+(two 0-based haplotype indices per line) to fix the pairs yourself, which is
+what you want if every chromosome must use the same pairs.
+
+**Set `--no-output-at-hets`.** With output at every segregating site, a large
+panel produces millions of output positions and the per-thread posterior buffers
+grow with it; at stride 1000 chr1 has ~249,000 columns instead of ~3,000,000.
+
+### Per-position summary
+
+`--output` is the small TSV. The first five columns are unchanged from the
+within-individual scan, so every existing consumer keeps working, and
+`mean_p_tmrca_lt_threshold` is the first threshold's mean probability:
+
+| column | meaning |
+|---|---|
+| `position_0based`, `position_1based` | output position |
+| `n_pairs` | pairs with a usable posterior at this position |
+| `mean_p_tmrca_lt_threshold` | alias for `mean_p_lt_4500` |
+| `mean_tmrca_generations` | mean posterior TMRCA |
+| `n_recent_4500`, `frac_recent_4500` | pairs **called** recent, and the proportion |
+| `mean_p_lt_4500` | mean of P(T < 4500 years) across pairs |
+| `n_recent_10000`, … | the same block per additional threshold |
+
+`frac_recent_*` is the hard-threshold proportion; `mean_p_lt_*` is the soft
+version the paper uses. A pair is called recent when its posterior median falls
+below the threshold, i.e. P(T < t) >= 0.5. `--recent-call mean` thresholds the
+posterior mean instead, and `--recent-call prob --recent-call-probability 0.9`
+demands 90% posterior mass.
+
+### Bit matrix
+
+`--bitmatrix` writes one bit per (pair, position, threshold): ~6 GB per
+chromosome before compression for 100,000 pairs at stride 1000 with two
+thresholds, against ~200 GB for the equivalent raw alpha/beta. It is a
+concatenation of independent zstd frames indexed by a `.meta` sidecar, so a
+subset of pairs can be read without touching the rest of the file.
+
+```python
+from gamma_smc_aou import bitmatrix
+
+meta = bitmatrix.read_meta("scan/chr2.bits")
+counts = bitmatrix.position_counts("scan/chr2.bits")        # (2, n_positions)
+carriers = bitmatrix.position_counts("scan/chr2.bits", meta, pair_indices=carrier_pairs)
+profiles = bitmatrix.pair_profiles("scan/chr2.bits", [0, 17, 512])
+```
+
+`bitmatrix.to_frame` rebuilds the counts table, which is a direct check against
+the decoder's own TSV. `scripts/aou.sh bitmatrix-summary` does the same from the
+command line and takes `--pairs` to restrict the counts to a subset.
+
+### Cost
+
+The decode is parallel over blocks of pairs; `--threads 0` uses every core.
+`--pair-block` sets how many pairs each work unit covers (default 256) and is
+also the bit-matrix frame size. Per-thread scratch is roughly
+`2 x n_positions x 8 x 4` bytes of posteriors plus `n_segments x 8` bytes of
+emission types; the genotype matrix, the callability bitmap and the 490 MB
+flow-field cache are shared. The decoder prints its own estimate before starting
+and warns when `--output-at-hets` would blow it up.
+
+### Two numerical switches
+
+Both default to upstream behaviour, because turning either on shifts results
+against calibrations produced with the old binary. Re-run your nulls with the
+same setting if you enable them.
+
+- `--accurate-exp10` replaces the fast `10^x` used to convert the message state
+  into (alpha, beta). The fast version has −3.9%…+2.0% relative error and about
+  a −1% systematic bias, which lands directly on the posterior and therefore on
+  P(T < t). It is evaluated once per output position, so the accurate version
+  costs a few percent of the run.
+- `--backward-alignment fixed` corrects an off-by-one: because
+  `output_at_start[k] == output_at_end[k-1]`, the backward pass makes one fewer
+  write than the forward pass whenever the last segment is an output position,
+  so every backward message is paired with the forward message one output
+  position to its right and position 0 receives none at all. With
+  `--output-at-stride 1000` that is a 1 kb shift of the backward half of the
+  smoother.
+
 ## 2. Neutral simulations
 
 All ancestry simulations explicitly use `msprime.StandardCoalescent()`; DTWF is
