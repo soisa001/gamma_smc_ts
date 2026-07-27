@@ -5,6 +5,7 @@
 #include "flow_field.h"
 #include "gamma_smc.h"
 #include "data_processor.h"
+#include "pair_sampling.h"
 #include "screenoutput.h"
 #include "cxxopts.hpp"
 
@@ -32,8 +33,12 @@ int main(int argc, char** argv) {
         ("input_format", "Input format: auto, vcf, trees, or tsz (required for tree sequence stdin)", cxxopts::value<std::string>()->default_value("auto"))
         ("allow_unphased", "Allow unphased heterozygotes (not recommended for haplotype scans)")
         ("o,output", "Output file", cxxopts::value<std::string>())
-        ("recent_summary", "Write an across-pair recent-coalescence TSV (use with --only_within)", cxxopts::value<std::string>())
-        ("recent_threshold_years", "Recent-coalescence threshold in years", cxxopts::value<double>()->default_value("4500"))
+        ("recent_summary", "Write an across-pair recent-coalescence TSV", cxxopts::value<std::string>())
+        ("recent_bitmatrix", "Write the per-pair recent-coalescence calls as a packed bit matrix", cxxopts::value<std::string>())
+        ("recent_threshold_years", "Recent-coalescence threshold in years; repeat for several", cxxopts::value<std::vector<double>>()->default_value("4500"))
+        ("recent_call", "Per-pair call rule: median, mean, or prob", cxxopts::value<std::string>()->default_value("median"))
+        ("recent_call_probability", "Probability used by --recent_call prob", cxxopts::value<double>()->default_value("0.5"))
+        ("no_recent_probability", "Skip the across-pair mean of P(T<t); counts only")
         ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("30"))
         ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time", cxxopts::value<double>())
         ("m,scaled_mutation_rate", "Scaled mutation rate", cxxopts::value<float>())
@@ -45,9 +50,17 @@ int main(int argc, char** argv) {
         ("S,samples", "Filename of a list of subset of samples to take", cxxopts::value<std::string>())
         ("T,samples_against", "Filename of a second list of subset of samples to take, to infer against first list", cxxopts::value<std::string>())
         ("w,only_within", "Apply only to haplotype pairs within each diploid")
+        ("n_random_pairs", "Sample this many haplotype pairs uniformly at random", cxxopts::value<long>()->default_value("0"))
+        ("pairs_seed", "Seed for --n_random_pairs", cxxopts::value<unsigned long long>()->default_value("1729"))
+        ("pairs_file", "File of explicit haplotype pairs, two 0-based indices per line", cxxopts::value<std::string>())
+        ("exclude_within", "Exclude within-individual pairs when sampling at random")
         ("s,output_at_stride", "Output at positions which are multiples of this number", cxxopts::value<int>()->default_value("-1"))
         ("h,output_at_hets", "Output at segregating sites", cxxopts::value<bool>()->default_value("true"))
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
+        ("j,threads", "Worker threads (0 = all available)", cxxopts::value<int>()->default_value("0"))
+        ("pair_block", "Pairs decoded per work unit and per bit-matrix frame", cxxopts::value<long>()->default_value("256"))
+        ("accurate_exp10", "Use an accurate 10^x instead of the fast approximation with ~1% bias")
+        ("backward_alignment", "legacy (upstream, backward message shifted one output position) or fixed", cxxopts::value<std::string>()->default_value("legacy"))
         ("y,only_forward", "Calculate only forward pass", cxxopts::value<bool>()->default_value("false"))
         ("d,only_backward", "Calculate only backward pass", cxxopts::value<bool>()->default_value("false"))
         ("zstd_compression_level", "zstd compression level", cxxopts::value<int>()->default_value("1"))
@@ -61,7 +74,7 @@ int main(int argc, char** argv) {
         std::cout << options.help() << "\n";
         exit(-1);
     }
-    
+
     //
     // Validate flags
     //
@@ -76,12 +89,12 @@ int main(int argc, char** argv) {
 
     if ((vm.count("scaled_recombination_rate") > 0) && (vm.count("recombination_to_mutation_ratio") > 0)) {
         cout << "Error: --scaled_recombination_rate and --recombination_to_mutation_ratio are mutually exclusive." << endl;
-        exit(-1);    
+        exit(-1);
     }
 
     if ((vm.count("scaled_recombination_rate") == 0) && (vm.count("recombination_to_mutation_ratio") == 0)) {
         cout << "Error: Either --scaled_recombination_rate or --recombination_to_mutation_ratio must be specified." << endl;
-        exit(-1);    
+        exit(-1);
     }
 
     float scaled_recombination_rate;
@@ -133,8 +146,8 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    if (vm.count("output") == 0 && vm.count("recent_summary") == 0) {
-        cout << boost::format("Error: At least one of --output or --recent_summary is required.\n");
+    if (vm.count("output") == 0 && vm.count("recent_summary") == 0 && vm.count("recent_bitmatrix") == 0) {
+        cout << boost::format("Error: At least one of --output, --recent_summary or --recent_bitmatrix is required.\n");
         exit(-1);
     }
     string output_filename;
@@ -145,27 +158,73 @@ int main(int argc, char** argv) {
             std::filesystem::create_directories(output_directory);
         }
     }
+
+    //
+    // Recent-coalescence configuration
+    //
+    const bool wants_recent_summary = vm.count("recent_summary") > 0;
+    const bool wants_bitmatrix = vm.count("recent_bitmatrix") > 0;
+    const bool wants_recent = wants_recent_summary || wants_bitmatrix;
+
     string recent_summary_filename;
-    if (vm.count("recent_summary")) {
+    if (wants_recent_summary) {
         recent_summary_filename = vm["recent_summary"].as<string>();
         auto summary_directory = std::filesystem::path(recent_summary_filename).parent_path();
         if (!summary_directory.empty()) {
             std::filesystem::create_directories(summary_directory);
         }
-        if (!vm.count("only_within")) {
-            cout << "Error: --recent_summary currently requires --only_within." << endl;
-            exit(-1);
+    }
+    string bitmatrix_filename;
+    if (wants_bitmatrix) {
+        bitmatrix_filename = vm["recent_bitmatrix"].as<string>();
+        auto bitmatrix_directory = std::filesystem::path(bitmatrix_filename).parent_path();
+        if (!bitmatrix_directory.empty()) {
+            std::filesystem::create_directories(bitmatrix_directory);
         }
+    }
+
+    vector<double> threshold_years = vm["recent_threshold_years"].as<std::vector<double>>();
+    recent_call_t recent_call = RECENT_CALL_MEDIAN;
+    double recent_call_probability = vm["recent_call_probability"].as<double>();
+    const bool accumulate_probability = (vm.count("no_recent_probability") == 0);
+
+    if (wants_recent) {
         if (!vm.count("unscaled_mutation_rate") || vm["unscaled_mutation_rate"].as<double>() <= 0.0) {
-            cout << "Error: --recent_summary requires a positive --unscaled_mutation_rate." << endl;
+            cout << "Error: --recent_summary/--recent_bitmatrix require a positive --unscaled_mutation_rate." << endl;
             exit(-1);
         }
-        if (vm["recent_threshold_years"].as<double>() <= 0.0 || vm["generation_time"].as<double>() <= 0.0) {
-            cout << "Error: --recent_threshold_years and --generation_time must be positive." << endl;
+        if (vm["generation_time"].as<double>() <= 0.0) {
+            cout << "Error: --generation_time must be positive." << endl;
+            exit(-1);
+        }
+        if (threshold_years.empty()) {
+            cout << "Error: --recent_threshold_years needs at least one value." << endl;
+            exit(-1);
+        }
+        for (double years : threshold_years) {
+            if (years <= 0.0) {
+                cout << "Error: every --recent_threshold_years value must be positive." << endl;
+                exit(-1);
+            }
+        }
+
+        const string call_name = vm["recent_call"].as<string>();
+        if (call_name == "median") {
+            recent_call = RECENT_CALL_MEDIAN;
+        } else if (call_name == "mean") {
+            recent_call = RECENT_CALL_MEAN;
+        } else if (call_name == "prob") {
+            recent_call = RECENT_CALL_PROB;
+            if (recent_call_probability <= 0.0 || recent_call_probability >= 1.0) {
+                cout << "Error: --recent_call_probability must be strictly between 0 and 1." << endl;
+                exit(-1);
+            }
+        } else {
+            cout << "Error: --recent_call must be median, mean or prob." << endl;
             exit(-1);
         }
     }
-    
+
     if (vm.count("only_within") && vm.count("samples_against")) {
         cout << "Error: --only_within and --samples_file_against are mutually exclusive." << endl;
         exit(-1);
@@ -177,6 +236,30 @@ int main(int argc, char** argv) {
     if (vm.count("mask") && vm.count("masks_per_sample")) {
         cout << "Error: --mask and --masks_per_sample are mutually exclusive." << endl;
         exit(-1);
+    }
+
+    const long n_random_pairs = vm["n_random_pairs"].as<long>();
+    const bool wants_pairs_file = vm.count("pairs_file") > 0;
+    if (n_random_pairs < 0) {
+        cout << "Error: --n_random_pairs must not be negative." << endl;
+        exit(-1);
+    }
+    {
+        int n_pair_selectors = (n_random_pairs > 0) + (wants_pairs_file ? 1 : 0)
+                             + (vm.count("only_within") > 0) + (vm.count("samples_against") > 0);
+        if (n_pair_selectors > 1) {
+            cout << "Error: --n_random_pairs, --pairs_file, --only_within and --samples_against "
+                    "are mutually exclusive." << endl;
+            exit(-1);
+        }
+    }
+    string pairs_filename;
+    if (wants_pairs_file) {
+        pairs_filename = vm["pairs_file"].as<string>();
+        if (!std::filesystem::exists(pairs_filename)) {
+            cout << boost::format("Error: Cannot open --pairs_file: %s\n") % pairs_filename;
+            exit(-1);
+        }
     }
 
     string mask_filename;
@@ -230,30 +313,57 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
+    long pair_block = vm["pair_block"].as<long>();
+    if (pair_block < parallel_vector_size) {
+        pair_block = parallel_vector_size;
+    }
+
+    const string backward_alignment = vm["backward_alignment"].as<string>();
+    if (backward_alignment != "legacy" && backward_alignment != "fixed") {
+        cout << "Error: --backward_alignment must be legacy or fixed." << endl;
+        exit(-1);
+    }
+
+    int n_threads = vm["threads"].as<int>();
+#ifdef _OPENMP
+    if (n_threads <= 0) {
+        n_threads = omp_get_max_threads();
+    }
+    omp_set_num_threads(n_threads);
+#else
+    if (n_threads > 1) {
+        cout << "Warning: built without OpenMP; running on one thread.\n";
+    }
+    n_threads = 1;
+#endif
+
     //
     // Load input file
     //
     screen.print_subtitle("Reading input file...");
 
-    vector<unique_ptr<SegregatingSite>> input_sites;  // TODO: Have another go at getting rid of the unique_ptr and just have vector<Seg...>
-    vector<string> sample_names;    
+    SiteMatrix input_sites;
+    vector<string> sample_names;
     vector<int> samples_indices;
     vector<int> samples_against_indices;
 
     readVcf(
-        input_filename, 
-        input_sites, 
-        sample_names, 
-        samples_filename, 
+        input_filename,
+        input_sites,
+        sample_names,
+        samples_filename,
         samples_indices,
         samples_against_filename,
         samples_against_indices,
         input_format,
         vm.count("allow_unphased") > 0
-    ); 
+    );
 
     screen.print_item(boost::str(boost::format("Read %d samples.") % sample_names.size()));
     screen.print_item(boost::str(boost::format("Read %d segregating sites.") % input_sites.size()));
+    screen.print_item(boost::str(
+        boost::format("Genotype matrix: %.3f GB (bit-packed).") % (input_sites.bytes() / 1073741824.0)
+    ));
     if (input_sites.empty()) {
         cout << "Error: Input contains no segregating SNP sites after filtering." << endl;
         exit(-1);
@@ -270,7 +380,7 @@ int main(int argc, char** argv) {
         readMask(mask_filename, global_mask);
     } else {
         // If no global mask is given, assume no mask
-        global_mask.push_back(make_pair(0, input_sites.back()->pos+1));
+        global_mask.push_back(make_pair(0, input_sites.pos.back()+1));
     }
 
     unordered_map<string, vector<pair<int, int>>> mask_map;
@@ -283,7 +393,7 @@ int main(int argc, char** argv) {
         }
         screen.print_item(boost::str(boost::format("Read %d masks.") % mask_map.size()));
     }
-    
+
     screen.print_done();
 
     //
@@ -322,15 +432,26 @@ int main(int argc, char** argv) {
 
     screen.print_item(boost::str(boost::format("Scaled mutation rate: %f") % scaled_mutation_rate));
     screen.print_item(boost::str(boost::format("Scaled recombination rate: %f") % scaled_recombination_rate));
-    screen.print_done();        
-    
+    screen.print_done();
+
     //
     // Create a list of pairs to work on
     //
     vector<pair<int, int>> haplotype_pairs;
     uint n_samples = sample_names.size();
-    
-    if (vm.count("only_within")) {
+    const int n_haplotypes = (int) (2 * n_samples);
+
+    if (n_random_pairs > 0) {
+        sample_random_pairs(
+            n_haplotypes,
+            n_random_pairs,
+            vm["pairs_seed"].as<unsigned long long>(),
+            vm.count("exclude_within") > 0,
+            haplotype_pairs
+        );
+    } else if (wants_pairs_file) {
+        read_pairs_file(pairs_filename, n_haplotypes, haplotype_pairs);
+    } else if (vm.count("only_within")) {
         for (uint i = 0; i < n_samples; i++) {
             haplotype_pairs.push_back(make_pair(2*i, 2*i+1));
         }
@@ -357,9 +478,77 @@ int main(int argc, char** argv) {
         }
     }
 
+    if (haplotype_pairs.empty()) {
+        cout << "Error: no haplotype pairs selected." << endl;
+        exit(-1);
+    }
+
     screen.print_item(boost::str(
         boost::format("Applying to %d haplotype pairs") % haplotype_pairs.size()
     ));
+    screen.print_item(boost::str(
+        boost::format("Using %d thread(s), %d pairs per work unit") % n_threads % pair_block
+    ));
+
+    //
+    // Memory budget. Per-thread scratch scales with the number of output
+    // positions and with the number of segments, both of which explode when
+    // --output_at_hets is left on for a large panel, so say so up front rather
+    // than letting the run die in the allocator an hour later.
+    //
+    {
+        const double bytes_per_thread_posteriors =
+            2.0 * (double) data_processor._seq_length * parallel_vector_size * sizeof(float);
+        const double bytes_per_thread_segment_types =
+            (double) data_processor._n_segments * parallel_vector_size;
+        const double bytes_per_thread_n_called = mask_map.empty()
+            ? 0.0
+            : (double) data_processor._n_segments * parallel_vector_size * sizeof(int32_t);
+        const long effective_block = (output_filename.size() > 0) ? parallel_vector_size : pair_block;
+        const double bytes_per_thread_bits = bitmatrix_filename.empty()
+            ? 0.0
+            : 2.0 * (double) threshold_years.size()
+              * (double) (effective_block / parallel_vector_size)
+              * (double) data_processor._seq_length;
+        const double bytes_per_thread_accumulators = wants_recent
+            ? (double) data_processor._seq_length * (threshold_years.size() * 16.0 + 16.0)
+            : 0.0;
+
+        const double per_thread = bytes_per_thread_posteriors + bytes_per_thread_segment_types
+            + bytes_per_thread_n_called + bytes_per_thread_bits + bytes_per_thread_accumulators;
+        const double shared = input_sites.bytes()
+            + (mask_map.empty()
+               ? (double) data_processor._n_segments * parallel_vector_size * sizeof(int32_t)
+               : 0.0)
+            + 489.6e6;   // flow-field cache, six flat tables
+
+        screen.print_item(boost::str(
+            boost::format("Memory estimate: %.2f GB shared + %.2f GB x %d threads = %.2f GB")
+            % (shared / 1073741824.0)
+            % (per_thread / 1073741824.0)
+            % n_threads
+            % ((shared + per_thread * n_threads) / 1073741824.0)
+        ));
+        if (output_at_hets && data_processor._seq_length > 1000000) {
+            cout << boost::format(
+                "Warning: --output_at_hets is on with %ld output positions. For a whole-genome "
+                "scan use --output_at_hets=false --output_at_stride 1000 to cut per-thread "
+                "memory and output volume by an order of magnitude.\n"
+            ) % (long) data_processor._seq_length;
+        }
+        if (output_filename.size() > 0) {
+            const double raw_bytes = 2.0 * (double) data_processor._seq_length
+                                   * (double) haplotype_pairs.size() * sizeof(float);
+            screen.print_item(boost::str(
+                boost::format("Raw posterior output before compression: %.2f GB")
+                % (raw_bytes / 1073741824.0)
+            ));
+            if (raw_bytes > 50e9) {
+                cout << "Warning: --output at this scale writes a very large file; "
+                        "--recent_bitmatrix stores one bit per pair and position instead.\n";
+            }
+        }
+    }
     screen.print_done();
 
 
@@ -392,22 +581,64 @@ int main(int argc, char** argv) {
     ofstream* output_file_raw_meta = NULL;
     ofstream* output_file_raw = NULL;
     if (output_filename.size() > 0) {
-        output_file_raw = new ofstream(output_filename, ios_base::out | ios_base::binary);        
-        output_file_raw_meta = new ofstream(output_filename + ".meta", ios_base::out);        
+        output_file_raw = new ofstream(output_filename, ios_base::out | ios_base::binary);
+        output_file_raw_meta = new ofstream(output_filename + ".meta", ios_base::out);
     }
     ofstream* recent_summary_file = NULL;
     if (recent_summary_filename.size() > 0) {
         recent_summary_file = new ofstream(recent_summary_filename, ios_base::out);
     }
+    ofstream* bitmatrix_file = NULL;
+    if (bitmatrix_filename.size() > 0) {
+        bitmatrix_file = new ofstream(bitmatrix_filename, ios_base::out | ios_base::binary);
+    }
 
-    double recent_threshold_scaled = -1.0;
+    //
+    // Build the recent-coalescence thresholds and lookup tables
+    //
+    vector<RecentThreshold> thresholds;
+    RecentProbabilityTable probability_table;
     double two_ne_generations = -1.0;
-    if (recent_summary_file != NULL) {
+
+    if (wants_recent) {
+        screen.print_subtitle("Building recent-coalescence tables...");
         const double mutation_rate = vm["unscaled_mutation_rate"].as<double>();
+        const double generation_time = vm["generation_time"].as<double>();
         two_ne_generations = scaled_mutation_rate / (2.0 * mutation_rate);
-        const double threshold_generations =
-            vm["recent_threshold_years"].as<double>() / vm["generation_time"].as<double>();
-        recent_threshold_scaled = threshold_generations / two_ne_generations;
+
+        for (double years : threshold_years) {
+            RecentThreshold threshold;
+            threshold.years = years;
+            threshold.generations = years / generation_time;
+            threshold.scaled = threshold.generations / two_ne_generations;
+            threshold.build(recent_call, recent_call_probability);
+            thresholds.push_back(std::move(threshold));
+        }
+
+        screen.print_item(boost::str(boost::format("2Ne: %.1f generations") % two_ne_generations));
+        for (const auto& threshold : thresholds) {
+            screen.print_item(boost::str(
+                boost::format("Threshold %.0f years = %.1f generations = %.6g coalescent units")
+                % threshold.years % threshold.generations % threshold.scaled
+            ));
+        }
+        screen.print_item(boost::str(
+            boost::format("Call rule: %s%s") % recent_call_name(recent_call)
+            % (recent_call == RECENT_CALL_PROB
+               ? boost::str(boost::format(" (p = %.4g)") % recent_call_probability)
+               : string(""))
+        ));
+
+        if (accumulate_probability) {
+            probability_table.build();
+            probability_table.self_check();
+            screen.print_item(boost::str(
+                boost::format("P(T<t) table: %.1f MB, max abs error %.2e")
+                % (probability_table._table.size() * sizeof(float) / 1048576.0)
+                % probability_table._max_abs_error
+            ));
+        }
+        screen.print_done();
     }
 
     //
@@ -419,7 +650,7 @@ int main(int argc, char** argv) {
     // Construct flow field cache
     //
     screen.print_subtitle("Building flow field cache...");
-    
+
     unique_ptr<FlowFieldCache> FFC(new FlowFieldCache(
         scaled_recombination_rate,
         scaled_mutation_rate,
@@ -449,9 +680,19 @@ int main(int argc, char** argv) {
         output_file_raw,
         vm["zstd_compression_level"].as<int>(),
         recent_summary_file,
-        recent_threshold_scaled,
-        two_ne_generations
+        thresholds,
+        accumulate_probability ? &probability_table : NULL,
+        recent_call,
+        accumulate_probability,
+        two_ne_generations,
+        bitmatrix_file,
+        bitmatrix_filename,
+        pair_block,
+        n_threads
     );
+
+    PPC._accurate_exp10 = (vm.count("accurate_exp10") > 0);
+    PPC._fix_backward_alignment = (backward_alignment == "fixed");
 
     PPC.calculate_posteriors();
 
@@ -465,25 +706,29 @@ int main(int argc, char** argv) {
     if (recent_summary_file != NULL) {
         recent_summary_file->close();
     }
+    if (bitmatrix_file != NULL) {
+        bitmatrix_file->close();
+        PPC.write_bitmatrix_meta(bitmatrix_filename);
+    }
 
     double total_processing_time = PPC._timer_emissions + PPC._timer_forward + PPC._timer_backward;  // Excludes output time
     double total_basepairs = data_processor._segments.back().pos + data_processor._segments.back().length - data_processor._segments.front().pos;
     double time_per_bp_per_pair = total_processing_time / total_basepairs / haplotype_pairs.size();
-    double time_per_segment_per_pair = total_processing_time / data_processor._segments.size() / haplotype_pairs.size();
-    
 
-    screen.print_item(boost::str(boost::format("Emissions preparation time:\t%.3f secs") % PPC._timer_emissions));
-    screen.print_item(boost::str(boost::format("Forward pass time:\t\t%.3f secs") % PPC._timer_forward));
-    screen.print_item(boost::str(boost::format("Backward pass time:\t\t%.3f secs") % PPC._timer_backward));
-    screen.print_item(boost::str(boost::format("Output time:\t\t%.3f secs") % PPC._timer_output));
+    // The per-pass timers sum CPU time across workers, so they no longer add up
+    // to elapsed time; both are reported to keep the distinction visible.
+    screen.print_item(boost::str(boost::format("Emissions preparation time:\t%.3f secs (CPU)") % PPC._timer_emissions));
+    screen.print_item(boost::str(boost::format("Forward pass time:\t\t%.3f secs (CPU)") % PPC._timer_forward));
+    screen.print_item(boost::str(boost::format("Backward pass time:\t\t%.3f secs (CPU)") % PPC._timer_backward));
+    screen.print_item(boost::str(boost::format("Output time:\t\t%.3f secs (CPU)") % PPC._timer_output));
+    screen.print_item(boost::str(boost::format("Decoding wall time:\t\t%.3f secs") % PPC._timer_wall));
     screen.print_done();
 
     screen.print_subtitle("Summary:");
 
-    screen.print_item(boost::str(boost::format("Time per Gbp per pair\t%.3f secs") % (time_per_bp_per_pair * 1e9)));
-    // screen.print_item(boost::str(boost::format("Time per 1M segments per pair\t%.3f secs") % (time_per_segment_per_pair * 1e6)));
+    screen.print_item(boost::str(boost::format("Time per Gbp per pair\t%.3f secs (CPU)") % (time_per_bp_per_pair * 1e9)));
     screen.print_item(boost::str(boost::format("Overall time:\t\t%.3f secs") % mp_cputime()));
-    screen.print_item(boost::str(boost::format("Peak memory:\t\t%.3f GB") % (mp_peakrss() / 1024.0 / 1024.0 / 1024.0)));	
+    screen.print_item(boost::str(boost::format("Peak memory:\t\t%.3f GB") % (mp_peakrss() / 1024.0 / 1024.0 / 1024.0)));
     screen.print_done();
 
     return 0;

@@ -274,6 +274,16 @@ class FlowFieldCache {
         _cached_hom_site_hom_stretch_flat = aligned_alloc_float(flat_n_elements);
         _cached_het_site_hom_stretch_flat = aligned_alloc_float(flat_n_elements);
 
+        // ~82 MB per table, six of them, read with an effectively random index
+        // by every worker thread. On 4 KB pages that is TLB-bound; ask for THP.
+        const size_t flat_n_bytes = flat_n_elements * sizeof(float);
+        advise_huge_pages(_cached_missing_flat, flat_n_bytes);
+        advise_huge_pages(_cached_hom_flat, flat_n_bytes);
+        advise_huge_pages(_cached_hom_stretch_hom_site_flat, flat_n_bytes);
+        advise_huge_pages(_cached_hom_stretch_het_site_flat, flat_n_bytes);
+        advise_huge_pages(_cached_hom_site_hom_stretch_flat, flat_n_bytes);
+        advise_huge_pages(_cached_het_site_hom_stretch_flat, flat_n_bytes);
+
         _lookup_forward[0] = _cached_missing_flat;
         _lookup_forward[1] = _cached_hom_stretch_hom_site_flat;
         _lookup_forward[2] = _cached_hom_stretch_het_site_flat;
@@ -893,6 +903,15 @@ class FlowFieldCache {
 
         flatten(_cached_hom_site_hom_stretch_unravelled, _cached_hom_site_hom_stretch_flat);
         flatten(_cached_het_site_hom_stretch_unravelled, _cached_het_site_hom_stretch_flat);
+
+        // The unravelled forms are scaffolding for the flat tables and are never
+        // read again; releasing them here returns ~120 MB before the run starts.
+        vector<float>().swap(_cached_missing_unravelled);
+        vector<float>().swap(_cached_hom_unravelled);
+        vector<float>().swap(_cached_hom_stretch_hom_site_unravelled);
+        vector<float>().swap(_cached_hom_stretch_het_site_unravelled);
+        vector<float>().swap(_cached_hom_site_hom_stretch_unravelled);
+        vector<float>().swap(_cached_het_site_hom_stretch_unravelled);
     }
 
     void flatten(const vector<float>& unravelled, float* flat) {
@@ -1031,149 +1050,102 @@ class FlowFieldCache {
         // cout << V01 << endl;
     }
 
+    // Advance one 8-pair chunk by `counts[i]` cached steps, each lane reading the
+    // bilinear neighbourhood from its own table.
+    //
+    // Every temporary here is a function local. They used to be class members,
+    // which made this method unusable from more than one thread and also forced
+    // the compiler to spill each lane through memory; both are fixed by making
+    // them locals and materialising the vectors into aligned arrays once.
+    inline void apply_cached_steps(
+        float* mean_log10_chunk,
+        float* cv_log10_chunk,
+        const int32_t* counts,                  // per lane; 0 means "leave this lane alone"
+        const float* const* tables              // per lane base pointer
+    ) const {
+        const __m256 mean_log10_v = _mm256_load_ps(mean_log10_chunk);
+        const __m256 cv_log10_v = _mm256_load_ps(cv_log10_chunk);
+
+        // m = (mean_log10 - _mean_min_log10) * _mean_step_recip;
+        const __m256 m = _mm256_fmsub_ps(mean_log10_v, _mean_step_recip_v, _mean_min_log10_times_mean_step_recip_v);
+
+        // c = (cv_log10 - _cv_min_log10) * _cv_step_recip;
+        const __m256 c = _mm256_fmsub_ps(cv_log10_v, _cv_step_recip_v, _cv_min_log10_times_cv_step_recip_v);
+
+        const __m256 m0 = _mm256_floor_ps(m);
+        const __m256 c0 = _mm256_floor_ps(c);
+
+        alignas(32) float wm_arr[parallel_vector_size];
+        alignas(32) float wc_arr[parallel_vector_size];
+        alignas(32) int32_t shifts[parallel_vector_size];
+
+        _mm256_store_ps(wm_arr, _mm256_sub_ps(m, m0));
+        _mm256_store_ps(wc_arr, _mm256_sub_ps(c, c0));
+
+        // shift = 2 * 4 * ((count-1) * _mean_n_steps * _cv_n_steps + m0 * _cv_n_steps + c0)
+        const __m256i counts_v = _mm256_load_si256((const __m256i*) counts);
+        _mm256_store_si256((__m256i*) shifts, _mm256_add_epi32(_mm256_add_epi32(
+            _mm256_mullo_epi32(_mm256_sub_epi32(counts_v, _mm256_set1_epi32(1)), _shift_n_step_coef),
+            _mm256_mullo_epi32(_mm256_cvtps_epi32(m0), _shift_m0_coef)),
+            _mm256_mullo_epi32(_mm256_cvtps_epi32(c0), _shift_c0_coef)
+        ));
+
+        for (int i = 0; i < parallel_vector_size; i++) {
+            if (counts[i] == 0) {
+                continue;
+            }
+
+            const float* ptr = tables[i] + shifts[i];
+
+            const __m256 wmvec = _mm256_fmadd_ps(_mm256_set1_ps(wm_arr[i]), _wm_mult, _wm_add);
+            const __m256 wcvec = _mm256_fmadd_ps(_mm256_set1_ps(wc_arr[i]), _wc_mult, _wc_add);
+            const __m256 halfdots = _mm256_dp_ps(
+                _mm256_load_ps(ptr),
+                _mm256_mul_ps(wmvec, wcvec),
+                0xF1);
+
+            // Lane 0 of each 128-bit half holds the two dot products.
+            mean_log10_chunk[i] = _mm256_cvtss_f32(halfdots);
+            cv_log10_chunk[i] = _mm_cvtss_f32(_mm256_extractf128_ps(halfdots, 1));
+        }
+    }
+
     void at_flat_vectorized(
-        float* mean_log10_chunk, 
-        float* cv_log10_chunk, 
-        int32_t n_step, 
-        int32_t* n_called_ptr,
-        segment_type* type_chunk, 
-        bool forward) {  
+        float* mean_log10_chunk,
+        float* cv_log10_chunk,
+        int32_t n_step,
+        const int32_t* n_called_ptr,
+        const segment_type* type_chunk,
+        bool forward) const {
 
-        //
-        // First step: Missing segments
-        //
+        alignas(32) int32_t n_called[parallel_vector_size];
+        alignas(32) int32_t n_missing[parallel_vector_size];
 
-        // Load
-        __m256 mean_log10_v = _mm256_load_ps(mean_log10_chunk);
-        __m256 cv_log10_v = _mm256_load_ps(cv_log10_chunk);
-
-        // _m = (mean_log10 - _mean_min_log10) * _mean_step_recip;        
-        __m256 _m = _mm256_fmsub_ps(mean_log10_v, _mean_step_recip_v, _mean_min_log10_times_mean_step_recip_v);
-
-        // _c = (cv_log10 - _cv_min_log10) * _cv_step_recip;
-        __m256 _c = _mm256_fmsub_ps(cv_log10_v, _cv_step_recip_v, _cv_min_log10_times_cv_step_recip_v);
-
-        // _m0 = floor(_m);
-        // _c0 = floor(_c);
-        __m256 _m0 = _mm256_floor_ps(_m);
-        __m256 _c0 = _mm256_floor_ps(_c);  
-
-        // _wm = (_m - _m0);
-        // _wc = (_c - _c0);
-        _wm_v = _mm256_sub_ps(_m, _m0);
-        _wc_v = _mm256_sub_ps(_c, _c0);
-
-        __m256i n_missing = _mm256_sub_epi32(_mm256_set1_epi32(n_step), _mm256_load_si256((__m256i*) n_called_ptr));
-
-        // shifts = 2 * 4 * (n_missing * _mean_n_steps * _cv_n_steps + _m0 * _cv_n_steps + _c0)
-        __m256i shifts_missing = _mm256_add_epi32(_mm256_add_epi32(
-            _mm256_mullo_epi32(_mm256_sub_epi32(n_missing, _mm256_set1_epi32(1)), _shift_n_step_coef),
-            _mm256_mullo_epi32(_mm256_cvtps_epi32(_m0), _shift_m0_coef)),
-            _mm256_mullo_epi32(_mm256_cvtps_epi32(_c0), _shift_c0_coef)
+        const __m256i n_called_v = _mm256_load_si256((const __m256i*) n_called_ptr);
+        _mm256_store_si256((__m256i*) n_called, n_called_v);
+        _mm256_store_si256(
+            (__m256i*) n_missing,
+            _mm256_sub_epi32(_mm256_set1_epi32(n_step), n_called_v)
         );
 
-
-        for (int i = 0; i < parallel_vector_size; i++) {
-            // If missing steps is 0, do nothing
-            if (((int32_t*) (&n_missing))[i] == 0) {
-                continue;
-            }
-
-            // _flat = (forward ? _lookup_forward[type] : _lookup_backward[type]);
-
-            // This is always a missing stretch
-            _flat = _cached_missing_flat;
-
-            //_ptr = (_flat + 2 * 4 * (n_step * _mean_n_steps * _cv_n_steps + _m0 * _cv_n_steps + _c0));
-            _ptr = _flat + ((int32_t*) (&shifts_missing))[i];
-
-            _wm = ((float*) (&_wm_v))[i];
-            _wc = ((float*) (&_wc_v))[i];
-
-            // TODO: can we save something here with FMA?
-            _wmvec = _mm256_fmadd_ps(_mm256_set1_ps(_wm), _wm_mult, _wm_add);
-            _wcvec = _mm256_fmadd_ps(_mm256_set1_ps(_wc), _wc_mult, _wc_add);
-            _halfdots = _mm256_dp_ps(
-                _mm256_load_ps(_ptr), 
-                _mm256_mul_ps(
-                    _wmvec, _wcvec                
-                ), 
-                0xF1);
-
-            float* res = (float*)&_halfdots;
-
-            *(mean_log10_chunk+i) = res[0]; 
-            *(cv_log10_chunk+i) = res[4];
-        }
-
-        // 
-        // Second step: Hom stretches, with hom/het/missing emission
         //
-        mean_log10_v = _mm256_load_ps(mean_log10_chunk);
-        cv_log10_v = _mm256_load_ps(cv_log10_chunk);
-
-        // _m = (mean_log10 - _mean_min_log10) * _mean_step_recip;        
-        _m = _mm256_fmsub_ps(mean_log10_v, _mean_step_recip_v, _mean_min_log10_times_mean_step_recip_v);
-
-        // _c = (cv_log10 - _cv_min_log10) * _cv_step_recip;
-        _c = _mm256_fmsub_ps(cv_log10_v, _cv_step_recip_v, _cv_min_log10_times_cv_step_recip_v);
-
-        // _m0 = floor(_m);
-        // _c0 = floor(_c);
-        _m0 = _mm256_floor_ps(_m);
-        _c0 = _mm256_floor_ps(_c);  
-
-        // _wm = (_m - _m0);
-        // _wc = (_c - _c0);
-        _wm_v = _mm256_sub_ps(_m, _m0);
-        _wc_v = _mm256_sub_ps(_c, _c0);
-
-        __m256i n_called = _mm256_load_si256((__m256i*) n_called_ptr);
-
-        // shifts = 2 * 4 * (n_step * _mean_n_steps * _cv_n_steps + _m0 * _cv_n_steps + _c0)
-        __m256i shifts_called = _mm256_add_epi32(_mm256_add_epi32(
-            _mm256_mullo_epi32(_mm256_sub_epi32(n_called, _mm256_set1_epi32(1)), _shift_n_step_coef),
-            _mm256_mullo_epi32(_mm256_cvtps_epi32(_m0), _shift_m0_coef)),
-            _mm256_mullo_epi32(_mm256_cvtps_epi32(_c0), _shift_c0_coef)
-        );
-
-
+        // First step: the missing stretch, which always uses the missing table.
+        //
+        const float* missing_tables[parallel_vector_size];
         for (int i = 0; i < parallel_vector_size; i++) {
-            // If called steps is 0, do nothing
-            if (((int32_t*) (&n_called))[i] == 0) {
-                continue;
-            }
-
-            // _flat = (forward ? _lookup_forward[type] : _lookup_backward[type]);
-
-            // TODO: Make this faster
-            _flat = (
-                forward 
-                ? _lookup_forward[*(type_chunk + i)]
-                : _lookup_backward[*(type_chunk + i)]
-            );
-
-            //_ptr = (_flat + 2 * 4 * (n_step * _mean_n_steps * _cv_n_steps + _m0 * _cv_n_steps + _c0));
-            _ptr = _flat + ((int32_t*) (&shifts_called))[i];
-
-            _wm = ((float*) (&_wm_v))[i];
-            _wc = ((float*) (&_wc_v))[i];
-
-            // TODO: can we save something here with FMA?
-            _wmvec = _mm256_fmadd_ps(_mm256_set1_ps(_wm), _wm_mult, _wm_add);
-            _wcvec = _mm256_fmadd_ps(_mm256_set1_ps(_wc), _wc_mult, _wc_add);
-            _halfdots = _mm256_dp_ps(
-                _mm256_load_ps(_ptr), 
-                _mm256_mul_ps(
-                    _wmvec, _wcvec                
-                ), 
-                0xF1);
-
-            float* res = (float*)&_halfdots;
-
-            *(mean_log10_chunk+i) = res[0]; 
-            *(cv_log10_chunk+i) = res[4];
+            missing_tables[i] = _cached_missing_flat;
         }
+        apply_cached_steps(mean_log10_chunk, cv_log10_chunk, n_missing, missing_tables);
+
+        //
+        // Second step: hom stretches, with hom/het/missing emission.
+        //
+        const float* const* lookup = forward ? _lookup_forward : _lookup_backward;
+        const float* called_tables[parallel_vector_size];
+        for (int i = 0; i < parallel_vector_size; i++) {
+            called_tables[i] = lookup[type_chunk[i]];
+        }
+        apply_cached_steps(mean_log10_chunk, cv_log10_chunk, n_called, called_tables);
     }
 
 };

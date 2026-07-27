@@ -11,6 +11,7 @@
 #include <limits>
 #include <random>
 #include <sstream>
+#include <unordered_set>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -360,7 +361,7 @@ void read_flow_field_raw(
 //
 void readVcf(
     string filename,
-    vector<unique_ptr<SegregatingSite>>& ret,
+    SiteMatrix& ret,
     vector<string>& samples_in_order,
     string samples_filename,
     vector<int>& samples_indices,
@@ -440,9 +441,10 @@ void readVcf(
         }            
     }
     int n_samples_required = required_samples.size();
-
-    // Resize the result
-    ret.resize(0);
+    std::unordered_set<string> required_samples_set(required_samples.begin(), required_samples.end());
+    std::unordered_set<string> samples_names_against_set(
+        samples_names_against.begin(), samples_names_against.end()
+    );
 
     // TODO CHECK ERRORS
     auto file = hts_open(filename.c_str(), "r");
@@ -484,7 +486,7 @@ void readVcf(
         samples_names.push_back(header->samples[i]);
         if (n_samples_required > 0) {
             sample_is_required.push_back(
-                std::find(required_samples.begin(), required_samples.end(), header->samples[i]) != required_samples.end()
+                required_samples_set.count(header->samples[i]) > 0
             );
         } else {
             sample_is_required.push_back(true);
@@ -492,7 +494,7 @@ void readVcf(
         if (sample_is_required.back()) {
             samples_in_order.push_back(header->samples[i]);
 
-            if (std::find(samples_names_against.begin(), samples_names_against.end(), header->samples[i]) != samples_names_against.end()) {
+            if (samples_names_against_set.count(header->samples[i]) > 0) {
                 samples_against_indices.push_back(n_relevant_sample);
             } else {
                 samples_indices.push_back(n_relevant_sample);
@@ -504,10 +506,19 @@ void readVcf(
         n_samples_required = n_samples;
     }
 
+    // Retained haplotypes, in the order the rest of the program indexes them:
+    // haplotype 2*s and 2*s+1 belong to retained sample s.
+    const int n_haplotypes = n_relevant_sample * 2;
+    ret.init(n_haplotypes);
+
     int32_t *gt_arr = NULL, ngt_arr = 0;
     int ngt;
 
-    vector<int8_t> int_alleles;
+    // Genotypes are packed straight into two bit planes. A per-record scratch
+    // row avoids having to unwind a site that turns out not to segregate.
+    vector<uint64_t> scratch_alt((size_t) ret.words_per_site, 0ULL);
+    vector<uint64_t> scratch_missing((size_t) ret.words_per_site, 0ULL);
+    long n_sites_with_missing = 0;
 
     IndeterminateProgressBar bar{
         option::BarWidth{70},
@@ -526,18 +537,19 @@ void readVcf(
             break;
         }
 
-
-        bcf_unpack(record, BCF_UN_ALL);
+        // Unpack only through ALT: enough for the biallelic-SNP filter, and it
+        // skips INFO parsing entirely. bcf_get_genotypes unpacks FORMAT itself,
+        // so non-SNP records never pay for it.
+        bcf_unpack(record, BCF_UN_STR);
 
         // Gamma-SMC's emissions are binary, so retain only biallelic SNPs.
         if (!bcf_is_snp(record) || record->n_allele != 2) {
             continue;
         }
 
-        // Reset vector
-        //int_alleles.resize(0);
-        int_alleles.resize(n_samples_required * 2);
-        int int_alleles_index = 0;
+        std::fill(scratch_alt.begin(), scratch_alt.end(), 0ULL);
+        std::fill(scratch_missing.begin(), scratch_missing.end(), 0ULL);
+        bool record_has_missing = false;
 
         // Get genotypes
         ngt = bcf_get_genotypes(header, record, &gt_arr, &ngt_arr);
@@ -553,37 +565,45 @@ void readVcf(
             cout << "Error: Gamma-SMC requires diploid genotypes." << std::endl;
             exit(-1);
         }
+        int n_relevant_so_far = 0;
         for (int i = 0; i < n_samples; i++) {
             if (!sample_is_required[i]) {
                 continue;
             }
+            const int haplotype_base = 2 * n_relevant_so_far;
+            n_relevant_so_far++;
 
             int32_t *ptr = gt_arr + i*max_ploidy;
             int sample_alleles[2] = {-1, -1};
             for (int j = 0; j < max_ploidy; j++)
             {
                 // if true, the sample has smaller ploidy
-                if (ptr[j] == bcf_int32_vector_end) break;
+                if (ptr[j] == bcf_int32_vector_end) {
+                    // A haplotype the record does not call at all is missing.
+                    SiteMatrix::set_bit(scratch_missing.data(), haplotype_base + j);
+                    record_has_missing = true;
+                    continue;
+                }
 
                 // missing allele
                 if (bcf_gt_is_missing(ptr[j])) {
-                    //int_alleles.push_back(-1);
-                    int_alleles[int_alleles_index] = -1;
-                    int_alleles_index++;
+                    SiteMatrix::set_bit(scratch_missing.data(), haplotype_base + j);
+                    record_has_missing = true;
                 } else {
-                    // the VCF 0-based allele index
+                    // the VCF 0-based allele index; the biallelic filter above
+                    // guarantees this is 0 or 1, so one bit holds it.
                     int32_t al = bcf_gt_allele(ptr[j]);
-                    //int_alleles.push_back(al);
-                    int_alleles[int_alleles_index] = al;
-                    int_alleles_index++;
+                    if (al) {
+                        SiteMatrix::set_bit(scratch_alt.data(), haplotype_base + j);
+                    }
                     sample_alleles[j] = al;
                     has_reference = has_reference || (al == 0);
                     has_alternate = has_alternate || (al == 1);
                 }
 
                 // is phased?
-                // int is_phased = bcf_gt_is_phased(ptr[j]);                
-            }            
+                // int is_phased = bcf_gt_is_phased(ptr[j]);
+            }
             if (!allow_unphased && sample_alleles[0] >= 0 && sample_alleles[1] >= 0
                     && sample_alleles[0] != sample_alleles[1] && !bcf_gt_is_phased(ptr[1])) {
                 cout << boost::format("Error: Unphased heterozygous genotype at %s:%d. "
@@ -594,9 +614,13 @@ void readVcf(
         }
 
         if (has_reference && has_alternate) {
-            ret.push_back(make_unique<SegregatingSite>());
-            ret.back()->pos = record->pos;
-            ret.back()->alleles = int_alleles;        
+            uint64_t* row = ret.append_site(record->pos);
+            memcpy(row, scratch_alt.data(), (size_t) ret.words_per_site * sizeof(uint64_t));
+            if (record_has_missing) {
+                uint64_t* missing = ret.append_missing_row();
+                memcpy(missing, scratch_missing.data(), (size_t) ret.words_per_site * sizeof(uint64_t));
+                n_sites_with_missing++;
+            }
         }
 
         // Arbitrary number to make progress not seem so round :)
@@ -613,6 +637,11 @@ void readVcf(
     });
     bar.mark_as_completed();
     indicators::show_console_cursor(true);
+
+    if (n_sites_with_missing > 0) {
+        cout << boost::format("  %ld of %ld sites carry a missing genotype.\n")
+                % n_sites_with_missing % ret.size();
+    }
 
     free(gt_arr);
     bcf_destroy(record);
@@ -637,6 +666,25 @@ void readMask(
         boost::algorithm::split(bedparts, bedline, boost::is_any_of("\t"));
         global_mask.push_back(make_pair(stoi(bedparts[1]), stoi(bedparts[2])));  // TODO: Check errors
     }
+
+    // Sort and merge. intersect_masks accumulates n_called per overlapping
+    // interval pair, so unsorted or overlapping BED records would double-count
+    // and produce n_called > segment length. That makes n_missing negative,
+    // which the SIMD step index turns into a large negative offset and then
+    // dereferences -- a wild aligned load, not a wrong number.
+    std::sort(global_mask.begin(), global_mask.end());
+    vector<pair<int, int>> merged;
+    for (const auto& interval : global_mask) {
+        if (interval.second <= interval.first) {
+            continue;
+        }
+        if (!merged.empty() && interval.first <= merged.back().second) {
+            merged.back().second = max(merged.back().second, interval.second);
+        } else {
+            merged.push_back(interval);
+        }
+    }
+    global_mask.swap(merged);
 }
 
 void readMasks(

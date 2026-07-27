@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+from collections.abc import Sequence
 from pathlib import Path
 
 
@@ -13,34 +14,98 @@ def run_within_decoder(
     scaled_mutation_rate: float,
     recombination_to_mutation_ratio: float,
     mutation_rate: float,
-    threshold_years: float = 4500,
+    threshold_years: float | Sequence[float] = 4500,
     generation_time: float = 30,
     input_format: str = "auto",
     raw_output: str | Path | None = None,
+    bitmatrix_output: str | Path | None = None,
     mask: str | Path | None = None,
     masks_per_sample: str | Path | None = None,
     output_at_stride: int = -1,
     output_at_hets: bool = True,
+    only_within: bool = True,
+    n_random_pairs: int = 0,
+    pairs_seed: int = 1729,
+    pairs_file: str | Path | None = None,
+    exclude_within: bool = False,
+    recent_call: str = "median",
+    recent_call_probability: float = 0.5,
+    threads: int = 0,
+    pair_block: int = 256,
+    accurate_exp10: bool = False,
+    backward_alignment: str = "legacy",
+    extra_args: Sequence[str] | None = None,
 ) -> dict:
+    """Run the decoder and write a per-position recent-coalescence summary.
+
+    ``threshold_years`` accepts several thresholds; the summary gains an
+    ``n_recent_<years>``/``frac_recent_<years>``/``mean_p_lt_<years>`` block for
+    each, and ``mean_p_tmrca_lt_threshold`` stays as the first threshold's mean
+    probability so existing consumers keep working.
+
+    Pair selection is mutually exclusive: ``only_within`` (one pair per
+    diploid), ``n_random_pairs`` (a uniform sample over all haplotype pairs,
+    within-individual pairs included unless ``exclude_within``), or
+    ``pairs_file``.
+    """
     output_summary = Path(output_summary)
     output_summary.parent.mkdir(parents=True, exist_ok=True)
+
+    thresholds = (
+        [threshold_years]
+        if isinstance(threshold_years, (int, float))
+        else list(threshold_years)
+    )
+    if not thresholds:
+        raise ValueError("at least one threshold is required")
+
+    selectors = sum([bool(only_within), n_random_pairs > 0, pairs_file is not None])
+    if selectors > 1:
+        raise ValueError("only_within, n_random_pairs and pairs_file are mutually exclusive")
+    if selectors == 0:
+        raise ValueError(
+            "choose a pair set: only_within, n_random_pairs or pairs_file "
+            "(the exhaustive default is O(n^2) haplotype pairs)"
+        )
+
     command = [
         str(executable), "--input", str(input_path), "--input_format", input_format,
-        "--only_within", "--scaled_mutation_rate", str(scaled_mutation_rate),
+        "--scaled_mutation_rate", str(scaled_mutation_rate),
         "--recombination_to_mutation_ratio", str(recombination_to_mutation_ratio),
         "--unscaled_mutation_rate", str(mutation_rate),
-        "--recent_threshold_years", str(threshold_years),
+        "--recent_threshold_years", ",".join(str(value) for value in thresholds),
         "--generation_time", str(generation_time),
         "--recent_summary", str(output_summary),
+        "--recent_call", recent_call,
+        "--recent_call_probability", str(recent_call_probability),
         "--output_at_hets", str(output_at_hets).lower(),
         "--output_at_stride", str(output_at_stride),
+        "--threads", str(threads),
+        "--pair_block", str(pair_block),
+        "--backward_alignment", backward_alignment,
     ]
+    if only_within:
+        command.append("--only_within")
+    if n_random_pairs > 0:
+        command.extend(["--n_random_pairs", str(n_random_pairs), "--pairs_seed", str(pairs_seed)])
+        if exclude_within:
+            command.append("--exclude_within")
+    if pairs_file is not None:
+        command.extend(["--pairs_file", str(pairs_file)])
+    if accurate_exp10:
+        command.append("--accurate_exp10")
     if raw_output is not None:
         command.extend(["--output", str(raw_output)])
+    if bitmatrix_output is not None:
+        Path(bitmatrix_output).parent.mkdir(parents=True, exist_ok=True)
+        command.extend(["--recent_bitmatrix", str(bitmatrix_output)])
     if mask is not None:
         command.extend(["--mask", str(mask)])
     if masks_per_sample is not None:
         command.extend(["--masks_per_sample", str(masks_per_sample)])
+    if extra_args:
+        command.extend(str(value) for value in extra_args)
+
     completed = subprocess.run(command, check=True, text=True, capture_output=True)
     run = {"command": command, "stdout": completed.stdout, "stderr": completed.stderr}
     with output_summary.with_suffix(output_summary.suffix + ".run.json").open("w", encoding="utf-8") as handle:

@@ -1,12 +1,24 @@
 CXX=g++
 
+# The decoder is parallel over haplotype pairs; build with OPENMP=0 to get the
+# old single-threaded binary (e.g. to bisect a numerical difference).
+OPENMP ?= 1
+ifeq ($(OPENMP),1)
+OPENMP_FLAGS = -fopenmp
+else
+OPENMP_FLAGS =
+endif
+
+# `native` tunes for the build host. On a heterogeneous cluster, or when the
+# build node differs from the run node, use MARCH=x86-64-v3 (AVX2+FMA baseline).
 MARCH = native
 CXXFLAGS =	-std=c++17  -Wall -DNDEBUG -O3 -g -ffast-math -funsafe-math-optimizations -fno-math-errno \
 			-pipe -faligned-new  \
 			-mavx2 -march=$(MARCH) -mfma -ftree-vectorize -msse -msse2 -msse3 \
-			-Wno-unused-variable -Wno-strict-aliasing 
+			$(OPENMP_FLAGS) \
+			-Wno-unused-variable -Wno-strict-aliasing
 
-LDFLAGS =	-O3 -g -lm -lstdc++fs
+LDFLAGS =	-O3 -g $(OPENMP_FLAGS) -lm -lstdc++fs -lpthread
 LDFLAGS_MAIN = -lhts -lzstd
 LDFLAGS_FF = -larb -lflint -lpthread -lgsl -lgslcblas
 
@@ -30,8 +42,8 @@ clean:
 	rm -f src/*.o
 	rm -f bin/*
 
-src/generate_canonical_flow_field.o: 
-src/gamma_smc.o: src/cxxopts.hpp src/io.h src/common.h src/flow_field.h src/gamma_smc.h src/data_processor.h src/sys.h src/screenoutput.h src/indicators.h
+src/generate_canonical_flow_field.o:
+src/gamma_smc.o: src/cxxopts.hpp src/io.h src/common.h src/flow_field.h src/gamma_smc.h src/data_processor.h src/sys.h src/screenoutput.h src/indicators.h src/recent_stats.h src/bitmatrix.h src/pair_sampling.h
 
 
 

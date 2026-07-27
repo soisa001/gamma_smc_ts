@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from .bitmatrix import to_frame as bitmatrix_to_frame
 from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
 from .carrier_profiles import plot_retained_carrier_tmrca_profiles
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
@@ -143,11 +144,36 @@ def command_decode(args):
         generation_time=args.generation_time,
         input_format=args.input_format,
         raw_output=args.raw_output,
+        bitmatrix_output=args.bitmatrix,
         mask=args.mask,
         masks_per_sample=args.masks_per_sample,
         output_at_stride=args.output_at_stride,
         output_at_hets=not args.no_output_at_hets,
+        only_within=(args.n_random_pairs <= 0 and args.pairs_file is None),
+        n_random_pairs=args.n_random_pairs,
+        pairs_seed=args.pairs_seed,
+        pairs_file=args.pairs_file,
+        exclude_within=args.exclude_within,
+        recent_call=args.recent_call,
+        recent_call_probability=args.recent_call_probability,
+        threads=args.threads,
+        pair_block=args.pair_block,
+        accurate_exp10=args.accurate_exp10,
+        backward_alignment=args.backward_alignment,
     )
+
+
+def command_bitmatrix_summary(args):
+    frame = bitmatrix_to_frame(args.input, pair_indices=_pair_indices(args.pairs))
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(args.output, sep="\t", index=False)
+    print(f"wrote {len(frame)} positions to {args.output}")
+
+
+def _pair_indices(path: str | None):
+    if path is None:
+        return None
+    return np.loadtxt(path, dtype=np.int64, ndmin=1)
 
 
 def command_decode_container(args):
@@ -376,7 +402,7 @@ def parser() -> argparse.ArgumentParser:
     convert.add_argument("--output", required=True)
     convert.set_defaults(func=command_convert)
 
-    decode = commands.add_parser("decode", help="run streaming within-individual Gamma-SMC summary")
+    decode = commands.add_parser("decode", help="run a streaming Gamma-SMC recent-coalescence summary")
     decode.add_argument(
         "--executable",
         default=os.environ.get("GAMMA_SMC_BIN", "gamma_smc"),
@@ -385,17 +411,58 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--input", required=True)
     decode.add_argument("--input-format", choices=["auto", "vcf", "trees", "tsz"], default="auto")
     decode.add_argument("--output", required=True)
-    decode.add_argument("--raw-output")
+    decode.add_argument("--raw-output", help="raw alpha/beta posteriors; 8 bytes per pair per position")
+    decode.add_argument(
+        "--bitmatrix",
+        help="packed per-pair recent-coalescence calls, one bit per pair/position/threshold",
+    )
     decode.add_argument("--mask", help="global BED mask; use the same callable-region policy in data and simulations")
     decode.add_argument("--masks-per-sample", help="sample-to-BED TSV")
     decode.add_argument("--theta", type=float, required=True)
     decode.add_argument("--rho-over-theta", type=float, required=True)
     decode.add_argument("--mutation-rate", type=float, required=True)
-    decode.add_argument("--threshold-years", type=float, default=4500)
+    decode.add_argument(
+        "--threshold-years", type=float, nargs="+", default=[4500],
+        help="one or more thresholds, e.g. --threshold-years 4500 10000",
+    )
     decode.add_argument("--generation-time", type=float, default=30)
     decode.add_argument("--output-at-stride", type=int, default=-1)
     decode.add_argument("--no-output-at-hets", action="store_true")
+    decode.add_argument(
+        "--n-random-pairs", type=int, default=0,
+        help="sample this many haplotype pairs uniformly instead of one per diploid",
+    )
+    decode.add_argument("--pairs-seed", type=int, default=1729)
+    decode.add_argument("--pairs-file", help="explicit pair list: two 0-based haplotype indices per line")
+    decode.add_argument(
+        "--exclude-within", action="store_true",
+        help="drop within-individual pairs when sampling at random",
+    )
+    decode.add_argument(
+        "--recent-call", choices=["median", "mean", "prob"], default="median",
+        help="per-pair call rule: posterior median below the threshold (default), posterior mean, or P>=p",
+    )
+    decode.add_argument("--recent-call-probability", type=float, default=0.5)
+    decode.add_argument("--threads", type=int, default=0, help="0 uses every available core")
+    decode.add_argument("--pair-block", type=int, default=256)
+    decode.add_argument(
+        "--accurate-exp10", action="store_true",
+        help="replace the fast 10^x approximation (about 1%% systematic bias) with an accurate one",
+    )
+    decode.add_argument(
+        "--backward-alignment", choices=["legacy", "fixed"], default="legacy",
+        help="legacy keeps upstream's one-position shift of the backward message",
+    )
     decode.set_defaults(func=command_decode)
+
+    bits = commands.add_parser(
+        "bitmatrix-summary",
+        help="per-position recent-coalescence counts from a packed bit matrix",
+    )
+    bits.add_argument("--input", required=True, help="path to the .bits file (its .meta must sit alongside)")
+    bits.add_argument("--output", required=True)
+    bits.add_argument("--pairs", help="optional file of 0-based pair indices to restrict the counts to")
+    bits.set_defaults(func=command_bitmatrix_summary)
 
     container = commands.add_parser(
         "decode-container",
