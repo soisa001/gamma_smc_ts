@@ -1,8 +1,40 @@
 # Getting Started
 
-For the AoU within-individual selection scan, fixed-standard-coalescent
-simulations, tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries,
-and simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).
+For the AoU selection scan, fixed-standard-coalescent simulations,
+tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries, and
+simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).
+
+## Large scans: many sampled pairs, one bit per pair
+
+The decoder in this branch is parallel over haplotype pairs and can record the
+recent-coalescence call for each pair as a single bit, which is what makes a
+whole-genome scan over ~100,000 pairs practical:
+
+```bash
+bin/gamma_smc \
+  --input chr2.phased.bcf \
+  --recent_summary chr2.tsv --recent_bitmatrix chr2.bits \
+  --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 \
+  --unscaled_mutation_rate 1.25e-8 --generation_time 25 \
+  --recent_threshold_years 4500,10000 \
+  --n_random_pairs 100000 --pairs_seed 1729 \
+  --output_at_hets=false --output_at_stride 1000 \
+  --threads 32 --mask callable.chr2.bed
+```
+
+- `--n_random_pairs` samples distinct haplotype pairs uniformly from the whole
+  panel (`--pairs_file` and `--exclude_within` are also available).
+- `--recent_threshold_years` takes several thresholds.
+- `--recent_summary` writes per-position counts, proportions and mean
+  probabilities; its first five columns are unchanged from earlier versions.
+- `--recent_bitmatrix` writes one bit per pair, position and threshold —
+  ~64x smaller than the raw alpha/beta posteriors — as independently
+  decompressible frames. Read it with `gamma_smc_aou.bitmatrix`.
+- `--threads 0` uses every core.
+
+See [AOU_WORKFLOW.md](AOU_WORKFLOW.md#1b-whole-genome-scan-over-100000-sampled-haplotype-pairs)
+for the output schemas, the memory model, and the two opt-in numerical
+corrections (`--accurate_exp10`, `--backward_alignment fixed`).
 
 ## Reproducible one-command environment
 

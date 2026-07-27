@@ -12,11 +12,11 @@ on:
       diploids:
         description: Diploid samples to simulate
         required: true
-        default: "1000"
+        default: "4000"
       length:
         description: Sequence length in bp
         required: true
-        default: "10000000"
+        default: "5000000"
       random_pairs:
         description: Pairs for the throughput run (this branch only)
         required: true
@@ -76,8 +76,8 @@ jobs:
           print(f"{ts.num_individuals} diploids, {ts.num_sites} sites, {int(ts.sequence_length)} bp")
           PY
         env:
-          DIPLOIDS: ${{ inputs.diploids || '1000' }}
-          LENGTH: ${{ inputs.length || '10000000' }}
+          DIPLOIDS: ${{ inputs.diploids || '4000' }}
+          LENGTH: ${{ inputs.length || '5000000' }}
 
       - name: Baseline (AOU_run), one thread
         run: |
@@ -88,7 +88,7 @@ jobs:
             --recent_threshold_years 4500 --generation_time 25 \
             --recent_summary base.tsv \
             --output_at_hets=false --output_at_stride 1000 \
-            2> base.time | tail -20
+            > base.log 2> base.time; tail -20 base.log
           grep -E "Elapsed|Maximum resident" base.time
 
       - name: This branch, one thread, identical workload
@@ -100,7 +100,7 @@ jobs:
             --recent_threshold_years 4500 --generation_time 25 \
             --recent_summary opt1.tsv \
             --output_at_hets=false --output_at_stride 1000 --threads 1 \
-            2> opt1.time | tail -20
+            > opt1.log 2> opt1.time; tail -20 opt1.log
           grep -E "Elapsed|Maximum resident" opt1.time
 
       - name: This branch, all threads
@@ -112,7 +112,7 @@ jobs:
             --recent_threshold_years 4500 --generation_time 25 \
             --recent_summary optN.tsv \
             --output_at_hets=false --output_at_stride 1000 --threads 0 \
-            2> optN.time | tail -20
+            > optN.log 2> optN.time; tail -20 optN.log
           grep -E "Elapsed|Maximum resident" optN.time
 
       - name: Throughput at scale, two thresholds plus bit matrix
@@ -125,55 +125,15 @@ jobs:
             --recent_threshold_years 4500,10000 --generation_time 25 \
             --recent_summary scale.tsv --recent_bitmatrix scale.bits \
             --output_at_hets=false --output_at_stride 1000 --threads 0 \
-            2> scale.time | tail -25
+            > scale.log 2> scale.time; tail -25 scale.log
           grep -E "Elapsed|Maximum resident" scale.time
           ls -l scale.bits
 
       - name: Compare and project
-        run: |
-          python - <<'PY'
-          import pandas as pd, numpy as np, re, os, pathlib
-
-          def elapsed(path):
-              text = pathlib.Path(path).read_text()
-              m = re.search(r"Elapsed \(wall clock\) time.*?:\s*([\d:.]+)", text)
-              parts = [float(p) for p in m.group(1).split(":")]
-              seconds = 0.0
-              for p in parts:
-                  seconds = seconds * 60 + p
-              rss = float(re.search(r"Maximum resident set size \(kbytes\):\s*(\d+)", text).group(1))
-              return seconds, rss / 1048576.0
-
-          rows = {name: elapsed(f"{name}.time") for name in ("base", "opt1", "optN", "scale")}
-          for name, (secs, gb) in rows.items():
-              print(f"{name:6} {secs:8.1f} s   peak RSS {gb:6.2f} GB")
-
-          base_s = rows["base"][0]; opt1_s = rows["opt1"][0]; optN_s = rows["optN"][0]
-          print(f"\nsingle-thread speedup vs AOU_run: {base_s / opt1_s:.2f}x")
-          print(f"thread scaling on {os.cpu_count()} vCPU:  {opt1_s / optN_s:.2f}x")
-          print(f"total speedup:                    {base_s / optN_s:.2f}x")
-
-          # Same statistic must come out of both binaries.
-          base = pd.read_csv("base.tsv", sep="\t")
-          opt = pd.read_csv("opt1.tsv", sep="\t")
-          assert len(base) == len(opt), (len(base), len(opt))
-          delta = np.abs(base["mean_p_tmrca_lt_threshold"] - opt["mean_p_tmrca_lt_threshold"])
-          print(f"\nmean_p_tmrca_lt_threshold vs baseline: max |delta| = {np.nanmax(delta):.3e}")
-          dt = np.abs(base["mean_tmrca_generations"] - opt["mean_tmrca_generations"])
-          rel = dt / np.maximum(np.abs(base["mean_tmrca_generations"]), 1e-12)
-          print(f"mean_tmrca_generations:                max rel = {np.nanmax(rel):.3e}")
-
-          # Project the whole-genome cost from the throughput run.
-          length = int(os.environ["LENGTH"]); pairs = int(os.environ["RANDOM_PAIRS"])
-          scale_s = rows["scale"][0]
-          per = scale_s / (pairs * length / 1e9)
-          print(f"\nthroughput: {per:.1f} s per (Gbp x pair) of wall time on {os.cpu_count()} vCPU")
-          print(f"projected 3.1 Gbp x 100,000 pairs here: {per * 3.1 * 1e5 / 3600:.1f} h")
-          print(f"same work scaled to 32 cores:           {per * 3.1 * 1e5 / 3600 * os.cpu_count() / 32:.1f} h")
-          PY
-        env:
-          LENGTH: ${{ inputs.length || '10000000' }}
-          RANDOM_PAIRS: ${{ inputs.random_pairs || '20000' }}
+        run: >-
+          python opt/scripts/compare_benchmark.py
+          --length ${{ inputs.length || '5000000' }}
+          --random-pairs ${{ inputs.random_pairs || '20000' }}
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -182,4 +142,5 @@ jobs:
           path: |
             *.tsv
             *.time
+            *.log
           if-no-files-found: ignore
