@@ -158,7 +158,7 @@ def command_decode(args):
         recent_call_probability=args.recent_call_probability,
         threads=args.threads,
         pair_block=args.pair_block,
-        accurate_exp10=args.accurate_exp10,
+        exp10=args.exp10,
         backward_alignment=args.backward_alignment,
     )
 
@@ -446,12 +446,12 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--threads", type=int, default=0, help="0 uses every available core")
     decode.add_argument("--pair-block", type=int, default=256)
     decode.add_argument(
-        "--accurate-exp10", action="store_true",
-        help="replace the fast 10^x approximation (about 1%% systematic bias) with an accurate one",
+        "--exp10", choices=["accurate", "fast"], default="accurate",
+        help="fast reproduces upstream's 10^x approximation, which carries about 1%% systematic bias",
     )
     decode.add_argument(
-        "--backward-alignment", choices=["legacy", "fixed"], default="legacy",
-        help="legacy keeps upstream's one-position shift of the backward message",
+        "--backward-alignment", choices=["fixed", "legacy"], default="fixed",
+        help="legacy reproduces upstream's one-output-position shift of the backward message",
     )
     decode.set_defaults(func=command_decode)
 

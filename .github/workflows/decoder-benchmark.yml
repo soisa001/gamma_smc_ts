@@ -91,29 +91,25 @@ jobs:
             > base.log 2> base.time; tail -20 base.log
           grep -E "Elapsed|Maximum resident" base.time
 
-      - name: This branch, one thread, identical workload
+      - name: "Ablation: CPU/memory work only (exact gamma_p, upstream numerics)"
         run: |
-          /usr/bin/time -v opt/bin/gamma_smc \
-            --input panel.trees --input_format trees --only_within \
-            --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 \
-            --unscaled_mutation_rate 1.25e-8 \
-            --recent_threshold_years 4500 --generation_time 25 \
-            --recent_summary opt1.tsv \
-            --output_at_hets=false --output_at_stride 1000 --threads 1 \
-            > opt1.log 2> opt1.time; tail -20 opt1.log
-          grep -E "Elapsed|Maximum resident" opt1.time
+          /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary exact.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --backward_alignment legacy --exp10 fast \n            --exact_recent_stats \n            --threads 1 \n            > exact.log 2> exact.time; tail -20 exact.log
+          grep -E "Elapsed|Maximum resident" exact.time
 
-      - name: This branch, all threads
+      - name: "Ablation: plus lookup tables (upstream numerics)"
         run: |
-          /usr/bin/time -v opt/bin/gamma_smc \
-            --input panel.trees --input_format trees --only_within \
-            --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 \
-            --unscaled_mutation_rate 1.25e-8 \
-            --recent_threshold_years 4500 --generation_time 25 \
-            --recent_summary optN.tsv \
-            --output_at_hets=false --output_at_stride 1000 --threads 0 \
-            > optN.log 2> optN.time; tail -20 optN.log
+          /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary legacy.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --backward_alignment legacy --exp10 fast \n            --threads 1 \n            > legacy.log 2> legacy.time; tail -20 legacy.log
+          grep -E "Elapsed|Maximum resident" legacy.time
+
+      - name: "Ablation: plus threads (upstream numerics)"
+        run: |
+          /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary optN.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --backward_alignment legacy --exp10 fast \n            --threads 0 \n            > optN.log 2> optN.time; tail -20 optN.log
           grep -E "Elapsed|Maximum resident" optN.time
+
+      - name: "Shipping defaults: corrected exp10 and backward alignment"
+        run: |
+          /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary fixed.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --threads 0 \n            > fixed.log 2> fixed.time; tail -20 fixed.log
+          grep -E "Elapsed|Maximum resident" fixed.time
 
       - name: Throughput at scale, two thresholds plus bit matrix
         run: |
@@ -134,6 +130,7 @@ jobs:
           python opt/scripts/compare_benchmark.py
           --length ${{ inputs.length || '5000000' }}
           --random-pairs ${{ inputs.random_pairs || '20000' }}
+          --pairs ${{ inputs.diploids || '4000' }}
 
       - uses: actions/upload-artifact@v4
         if: always()

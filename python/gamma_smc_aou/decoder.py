@@ -32,8 +32,8 @@ def run_within_decoder(
     recent_call_probability: float = 0.5,
     threads: int = 0,
     pair_block: int = 256,
-    accurate_exp10: bool = False,
-    backward_alignment: str = "legacy",
+    exp10: str = "accurate",
+    backward_alignment: str = "fixed",
     extra_args: Sequence[str] | None = None,
 ) -> dict:
     """Run the decoder and write a per-position recent-coalescence summary.
@@ -83,6 +83,7 @@ def run_within_decoder(
         "--threads", str(threads),
         "--pair_block", str(pair_block),
         "--backward_alignment", backward_alignment,
+        "--exp10", exp10,
     ]
     if only_within:
         command.append("--only_within")
@@ -92,8 +93,6 @@ def run_within_decoder(
             command.append("--exclude_within")
     if pairs_file is not None:
         command.extend(["--pairs_file", str(pairs_file)])
-    if accurate_exp10:
-        command.append("--accurate_exp10")
     if raw_output is not None:
         command.extend(["--output", str(raw_output)])
     if bitmatrix_output is not None:

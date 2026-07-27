@@ -59,8 +59,9 @@ int main(int argc, char** argv) {
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
         ("j,threads", "Worker threads (0 = all available)", cxxopts::value<int>()->default_value("0"))
         ("pair_block", "Pairs decoded per work unit and per bit-matrix frame", cxxopts::value<long>()->default_value("256"))
-        ("accurate_exp10", "Use an accurate 10^x instead of the fast approximation with ~1% bias")
-        ("backward_alignment", "legacy (upstream, backward message shifted one output position) or fixed", cxxopts::value<std::string>()->default_value("legacy"))
+        ("exp10", "accurate (default) or fast (upstream's approximation, ~1% systematic bias)", cxxopts::value<std::string>()->default_value("accurate"))
+        ("exact_recent_stats", "Evaluate P(T<t) with boost::math::gamma_p per element instead of the lookup tables (validation only; very slow)")
+        ("backward_alignment", "fixed (default) or legacy (upstream's one-output-position shift of the backward message)", cxxopts::value<std::string>()->default_value("fixed"))
         ("y,only_forward", "Calculate only forward pass", cxxopts::value<bool>()->default_value("false"))
         ("d,only_backward", "Calculate only backward pass", cxxopts::value<bool>()->default_value("false"))
         ("zstd_compression_level", "zstd compression level", cxxopts::value<int>()->default_value("1"))
@@ -320,7 +321,13 @@ int main(int argc, char** argv) {
 
     const string backward_alignment = vm["backward_alignment"].as<string>();
     if (backward_alignment != "legacy" && backward_alignment != "fixed") {
-        cout << "Error: --backward_alignment must be legacy or fixed." << endl;
+        cout << "Error: --backward_alignment must be fixed or legacy." << endl;
+        exit(-1);
+    }
+
+    const string exp10_mode = vm["exp10"].as<string>();
+    if (exp10_mode != "accurate" && exp10_mode != "fast") {
+        cout << "Error: --exp10 must be accurate or fast." << endl;
         exit(-1);
     }
 
@@ -710,8 +717,18 @@ int main(int argc, char** argv) {
         n_threads
     );
 
-    PPC._accurate_exp10 = (vm.count("accurate_exp10") > 0);
+    PPC._accurate_exp10 = (exp10_mode == "accurate");
     PPC._fix_backward_alignment = (backward_alignment == "fixed");
+    PPC._exact_recent_stats = (vm.count("exact_recent_stats") > 0);
+    PPC._recent_call_probability = recent_call_probability;
+    if (!PPC._accurate_exp10 || !PPC._fix_backward_alignment) {
+        screen.print_item(boost::str(boost::format(
+            "Reproducing upstream numerics: exp10=%s, backward_alignment=%s"
+        ) % exp10_mode % backward_alignment));
+    }
+    if (PPC._exact_recent_stats) {
+        screen.print_item("Using exact boost::math::gamma_p instead of the lookup tables.");
+    }
 
     PPC.calculate_posteriors();
 

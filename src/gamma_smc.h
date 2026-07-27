@@ -161,6 +161,8 @@ class CachedPairwiseGammaSMC {
     // construction.
     bool _accurate_exp10 = false;
     bool _fix_backward_alignment = false;
+    bool _exact_recent_stats = false;
+    double _recent_call_probability = 0.5;
 
     // Blocking and threading
     long _pair_block = 256;
@@ -556,12 +558,66 @@ class CachedPairwiseGammaSMC {
     // Recent-coalescence calls, packed one bit per pair
     // ----------------------------------------------------------------------
 
+    // Reference implementation: boost::math::gamma_p per element, exactly what
+    // upstream did. Far too slow for a real run -- it is the reason the lookup
+    // tables exist -- but it isolates the tables' contribution to both runtime
+    // and output when the two are run over the same decoded posteriors.
+    void accumulate_and_pack_exact(
+        PairWorkspace& ws,
+        long chunk_first_pair,
+        long chunk_in_block,
+        long chunks_in_block
+    ) const {
+        const long real_lanes = min(_n_pairs_in_chunk, _n_pairs - chunk_first_pair);
+        const int n_thresholds = (int) _thresholds.size();
+        const bool write_bits = (_bitmatrix_output != NULL);
+        const double call_probability =
+            (_recent_call == RECENT_CALL_MEDIAN) ? 0.5 : _recent_call_probability;
+
+        for (position_t pos = 0; pos < _seq_length; pos++) {
+            const long offset = pos * _n_pairs_in_chunk;
+            for (long lane = 0; lane < real_lanes; lane++) {
+                const double alpha = (double) ws.posteriors_alpha[offset + lane];
+                const double beta = (double) ws.posteriors_beta[offset + lane];
+                if (!(alpha > 0.0) || !(beta > 0.0)
+                    || !std::isfinite(alpha) || !std::isfinite(beta)) {
+                    continue;
+                }
+                ws.n_valid[(size_t) pos] += 1;
+                ws.sum_tmrca[(size_t) pos] += (alpha / beta) * _two_ne_generations;
+
+                for (int k = 0; k < n_thresholds; k++) {
+                    const double x = beta * _thresholds[k].scaled;
+                    const double probability = boost::math::gamma_p(alpha, x);
+                    const bool called = (_recent_call == RECENT_CALL_MEAN)
+                        ? ((alpha / beta) < _thresholds[k].scaled)
+                        : (probability >= call_probability);
+                    if (called) {
+                        ws.n_recent[(size_t) (k * _seq_length + pos)] += 1;
+                        if (write_bits) {
+                            ws.bits[(size_t) (((k * chunks_in_block) + chunk_in_block)
+                                              * _seq_length + pos)] |= (uint8_t) (1u << lane);
+                        }
+                    }
+                    if (_accumulate_probability) {
+                        ws.sum_probability[(size_t) (k * _seq_length + pos)] += probability;
+                    }
+                }
+            }
+        }
+    }
+
     void accumulate_and_pack(
         PairWorkspace& ws,
         long chunk_first_pair,
         long chunk_in_block,
         long chunks_in_block
     ) const {
+        if (_exact_recent_stats) {
+            accumulate_and_pack_exact(ws, chunk_first_pair, chunk_in_block, chunks_in_block);
+            return;
+        }
+
         const long real_lanes = min(_n_pairs_in_chunk, _n_pairs - chunk_first_pair);
         // Lanes past the end of the pair list must never contribute a count or
         // set a bit, so mask them out here rather than trusting their contents.
