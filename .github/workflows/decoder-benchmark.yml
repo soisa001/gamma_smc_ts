@@ -3,6 +3,9 @@ name: Decoder benchmark
 # Measures this branch against the AOU_run baseline on an identical workload,
 # then measures thread scaling and pair throughput on this branch alone.
 # Manual, because it simulates a panel and takes a few minutes.
+#
+# workflow_dispatch only works once this file is on the default branch, so the
+# development branch also triggers on edits to the workflow itself.
 on:
   workflow_dispatch:
     inputs:
@@ -18,6 +21,10 @@ on:
         description: Pairs for the throughput run (this branch only)
         required: true
         default: "20000"
+  push:
+    branches: [AOU_run_opt]
+    paths:
+      - .github/workflows/decoder-benchmark.yml
 
 jobs:
   benchmark:
@@ -69,8 +76,8 @@ jobs:
           print(f"{ts.num_individuals} diploids, {ts.num_sites} sites, {int(ts.sequence_length)} bp")
           PY
         env:
-          DIPLOIDS: ${{ inputs.diploids }}
-          LENGTH: ${{ inputs.length }}
+          DIPLOIDS: ${{ inputs.diploids || '1000' }}
+          LENGTH: ${{ inputs.length || '10000000' }}
 
       - name: Baseline (AOU_run), one thread
         run: |
@@ -112,7 +119,7 @@ jobs:
         run: |
           /usr/bin/time -v opt/bin/gamma_smc \
             --input panel.trees --input_format trees \
-            --n_random_pairs ${{ inputs.random_pairs }} --pairs_seed 1729 \
+            --n_random_pairs ${{ inputs.random_pairs || '20000' }} --pairs_seed 1729 \
             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 \
             --unscaled_mutation_rate 1.25e-8 \
             --recent_threshold_years 4500,10000 --generation_time 25 \
@@ -165,8 +172,8 @@ jobs:
           print(f"same work scaled to 32 cores:           {per * 3.1 * 1e5 / 3600 * os.cpu_count() / 32:.1f} h")
           PY
         env:
-          LENGTH: ${{ inputs.length }}
-          RANDOM_PAIRS: ${{ inputs.random_pairs }}
+          LENGTH: ${{ inputs.length || '10000000' }}
+          RANDOM_PAIRS: ${{ inputs.random_pairs || '20000' }}
 
       - uses: actions/upload-artifact@v4
         if: always()
