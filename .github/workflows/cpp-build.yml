@@ -34,14 +34,15 @@ jobs:
           python-version: "3.11"
 
       - name: Install test dependencies
-        run: python -m pip install --quiet numpy pandas scipy zstandard pytest msprime tskit
+        run: python -m pip install --quiet numpy pandas scipy zstandard pytest msprime tskit tszip matplotlib
 
-      - name: Smoke test and decoder unit tests
+      - name: Decoder tests
         env:
           GAMMA_SMC_BIN: ${{ github.workspace }}/bin/gamma_smc
+          PYTHONPATH: ${{ github.workspace }}/python:${{ github.workspace }}/tests
         run: |
           python -m pytest tests/test_bitmatrix.py tests/test_source_regressions.py -q
-          python -m pytest tests/test_cpp_integration.py -q
+          python -m pytest tests/test_cpp_integration.py tests/test_cpp_bitmatrix_integration.py -q
 
       - name: Upload binary
         if: always()

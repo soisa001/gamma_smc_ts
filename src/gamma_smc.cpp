@@ -631,11 +631,30 @@ int main(int argc, char** argv) {
 
         if (accumulate_probability) {
             probability_table.build();
-            probability_table.self_check();
+        }
+
+        // Runs the SIMD kernels themselves against Boost, so a bad grid or a
+        // mistake in the deviance shows up here rather than as a quietly wrong
+        // statistic in the output.
+        const RecentTableAccuracy accuracy = self_check_recent_tables(
+            probability_table, thresholds.front(), accumulate_probability,
+            recent_call, recent_call_probability
+        );
+        if (accumulate_probability) {
             screen.print_item(boost::str(
-                boost::format("P(T<t) table: %.1f MB, max abs error %.2e")
+                boost::format("P(T<t) table: %.1f MB, max abs error vs Boost %.2e")
                 % (probability_table._table.size() * sizeof(float) / 1048576.0)
-                % probability_table._max_abs_error
+                % accuracy.max_probability_error
+            ));
+            if (accuracy.max_probability_error > 1e-2) {
+                cout << "Warning: the P(T<t) table is less accurate than expected; "
+                        "treat mean_p_* columns with care.\n";
+            }
+        }
+        if (recent_call != RECENT_CALL_MEAN) {
+            screen.print_item(boost::str(
+                boost::format("Call table: %ld probes, disagreement with Boost %.2e")
+                % accuracy.n_samples % accuracy.call_disagreement
             ));
         }
         screen.print_done();

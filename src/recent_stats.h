@@ -186,124 +186,134 @@ class RecentThreshold {
 // P(alpha, x) table: the continuous statistic
 // ---------------------------------------------------------------------------
 //
-// Second axis is the standardized deviate
+// The second axis is the signed deviance, or saddle-point, coordinate
 //
-//     z = (x / alpha - 1) * sqrt(alpha)
+//     v = sign(u - 1) * sqrt(2 * alpha * h(u)),   u = x / alpha,
+//     h(u) = u - 1 - ln u
 //
-// under which the transition of P sits at z ~ 0 with O(1) width for every
-// alpha, instead of collapsing to a spike of width 1/sqrt(alpha) as it would in
-// x or log x. The lower end is safe because x >= 0 forces z >= -sqrt(alpha), so
-// clamping to P = 0 below z_min is exact whenever alpha <= z_min^2; the upper
-// end runs out to z = 20 so that the heavy small-alpha tail has converged
-// before the clamp to 1.
+// for which P(alpha, x) ~= Phi(v) with an O(1/sqrt(alpha)) correction, so the
+// tabulated surface is close to a function of v alone and is gentle in both
+// directions for every alpha.
+//
+// The obvious alternative, the standardized deviate (x/alpha - 1)*sqrt(alpha),
+// was measured against scipy and is 100x worse: it packs x in (0, small) into a
+// boundary layer just above -sqrt(alpha), where for alpha near 1 the true P
+// climbs from 0 to 0.11 inside a single grid step and bilinear interpolation
+// cannot follow it. Worst absolute error over the realistic parameter region
+// was 1.7e-2 there against 1.3e-4 here, at the same table size. The deviance
+// coordinate sends x -> 0 to v -> -infinity instead, so no boundary layer
+// exists.
+//
+// The alpha axis covers alpha_coord in [-2, 16], i.e. alpha in [0.25, 65536].
+// The posterior shape is alpha_forward + alpha_backward - 1 with each message
+// at least 1, so alpha >= 1 up to the error of the fast 10^x; the range has
+// room on both sides of what can actually occur.
 
-static const int recent_prob_alpha_steps = 512;    // over alpha_coord in [-16, 16]
-static const int recent_prob_z_steps = 2048;       // over z in [-8, 20]
-static const float recent_prob_z_min = -8.0f;
-static const float recent_prob_z_max = 20.0f;
+static const int recent_prob_alpha_steps = 1024;   // over alpha_coord in [-2, 16]
+static const int recent_prob_v_steps = 1024;       // over v in [-8, 8]
+static const float recent_prob_alpha_coord_min = -2.0f;
+static const float recent_prob_alpha_coord_max = 16.0f;
+static const float recent_prob_v_min = -8.0f;
+static const float recent_prob_v_max = 8.0f;
+
+// h(u) = u - 1 - ln u, evaluated so that the cancellation near u = 1 does not
+// destroy it: there h ~ d^2/2 with d = u-1, while the two terms are each ~d.
+inline double deviance_h(double u) {
+    const double d = u - 1.0;
+    if (std::fabs(d) <= 0.125) {
+        // d^2 * (1/2 - d/3 + d^2/4 - d^3/5 + d^4/6 - d^5/7 + d^6/8)
+        double series = 1.0 / 8.0;
+        series = -1.0 / 7.0 + series * d;
+        series = 1.0 / 6.0 + series * d;
+        series = -1.0 / 5.0 + series * d;
+        series = 1.0 / 4.0 + series * d;
+        series = -1.0 / 3.0 + series * d;
+        series = 0.5 + series * d;
+        return d * d * series;
+    }
+    return d - std::log(u);
+}
+
+// Invert h(u) = target on the branch selected by `upper`, by bisection with a
+// Newton step where it is safe. Only ever called while building the table.
+inline double deviance_invert(double target, bool upper) {
+    if (!(target > 0.0)) {
+        return 1.0;
+    }
+    double lo, hi;
+    if (upper) {
+        lo = 1.0;
+        hi = 2.0 + 2.0 * target;
+        while (deviance_h(hi) < target) {
+            hi *= 2.0;
+            if (hi > 1e300) {
+                return hi;
+            }
+        }
+    } else {
+        hi = 1.0;
+        lo = std::exp(-(target + 1.0));   // h(u) ~ -ln u - 1 as u -> 0
+        while (deviance_h(lo) < target) {
+            lo *= 0.5;
+            if (lo < 1e-300) {
+                return lo;
+            }
+        }
+    }
+    // h is monotone increasing away from 1 on each branch.
+    for (int iteration = 0; iteration < 200; iteration++) {
+        const double mid = 0.5 * (lo + hi);
+        if (mid <= lo || mid >= hi) {
+            break;
+        }
+        const bool above = deviance_h(mid) > target;
+        if (upper == above) {
+            hi = mid;
+        } else {
+            lo = mid;
+        }
+    }
+    return 0.5 * (lo + hi);
+}
 
 class RecentProbabilityTable {
   public:
-    vector<float> _table;              // recent_prob_alpha_steps x recent_prob_z_steps
+    vector<float> _table;              // recent_prob_alpha_steps x recent_prob_v_steps
     float _alpha_scale = 0.0f;         // grid = alpha_coord * scale + offset
     float _alpha_offset = 0.0f;
-    float _z_scale = 0.0f;
-    float _z_offset = 0.0f;
+    float _v_scale = 0.0f;
+    float _v_offset = 0.0f;
     double _max_abs_error = 0.0;
 
     void build() {
-        _table.assign((size_t) recent_prob_alpha_steps * recent_prob_z_steps, 0.0f);
+        _table.assign((size_t) recent_prob_alpha_steps * recent_prob_v_steps, 0.0f);
 
         const double alpha_step =
-            (double) (recent_alpha_max_exponent - recent_alpha_min_exponent)
+            (double) (recent_prob_alpha_coord_max - recent_prob_alpha_coord_min)
             / (recent_prob_alpha_steps - 1);
-        const double z_step =
-            (double) (recent_prob_z_max - recent_prob_z_min) / (recent_prob_z_steps - 1);
+        const double v_step =
+            (double) (recent_prob_v_max - recent_prob_v_min) / (recent_prob_v_steps - 1);
 
         _alpha_scale = (float) (1.0 / alpha_step);
-        _alpha_offset = (float) (-(double) recent_alpha_min_exponent / alpha_step);
-        _z_scale = (float) (1.0 / z_step);
-        _z_offset = (float) (-(double) recent_prob_z_min / z_step);
+        _alpha_offset = (float) (-(double) recent_prob_alpha_coord_min / alpha_step);
+        _v_scale = (float) (1.0 / v_step);
+        _v_offset = (float) (-(double) recent_prob_v_min / v_step);
 
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
         for (int a = 0; a < recent_prob_alpha_steps; a++) {
-            // Build at exactly the alpha the lookup coordinate decodes to.
+            // Build at exactly the alpha the lookup coordinate decodes to, so
+            // interpolation is exact at grid nodes.
             const double alpha =
-                (double) alpha_from_coord(recent_alpha_min_exponent + a * alpha_step);
-            const double sqrt_alpha = std::sqrt(alpha);
-            for (int k = 0; k < recent_prob_z_steps; k++) {
-                const double z = recent_prob_z_min + k * z_step;
-                const double x = alpha + z * sqrt_alpha;
-                _table[(size_t) a * recent_prob_z_steps + k] =
-                    (x <= 0.0) ? 0.0f : (float) boost::math::gamma_p(alpha, x);
+                (double) alpha_from_coord(recent_prob_alpha_coord_min + a * alpha_step);
+            for (int k = 0; k < recent_prob_v_steps; k++) {
+                const double v = recent_prob_v_min + k * v_step;
+                const double u = deviance_invert(v * v / (2.0 * alpha), v > 0.0);
+                _table[(size_t) a * recent_prob_v_steps + k] =
+                    (float) boost::math::gamma_p(alpha, alpha * u);
             }
         }
-    }
-
-    // Scalar reference; mirrors the SIMD path so the self-check measures what
-    // the hot loop will actually compute.
-    float lookup(float alpha, float x) const {
-        if (!(alpha > 0.0f) || !(x > 0.0f)) {
-            return 0.0f;
-        }
-        const float sqrt_alpha = std::sqrt(alpha);
-        const float z = (x / alpha - 1.0f) * sqrt_alpha;
-        if (z <= recent_prob_z_min) {
-            return 0.0f;
-        }
-        if (z >= recent_prob_z_max) {
-            return 1.0f;
-        }
-
-        float ga = alpha_coord(alpha) * _alpha_scale + _alpha_offset;
-        ga = std::min(std::max(ga, 0.0f), (float) (recent_prob_alpha_steps - 1) - 1.0f / 512.0f);
-        const float gz = z * _z_scale + _z_offset;
-
-        const int a0 = (int) ga;
-        const int k0 = (int) gz;
-        const float wa = ga - a0;
-        const float wk = gz - k0;
-
-        const size_t base = (size_t) a0 * recent_prob_z_steps + k0;
-        const float v00 = _table[base];
-        const float v01 = _table[base + 1];
-        const float v10 = _table[base + recent_prob_z_steps];
-        const float v11 = _table[base + recent_prob_z_steps + 1];
-
-        const float lower = v00 + wk * (v01 - v00);
-        const float upper = v10 + wk * (v11 - v10);
-        return lower + wa * (upper - lower);
-    }
-
-    // Compare against Boost over the parameter region the decoder actually
-    // visits, deliberately landing between nodes where bilinear interpolation is
-    // at its worst, so a bad grid shows up as a printed number rather than as a
-    // silently biased statistic.
-    void self_check() {
-        double worst = 0.0;
-        const int alpha_samples = 512;
-        const int z_samples = 512;
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static) reduction(max : worst)
-#endif
-        for (int i = 0; i < alpha_samples; i++) {
-            const double coord = -4.0 + (i + 0.5) * (18.0 / alpha_samples);
-            const double alpha = (double) alpha_from_coord(coord);
-            const double sqrt_alpha = std::sqrt(alpha);
-            for (int k = 0; k < z_samples; k++) {
-                const double z = -7.5 + (k + 0.5) * (27.0 / z_samples);
-                const double x = alpha + z * sqrt_alpha;
-                if (x <= 0.0) {
-                    continue;
-                }
-                const double exact = boost::math::gamma_p(alpha, x);
-                const double approx = (double) lookup((float) alpha, (float) x);
-                worst = std::max(worst, std::fabs(exact - approx));
-            }
-        }
-        _max_abs_error = worst;
     }
 };
 
@@ -353,6 +363,82 @@ inline __m256 recent_call_mask(
     return _mm256_cmp_ps(x, q, _CMP_GE_OQ);
 }
 
+// Natural log, Cephes logf structure: exponent from the bit pattern plus a
+// minimax polynomial on the mantissa. Relatively accurate near 1, which is what
+// the deviance below needs.
+inline __m256 log_ps(__m256 x) {
+    const __m256i bits = _mm256_castps_si256(x);
+    __m256i exponent = _mm256_sub_epi32(_mm256_srli_epi32(bits, 23), _mm256_set1_epi32(127));
+    __m256 mantissa = _mm256_castsi256_ps(_mm256_or_si256(
+        _mm256_and_si256(bits, _mm256_set1_epi32(0x007FFFFF)),
+        _mm256_set1_epi32(0x3F800000)
+    ));   // mantissa in [1, 2)
+
+    // Fold [sqrt(2), 2) down to [sqrt(2)/2, sqrt(2)) so the polynomial argument
+    // straddles zero.
+    const __m256 fold = _mm256_cmp_ps(mantissa, _mm256_set1_ps(1.41421356237f), _CMP_GT_OQ);
+    mantissa = _mm256_blendv_ps(mantissa, _mm256_mul_ps(mantissa, _mm256_set1_ps(0.5f)), fold);
+    exponent = _mm256_add_epi32(
+        exponent,
+        _mm256_and_si256(_mm256_castps_si256(fold), _mm256_set1_epi32(1))
+    );
+
+    const __m256 f = _mm256_sub_ps(mantissa, _mm256_set1_ps(1.0f));
+    const __m256 f2 = _mm256_mul_ps(f, f);
+
+    __m256 poly = _mm256_set1_ps(7.0376836292E-2f);
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(-1.1514610310E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(1.1676998740E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(-1.2420140846E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(1.4249322787E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(-1.6668057665E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(2.0000714765E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(-2.4999993993E-1f));
+    poly = _mm256_fmadd_ps(poly, f, _mm256_set1_ps(3.3333331174E-1f));
+    poly = _mm256_mul_ps(poly, _mm256_mul_ps(f2, f));
+    poly = _mm256_fmadd_ps(f2, _mm256_set1_ps(-0.5f), poly);
+
+    return _mm256_fmadd_ps(
+        _mm256_cvtepi32_ps(exponent), _mm256_set1_ps(0.693147180559945f),
+        _mm256_add_ps(f, poly)
+    );
+}
+
+// Signed deviance v = sign(u-1) * sqrt(2*alpha*(u - 1 - ln u)), u = x/alpha.
+//
+// Near u = 1 the two terms of h = u - 1 - ln u cancel to h ~ d^2/2, so that
+// branch uses the series instead. The residual error in v is relative, and v is
+// itself small exactly where the cancellation is worst, so the absolute error
+// stays around sqrt(alpha)*1e-7 -- three orders below the grid step.
+inline __m256 recent_deviance(__m256 alpha, __m256 x) {
+    const __m256 one = _mm256_set1_ps(1.0f);
+    const __m256 u = _mm256_max_ps(_mm256_div_ps(x, alpha), _mm256_set1_ps(1e-30f));
+    const __m256 d = _mm256_sub_ps(u, one);
+
+    __m256 series = _mm256_set1_ps(1.0f / 8.0f);
+    series = _mm256_fmadd_ps(series, d, _mm256_set1_ps(-1.0f / 7.0f));
+    series = _mm256_fmadd_ps(series, d, _mm256_set1_ps(1.0f / 6.0f));
+    series = _mm256_fmadd_ps(series, d, _mm256_set1_ps(-1.0f / 5.0f));
+    series = _mm256_fmadd_ps(series, d, _mm256_set1_ps(1.0f / 4.0f));
+    series = _mm256_fmadd_ps(series, d, _mm256_set1_ps(-1.0f / 3.0f));
+    series = _mm256_fmadd_ps(series, d, _mm256_set1_ps(0.5f));
+    series = _mm256_mul_ps(_mm256_mul_ps(d, d), series);
+
+    const __m256 direct = _mm256_sub_ps(d, log_ps(u));
+
+    const __m256 sign_mask = _mm256_set1_ps(-0.0f);
+    const __m256 near_one = _mm256_cmp_ps(
+        _mm256_andnot_ps(sign_mask, d), _mm256_set1_ps(0.125f), _CMP_LE_OQ
+    );
+    const __m256 h = _mm256_blendv_ps(direct, series, near_one);
+
+    const __m256 magnitude = _mm256_sqrt_ps(_mm256_max_ps(
+        _mm256_mul_ps(_mm256_set1_ps(2.0f), _mm256_mul_ps(alpha, h)),
+        _mm256_setzero_ps()
+    ));
+    return _mm256_or_ps(_mm256_and_ps(d, sign_mask), magnitude);
+}
+
 // Bilinear P(alpha, x) for eight pairs at once.
 inline __m256 recent_probability(
     const RecentProbabilityTable& table,
@@ -360,14 +446,10 @@ inline __m256 recent_probability(
     __m256 x
 ) {
     const __m256 one = _mm256_set1_ps(1.0f);
-    const __m256 sqrt_alpha = _mm256_sqrt_ps(alpha);
-    const __m256 z = _mm256_mul_ps(
-        _mm256_sub_ps(_mm256_div_ps(x, alpha), one),
-        sqrt_alpha
-    );
+    const __m256 v = recent_deviance(alpha, x);
 
-    const __m256 below = _mm256_cmp_ps(z, _mm256_set1_ps(recent_prob_z_min), _CMP_LE_OQ);
-    const __m256 above = _mm256_cmp_ps(z, _mm256_set1_ps(recent_prob_z_max), _CMP_GE_OQ);
+    const __m256 below = _mm256_cmp_ps(v, _mm256_set1_ps(recent_prob_v_min), _CMP_LE_OQ);
+    const __m256 above = _mm256_cmp_ps(v, _mm256_set1_ps(recent_prob_v_max), _CMP_GE_OQ);
 
     // alpha_coord without a log: exponent + mantissa fraction.
     const __m256i bits = _mm256_castps_si256(alpha);
@@ -384,30 +466,30 @@ inline __m256 recent_probability(
     __m256 ga = _mm256_fmadd_ps(coord, _mm256_set1_ps(table._alpha_scale), _mm256_set1_ps(table._alpha_offset));
     ga = _mm256_min_ps(
         _mm256_max_ps(ga, _mm256_setzero_ps()),
-        _mm256_set1_ps((float) (recent_prob_alpha_steps - 1) - 1.0f / 512.0f)
+        _mm256_set1_ps((float) (recent_prob_alpha_steps - 2))
     );
 
-    __m256 gz = _mm256_fmadd_ps(z, _mm256_set1_ps(table._z_scale), _mm256_set1_ps(table._z_offset));
-    gz = _mm256_min_ps(
-        _mm256_max_ps(gz, _mm256_setzero_ps()),
-        _mm256_set1_ps((float) (recent_prob_z_steps - 2))
+    __m256 gv = _mm256_fmadd_ps(v, _mm256_set1_ps(table._v_scale), _mm256_set1_ps(table._v_offset));
+    gv = _mm256_min_ps(
+        _mm256_max_ps(gv, _mm256_setzero_ps()),
+        _mm256_set1_ps((float) (recent_prob_v_steps - 2))
     );
 
     const __m256 ga_floor = _mm256_floor_ps(ga);
-    const __m256 gz_floor = _mm256_floor_ps(gz);
+    const __m256 gv_floor = _mm256_floor_ps(gv);
     const __m256 wa = _mm256_sub_ps(ga, ga_floor);
-    const __m256 wk = _mm256_sub_ps(gz, gz_floor);
+    const __m256 wk = _mm256_sub_ps(gv, gv_floor);
 
     const __m256i base = _mm256_add_epi32(
-        _mm256_mullo_epi32(_mm256_cvttps_epi32(ga_floor), _mm256_set1_epi32(recent_prob_z_steps)),
-        _mm256_cvttps_epi32(gz_floor)
+        _mm256_mullo_epi32(_mm256_cvttps_epi32(ga_floor), _mm256_set1_epi32(recent_prob_v_steps)),
+        _mm256_cvttps_epi32(gv_floor)
     );
 
     const float* data = table._table.data();
     const __m256 v00 = _mm256_i32gather_ps(data, base, 4);
     const __m256 v01 = _mm256_i32gather_ps(data + 1, base, 4);
-    const __m256 v10 = _mm256_i32gather_ps(data + recent_prob_z_steps, base, 4);
-    const __m256 v11 = _mm256_i32gather_ps(data + recent_prob_z_steps + 1, base, 4);
+    const __m256 v10 = _mm256_i32gather_ps(data + recent_prob_v_steps, base, 4);
+    const __m256 v11 = _mm256_i32gather_ps(data + recent_prob_v_steps + 1, base, 4);
 
     const __m256 lower = _mm256_fmadd_ps(wk, _mm256_sub_ps(v01, v00), v00);
     const __m256 upper = _mm256_fmadd_ps(wk, _mm256_sub_ps(v11, v10), v10);
@@ -425,4 +507,105 @@ inline float horizontal_sum(__m256 v) {
     low = _mm_add_ps(low, _mm_movehl_ps(low, low));
     low = _mm_add_ss(low, _mm_shuffle_ps(low, low, 1));
     return _mm_cvtss_f32(low);
+}
+
+// ---------------------------------------------------------------------------
+// Startup self-check
+// ---------------------------------------------------------------------------
+
+struct RecentTableAccuracy {
+    double max_probability_error = 0.0;   // absolute, against boost::math::gamma_p
+    double call_disagreement = 0.0;       // fraction of boundary-enriched samples
+    long n_samples = 0;
+};
+
+// Drives the actual SIMD kernels -- not a scalar re-implementation of them -- so
+// a mistake anywhere from the deviance to the gather shows up as a number here
+// rather than as a quietly wrong statistic later.
+inline RecentTableAccuracy self_check_recent_tables(
+    const RecentProbabilityTable& table,
+    const RecentThreshold& threshold,
+    bool check_probability,
+    recent_call_t rule,
+    double call_probability
+) {
+    // The mean rule is a threshold on alpha rather than on the CDF, so there is
+    // no probability to compare its calls against.
+    const bool check_call = (rule != RECENT_CALL_MEAN);
+    const double target_probability = (rule == RECENT_CALL_MEDIAN) ? 0.5 : call_probability;
+    RecentTableAccuracy accuracy;
+
+    const int alpha_samples = 512;
+    const int v_samples = 256;
+    double worst_probability = 0.0;
+    long disagreements = 0;
+    long total = 0;
+
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static) reduction(max : worst_probability) \
+    reduction(+ : disagreements, total)
+#endif
+    for (int i = 0; i < alpha_samples; i++) {
+        // Deliberately land between table nodes, where bilinear interpolation
+        // is at its worst.
+        const double coord = -1.0 + (i + 0.5) * (15.0 / alpha_samples);
+        const double alpha_d = (double) alpha_from_coord(coord);
+        const float alpha_f = (float) alpha_d;
+
+        alignas(32) float alpha_lane[parallel_vector_size];
+        alignas(32) float x_lane[parallel_vector_size];
+        alignas(32) float out_lane[parallel_vector_size];
+        for (int lane = 0; lane < parallel_vector_size; lane++) {
+            alpha_lane[lane] = alpha_f;
+        }
+        const __m256 alpha_v = _mm256_load_ps(alpha_lane);
+
+        for (int k = 0; k < v_samples; k += parallel_vector_size) {
+            double exact[parallel_vector_size];
+            for (int lane = 0; lane < parallel_vector_size; lane++) {
+                const double v = -7.5 + (k + lane + 0.5) * (15.0 / v_samples);
+                const double u = deviance_invert(v * v / (2.0 * alpha_d), v > 0.0);
+                x_lane[lane] = (float) (alpha_d * u);
+                exact[lane] = boost::math::gamma_p(alpha_d, alpha_d * u);
+            }
+            const __m256 x_v = _mm256_load_ps(x_lane);
+
+            if (check_probability) {
+                _mm256_store_ps(out_lane, recent_probability(table, alpha_v, x_v));
+                for (int lane = 0; lane < parallel_vector_size; lane++) {
+                    worst_probability = std::max(
+                        worst_probability, std::fabs(exact[lane] - (double) out_lane[lane])
+                    );
+                }
+            }
+
+            if (check_call) {
+                // The call is a threshold on x, so beta = x / scaled reproduces it.
+                alignas(32) float beta_lane[parallel_vector_size];
+                for (int lane = 0; lane < parallel_vector_size; lane++) {
+                    beta_lane[lane] = (float) (x_lane[lane] / threshold.scaled);
+                }
+                const __m256 beta_v = _mm256_load_ps(beta_lane);
+                const __m256 x_from_beta =
+                    _mm256_mul_ps(beta_v, _mm256_set1_ps(threshold.scaled_float));
+                const int called =
+                    _mm256_movemask_ps(recent_call_mask(threshold, alpha_v, x_from_beta));
+                for (int lane = 0; lane < parallel_vector_size; lane++) {
+                    const bool lut = ((called >> lane) & 1) != 0;
+                    const bool truth = exact[lane] >= target_probability;
+                    // Skip samples sitting within float noise of the decision
+                    // boundary; a tie there is meaningless either way.
+                    if (std::fabs(exact[lane] - target_probability) > 1e-6) {
+                        total += 1;
+                        disagreements += (lut != truth) ? 1 : 0;
+                    }
+                }
+            }
+        }
+    }
+
+    accuracy.max_probability_error = worst_probability;
+    accuracy.n_samples = total;
+    accuracy.call_disagreement = (total > 0) ? ((double) disagreements / (double) total) : 0.0;
+    return accuracy;
 }
