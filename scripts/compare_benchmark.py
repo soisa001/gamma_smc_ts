@@ -111,7 +111,7 @@ def main() -> None:
     args = parser.parse_args()
 
     root = Path(args.directory)
-    names = ("base", "exact", "legacy", "optN", "fixed", "scale")
+    names = ("base", "exact", "legacy", "optN", "expfix", "alignfix", "fixed", "scale")
     totals = {name: total_time(root / f"{name}.time") for name in names}
     cpu = {name: decode_cpu(root / f"{name}.log") for name in names}
     wall = {name: decode_wall(root / f"{name}.log") for name in names}
@@ -152,8 +152,12 @@ def main() -> None:
     compare_outputs(root / "exact.tsv", root / "legacy.tsv",
                     "exact gamma_p vs lookup tables, same binary (lookup-table error alone)")
     compare_outputs(root / "legacy.tsv", root / "optN.tsv", f"1 thread vs {cores} threads")
+    compare_outputs(root / "optN.tsv", root / "expfix.tsv",
+                    "the accurate exp10 alone")
+    compare_outputs(root / "optN.tsv", root / "alignfix.tsv",
+                    "the backward-alignment fix alone")
     compare_outputs(root / "optN.tsv", root / "fixed.tsv",
-                    "upstream numerics vs shipping defaults (what the two corrections change)")
+                    "upstream numerics vs shipping defaults (both corrections)")
     print()
 
     per_gbp_pair = wall["scale"] / (args.random_pairs * args.length / 1e9)

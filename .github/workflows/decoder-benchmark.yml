@@ -111,6 +111,16 @@ jobs:
           /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary fixed.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --threads 0 \n            > fixed.log 2> fixed.time; tail -20 fixed.log
           grep -E "Elapsed|Maximum resident" fixed.time
 
+      - name: "Isolate the exp10 correction"
+        run: |
+          /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary expfix.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --exp10 accurate --backward_alignment legacy \n            --threads 0 \n            > expfix.log 2> expfix.time; tail -20 expfix.log
+          grep -E "Elapsed|Maximum resident" expfix.time
+
+      - name: "Isolate the backward-alignment correction"
+        run: |
+          /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary alignfix.tsv \n            --output_at_hets=false --output_at_stride 1000 \n            --exp10 fast --backward_alignment fixed \n            --threads 0 \n            > alignfix.log 2> alignfix.time; tail -20 alignfix.log
+          grep -E "Elapsed|Maximum resident" alignfix.time
+
       - name: Throughput at scale, two thresholds plus bit matrix
         run: |
           /usr/bin/time -v opt/bin/gamma_smc \
