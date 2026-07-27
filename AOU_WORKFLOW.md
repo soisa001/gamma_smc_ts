@@ -181,6 +181,42 @@ emission types; the genotype matrix, the callability bitmap and the 490 MB
 flow-field cache are shared. The decoder prints its own estimate before starting
 and warns when `--output-at-hets` would blow it up.
 
+### Measured
+
+`.github/workflows/decoder-benchmark.yml` builds this branch and `AOU_run` side
+by side and runs an identical workload through each. On a 4-vCPU
+`ubuntu-22.04` runner, 4,000 simulated diploids over 5 Mbp (23,986 segregating
+sites), `--only_within`, one threshold, stride 1000:
+
+| | AOU_run | this branch, 1 thread | this branch, 4 threads |
+|---|---|---|---|
+| decode | 16.51 s | 1.95 s | 0.72 s |
+| speedup | 1x | **8.5x** | **22.9x** |
+| peak RSS | 0.77 GB | 0.61 GB | 0.61 GB |
+
+The single-thread 8.5x is the lookup tables replacing `boost::math::gamma_p`
+plus the hoisted emission fill; the rest is threads. Both binaries produce the
+same statistic: `mean_p_tmrca_lt_threshold` agrees to 1.3e-6 absolute and
+`mean_tmrca_generations` to 4.7e-6 relative.
+
+Total wall time is a poor guide at this scale — it is dominated by fixed
+startup (tree-sequence conversion, reading, and building the flow-field cache),
+which is identical for both binaries.
+
+A more representative run — 20,000 random pairs, two thresholds, bit matrix —
+decoded at **0.051 s per Gbp per pair** of wall time on those 4 vCPU, using
+19.82 s of CPU in 5.08 s of wall time, i.e. 3.9x on 4 cores. Extrapolated at the
+same per-core efficiency, 3.1 Gbp x 100,000 pairs is roughly **half an hour on
+32 cores**. Treat that as a projection, not a measurement: the flow-field cache
+is read with an effectively random access pattern, so memory bandwidth, not
+arithmetic, is what will limit 32 threads.
+
+Budget the bit matrix from its raw size rather than the compressed size in the
+benchmark: a neutral simulation has almost no recent coalescence, so its bits
+are nearly all zero and compress ~240x, which real data will not. Raw is
+`n_pairs x n_positions x n_thresholds / 8` — 6.2 GB for chr1 and 77.5 GB
+genome-wide at 100,000 pairs and two thresholds.
+
 ### Two numerical switches
 
 Both default to upstream behaviour, because turning either on shifts results
