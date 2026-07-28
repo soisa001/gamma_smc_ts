@@ -207,12 +207,17 @@ Peak RSS 0.77 GB to 0.61 GB.
 | backward | 1.21 s | 1.03 s | 0.82 s |
 | **statistic** | **15.30 s** | 15.95 s | **0.17 s** |
 
-The baseline spends 82% of its decode inside `boost::math::gamma_p`, evaluating
-P(T<t) once per pair per position. That, not the SMC recursion, was the
-bottleneck for this statistic. The message-passing core is genuinely efficient:
-CPU-level work on it gives 3.42 s to 1.91 s, about 1.8x, and most of that is
-the hoisted emission fill (0.99 s to 0.27 s) rather than anything in the flow
-field. Overall it is only 1.02x because `gamma_p` drowns it out.
+The baseline spends **82% of its decode inside `boost::math::gamma_p`**,
+evaluating P(T<t) once per pair per position. That, not the SMC recursion, was
+the bottleneck for this statistic.
+
+This is worth stating plainly, because it bears on whether the rewrite was
+warranted at all: **the message-passing core really is close to optimal.**
+CPU-level work on it takes 3.42 s to 1.91 s, about 1.8x, and most of that is
+the hoisted emission fill (0.99 s to 0.27 s) rather than anything inside the
+flow field, whose SIMD kernel was already well tuned. Overall that shows up as
+only 1.02x because `gamma_p` drowns it out. The wins here are the statistic
+evaluation (90x), threads, and the output volume — not the algorithm.
 
 Total wall time is a poor guide here — it is dominated by fixed startup
 (tree-sequence conversion, reading, building the flow-field cache), identical
@@ -284,11 +289,24 @@ Leaving the final position with only a forward contribution is correct, not a
 gap: the backward message there is the Exp(1) prior, and the
 `alpha_f + alpha_b − 1` convention makes adding it a no-op.
 
-**Re-run your nulls.** Switching to the accurate `10^x` moves the statistic by
-far more than the lookup tables do — on the benchmark panel,
-`mean_p_tmrca_lt_threshold` by up to 3.9e-3 absolute (9.3% relative) and
-`n_recent_4500` at 4,817 of 5,000 positions. Observed and null must be decoded
-with the same settings.
+**Measured effect of each correction**, on the benchmark panel, each against
+upstream numerics with everything else held fixed:
+
+| correction | mode | `mean_p` max abs | `n_recent_4500` |
+|---|---|---|---|
+| accurate `10^x` | stride 1000 | 3.9e-3 | 4,817/5,000 positions differ, max 11 calls, **total −7.0%** |
+| backward alignment | stride 1000 | 0 | identical (unreachable, see above) |
+| backward alignment | `--output-at-hets` | 1.4e-2 | 1,961/23,984 differ, max 17 calls, total −0.15% |
+
+The `10^x` correction is the one that matters for the stride-1000 scan, and it
+is not small: it removes about 7% of the recent calls in aggregate, i.e. the
+old binary over-called recent coalescence by roughly that much. That is two
+orders of magnitude larger than the lookup-table error, which changes no calls
+at all.
+
+**Re-run your nulls.** Observed data and the matched null replicates must be
+decoded with the same `--exp10` and `--backward-alignment` settings, or the
+p-values are meaningless. Nothing in the pipeline checks this for you.
 
 ## 2. Neutral simulations
 
