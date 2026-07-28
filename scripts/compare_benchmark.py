@@ -96,10 +96,15 @@ def compare_outputs(left: Path, right: Path, label: str) -> None:
     # Counts only exist on the new binary; compare them when both sides have them.
     for column in a.columns:
         if column.startswith("n_recent_") and column in b.columns:
-            differing = int((a[column].to_numpy() != b[column].to_numpy()).sum())
-            total = int(a[column].to_numpy().sum())
-            print(f"    {column:28} positions differing: {differing}/{len(a)}"
-                  f"   (total calls {total})")
+            left_counts = a[column].to_numpy().astype(np.int64)
+            right_counts = b[column].to_numpy().astype(np.int64)
+            change = right_counts - left_counts
+            differing = int((change != 0).sum())
+            total = int(left_counts.sum())
+            print(f"    {column:28} positions differing: {differing}/{len(a)}, "
+                  f"max |change| {int(np.abs(change).max())} calls, "
+                  f"total {total} -> {int(right_counts.sum())} "
+                  f"({100.0 * (right_counts.sum() - total) / max(total, 1):+.2f}%)")
 
 
 def main() -> None:
@@ -111,7 +116,8 @@ def main() -> None:
     args = parser.parse_args()
 
     root = Path(args.directory)
-    names = ("base", "exact", "legacy", "optN", "expfix", "alignfix", "fixed", "scale")
+    names = ("base", "exact", "legacy", "optN", "expfix", "alignfix", "fixed",
+             "hetslegacy", "hetsfixed", "scale")
     totals = {name: total_time(root / f"{name}.time") for name in names}
     cpu = {name: decode_cpu(root / f"{name}.log") for name in names}
     wall = {name: decode_wall(root / f"{name}.log") for name in names}
@@ -158,6 +164,8 @@ def main() -> None:
                     "the backward-alignment fix alone")
     compare_outputs(root / "optN.tsv", root / "fixed.tsv",
                     "upstream numerics vs shipping defaults (both corrections)")
+    compare_outputs(root / "hetslegacy.tsv", root / "hetsfixed.tsv",
+                    "the backward-alignment fix with --output_at_hets, where it is reachable")
     print()
 
     per_gbp_pair = wall["scale"] / (args.random_pairs * args.length / 1e9)

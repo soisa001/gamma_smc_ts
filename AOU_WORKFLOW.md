@@ -184,38 +184,66 @@ and warns when `--output-at-hets` would blow it up.
 ### Measured
 
 `.github/workflows/decoder-benchmark.yml` builds this branch and `AOU_run` side
-by side and runs an identical workload through each. On a 4-vCPU
+by side and runs the same workload through each, as an ablation. On a 4-vCPU
 `ubuntu-22.04` runner, 4,000 simulated diploids over 5 Mbp (23,986 segregating
-sites), `--only_within`, one threshold, stride 1000:
+sites), `--only_within`, one threshold, stride 1000, decode time only:
 
-| | AOU_run | this branch, 1 thread | this branch, 4 threads |
+| configuration | decode | step |
+|---|---|---|
+| `AOU_run` baseline | 18.73 s | — |
+| + CPU/memory work, still exact `gamma_p` | 18.30 s | 1.02x |
+| + lookup tables | 2.08 s | **8.79x** |
+| + 4 threads | 0.85 s | **2.47x** |
+| **overall** | | **22.1x** |
+
+Peak RSS 0.77 GB to 0.61 GB.
+
+**Where the time actually went.** Per-phase, single-threaded:
+
+| phase | baseline | + CPU work | + tables |
 |---|---|---|---|
-| decode | 16.51 s | 1.95 s | 0.72 s |
-| speedup | 1x | **8.5x** | **22.9x** |
-| peak RSS | 0.77 GB | 0.61 GB | 0.61 GB |
+| emissions | 0.99 s | 0.29 s | 0.27 s |
+| forward | 1.22 s | 1.03 s | 0.82 s |
+| backward | 1.21 s | 1.03 s | 0.82 s |
+| **statistic** | **15.30 s** | 15.95 s | **0.17 s** |
 
-The single-thread 8.5x is the lookup tables replacing `boost::math::gamma_p`
-plus the hoisted emission fill; the rest is threads. Both binaries produce the
-same statistic: `mean_p_tmrca_lt_threshold` agrees to 1.3e-6 absolute and
-`mean_tmrca_generations` to 4.7e-6 relative.
+The baseline spends 82% of its decode inside `boost::math::gamma_p`, evaluating
+P(T<t) once per pair per position. That, not the SMC recursion, was the
+bottleneck for this statistic. The message-passing core is genuinely efficient:
+CPU-level work on it gives 3.42 s to 1.91 s, about 1.8x, and most of that is
+the hoisted emission fill (0.99 s to 0.27 s) rather than anything in the flow
+field. Overall it is only 1.02x because `gamma_p` drowns it out.
 
-Total wall time is a poor guide at this scale — it is dominated by fixed
-startup (tree-sequence conversion, reading, and building the flow-field cache),
-which is identical for both binaries.
+Total wall time is a poor guide here — it is dominated by fixed startup
+(tree-sequence conversion, reading, building the flow-field cache), identical
+for both binaries.
 
-A more representative run — 20,000 random pairs, two thresholds, bit matrix —
-decoded at **0.051 s per Gbp per pair** of wall time on those 4 vCPU, using
-19.82 s of CPU in 5.08 s of wall time, i.e. 3.9x on 4 cores. Extrapolated at the
-same per-core efficiency, 3.1 Gbp x 100,000 pairs is roughly **half an hour on
-32 cores**. Treat that as a projection, not a measurement: the flow-field cache
-is read with an effectively random access pattern, so memory bandwidth, not
-arithmetic, is what will limit 32 threads.
+**Throughput.** 20,000 random pairs, two thresholds, bit matrix: 22.6 s of CPU
+in 5.75 s of wall time, i.e. 3.93x on 4 cores, or **0.058 s per Gbp per pair**.
+At the same per-core efficiency, 3.1 Gbp x 100,000 pairs is roughly **35 minutes
+on 32 cores**. Treat that as a projection: the flow-field cache is read with an
+effectively random access pattern, so memory bandwidth, not arithmetic, is what
+will limit 32 threads.
 
-Budget the bit matrix from its raw size rather than the compressed size in the
+Budget the bit matrix from its raw size, not the compressed size in the
 benchmark: a neutral simulation has almost no recent coalescence, so its bits
-are nearly all zero and compress ~240x, which real data will not. Raw is
+are nearly all zero and compress ~220x, which real data will not. Raw is
 `n_pairs x n_positions x n_thresholds / 8` — 6.2 GB for chr1 and 77.5 GB
 genome-wide at 100,000 pairs and two thresholds.
+
+### Output agreement
+
+Run with `--exp10 fast --backward_alignment legacy`, this branch reproduces the
+old binary: `mean_p_tmrca_lt_threshold` to 1.3e-6 absolute, `mean_tmrca_generations`
+to 4.7e-6 relative. Nothing changed by accident.
+
+The lookup tables are exact where it matters. Against `--exact_recent_stats`,
+which evaluates `boost::math::gamma_p` per element over the same decoded
+posteriors, `mean_p_tmrca_lt_threshold` agrees to 1.3e-6 and `n_recent_4500` is
+identical at **all 5,000 positions** — the hard-threshold counts, which are the
+headline statistic, are not affected at all.
+
+Thread count and `--pair_block` give bit-identical output.
 
 ### Two numerical switches
 
