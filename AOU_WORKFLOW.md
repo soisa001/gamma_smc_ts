@@ -264,9 +264,25 @@ range that is −3.89%…+2.01% relative error with a mean of +0.03% — a near
 zero-mean sawtooth, not a systematic bias. It is nevertheless a deterministic
 function of the value rather than noise, so it does not cancel across pairs
 whose posteriors land in the same part of the sawtooth, and alpha and beta are
-perturbed independently of each other. `10^x` is evaluated once per output
-position, not once per segment, so the accurate version costs a few percent of
-the run.
+perturbed independently of each other.
+
+It is close to free. `10^x` is evaluated once per output *position*, not once
+per segment: on the benchmark panel that is 5,000 calls against ~29,000
+flow-field steps, so it is a sixth of the call count and the accurate version's
+extra arithmetic (about 11 AVX ops against 3) is diluted accordingly. Measured
+single-threaded over three repeats per mode:
+
+| | forward+backward | whole decode |
+|---|---|---|
+| `--exp10 fast` | 1.954 s | 2.436 s |
+| `--exp10 accurate` | 2.009 s | 2.493 s |
+| cost | +0.055 s (+2.8%) | +0.057 s (+2.4%) |
+
+Read that as an upper bound rather than a point estimate: run-to-run spread on
+a shared runner was ±7% for `fast` and ±11% for `accurate`, wider than the
+difference itself. A few percent is the right order; anything larger would have
+shown. Note the cost scales with output positions per segment, so it grows if
+you drop the stride well below 1000.
 
 **`--backward-alignment`** (default `fixed`) corrects an off-by-one. Because
 `output_at_start[k] == output_at_end[k-1]`, the backward pass makes one fewer
