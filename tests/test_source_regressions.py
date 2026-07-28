@@ -60,3 +60,32 @@ def test_openmp_is_enabled_in_the_build():
     makefile = (ROOT / "Makefile").read_text()
     assert "-fopenmp" in makefile
     assert "$(OPENMP_FLAGS)" in makefile
+
+
+def test_numerical_corrections_are_on_by_default():
+    # The C++ defaults, the Python wrapper defaults and the documentation all
+    # have to agree; they drifted apart once already when the defaults flipped.
+    source = (ROOT / "src" / "gamma_smc.cpp").read_text()
+    assert '("exp10", "accurate (default)' in source
+    assert '("backward_alignment", "fixed (default)' in source
+
+    header = (ROOT / "src" / "gamma_smc.h").read_text()
+    assert "bool _accurate_exp10 = true;" in header
+    assert "bool _fix_backward_alignment = true;" in header
+
+    cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
+    assert 'choices=["accurate", "fast"], default="accurate"' in cli
+    assert 'choices=["fixed", "legacy"], default="fixed"' in cli
+
+    decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()
+    assert 'exp10: str = "accurate"' in decoder
+    assert 'backward_alignment: str = "fixed"' in decoder
+
+
+def test_docs_do_not_call_the_corrections_opt_in():
+    for name in ("README.md", "AOU_WORKFLOW.md"):
+        text = (ROOT / name).read_text()
+        assert "opt-in numerical correction" not in text, name
+        # The flag was renamed; the old spelling would silently do nothing.
+        assert "--accurate_exp10" not in text, name
+        assert "--accurate-exp10" not in text, name

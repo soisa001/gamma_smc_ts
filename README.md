@@ -32,9 +32,15 @@ bin/gamma_smc \
   decompressible frames. Read it with `gamma_smc_aou.bitmatrix`.
 - `--threads 0` uses every core.
 
+Two corrections to upstream numerics are **on by default**: an accurate `10^x`
+in place of Schraudolph's bit trick, and a fix to a one-output-position shift of
+the backward message. `--exp10 fast --backward_alignment legacy` reproduces the
+old binary exactly, for comparing against results generated with it. Decode
+observed data and nulls with the same settings.
+
 See [AOU_WORKFLOW.md](AOU_WORKFLOW.md#1b-whole-genome-scan-over-100000-sampled-haplotype-pairs)
-for the output schemas, the memory model, and the two opt-in numerical
-corrections (`--accurate_exp10`, `--backward_alignment fixed`).
+for the output schemas, the memory model, the measured speedup, and how far each
+correction moves the statistic.
 
 ## Reproducible one-command environment
 

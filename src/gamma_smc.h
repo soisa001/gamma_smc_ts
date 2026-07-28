@@ -24,15 +24,21 @@ static inline __m256 _mm256_expfaster_ps(const __m256 &q) {
     return _mm256_castsi256_ps(_mm256_cvttps_epi32(_mm256_fmadd_ps(C2, _mm256_mul_ps(q, ln10), C1)));
 }
 
-// Accurate 10^q, for --accurate_exp10.
+// Accurate 10^q. This is the default; --exp10 fast selects the approximation
+// above.
 //
-// The Schraudolph trick above replaces 2^f by the straight line 1+f inside each
-// binade, which costs -3.9% .. +2.0% relative error with a systematic ~-1% bias.
-// That bias lands directly on the posterior shape and rate, and therefore on
-// P(T < t). This version splits 10^q = 2^n * 2^f with f in [-0.5, 0.5] and
-// evaluates 2^f with its degree-6 Taylor series, which is below float32
-// resolution on that interval. It is only called once per output position, so
-// the extra arithmetic is a few percent of the run at most.
+// The Schraudolph trick replaces 2^f by the straight line 1+f inside each
+// binade, giving -3.89% .. +2.01% relative error. Measured over the reachable
+// range that is a near zero-mean sawtooth (mean +0.03%), not a systematic bias
+// -- but it is a deterministic function of the value rather than noise, so it
+// does not cancel across pairs whose posteriors land in the same part of the
+// sawtooth, and alpha and beta are perturbed independently of one another. It
+// lands directly on the posterior shape and rate and therefore on P(T < t).
+//
+// This version splits 10^q = 2^n * 2^f with f in [-0.5, 0.5] and evaluates 2^f
+// with its degree-6 Taylor series, which is below float32 resolution on that
+// interval. It is called once per output position, not once per segment, so the
+// extra arithmetic is a few percent of the run at most.
 static inline __m256 _mm256_exp10_accurate_ps(const __m256 &q) {
     const __m256 log2_10 = _mm256_set1_ps(3.32192809488736f);
     const __m256 y = _mm256_mul_ps(q, log2_10);
@@ -156,11 +162,12 @@ class CachedPairwiseGammaSMC {
 
     int _zstd_compression_level;
 
-    // Numerical/algorithmic switches, both defaulting to upstream behaviour so
-    // that existing calibrations stay comparable. Set from main() after
-    // construction.
-    bool _accurate_exp10 = false;
-    bool _fix_backward_alignment = false;
+    // Numerical/algorithmic switches. Both default to the CORRECTED behaviour;
+    // --exp10 fast and --backward_alignment legacy reproduce upstream, for
+    // comparing against results generated with the old binary. Set from main()
+    // after construction.
+    bool _accurate_exp10 = true;
+    bool _fix_backward_alignment = true;
     bool _exact_recent_stats = false;
     double _recent_call_probability = 0.5;
 

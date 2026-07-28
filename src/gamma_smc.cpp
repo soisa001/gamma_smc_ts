@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
         ("j,threads", "Worker threads (0 = all available)", cxxopts::value<int>()->default_value("0"))
         ("pair_block", "Pairs decoded per work unit and per bit-matrix frame", cxxopts::value<long>()->default_value("256"))
-        ("exp10", "accurate (default) or fast (upstream's approximation, ~1% systematic bias)", cxxopts::value<std::string>()->default_value("accurate"))
+        ("exp10", "accurate (default) or fast (upstream's approximation, -3.9%..+2.0% relative error)", cxxopts::value<std::string>()->default_value("accurate"))
         ("exact_recent_stats", "Evaluate P(T<t) with boost::math::gamma_p per element instead of the lookup tables (validation only; very slow)")
         ("backward_alignment", "fixed (default) or legacy (upstream's one-output-position shift of the backward message)", cxxopts::value<std::string>()->default_value("fixed"))
         ("y,only_forward", "Calculate only forward pass", cxxopts::value<bool>()->default_value("false"))

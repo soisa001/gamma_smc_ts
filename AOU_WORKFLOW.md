@@ -235,7 +235,9 @@ genome-wide at 100,000 pairs and two thresholds.
 
 Run with `--exp10 fast --backward_alignment legacy`, this branch reproduces the
 old binary: `mean_p_tmrca_lt_threshold` to 1.3e-6 absolute, `mean_tmrca_generations`
-to 4.7e-6 relative. Nothing changed by accident.
+to 4.7e-6 relative. Nothing changed by accident. **The default binary does not
+reproduce the baseline** — that is the point of the two corrections below, and
+their size is quantified there.
 
 The lookup tables are exact where it matters. Against `--exact_recent_stats`,
 which evaluates `boost::math::gamma_p` per element over the same decoded
@@ -245,24 +247,48 @@ headline statistic, are not affected at all.
 
 Thread count and `--pair_block` give bit-identical output.
 
-### Two numerical switches
+### Two corrections to upstream numerics
 
-Both default to upstream behaviour, because turning either on shifts results
-against calibrations produced with the old binary. Re-run your nulls with the
-same setting if you enable them.
+Both are **on by default**. `--exp10 fast` and `--backward-alignment legacy`
+reproduce the old binary, for comparing against results generated with it.
 
-- `--accurate-exp10` replaces the fast `10^x` used to convert the message state
-  into (alpha, beta). The fast version has −3.9%…+2.0% relative error and about
-  a −1% systematic bias, which lands directly on the posterior and therefore on
-  P(T < t). It is evaluated once per output position, so the accurate version
-  costs a few percent of the run.
-- `--backward-alignment fixed` corrects an off-by-one: because
-  `output_at_start[k] == output_at_end[k-1]`, the backward pass makes one fewer
-  write than the forward pass whenever the last segment is an output position,
-  so every backward message is paired with the forward message one output
-  position to its right and position 0 receives none at all. With
-  `--output-at-stride 1000` that is a 1 kb shift of the backward half of the
-  smoother.
+**`--exp10`** (default `accurate`) controls the `10^x` that converts the message
+state into (alpha, beta). Upstream uses Schraudolph's bit trick, which replaces
+`2^f` by the straight line `1+f` inside each binade. Measured over the reachable
+range that is −3.89%…+2.01% relative error with a mean of +0.03% — a near
+zero-mean sawtooth, not a systematic bias. It is nevertheless a deterministic
+function of the value rather than noise, so it does not cancel across pairs
+whose posteriors land in the same part of the sawtooth, and alpha and beta are
+perturbed independently of each other. `10^x` is evaluated once per output
+position, not once per segment, so the accurate version costs a few percent of
+the run.
+
+**`--backward-alignment`** (default `fixed`) corrects an off-by-one. Because
+`output_at_start[k] == output_at_end[k-1]`, the backward pass makes one fewer
+write than the forward pass whenever the final segment is itself an output
+position; every backward message is then paired with the forward message one
+output position to its right, and position 0 receives none at all.
+
+Whether that is reachable depends on the output mode, and this matters for
+interpreting old results:
+
+- **`--output-at-hets`** — every segment ending at a segregating site is an
+  output position, including the last, so the shift **always** occurs. The
+  within-individual scan in section 1 runs in this mode.
+- **`--no-output-at-hets --output-at-stride 1000`** — the last segment ends at
+  the last segregating site, which is a multiple of the stride only by
+  coincidence, so the two settings normally agree. Measured identical over
+  5,000 positions on the benchmark panel.
+
+Leaving the final position with only a forward contribution is correct, not a
+gap: the backward message there is the Exp(1) prior, and the
+`alpha_f + alpha_b − 1` convention makes adding it a no-op.
+
+**Re-run your nulls.** Switching to the accurate `10^x` moves the statistic by
+far more than the lookup tables do — on the benchmark panel,
+`mean_p_tmrca_lt_threshold` by up to 3.9e-3 absolute (9.3% relative) and
+`n_recent_4500` at 4,817 of 5,000 positions. Observed and null must be decoded
+with the same settings.
 
 ## 2. Neutral simulations
 

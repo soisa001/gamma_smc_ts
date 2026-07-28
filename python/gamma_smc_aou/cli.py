@@ -447,7 +447,7 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--pair-block", type=int, default=256)
     decode.add_argument(
         "--exp10", choices=["accurate", "fast"], default="accurate",
-        help="fast reproduces upstream's 10^x approximation, which carries about 1%% systematic bias",
+        help="fast reproduces upstream's 10^x approximation, which carries -3.9%%..+2.0%% relative error",
     )
     decode.add_argument(
         "--backward-alignment", choices=["fixed", "legacy"], default="fixed",
