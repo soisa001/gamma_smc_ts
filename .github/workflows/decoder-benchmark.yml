@@ -131,6 +131,37 @@ jobs:
           /usr/bin/time -v opt/bin/gamma_smc \n            --input panel.trees --input_format trees --only_within             --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8             --unscaled_mutation_rate 1.25e-8             --recent_threshold_years 4500 --generation_time 25             --recent_summary hetsfixed.tsv \n            --output_at_hets=true --output_at_stride -1 \n            --exp10 fast --backward_alignment fixed \n            --threads 0 \n            > hetsfixed.log 2> hetsfixed.time; tail -20 hetsfixed.log
           grep -E "Elapsed|Maximum resident" hetsfixed.time
 
+      - name: "Cost of the accurate exp10, repeated at one thread"
+        run: |
+          for rep in 1 2 3; do
+            for mode in fast accurate; do
+              opt/bin/gamma_smc                 --input panel.trees --input_format trees --only_within                 --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8                 --unscaled_mutation_rate 1.25e-8                 --recent_threshold_years 4500 --generation_time 25                 --recent_summary exp10_${mode}_${rep}.tsv                 --output_at_hets=false --output_at_stride 1000                 --backward_alignment legacy --exp10 $mode --threads 1                 > exp10_${mode}_${rep}.log 2>&1
+            done
+          done
+          python - <<'PYEOF'
+          import re, statistics
+          # Isolate the passes that actually call 10^x: it runs once per output
+          # position, in mean_cv_to_alpha_beta, not once per segment.
+          def phases(path):
+              text = open(path).read()
+              def grab(label):
+                  return float(re.search(re.escape(label) + r":\s*([\d.]+)\s*secs", text).group(1))
+              fb = grab("Forward pass time") + grab("Backward pass time")
+              total = fb + grab("Emissions preparation time") + grab("Output time")
+              return fb, total
+          for label, index in (("forward+backward", 0), ("whole decode", 1)):
+              print(f"  {label}:")
+              means = {}
+              for mode in ("fast", "accurate"):
+                  values = [phases(f"exp10_{mode}_{rep}.log")[index] for rep in (1, 2, 3)]
+                  means[mode] = statistics.mean(values)
+                  spread = f"{min(values):.3f}-{max(values):.3f}"
+                  print(f"    {mode:9} {means[mode]:6.3f} s   (3 reps: {spread})")
+              delta = means["accurate"] - means["fast"]
+              print(f"    accurate costs {delta:+.3f} s "
+                    f"({100 * delta / means['fast']:+.1f}%)")
+          PYEOF
+
       - name: Throughput at scale, two thresholds plus bit matrix
         run: |
           /usr/bin/time -v opt/bin/gamma_smc \
