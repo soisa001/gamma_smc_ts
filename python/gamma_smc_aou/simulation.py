@@ -23,7 +23,7 @@ class SimulationConfig:
     mutation_rate: float = 1.25e-8
     recombination_rate: float = 1.0e-8
     threshold_years: float = 4500
-    generation_time: float = 30
+    generation_time: float = 25
     seed: int = 1729
     save_trees: bool = False
 

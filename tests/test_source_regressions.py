@@ -102,3 +102,25 @@ def test_manifest_header_fields_are_documented():
     documented = (ROOT / "AOU_WORKFLOW.md").read_text()
     for field in emitted:
         assert f"# {field}\t" in documented, field
+
+
+def test_generation_time_defaults_to_25_everywhere():
+    # 4500 years is 180 generations at 25 years/generation, which is the
+    # statistic this branch exists to compute. A surface still defaulting to 30
+    # would silently make it 150 generations instead, and nulls decoded through
+    # one surface would not be comparable with observed data decoded through
+    # another.
+    expected = [
+        ("src/gamma_smc.cpp", '("generation_time", "Generation time in years", '
+                              'cxxopts::value<double>()->default_value("25"))'),
+        ("python/gamma_smc_aou/decoder.py", "generation_time: float = 25,"),
+        ("python/gamma_smc_aou/simulation.py", "generation_time: float = 25"),
+        ("python/gamma_smc_aou/container_decoder.py", "generation_time: float = 25,"),
+    ]
+    for relative, needle in expected:
+        assert needle in (ROOT / relative).read_text(), relative
+
+    cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
+    defaults = re.findall(r'"--generation-time", type=float, default=(\d+)', cli)
+    assert defaults, "the generation-time arguments moved; this check went blind"
+    assert set(defaults) == {"25"}, defaults

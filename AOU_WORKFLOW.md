@@ -8,7 +8,8 @@ biallelic segregating SNP in the input VCF, the streaming summary reports
 
 `mean_p_tmrca_lt_threshold = mean_i P(T_i < threshold | sequence data)`.
 
-The default threshold is 4,500 years (150 generations at 30 years/generation).
+The default threshold is 4,500 years, which is 180 generations at the default
+25 years/generation.
 The Gamma posterior CDF is used, not a hard threshold of posterior mean TMRCA.
 The summary also contains mean posterior TMRCA in generations. It has one row
 per retained VCF segregating site and does not create a dense base-pair or 200 bp
@@ -391,6 +392,95 @@ at all.
 **Re-run your nulls.** Observed data and the matched null replicates must be
 decoded with the same `--exp10` and `--backward-alignment` settings, or the
 p-values are meaningless. Nothing in the pipeline checks this for you.
+
+## Parameter reference
+
+### Required
+
+| flag | notes |
+|---|---|
+| `--input` / `-i` | vcf, vcf.gz, bcf, `.trees`, `.tsz` |
+| `--scaled_mutation_rate` / `-m` | theta; estimated from data heterozygosity if omitted |
+| `--scaled_recombination_rate` / `-r` **or** `--recombination_to_mutation_ratio` / `-t` | mutually exclusive, one required |
+| one of `--output`, `--recent_summary`, `--recent_bitmatrix` | |
+| `--unscaled_mutation_rate` | required by `--recent_summary` and `--recent_bitmatrix` |
+
+### Defaults
+
+| flag | default | notes |
+|---|---|---|
+| `--input_format` | `auto` | required for `/dev/stdin` |
+| `--allow_unphased` | off | not recommended for haplotype scans |
+| `--recent_threshold_years` | `4500` | comma-separated for several |
+| `--generation_time` | `25` | 4500 years = 180 generations |
+| `--recent_call` | `median` | `median`, `mean`, or `prob` |
+| `--recent_call_probability` | `0.5` | only read by `--recent_call prob` |
+| `--no_recent_probability` | off | counts only; skips the mean-P accumulation |
+| *pair selection* | *exhaustive* | see the footguns below |
+| `--only_within` / `-w` | off | one pair per diploid |
+| `--n_random_pairs` | `0` (off) | |
+| `--pairs_seed` | `1729` | |
+| `--exclude_within` | off | drop within-individual pairs when sampling |
+| `--pairs_file` | — | |
+| `--pairs_manifest` | `<summary>.pairs.tsv` | auto-derived when sampling at random |
+| `--allow_panel_mismatch` | off | downgrades the panel-digest check to a warning |
+| `--samples` / `-S`, `--samples_against` / `-T` | — | |
+| `--output_at_hets` / `-h` | `true` | see the footguns below |
+| `--output_at_stride` / `-s` | `-1` (off) | |
+| `--mask` / `-a`, `--masks_per_sample` / `-b` | — | mutually exclusive |
+| `--cache_size` / `-z` | `1000` bp | no gain above the typical inter-SNP distance |
+| `--threads` / `-j` | `0` (all cores) | |
+| `--pair_block` | `256` | pairs per work unit and per bit-matrix frame |
+| `--exp10` | `accurate` | `fast` reproduces upstream |
+| `--backward_alignment` | `fixed` | `legacy` reproduces upstream |
+| `--exact_recent_stats` | off | validation only; roughly 90x slower |
+| `--flow_field` / `-f` | built-in | |
+| `--zstd_compression_level` | `1` | |
+| `--only_forward` / `-y`, `--only_backward` / `-d` | `false` | |
+
+### Python CLI
+
+`scripts/aou.sh decode` takes the same values, hyphenated, with four differences:
+
+- `--executable` defaults to `$GAMMA_SMC_BIN`, else `gamma_smc` on PATH.
+- `--threshold-years` is space-separated: `--threshold-years 4500 10000`.
+- `--no-output-at-hets` is a flag, inverting `--output_at_hets=false`.
+- Pair selection has **no exhaustive fallback**: picking none raises.
+
+### Build
+
+| knob | default | notes |
+|---|---|---|
+| `MARCH` | `native` | use `x86-64-v3` for a portable AVX2 build |
+| `OPENMP` | `1` | `OPENMP=0` builds single-threaded |
+
+### Compiled-in constants
+
+Not flags; change them in the source and rebuild.
+
+| constant | value | file |
+|---|---|---|
+| `parallel_vector_size` | 8 | `common.h`; AVX2 lanes, sets pairs per byte |
+| alpha exponent range | `[-16, 16]` | `recent_stats.h` |
+| quantile-table mantissa | 8 bits, 8,194 entries | `recent_stats.h` |
+| P(T<t) table | 1024 x 1024, 4.0 MB | alpha-coord `[-2,16]`, v `[-8,8]` |
+| table accuracy | 4.9e-5 max abs vs Boost | asserted in CI |
+
+### Three defaults that bite
+
+**Pair selection defaults to exhaustive.** With no selector the binary builds
+every O(n^2) haplotype pair, which at panel scale allocates before it fails.
+Always pass one of `--n_random_pairs`, `--only_within`, `--pairs_file`. The
+Python wrapper refuses instead of defaulting.
+
+**Output defaults to every segregating site.** `--output_at_hets` is `true` and
+the stride is off, so a whole-genome run without
+`--output_at_hets=false --output_at_stride 1000` emits roughly 1M positions per
+chromosome rather than 250k, and the bit matrix grows with it.
+
+**`--cache_size` interacts with the stride.** It bounds how far the decoder can
+skip in one step; there is no benefit above the typical distance between
+segregating sites, and raising it enlarges the flow-field cache.
 
 ## 2. Neutral simulations
 

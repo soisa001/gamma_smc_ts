@@ -375,7 +375,7 @@ def parser() -> argparse.ArgumentParser:
     sim.add_argument("--recombination-map")
     sim.add_argument("--histories", help="TSV with draw,time_generations,ne (e.g. PHLASH MVN draws)")
     sim.add_argument("--threshold-years", type=float, default=4500)
-    sim.add_argument("--generation-time", type=float, default=30)
+    sim.add_argument("--generation-time", type=float, default=25)
     sim.add_argument("--seed", type=int, default=1729)
     sim.add_argument("--save-trees", action="store_true")
     sim.add_argument("--workers", type=int, default=1, help="independent simulation processes")
@@ -426,7 +426,7 @@ def parser() -> argparse.ArgumentParser:
         "--threshold-years", type=float, nargs="+", default=[4500],
         help="one or more thresholds, e.g. --threshold-years 4500 10000",
     )
-    decode.add_argument("--generation-time", type=float, default=30)
+    decode.add_argument("--generation-time", type=float, default=25)
     decode.add_argument("--output-at-stride", type=int, default=-1)
     decode.add_argument("--no-output-at-hets", action="store_true")
     decode.add_argument(
@@ -551,7 +551,7 @@ def parser() -> argparse.ArgumentParser:
     truth_plot.add_argument("--sequence-length", type=float, required=True)
     truth_plot.add_argument("--ne", type=float, required=True)
     truth_plot.add_argument("--threshold-years", type=float, default=4500)
-    truth_plot.add_argument("--generation-time", type=float, default=30)
+    truth_plot.add_argument("--generation-time", type=float, default=25)
     truth_plot.add_argument("--relative-position", type=float, default=0.5)
     truth_plot.add_argument("--output-dir", required=True)
     truth_plot.set_defaults(func=command_plot_truth)
@@ -564,7 +564,7 @@ def parser() -> argparse.ArgumentParser:
     sweep.add_argument("--selection-coefficient", type=float, default=0.5)
     sweep.add_argument("--recombination-rate", type=float, default=1e-7)
     sweep.add_argument("--threshold-years", type=float, default=4500)
-    sweep.add_argument("--generation-time", type=float, default=30)
+    sweep.add_argument("--generation-time", type=float, default=25)
     sweep.add_argument("--neutral-replicates", type=int, default=39)
     sweep.add_argument("--seed", type=int, default=24681357)
     sweep.set_defaults(func=command_validate_sweep)

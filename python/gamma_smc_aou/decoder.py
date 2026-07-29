@@ -15,7 +15,7 @@ def run_within_decoder(
     recombination_to_mutation_ratio: float,
     mutation_rate: float,
     threshold_years: float | Sequence[float] = 4500,
-    generation_time: float = 30,
+    generation_time: float = 25,
     input_format: str = "auto",
     raw_output: str | Path | None = None,
     bitmatrix_output: str | Path | None = None,

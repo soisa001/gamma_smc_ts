@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
         ("recent_call", "Per-pair call rule: median, mean, or prob", cxxopts::value<std::string>()->default_value("median"))
         ("recent_call_probability", "Probability used by --recent_call prob", cxxopts::value<double>()->default_value("0.5"))
         ("no_recent_probability", "Skip the across-pair mean of P(T<t); counts only")
-        ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("30"))
+        ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("25"))
         ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time", cxxopts::value<double>())
         ("m,scaled_mutation_rate", "Scaled mutation rate", cxxopts::value<float>())
         ("r,scaled_recombination_rate", "Scaled recombination rate", cxxopts::value<float>())
