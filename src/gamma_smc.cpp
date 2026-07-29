@@ -512,9 +512,11 @@ int main(int argc, char** argv) {
     if (vm.count("pairs_manifest")) {
         pairs_manifest_filename = vm["pairs_manifest"].as<string>();
     } else if (pair_mode == "random") {
+        // Anchor on the summary: it is the output essentially every run
+        // writes, so the manifest lands in a predictable place.
         const string anchor =
-            !bitmatrix_filename.empty() ? bitmatrix_filename
-            : !recent_summary_filename.empty() ? recent_summary_filename
+            !recent_summary_filename.empty() ? recent_summary_filename
+            : !bitmatrix_filename.empty() ? bitmatrix_filename
             : output_filename;
         if (!anchor.empty()) {
             pairs_manifest_filename = anchor + ".pairs.tsv";

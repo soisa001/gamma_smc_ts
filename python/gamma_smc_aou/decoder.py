@@ -116,7 +116,7 @@ def run_within_decoder(
     # so resolve the same way rather than reporting nothing.
     manifest = Path(pairs_manifest) if pairs_manifest is not None else None
     if manifest is None and n_random_pairs > 0:
-        anchor = bitmatrix_output or output_summary or raw_output
+        anchor = output_summary or bitmatrix_output or raw_output
         if anchor is not None:
             manifest = Path(str(anchor) + ".pairs.tsv")
 

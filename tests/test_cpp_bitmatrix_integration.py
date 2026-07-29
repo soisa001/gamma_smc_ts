@@ -8,7 +8,9 @@ and that random pair sampling is reproducible.
 
 import json
 import os
+import re
 import subprocess
+from pathlib import Path
 
 import msprime
 import numpy as np
@@ -248,6 +250,17 @@ def test_pair_subset_counts_agree_with_the_whole(tmp_path):
     np.testing.assert_array_equal(total, first + second)
 
 
+def manifest_path(completed):
+    """The path the binary reports, rather than re-deriving its anchor rule."""
+    match = re.search(r"Pair manifest: (\S+)", strip_ansi(completed.stdout))
+    assert match, strip_ansi(completed.stdout)[-2000:]
+    return Path(match.group(1))
+
+
+def strip_ansi(text):
+    return re.sub(r"\[[0-9;]*m", "", text)
+
+
 def read_manifest(path):
     """Split a pair manifest into its '#' header fields and its pair rows."""
     header, pairs = {}, []
@@ -266,9 +279,10 @@ def read_manifest(path):
 def test_random_draw_writes_a_manifest_without_being_asked(tmp_path):
     # A seed alone does not identify a draw once the panel can change, so the
     # manifest is derived from the output path rather than left to a flag.
-    summary, _, _ = decode(tmp_path, panel_ts(), name="auto", n_random_pairs=64)
-    manifest = summary.with_name(summary.name + ".pairs.tsv")
+    summary, _, completed = decode(tmp_path, panel_ts(), name="auto", n_random_pairs=64)
+    manifest = manifest_path(completed)
     assert manifest.exists()
+    assert manifest == summary.with_name(summary.name + ".pairs.tsv")
 
     header, pairs = read_manifest(manifest)
     assert header["mode"] == "random"
@@ -283,8 +297,8 @@ def test_random_draw_writes_a_manifest_without_being_asked(tmp_path):
 
 def test_manifest_replays_as_a_pairs_file(tmp_path):
     ts = panel_ts()
-    drawn, _, _ = decode(tmp_path, ts, name="drawn", n_random_pairs=64)
-    manifest = drawn.with_name(drawn.name + ".pairs.tsv")
+    drawn, _, completed = decode(tmp_path, ts, name="drawn", n_random_pairs=64)
+    manifest = manifest_path(completed)
 
     replayed, _, _ = decode(
         tmp_path, ts, name="replayed", extra=["--pairs_file", str(manifest)]
@@ -295,8 +309,8 @@ def test_manifest_replays_as_a_pairs_file(tmp_path):
 
 
 def test_manifest_records_haplotype_names_alongside_indices(tmp_path):
-    summary, _, _ = decode(tmp_path, panel_ts(), name="named", n_random_pairs=16)
-    manifest = summary.with_name(summary.name + ".pairs.tsv")
+    _, _, completed = decode(tmp_path, panel_ts(), name="named", n_random_pairs=16)
+    manifest = manifest_path(completed)
     rows = [
         line.split("\t")
         for line in manifest.read_text().splitlines()
@@ -309,15 +323,15 @@ def test_manifest_records_haplotype_names_alongside_indices(tmp_path):
 
 
 def test_reusing_a_manifest_against_another_panel_is_refused(tmp_path):
-    big, _, _ = decode(tmp_path, panel_ts(n_individuals=24), name="big", n_random_pairs=64)
-    manifest = big.with_name(big.name + ".pairs.tsv")
+    _, _, completed = decode(tmp_path, panel_ts(n_individuals=24), name="big", n_random_pairs=64)
+    manifest = manifest_path(completed)
 
     with pytest.raises(subprocess.CalledProcessError) as caught:
         decode(
             tmp_path, panel_ts(n_individuals=20), name="small",
             extra=["--pairs_file", str(manifest)],
         )
-    assert "different panel" in caught.value.stdout
+    assert "different panel" in strip_ansi(caught.value.stdout)
 
     # The pairs still fit inside the smaller panel's index range, so nothing but
     # the digest would have caught this.
@@ -326,8 +340,8 @@ def test_reusing_a_manifest_against_another_panel_is_refused(tmp_path):
 
 
 def test_panel_mismatch_can_be_overridden(tmp_path):
-    big, _, _ = decode(tmp_path, panel_ts(n_individuals=24), name="ovbig", n_random_pairs=32)
-    manifest = big.with_name(big.name + ".pairs.tsv")
+    _, _, completed = decode(tmp_path, panel_ts(n_individuals=24), name="ovbig", n_random_pairs=32)
+    manifest = manifest_path(completed)
     _, pairs = read_manifest(manifest)
     usable = [pair for pair in pairs if max(pair) < 40]
     reduced = tmp_path / "reduced.pairs.tsv"
@@ -344,7 +358,7 @@ def test_panel_mismatch_can_be_overridden(tmp_path):
         tmp_path, panel_ts(n_individuals=20), name="ovsmall",
         extra=["--pairs_file", str(reduced), "--allow_panel_mismatch"],
     )
-    assert "Warning" in completed.stdout
+    assert "Warning" in strip_ansi(completed.stdout)
     assert pd.read_csv(summary, sep="\t")["n_pairs"].max() == len(usable)
 
 
