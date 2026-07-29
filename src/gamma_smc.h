@@ -36,9 +36,23 @@ static inline __m256 _mm256_expfaster_ps(const __m256 &q) {
 // lands directly on the posterior shape and rate and therefore on P(T < t).
 //
 // This version splits 10^q = 2^n * 2^f with f in [-0.5, 0.5] and evaluates 2^f
-// with its degree-6 Taylor series, which is below float32 resolution on that
-// interval. It is called once per output position, not once per segment, so the
-// extra arithmetic is a few percent of the run at most.
+// with its degree-6 Taylor series, whose truncation term at |f| = 0.5 is 1.19e-7
+// against a float32 epsilon of 1.19e-7 -- one ULP, as good as single precision
+// allows. End to end the routine is accurate to 1.19e-6, about 10 ULP; the
+// residual is the float32 range reduction q * log2(10), not the polynomial.
+// That is 40x tighter than the P(T<t) lookup table consuming it, so splitting
+// log2(10) Cody-Waite style to recover the last few ULP would buy nothing.
+//
+// It is called once per output position, not once per segment, so the extra
+// arithmetic over the fast path measures +2.4% of decode.
+//
+// PRECONDITION: neither this nor the fast path above clamps the exponent. Here,
+// (n + 127) << 23 walks into the sign bit once n <= -127, returning large
+// wrong-signed values rather than underflowing to zero -- multiplying by the
+// constructed power of two does not rescue that. What keeps both safe is the
+// caller: clip_mean_cv_log10 holds the message state inside the flow-field grid
+// (mean in [1e-5, 100], cv in [0.01, 1]), which bounds q to [-2, 9] and n to
+// [-7, 30]. Widen that grid and this needs an explicit clamp.
 static inline __m256 _mm256_exp10_accurate_ps(const __m256 &q) {
     const __m256 log2_10 = _mm256_set1_ps(3.32192809488736f);
     const __m256 y = _mm256_mul_ps(q, log2_10);
