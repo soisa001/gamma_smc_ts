@@ -158,6 +158,7 @@ def command_decode(args):
         recent_call_probability=args.recent_call_probability,
         threads=args.threads,
         pair_block=args.pair_block,
+        pairs_manifest=args.pairs_manifest,
         exp10=args.exp10,
         backward_alignment=args.backward_alignment,
     )
@@ -445,6 +446,11 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--recent-call-probability", type=float, default=0.5)
     decode.add_argument("--threads", type=int, default=0, help="0 uses every available core")
     decode.add_argument("--pair-block", type=int, default=256)
+    decode.add_argument(
+        "--pairs-manifest",
+        help="write the decoded pair list here (reusable as --pairs-file); "
+             "derived next to the output automatically when sampling at random",
+    )
     decode.add_argument(
         "--exp10", choices=["accurate", "fast"], default="accurate",
         help="fast reproduces upstream's 10^x approximation, which carries -3.9%%..+2.0%% relative error",

@@ -27,6 +27,7 @@ def run_within_decoder(
     n_random_pairs: int = 0,
     pairs_seed: int = 1729,
     pairs_file: str | Path | None = None,
+    pairs_manifest: str | Path | None = None,
     exclude_within: bool = False,
     recent_call: str = "median",
     recent_call_probability: float = 0.5,
@@ -93,6 +94,9 @@ def run_within_decoder(
             command.append("--exclude_within")
     if pairs_file is not None:
         command.extend(["--pairs_file", str(pairs_file)])
+    if pairs_manifest is not None:
+        Path(pairs_manifest).parent.mkdir(parents=True, exist_ok=True)
+        command.extend(["--pairs_manifest", str(pairs_manifest)])
     if raw_output is not None:
         command.extend(["--output", str(raw_output)])
     if bitmatrix_output is not None:
@@ -106,7 +110,29 @@ def run_within_decoder(
         command.extend(str(value) for value in extra_args)
 
     completed = subprocess.run(command, check=True, text=True, capture_output=True)
-    run = {"command": command, "stdout": completed.stdout, "stderr": completed.stderr}
+
+    # Record where the draw was written. Without an explicit --pairs_manifest
+    # the binary derives one next to the output whenever it sampled at random,
+    # so resolve the same way rather than reporting nothing.
+    manifest = Path(pairs_manifest) if pairs_manifest is not None else None
+    if manifest is None and n_random_pairs > 0:
+        anchor = bitmatrix_output or output_summary or raw_output
+        if anchor is not None:
+            manifest = Path(str(anchor) + ".pairs.tsv")
+
+    run = {
+        "command": command,
+        "stdout": completed.stdout,
+        "stderr": completed.stderr,
+        "pairs_manifest": str(manifest) if manifest is not None else None,
+        "n_pairs_recorded": (
+            sum(
+                1 for line in manifest.read_text().splitlines()
+                if line.strip() and not line.startswith("#")
+            )
+            if manifest is not None and manifest.exists() else None
+        ),
+    }
     with output_summary.with_suffix(output_summary.suffix + ".run.json").open("w", encoding="utf-8") as handle:
         json.dump(run, handle, indent=2)
     return run

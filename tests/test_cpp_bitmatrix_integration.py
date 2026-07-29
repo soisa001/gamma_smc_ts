@@ -246,3 +246,115 @@ def test_pair_subset_counts_agree_with_the_whole(tmp_path):
     first = bitmatrix.position_counts(bits_path, meta, pair_indices=range(0, 20))
     second = bitmatrix.position_counts(bits_path, meta, pair_indices=range(20, 40))
     np.testing.assert_array_equal(total, first + second)
+
+
+def read_manifest(path):
+    """Split a pair manifest into its '#' header fields and its pair rows."""
+    header, pairs = {}, []
+    for line in path.read_text().splitlines():
+        if line.startswith("#"):
+            body = line[1:].strip()
+            parts = body.split("\t")
+            if len(parts) == 2:
+                header[parts[0]] = parts[1]
+        elif line.strip():
+            fields = line.split("\t")
+            pairs.append((int(fields[0]), int(fields[1])))
+    return header, pairs
+
+
+def test_random_draw_writes_a_manifest_without_being_asked(tmp_path):
+    # A seed alone does not identify a draw once the panel can change, so the
+    # manifest is derived from the output path rather than left to a flag.
+    summary, _, _ = decode(tmp_path, panel_ts(), name="auto", n_random_pairs=64)
+    manifest = summary.with_name(summary.name + ".pairs.tsv")
+    assert manifest.exists()
+
+    header, pairs = read_manifest(manifest)
+    assert header["mode"] == "random"
+    assert header["n_pairs"] == "64"
+    assert header["n_haplotypes"] == "48"
+    assert header["pairs_seed"] == "20240727"
+    assert header["panel_digest"].startswith("0x")
+    assert len(pairs) == 64
+    assert len(set(pairs)) == 64
+    assert all(0 <= i < j < 48 for i, j in pairs)
+
+
+def test_manifest_replays_as_a_pairs_file(tmp_path):
+    ts = panel_ts()
+    drawn, _, _ = decode(tmp_path, ts, name="drawn", n_random_pairs=64)
+    manifest = drawn.with_name(drawn.name + ".pairs.tsv")
+
+    replayed, _, _ = decode(
+        tmp_path, ts, name="replayed", extra=["--pairs_file", str(manifest)]
+    )
+    pd.testing.assert_frame_equal(
+        pd.read_csv(drawn, sep="\t"), pd.read_csv(replayed, sep="\t")
+    )
+
+
+def test_manifest_records_haplotype_names_alongside_indices(tmp_path):
+    summary, _, _ = decode(tmp_path, panel_ts(), name="named", n_random_pairs=16)
+    manifest = summary.with_name(summary.name + ".pairs.tsv")
+    rows = [
+        line.split("\t")
+        for line in manifest.read_text().splitlines()
+        if line and not line.startswith("#")
+    ]
+    for hap_i, hap_j, label_i, label_j in rows:
+        # Haplotype h is haplotype (h & 1) of diploid (h >> 1).
+        assert label_i.endswith(f".{int(hap_i) & 1}")
+        assert label_j.endswith(f".{int(hap_j) & 1}")
+
+
+def test_reusing_a_manifest_against_another_panel_is_refused(tmp_path):
+    big, _, _ = decode(tmp_path, panel_ts(n_individuals=24), name="big", n_random_pairs=64)
+    manifest = big.with_name(big.name + ".pairs.tsv")
+
+    with pytest.raises(subprocess.CalledProcessError) as caught:
+        decode(
+            tmp_path, panel_ts(n_individuals=20), name="small",
+            extra=["--pairs_file", str(manifest)],
+        )
+    assert "different panel" in caught.value.stdout
+
+    # The pairs still fit inside the smaller panel's index range, so nothing but
+    # the digest would have caught this.
+    _, pairs = read_manifest(manifest)
+    assert max(max(pair) for pair in pairs) < 40
+
+
+def test_panel_mismatch_can_be_overridden(tmp_path):
+    big, _, _ = decode(tmp_path, panel_ts(n_individuals=24), name="ovbig", n_random_pairs=32)
+    manifest = big.with_name(big.name + ".pairs.tsv")
+    _, pairs = read_manifest(manifest)
+    usable = [pair for pair in pairs if max(pair) < 40]
+    reduced = tmp_path / "reduced.pairs.tsv"
+    reduced.write_text(
+        "\n".join(f"{i}\t{j}" for i, j in usable) + "\n"
+    )
+    header_lines = [
+        line for line in manifest.read_text().splitlines() if line.startswith("#")
+    ]
+    reduced.write_text(
+        "\n".join(header_lines + [f"{i}\t{j}" for i, j in usable]) + "\n"
+    )
+    summary, _, completed = decode(
+        tmp_path, panel_ts(n_individuals=20), name="ovsmall",
+        extra=["--pairs_file", str(reduced), "--allow_panel_mismatch"],
+    )
+    assert "Warning" in completed.stdout
+    assert pd.read_csv(summary, sep="\t")["n_pairs"].max() == len(usable)
+
+
+def test_explicit_manifest_path_is_honoured_for_any_mode(tmp_path):
+    target = tmp_path / "nested" / "within.pairs.tsv"
+    decode(
+        tmp_path, panel_ts(), name="within", only_within=True,
+        extra=["--pairs_manifest", str(target)],
+    )
+    header, pairs = read_manifest(target)
+    assert header["mode"] == "only_within"
+    assert "pairs_seed" not in header      # meaningless for a deterministic list
+    assert pairs == [(2 * i, 2 * i + 1) for i in range(24)]

@@ -6,6 +6,7 @@
 #include "gamma_smc.h"
 #include "data_processor.h"
 #include "pair_sampling.h"
+#include "pair_manifest.h"
 #include "screenoutput.h"
 #include "cxxopts.hpp"
 
@@ -54,6 +55,8 @@ int main(int argc, char** argv) {
         ("pairs_seed", "Seed for --n_random_pairs", cxxopts::value<unsigned long long>()->default_value("1729"))
         ("pairs_file", "File of explicit haplotype pairs, two 0-based indices per line", cxxopts::value<std::string>())
         ("exclude_within", "Exclude within-individual pairs when sampling at random")
+        ("pairs_manifest", "Write the decoded pair list here; reusable as --pairs_file. Written automatically next to the output when --n_random_pairs is used", cxxopts::value<std::string>())
+        ("allow_panel_mismatch", "Downgrade the --pairs_file panel-digest check to a warning")
         ("s,output_at_stride", "Output at positions which are multiples of this number", cxxopts::value<int>()->default_value("-1"))
         ("h,output_at_hets", "Output at segregating sites", cxxopts::value<bool>()->default_value("true"))
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
@@ -448,7 +451,9 @@ int main(int argc, char** argv) {
     uint n_samples = sample_names.size();
     const int n_haplotypes = (int) (2 * n_samples);
 
+    string pair_mode = "exhaustive";
     if (n_random_pairs > 0) {
+        pair_mode = "random";
         sample_random_pairs(
             n_haplotypes,
             n_random_pairs,
@@ -457,13 +462,24 @@ int main(int argc, char** argv) {
             haplotype_pairs
         );
     } else if (wants_pairs_file) {
+        // Indices in a pairs file only mean something relative to the sample
+        // order they were drawn against, so check that first.
+        pair_mode = "file";
+        verify_pair_manifest(
+            read_pair_manifest_header(pairs_filename),
+            sample_names,
+            pairs_filename,
+            vm.count("allow_panel_mismatch") > 0
+        );
         read_pairs_file(pairs_filename, n_haplotypes, haplotype_pairs);
     } else if (vm.count("only_within")) {
+        pair_mode = "only_within";
         for (uint i = 0; i < n_samples; i++) {
             haplotype_pairs.push_back(make_pair(2*i, 2*i+1));
         }
     } else {
         if (samples_against_indices.size()) {
+            pair_mode = "samples_against";
             for (int i : samples_indices) {
                 for (int j : samples_against_indices) {
                     haplotype_pairs.push_back(make_pair(2 * i, 2 * j));
@@ -490,9 +506,46 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
+    // Record the draw. A random sample is unreproducible in practice without
+    // this, so derive a path rather than let it be lost by omitting the flag.
+    string pairs_manifest_filename;
+    if (vm.count("pairs_manifest")) {
+        pairs_manifest_filename = vm["pairs_manifest"].as<string>();
+    } else if (pair_mode == "random") {
+        const string anchor =
+            !bitmatrix_filename.empty() ? bitmatrix_filename
+            : !recent_summary_filename.empty() ? recent_summary_filename
+            : output_filename;
+        if (!anchor.empty()) {
+            pairs_manifest_filename = anchor + ".pairs.tsv";
+        }
+    }
+    if (!pairs_manifest_filename.empty()) {
+        auto manifest_directory = std::filesystem::path(pairs_manifest_filename).parent_path();
+        if (!manifest_directory.empty()) {
+            std::filesystem::create_directories(manifest_directory);
+        }
+        write_pair_manifest(
+            pairs_manifest_filename,
+            haplotype_pairs,
+            sample_names,
+            input_filename,
+            pair_mode,
+            n_random_pairs,
+            vm["pairs_seed"].as<unsigned long long>(),
+            vm.count("exclude_within") > 0,
+            pair_mode == "random"
+        );
+    }
+
     screen.print_item(boost::str(
         boost::format("Applying to %d haplotype pairs") % haplotype_pairs.size()
     ));
+    if (!pairs_manifest_filename.empty()) {
+        screen.print_item(boost::str(
+            boost::format("Pair manifest: %s") % pairs_manifest_filename
+        ));
+    }
     screen.print_item(boost::str(
         boost::format("Using %d thread(s), %d pairs per work unit") % n_threads % pair_block
     ));
