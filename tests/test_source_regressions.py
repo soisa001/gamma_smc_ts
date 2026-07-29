@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -89,3 +90,15 @@ def test_docs_do_not_call_the_corrections_opt_in():
         # The flag was renamed; the old spelling would silently do nothing.
         assert "--accurate_exp10" not in text, name
         assert "--accurate-exp10" not in text, name
+
+
+def test_manifest_header_fields_are_documented():
+    # The manifest is the resume path; a field added to the writer without a
+    # doc entry is the kind of thing that only surfaces months later.
+    writer = (ROOT / "src" / "pair_manifest.h").read_text()
+    # The C++ source contains a literal backslash-t, not a tab character.
+    emitted = set(re.findall(r'"# ([a-z_]+)\\t', writer))
+    assert len(emitted) >= 10, f"regex stopped matching the writer: {emitted}"
+    documented = (ROOT / "AOU_WORKFLOW.md").read_text()
+    for field in emitted:
+        assert f"# {field}\t" in documented, field

@@ -150,6 +150,74 @@ below the threshold, i.e. P(T < t) >= 0.5. `--recent-call mean` thresholds the
 posterior mean instead, and `--recent-call prob --recent-call-probability 0.9`
 demands 90% posterior mass.
 
+### Which pairs were drawn
+
+Every random draw is written out literally, to a manifest next to the summary:
+
+```
+chr1.stride1000.tsv.pairs.tsv
+```
+
+No flag is needed — it is derived from the output path whenever
+`--n-random-pairs` is used, so it cannot be lost by forgetting one.
+`--pairs-manifest` overrides the location, and works for any pair mode.
+
+```
+# gamma_smc_pair_manifest_v1
+# created_utc	2026-07-29T18:22:41Z
+# input	/work/chr1.phased.vcf.gz
+# mode	random
+# n_pairs	100000
+# n_haplotypes	20000
+# n_samples	10000
+# pairs_seed	1729
+# n_random_pairs	100000
+# exclude_within	false
+# rng	mt19937_64; draw both haplotypes uniformly, reject i==j, deduplicate, sort ascending
+# panel_digest	0x3f1a9c04e7b52d18
+# pairs_digest	0x9c22b7ff0a41e6d3
+# Reuse with --pairs_file to decode exactly these pairs again.
+# hap_i	hap_j	haplotype_i	haplotype_j
+17	4082	NA12878.1	NA20502.0
+...
+```
+
+Every header line starts with `#`, which the pairs-file reader already skips,
+and the first two columns are the haplotype indices it already parses. So a
+manifest is a valid `--pairs-file` with no conversion — decode chr1, then hold
+the pair set fixed across the other 21 chromosomes:
+
+```bash
+scripts/aou.sh decode --input chr2.vcf.gz --output chr2.tsv --pairs-file chr1.tsv.pairs.tsv --no-output-at-hets --output-at-stride 1000 --threads 0
+```
+
+**Why not just keep the seed.** The draw is reproducible from `--pairs-seed`,
+but only against the same haplotype ordering. Indices are positions in the
+sample list, which depends on the input file, on `--samples`, and on which
+records htslib kept. Re-deriving a draw months later from a seed alone, against
+a panel that has since been re-exported or re-subset, silently decodes
+different pairs.
+
+`panel_digest` is a hash of the ordered sample names. Reusing a manifest
+against a panel whose digest differs is refused, not warned about:
+
+```
+Error: --pairs_file chr1.tsv.pairs.tsv was drawn against a different panel.
+  panel digest: manifest 0x3f1a9c04e7b52d18, this run 0x71ce0b39a2fd4460
+  manifest was drawn from: /work/chr1.phased.vcf.gz
+  Haplotype indices are relative to the sample order, so these pairs
+  would decode different haplotypes than the ones recorded.
+  Pass --allow_panel_mismatch to proceed anyway.
+```
+
+Range validation alone would not catch this: the indices usually remain inside
+the new panel's range, so the run would look perfectly healthy. `pairs_digest`
+covers the pair list itself, for checking a manifest has not been edited.
+
+The bit-matrix `.meta` also carries the full `pairs` array and `sample_names`,
+so a bit matrix stays interpretable on its own; the manifest is the portable,
+reusable form.
+
 ### Bit matrix
 
 `--bitmatrix` writes one bit per (pair, position, threshold): ~6 GB per
