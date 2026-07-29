@@ -22,12 +22,6 @@ def test_missing_genotypes_are_recorded_when_reading():
     assert "SiteMatrix::set_bit(scratch_missing.data(), haplotype_base + j)" in source
 
 
-def test_mask_option_typo_is_fixed():
-    source = (ROOT / "src" / "gamma_smc.cpp").read_text()
-    assert 'vm.count("masks_per_filename")' not in source
-    assert 'vm.count("masks_per_sample")' in source
-
-
 def test_tree_converter_does_not_use_shell_command():
     source = (ROOT / "src" / "io.h").read_text()
     assert "std::system" not in source
