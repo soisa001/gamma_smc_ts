@@ -322,38 +322,47 @@ def test_manifest_records_haplotype_names_alongside_indices(tmp_path):
         assert label_j.endswith(f".{int(hap_j) & 1}")
 
 
+def reduced_manifest(tmp_path, completed, n_haplotypes, destination):
+    """A manifest keeping only pairs that are valid indices in a smaller panel.
+
+    This is what makes the digest check meaningful: every index is in range, so
+    range validation cannot object, and only the recorded panel identity
+    distinguishes the two panels.
+    """
+    source = manifest_path(completed)
+    header = [line for line in source.read_text().splitlines() if line.startswith("#")]
+    _, pairs = read_manifest(source)
+    usable = [pair for pair in pairs if max(pair) < n_haplotypes]
+    assert usable, "no drawn pair fits the smaller panel"
+    rows = [f"{i}\t{j}" for i, j in usable]
+    destination.write_text("\n".join(header + rows) + "\n")
+    return destination, usable
+
+
 def test_reusing_a_manifest_against_another_panel_is_refused(tmp_path):
-    _, _, completed = decode(tmp_path, panel_ts(n_individuals=24), name="big", n_random_pairs=64)
-    manifest = manifest_path(completed)
+    _, _, completed = decode(
+        tmp_path, panel_ts(n_individuals=24), name="big", n_random_pairs=64
+    )
+    reduced, _ = reduced_manifest(tmp_path, completed, 40, tmp_path / "big.reduced.tsv")
 
     with pytest.raises(subprocess.CalledProcessError) as caught:
         decode(
             tmp_path, panel_ts(n_individuals=20), name="small",
-            extra=["--pairs_file", str(manifest)],
+            extra=["--pairs_file", str(reduced)],
         )
-    assert "different panel" in strip_ansi(caught.value.stdout)
-
-    # The pairs still fit inside the smaller panel's index range, so nothing but
-    # the digest would have caught this.
-    _, pairs = read_manifest(manifest)
-    assert max(max(pair) for pair in pairs) < 40
+    stdout = strip_ansi(caught.value.stdout)
+    assert "different panel" in stdout
+    # Every index is valid for the smaller panel, so the range check in
+    # read_pairs_file would have passed this file without complaint.
+    assert "outside" not in stdout
 
 
 def test_panel_mismatch_can_be_overridden(tmp_path):
-    _, _, completed = decode(tmp_path, panel_ts(n_individuals=24), name="ovbig", n_random_pairs=32)
-    manifest = manifest_path(completed)
-    _, pairs = read_manifest(manifest)
-    usable = [pair for pair in pairs if max(pair) < 40]
-    reduced = tmp_path / "reduced.pairs.tsv"
-    reduced.write_text(
-        "\n".join(f"{i}\t{j}" for i, j in usable) + "\n"
+    _, _, completed = decode(
+        tmp_path, panel_ts(n_individuals=24), name="ovbig", n_random_pairs=32
     )
-    header_lines = [
-        line for line in manifest.read_text().splitlines() if line.startswith("#")
-    ]
-    reduced.write_text(
-        "\n".join(header_lines + [f"{i}\t{j}" for i, j in usable]) + "\n"
-    )
+    reduced, usable = reduced_manifest(tmp_path, completed, 40, tmp_path / "ov.reduced.tsv")
+
     summary, _, completed = decode(
         tmp_path, panel_ts(n_individuals=20), name="ovsmall",
         extra=["--pairs_file", str(reduced), "--allow_panel_mismatch"],
