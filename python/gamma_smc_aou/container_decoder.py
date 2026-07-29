@@ -169,7 +169,7 @@ def run_container_decoder(
     *,
     scaled_mutation_rate: float = 0.00075,
     recombination_to_mutation_ratio: float = 0.8,
-    mutation_rate: float = 1.29e-8,
+    mutation_rate: float = 1.25e-8,
     threshold_years: float = 4500,
     generation_time: float = 25,
     stride: int = 1000,

@@ -145,11 +145,31 @@ within-individual scan, so every existing consumer keeps working, and
 | `mean_p_lt_4500` | mean of P(T < 4500 years) across pairs |
 | `n_recent_10000`, … | the same block per additional threshold |
 
-`frac_recent_*` is the hard-threshold proportion; `mean_p_lt_*` is the soft
-version the paper uses. A pair is called recent when its posterior median falls
-below the threshold, i.e. P(T < t) >= 0.5. `--recent-call mean` thresholds the
-posterior mean instead, and `--recent-call prob --recent-call-probability 0.9`
-demands 90% posterior mass.
+There are two families here, and they are not interchangeable:
+
+- **`frac_recent_*`** counts pairs *called* recent. `--recent-call` chooses the
+  rule: `median` (default, P(T<t) >= 0.5), `mean` (posterior mean below t), or
+  `prob` with `--recent-call-probability`.
+- **`mean_p_lt_*`** averages P(T<t) over pairs. It ignores `--recent-call`
+  entirely.
+
+**The paper uses neither of the defaults.** It reports "the proportion of
+posterior means below a threshold of T", i.e. `frac_recent_*` with
+`--recent-call mean`. The `AOU_run` baseline instead averaged the posterior CDF,
+which is `mean_p_lt_*`. Both are in every summary, so all three are comparable
+from one decode, but pick one deliberately and use it on both observed data and
+nulls.
+
+The default here is the median rule, because it is far less sensitive to
+posterior width than the soft average: over a CV shift from 0.8 to 1.0 the soft
+statistic's inflation over truth moves 2.5x -> 4.6x while the median rule's moves
+1.25x -> 1.44x. Since real data and simulations will not share posterior widths
+exactly, that difference does not cancel in a null-calibrated p-value.
+
+Do **not** threshold the MAP. For Gamma the mode is `(alpha-1)/beta`, and alpha
+sits at its floor of 1 in the recent regime, so the mode collapses to 0 and the
+rule becomes a step function of alpha right on the grid boundary — decided by
+the clipping, not by the data.
 
 ### Which pairs were drawn
 
@@ -397,13 +417,13 @@ p-values are meaningless. Nothing in the pipeline checks this for you.
 
 ### Required
 
+Only three things, since the rates now have reference defaults:
+
 | flag | notes |
 |---|---|
 | `--input` / `-i` | vcf, vcf.gz, bcf, `.trees`, `.tsz` |
-| `--scaled_mutation_rate` / `-m` | theta; estimated from data heterozygosity if omitted |
-| `--scaled_recombination_rate` / `-r` **or** `--recombination_to_mutation_ratio` / `-t` | mutually exclusive, one required |
 | one of `--output`, `--recent_summary`, `--recent_bitmatrix` | |
-| `--unscaled_mutation_rate` | required by `--recent_summary` and `--recent_bitmatrix` |
+| a pair selection | `--n_random_pairs`, `--only_within` or `--pairs_file`; otherwise exhaustive |
 
 ### Defaults
 
@@ -413,6 +433,10 @@ p-values are meaningless. Nothing in the pipeline checks this for you.
 | `--allow_unphased` | off | not recommended for haplotype scans |
 | `--recent_threshold_years` | `4500` | comma-separated for several |
 | `--generation_time` | `25` | 4500 years = 180 generations |
+| `--scaled_mutation_rate` / `-m` | `0.00075` | the paper's value; fixed, not per-file |
+| `--scaled_recombination_rate` / `-r` | `0.0006` | rho/theta = 0.8 |
+| `--unscaled_mutation_rate` | `1.25e-8` | with theta gives 2Ne = 30,000, Ne = 15,000 |
+| `--estimate_mutation_rate` | off | estimating theta rescales the time axis per file |
 | `--recent_call` | `median` | `median`, `mean`, or `prob` |
 | `--recent_call_probability` | `0.5` | only read by `--recent_call prob` |
 | `--no_recent_probability` | off | counts only; skips the mean-P accumulation |
@@ -425,8 +449,8 @@ p-values are meaningless. Nothing in the pipeline checks this for you.
 | `--pairs_manifest` | `<summary>.pairs.tsv` | auto-derived when sampling at random |
 | `--allow_panel_mismatch` | off | downgrades the panel-digest check to a warning |
 | `--samples` / `-S`, `--samples_against` / `-T` | — | |
-| `--output_at_hets` / `-h` | `true` | see the footguns below |
-| `--output_at_stride` / `-s` | `-1` (off) | |
+| `--output_at_hets` / `-h` | **off unless given** | ~1M positions/chr when on |
+| `--output_at_stride` / `-s` | `100000` | the paper's region size; `-1` disables |
 | `--mask` / `-a`, `--masks_per_sample` / `-b` | — | mutually exclusive |
 | `--cache_size` / `-z` | `1000` bp | no gain above the typical inter-SNP distance |
 | `--threads` / `-j` | `0` (all cores) | |

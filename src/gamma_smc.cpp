@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         ("recent_call_probability", "Probability used by --recent_call prob", cxxopts::value<double>()->default_value("0.5"))
         ("no_recent_probability", "Skip the across-pair mean of P(T<t); counts only")
         ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("25"))
-        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.29e-8)", cxxopts::value<double>())
+        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.25e-8)", cxxopts::value<double>())
         ("m,scaled_mutation_rate", "Scaled mutation rate (default 0.00075)", cxxopts::value<float>())
         ("estimate_mutation_rate", "Estimate the scaled mutation rate from data heterozygosity instead of using the fixed default")
         ("r,scaled_recombination_rate", "Scaled recombination rate (default 0.0006)", cxxopts::value<float>())
@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
         ("exclude_within", "Exclude within-individual pairs when sampling at random")
         ("pairs_manifest", "Write the decoded pair list here; reusable as --pairs_file. Written automatically next to the output when --n_random_pairs is used", cxxopts::value<std::string>())
         ("allow_panel_mismatch", "Downgrade the --pairs_file panel-digest check to a warning")
-        ("s,output_at_stride", "Output at positions which are multiples of this number", cxxopts::value<int>()->default_value("-1"))
-        ("h,output_at_hets", "Output at segregating sites", cxxopts::value<bool>()->default_value("true"))
+        ("s,output_at_stride", "Output at positions which are multiples of this number (default 100000; -1 disables)", cxxopts::value<int>()->default_value("100000"))
+        ("h,output_at_hets", "Output at segregating sites as well as at the stride (off unless given explicitly)", cxxopts::value<bool>()->default_value("true"))
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
         ("j,threads", "Worker threads (0 = all available)", cxxopts::value<int>()->default_value("0"))
         ("pair_block", "Pairs decoded per work unit and per bit-matrix frame", cxxopts::value<long>()->default_value("256"))
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     // default_value, otherwise presence checks below cannot tell the two apart.
     const float default_scaled_mutation_rate = 0.00075f;
     const float default_scaled_recombination_rate = 0.0006f;
-    const double default_unscaled_mutation_rate = 1.29e-8;
+    const double default_unscaled_mutation_rate = 1.25e-8;
 
     const bool estimate_mutation_rate = (vm.count("estimate_mutation_rate") > 0);
     if (estimate_mutation_rate && vm.count("scaled_mutation_rate")) {
@@ -330,7 +330,15 @@ int main(int argc, char** argv) {
     }
 
     int output_at_stride = vm["output_at_stride"].as<int>();
+
+    // Stride-only unless --output_at_hets is given. Segregating-site output is
+    // ~1M positions per chromosome, which would swamp the 100 kb stride default
+    // and the bit matrix with it. cxxopts count() is 0 when the value came from
+    // default_value, so this distinguishes "not mentioned" from "asked for".
     bool output_at_hets = vm["output_at_hets"].as<bool>();
+    if (vm.count("output_at_hets") == 0) {
+        output_at_hets = false;
+    }
     if (!output_at_hets && (output_at_stride == -1)) {
         cout << "Warning: No output flags provided.\n";
     }

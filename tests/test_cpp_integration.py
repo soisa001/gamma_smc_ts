@@ -22,6 +22,8 @@ def test_cpp_tree_input_streaming_recent_summary(tmp_path):
             "--unscaled_mutation_rate", "2e-7",
             "--recent_threshold_years", "4500", "--generation_time", "30",
             "--recent_summary", str(output),
+            # Per-site output is no longer the default; ask for it explicitly.
+            "--output_at_hets", "--output_at_stride", "-1",
         ],
         check=True,
     )

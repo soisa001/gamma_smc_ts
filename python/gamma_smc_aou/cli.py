@@ -428,13 +428,16 @@ def parser() -> argparse.ArgumentParser:
         "--rho-over-theta", type=float, default=0.8,
         help="0.8 with the default theta gives the reference rho = 0.0006",
     )
-    decode.add_argument("--mutation-rate", type=float, default=1.29e-8)
+    decode.add_argument("--mutation-rate", type=float, default=1.25e-8)
     decode.add_argument(
         "--threshold-years", type=float, nargs="+", default=[4500],
         help="one or more thresholds, e.g. --threshold-years 4500 10000",
     )
     decode.add_argument("--generation-time", type=float, default=25)
-    decode.add_argument("--output-at-stride", type=int, default=-1)
+    decode.add_argument(
+        "--output-at-stride", type=int, default=100_000,
+        help="100 kb matches the region size the paper scans; use 1000 for a fine scan",
+    )
     decode.add_argument("--no-output-at-hets", action="store_true")
     decode.add_argument(
         "--n-random-pairs", type=int, default=0,
@@ -485,7 +488,7 @@ def parser() -> argparse.ArgumentParser:
     container.add_argument("--output", required=True)
     container.add_argument("--theta", type=float, default=0.00075)
     container.add_argument("--rho-over-theta", type=float, default=0.8)
-    container.add_argument("--mutation-rate", type=float, default=1.29e-8)
+    container.add_argument("--mutation-rate", type=float, default=1.25e-8)
     container.add_argument("--threshold-years", type=float, default=4500)
     container.add_argument("--generation-time", type=float, default=25)
     container.add_argument("--output-at-stride", type=int, default=1000)

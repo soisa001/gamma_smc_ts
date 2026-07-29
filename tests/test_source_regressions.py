@@ -128,7 +128,7 @@ def test_reference_rates_are_the_defaults_everywhere():
     source = (ROOT / "src" / "gamma_smc.cpp").read_text()
     assert "const float default_scaled_mutation_rate = 0.00075f;" in source
     assert "const float default_scaled_recombination_rate = 0.0006f;" in source
-    assert "const double default_unscaled_mutation_rate = 1.29e-8;" in source
+    assert "const double default_unscaled_mutation_rate = 1.25e-8;" in source
     # rho/theta must stay self-consistent with the ratio the wrappers pass.
     assert abs(0.0006 / 0.00075 - 0.8) < 1e-12
 
@@ -144,8 +144,25 @@ def test_reference_rates_are_the_defaults_everywhere():
     decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()
     assert "scaled_mutation_rate: float = 0.00075," in decoder
     assert "recombination_to_mutation_ratio: float = 0.8," in decoder
-    assert "mutation_rate: float = 1.29e-8," in decoder
+    assert "mutation_rate: float = 1.25e-8," in decoder
 
     cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
     assert '"--theta", type=float, required=True' not in cli
     assert '"--mutation-rate", type=float, required=True' not in cli
+
+
+def test_stride_defaults_to_100kb_and_hets_are_off():
+    # 100 kb is the region size the paper scans. A stride default only means
+    # anything if per-segregating-site output stops being the default too --
+    # otherwise a bare run still emits ~1M positions per chromosome.
+    source = (ROOT / "src" / "gamma_smc.cpp").read_text()
+    assert 'default_value("100000")' in source
+    assert 'if (vm.count("output_at_hets") == 0) {' in source
+    assert "output_at_hets = false;" in source
+
+    decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()
+    assert "output_at_stride: int = 100_000," in decoder
+    assert "output_at_hets: bool = False," in decoder
+
+    # theta / (2 mu) must land on the paper's effective size.
+    assert abs(0.00075 / (2 * 1.25e-8) - 30_000) < 1e-6      # 2Ne
