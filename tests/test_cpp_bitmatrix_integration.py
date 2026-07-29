@@ -381,3 +381,57 @@ def test_explicit_manifest_path_is_honoured_for_any_mode(tmp_path):
     assert header["mode"] == "only_within"
     assert "pairs_seed" not in header      # meaningless for a deterministic list
     assert pairs == [(2 * i, 2 * i + 1) for i in range(24)]
+
+
+def test_runs_with_no_rate_flags_at_all(tmp_path):
+    # The three rates now have reference defaults, so a decode needs only an
+    # input, an output and a pair selection.
+    ts = panel_ts()
+    source = tmp_path / "defaults.trees"
+    ts.dump(source)
+    summary = tmp_path / "defaults.tsv"
+    completed = subprocess.run(
+        [
+            os.environ["GAMMA_SMC_BIN"], "--input", str(source),
+            "--input_format", "trees", "--only_within",
+            "--recent_summary", str(summary),
+            "--output_at_hets=false", "--output_at_stride", str(STRIDE),
+            "--threads", "1",
+        ],
+        check=True, text=True, capture_output=True,
+    )
+    stdout = strip_ansi(completed.stdout)
+    assert "Scaled mutation rate: 0.000750" in stdout
+    assert "Scaled recombination rate: 0.000600" in stdout
+    frame = pd.read_csv(summary, sep="\t")
+    assert frame["mean_p_tmrca_lt_threshold"].between(0, 1).all()
+
+
+def test_estimating_theta_is_opt_in(tmp_path):
+    # Omitting --scaled_mutation_rate used to estimate it from heterozygosity,
+    # which silently rescaled the time axis per file. That is now explicit.
+    ts = panel_ts()
+    source = tmp_path / "est.trees"
+    ts.dump(source)
+    common = [
+        os.environ["GAMMA_SMC_BIN"], "--input", str(source),
+        "--input_format", "trees", "--only_within",
+        "--output_at_hets=false", "--output_at_stride", str(STRIDE),
+        "--threads", "1", "--recombination_to_mutation_ratio", "0.8",
+    ]
+    estimated = subprocess.run(
+        common + ["--recent_summary", str(tmp_path / "est.tsv"),
+                  "--estimate_mutation_rate"],
+        check=True, text=True, capture_output=True,
+    )
+    assert "Estimating mutation rate from heterozygosity" in strip_ansi(estimated.stdout)
+    assert "Scaled mutation rate: 0.000750" not in strip_ansi(estimated.stdout)
+
+    # And it conflicts with pinning theta explicitly.
+    with pytest.raises(subprocess.CalledProcessError) as caught:
+        subprocess.run(
+            common + ["--recent_summary", str(tmp_path / "conflict.tsv"),
+                      "--estimate_mutation_rate", "--scaled_mutation_rate", "0.0005"],
+            check=True, text=True, capture_output=True,
+        )
+    assert "mutually exclusive" in strip_ansi(caught.value.stdout)

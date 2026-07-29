@@ -41,9 +41,10 @@ int main(int argc, char** argv) {
         ("recent_call_probability", "Probability used by --recent_call prob", cxxopts::value<double>()->default_value("0.5"))
         ("no_recent_probability", "Skip the across-pair mean of P(T<t); counts only")
         ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("25"))
-        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time", cxxopts::value<double>())
-        ("m,scaled_mutation_rate", "Scaled mutation rate", cxxopts::value<float>())
-        ("r,scaled_recombination_rate", "Scaled recombination rate", cxxopts::value<float>())
+        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.29e-8)", cxxopts::value<double>())
+        ("m,scaled_mutation_rate", "Scaled mutation rate (default 0.00075)", cxxopts::value<float>())
+        ("estimate_mutation_rate", "Estimate the scaled mutation rate from data heterozygosity instead of using the fixed default")
+        ("r,scaled_recombination_rate", "Scaled recombination rate (default 0.0006)", cxxopts::value<float>())
         ("t,recombination_to_mutation_ratio", "Recombination to mutation rates ratio", cxxopts::value<float>())
         ("f,flow_field", "Flow field file", cxxopts::value<std::string>())
         ("a,mask", "File of a global mask (empty for no mask)", cxxopts::value<std::string>())
@@ -82,13 +83,35 @@ int main(int argc, char** argv) {
     //
     // Validate flags
     //
-    float scaled_mutation_rate = -1;
+    // Reference rates, matching the Gamma-SMC paper's 1000 Genomes analysis
+    // (theta = 0.00075, rho = 0.0006, so rho/theta = 0.8) with a human autosomal
+    // mutation rate. These are fixed rather than estimated per input file on
+    // purpose: coalescent time is measured in units of 2Ne = theta / (2*mu), so a
+    // per-file theta would silently rescale the time axis and make P(T<t)
+    // incomparable between datasets, and between observed data and its nulls.
+    //
+    // NOTE: cxxopts count() stays 0 when an option only received a
+    // default_value, so these must be applied here rather than through
+    // default_value, otherwise presence checks below cannot tell the two apart.
+    const float default_scaled_mutation_rate = 0.00075f;
+    const float default_scaled_recombination_rate = 0.0006f;
+    const double default_unscaled_mutation_rate = 1.29e-8;
+
+    const bool estimate_mutation_rate = (vm.count("estimate_mutation_rate") > 0);
+    if (estimate_mutation_rate && vm.count("scaled_mutation_rate")) {
+        cout << "Error: --estimate_mutation_rate and --scaled_mutation_rate are mutually exclusive." << endl;
+        exit(-1);
+    }
+
+    float scaled_mutation_rate = default_scaled_mutation_rate;
     if (vm.count("scaled_mutation_rate")) {
         scaled_mutation_rate = vm["scaled_mutation_rate"].as<float>();
-        if (scaled_mutation_rate < 0) {
+        if (scaled_mutation_rate <= 0) {
             cout << "Error: --scaled_mutation_rate must be positive." << endl;
             exit(-1);
         }
+    } else if (estimate_mutation_rate) {
+        scaled_mutation_rate = -1;      // filled in from heterozygosity below
     }
 
     if ((vm.count("scaled_recombination_rate") > 0) && (vm.count("recombination_to_mutation_ratio") > 0)) {
@@ -96,15 +119,10 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    if ((vm.count("scaled_recombination_rate") == 0) && (vm.count("recombination_to_mutation_ratio") == 0)) {
-        cout << "Error: Either --scaled_recombination_rate or --recombination_to_mutation_ratio must be specified." << endl;
-        exit(-1);
-    }
-
-    float scaled_recombination_rate;
+    float scaled_recombination_rate = default_scaled_recombination_rate;
     if (vm.count("scaled_recombination_rate")) {
         scaled_recombination_rate = vm["scaled_recombination_rate"].as<float>();
-        if (scaled_recombination_rate < 0) {
+        if (scaled_recombination_rate <= 0) {
             cout << "Error: --scaled_recombination_rate must be positive." << endl;
             exit(-1);
         }
@@ -113,10 +131,19 @@ int main(int argc, char** argv) {
     float recombination_to_mutation_ratio = -1;
     if (vm.count("recombination_to_mutation_ratio")) {
         recombination_to_mutation_ratio = vm["recombination_to_mutation_ratio"].as<float>();
-        if (recombination_to_mutation_ratio < 0) {
+        if (recombination_to_mutation_ratio <= 0) {
             cout << "Error: --recombination_to_mutation_ratio must be positive." << endl;
             exit(-1);
         }
+    }
+
+    // Estimating theta moves the time axis; a fixed rho would then no longer sit
+    // at the intended rho/theta and the transition rate would be wrong.
+    if (estimate_mutation_rate && (vm.count("recombination_to_mutation_ratio") == 0)) {
+        cout << "Warning: --estimate_mutation_rate rescales theta, but rho is fixed at "
+             << scaled_recombination_rate << ".\n"
+             << "         Pass --recombination_to_mutation_ratio (0.8 matches the defaults) "
+                "to keep rho/theta.\n";
     }
 
     string flow_field_filename;
@@ -193,7 +220,7 @@ int main(int argc, char** argv) {
     const bool accumulate_probability = (vm.count("no_recent_probability") == 0);
 
     if (wants_recent) {
-        if (!vm.count("unscaled_mutation_rate") || vm["unscaled_mutation_rate"].as<double>() <= 0.0) {
+        if (vm.count("unscaled_mutation_rate") && vm["unscaled_mutation_rate"].as<double>() <= 0.0) {
             cout << "Error: --recent_summary/--recent_bitmatrix require a positive --unscaled_mutation_rate." << endl;
             exit(-1);
         }
@@ -431,9 +458,13 @@ int main(int argc, char** argv) {
     // Estimated scaled mutation rate if needed
     //
     screen.print_subtitle("Calculating rates...");
-    if (vm.count("scaled_mutation_rate") == 0) {
-        screen.print_item("Estimating mutation rate...");
+    if (estimate_mutation_rate) {
+        screen.print_item("Estimating mutation rate from heterozygosity...");
         scaled_mutation_rate = data_processor.calculate_heterozygosity();
+        if (!(scaled_mutation_rate > 0)) {
+            cout << "Error: estimated scaled mutation rate is not positive." << endl;
+            exit(-1);
+        }
     }
 
     if (vm.count("recombination_to_mutation_ratio")) {
@@ -664,7 +695,9 @@ int main(int argc, char** argv) {
 
     if (wants_recent) {
         screen.print_subtitle("Building recent-coalescence tables...");
-        const double mutation_rate = vm["unscaled_mutation_rate"].as<double>();
+        const double mutation_rate = vm.count("unscaled_mutation_rate")
+            ? vm["unscaled_mutation_rate"].as<double>()
+            : default_unscaled_mutation_rate;
         const double generation_time = vm["generation_time"].as<double>();
         two_ne_generations = scaled_mutation_rate / (2.0 * mutation_rate);
 

@@ -118,3 +118,34 @@ def test_generation_time_defaults_to_25_everywhere():
     defaults = re.findall(r'"--generation-time", type=float, default=(\d+)', cli)
     assert defaults, "the generation-time arguments moved; this check went blind"
     assert set(defaults) == {"25"}, defaults
+
+
+def test_reference_rates_are_the_defaults_everywhere():
+    # Fixed rates, not per-file estimates: coalescent time is measured in units
+    # of 2Ne = theta/(2*mu), so a per-file theta rescales the time axis and makes
+    # P(T<t) incomparable between datasets and between observed and null.
+    # theta/rho match the Gamma-SMC paper's 1000 Genomes analysis.
+    source = (ROOT / "src" / "gamma_smc.cpp").read_text()
+    assert "const float default_scaled_mutation_rate = 0.00075f;" in source
+    assert "const float default_scaled_recombination_rate = 0.0006f;" in source
+    assert "const double default_unscaled_mutation_rate = 1.29e-8;" in source
+    # rho/theta must stay self-consistent with the ratio the wrappers pass.
+    assert abs(0.0006 / 0.00075 - 0.8) < 1e-12
+
+    # Attaching cxxopts default_value to these would break presence detection,
+    # because count() stays 0 for an option that only received its default.
+    for option in ("scaled_mutation_rate", "scaled_recombination_rate",
+                   "unscaled_mutation_rate"):
+        line = next(l for l in source.splitlines() if f'("{option}"' in l
+                    or f',{option}"' in l or f'"m,{option}"' in l
+                    or f'"r,{option}"' in l)
+        assert "default_value" not in line, option
+
+    decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()
+    assert "scaled_mutation_rate: float = 0.00075," in decoder
+    assert "recombination_to_mutation_ratio: float = 0.8," in decoder
+    assert "mutation_rate: float = 1.29e-8," in decoder
+
+    cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
+    assert '"--theta", type=float, required=True' not in cli
+    assert '"--mutation-rate", type=float, required=True' not in cli

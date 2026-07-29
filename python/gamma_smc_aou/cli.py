@@ -419,9 +419,16 @@ def parser() -> argparse.ArgumentParser:
     )
     decode.add_argument("--mask", help="global BED mask; use the same callable-region policy in data and simulations")
     decode.add_argument("--masks-per-sample", help="sample-to-BED TSV")
-    decode.add_argument("--theta", type=float, required=True)
-    decode.add_argument("--rho-over-theta", type=float, required=True)
-    decode.add_argument("--mutation-rate", type=float, required=True)
+    decode.add_argument(
+        "--theta", type=float, default=0.00075,
+        help="scaled mutation rate; fixed by default so coalescent-time units, "
+             "and therefore P(T<t), are comparable across datasets",
+    )
+    decode.add_argument(
+        "--rho-over-theta", type=float, default=0.8,
+        help="0.8 with the default theta gives the reference rho = 0.0006",
+    )
+    decode.add_argument("--mutation-rate", type=float, default=1.29e-8)
     decode.add_argument(
         "--threshold-years", type=float, nargs="+", default=[4500],
         help="one or more thresholds, e.g. --threshold-years 4500 10000",
@@ -476,9 +483,9 @@ def parser() -> argparse.ArgumentParser:
     )
     container.add_argument("--input", required=True)
     container.add_argument("--output", required=True)
-    container.add_argument("--theta", type=float, required=True)
-    container.add_argument("--rho-over-theta", type=float, required=True)
-    container.add_argument("--mutation-rate", type=float, required=True)
+    container.add_argument("--theta", type=float, default=0.00075)
+    container.add_argument("--rho-over-theta", type=float, default=0.8)
+    container.add_argument("--mutation-rate", type=float, default=1.29e-8)
     container.add_argument("--threshold-years", type=float, default=4500)
     container.add_argument("--generation-time", type=float, default=25)
     container.add_argument("--output-at-stride", type=int, default=1000)
