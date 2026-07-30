@@ -130,12 +130,19 @@ scripts/aou.sh run-native-study \
   --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
   --executable bin/gamma_smc \
   --neutral-replicates 100 --output-at-stride 10000 \
-  --cache-size 1000 --threads 1 --workers 4
+  --cache-size 1000 --threads 1 --workers 4 \
+  --recent-call mean --compare-recent-call median \
+  --calibration-statistic called-fraction
 ```
 
 `workers * threads` is the maximum decoder concurrency; avoid oversubscribing
 the Workbench VM. Each selected/null profile records its exact command and
-decode time.
+decode time. With `--compare-recent-call`, each selected or neutral simulation
+is generated once and decoded under both rules. The standard spatial outputs
+use `--calibration-statistic`; the additional `comparison_*` tables and
+`posterior_mean_median_rule_comparison.png` report the soft probability,
+posterior-mean call fraction, and posterior-median call fraction side by side
+on those matched simulations.
 
 ## 1b. Whole-genome scan over ~100,000 sampled haplotype pairs
 
@@ -196,9 +203,11 @@ There are two families here, and they are not interchangeable:
 **The paper uses neither of the defaults.** It reports "the proportion of
 posterior means below a threshold of T", i.e. `frac_recent_*` with
 `--recent-call mean`. The `AOU_run` baseline instead averaged the posterior CDF,
-which is `mean_p_lt_*`. Both are in every summary, so all three are comparable
-from one decode, but pick one deliberately and use it on both observed data and
-nulls.
+which is `mean_p_lt_*`. The soft statistic and the selected hard-call rule are
+both in every summary. A matched mean-versus-median comparison requires two
+decodes; `run-native-study --compare-recent-call` performs those decodes on the
+same selected and null simulations. Pick one statistic deliberately and use it
+on both observed data and nulls.
 
 The default here is the median rule, because it is far less sensitive to
 posterior width than the soft average: over a CV shift from 0.8 to 1.0 the soft

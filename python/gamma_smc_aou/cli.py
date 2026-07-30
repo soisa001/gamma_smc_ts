@@ -230,6 +230,9 @@ def command_native_study(args):
         threads=args.threads,
         keep_vcfs=args.keep_vcfs,
         workers=args.workers,
+        recent_call=args.recent_call,
+        comparison_recent_call=args.compare_recent_call,
+        calibration_statistic=args.calibration_statistic,
     )
 
 
@@ -572,6 +575,23 @@ def parser() -> argparse.ArgumentParser:
     native_study.add_argument("--threads", type=int, default=1)
     native_study.add_argument("--keep-vcfs", action="store_true")
     native_study.add_argument("--workers", type=int, default=1)
+    native_study.add_argument(
+        "--recent-call",
+        choices=["mean", "median"],
+        default="median",
+        help="per-pair posterior summary used for n_recent/frac_recent",
+    )
+    native_study.add_argument(
+        "--compare-recent-call",
+        choices=["mean", "median"],
+        help="also decode the same selected and null simulations with this call rule",
+    )
+    native_study.add_argument(
+        "--calibration-statistic",
+        choices=["mean-posterior-probability", "called-fraction"],
+        default="mean-posterior-probability",
+        help="statistic calibrated against the neutral simulations",
+    )
     native_study.set_defaults(func=command_native_study)
 
     finalize = commands.add_parser(

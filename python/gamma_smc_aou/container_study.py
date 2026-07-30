@@ -34,13 +34,15 @@ def scan_density_calibration(
     center: int,
     local_half_width: int,
     output_dir: Path,
+    statistic_column: str = "mean_p_tmrca_lt_threshold",
+    statistic_label: str = "recent-coalescence statistic",
 ) -> dict:
     """Calibrate the number of pointwise-positive windows against null scans."""
     positions = scan["position_0based"].to_numpy(dtype=float)
     pivot = neutral[neutral["position_0based"].isin(positions)].pivot(
         index="replicate",
         columns="position_0based",
-        values="mean_p_tmrca_lt_threshold",
+        values=statistic_column,
     ).reindex(columns=positions)
     if pivot.isna().any().any():
         raise ValueError("scan-density calibration requires a complete null grid")
@@ -116,7 +118,7 @@ def scan_density_calibration(
         )
         axis.grid(axis="y", alpha=0.16)
     fig.suptitle(
-        "Simulation-calibrated density of recent-coalescence windows",
+        f"Simulation-calibrated density of {statistic_label} windows",
         fontsize=25,
     )
     fig.savefig(
@@ -151,9 +153,11 @@ def _plot_decoded_center_calibration(
     observed_value: float,
     pvalue: float,
     output_path: Path,
+    statistic_column: str = "mean_p_tmrca_lt_threshold",
+    statistic_label: str = "Mean inferred P(TMRCA < 4,500 years) across 2,000 pairs",
 ) -> None:
     center_rows = neutral[np.isclose(neutral["position_0based"], center_position)]
-    values = center_rows["mean_p_tmrca_lt_threshold"].to_numpy(dtype=float)
+    values = center_rows[statistic_column].to_numpy(dtype=float)
     exceedances = int(np.count_nonzero(values >= observed_value))
     fig, axis = plt.subplots(figsize=(14, 7.5), constrained_layout=True)
     axis.hist(values, bins=16, color="0.55", edgecolor="white", alpha=0.9)
@@ -164,7 +168,7 @@ def _plot_decoded_center_calibration(
         label=f"selected Gamma-SMC estimate={observed_value:.4f}",
     )
     axis.set_title("Gamma-SMC center statistic versus decoded neutral null", fontsize=24)
-    axis.set_xlabel("Inferred P(TMRCA < 4,500 years) across 2,000 pairs", fontsize=20)
+    axis.set_xlabel(statistic_label, fontsize=20)
     axis.set_ylabel("Decoded neutral simulations", fontsize=20)
     axis.tick_params(axis="both", labelsize=17)
     axis.text(
@@ -187,6 +191,290 @@ def _plot_decoded_center_calibration(
     axis.grid(axis="y", alpha=0.16)
     fig.savefig(output_path, dpi=190, bbox_inches="tight")
     plt.close(fig)
+
+
+def _threshold_suffix(years: float) -> str:
+    return str(int(years)) if float(years).is_integer() else str(years)
+
+
+def _calibration_column(calibration_statistic: str, threshold_years: float) -> str:
+    if calibration_statistic == "mean-posterior-probability":
+        return "mean_p_tmrca_lt_threshold"
+    if calibration_statistic == "called-fraction":
+        return f"frac_recent_{_threshold_suffix(threshold_years)}"
+    raise ValueError(
+        "calibration_statistic must be mean-posterior-probability or called-fraction"
+    )
+
+
+def _statistic_label(
+    calibration_statistic: str,
+    recent_call: str,
+) -> str:
+    if calibration_statistic == "mean-posterior-probability":
+        return "Mean posterior P"
+    return f"Fraction called recent by posterior {recent_call}"
+
+
+def _assert_matched_soft_profiles(
+    first: pd.DataFrame,
+    second: pd.DataFrame,
+) -> None:
+    """Ensure two call-rule decodes used identical data and posteriors."""
+    columns = [
+        "position_0based",
+        "position_1based",
+        "n_pairs",
+        "mean_p_tmrca_lt_threshold",
+        "mean_tmrca_generations",
+    ]
+    probability_columns = sorted(
+        column for column in first if column.startswith("mean_p_lt_")
+    )
+    columns.extend(probability_columns)
+    if list(first.columns) != list(second.columns) or len(first) != len(second):
+        raise RuntimeError("recent-call comparison profiles have different schemas")
+    for column in columns:
+        left = first[column].to_numpy()
+        right = second[column].to_numpy()
+        if not np.allclose(left, right, rtol=0, atol=1e-12, equal_nan=True):
+            raise RuntimeError(
+                f"recent-call comparison changed posterior output column {column}"
+            )
+
+
+def _write_recent_call_comparison(
+    observed_by_call: dict[str, pd.DataFrame],
+    neutral_by_call: dict[str, pd.DataFrame],
+    truth: pd.DataFrame,
+    *,
+    threshold_years: float,
+    center: int,
+    sequence_length: int,
+    stride: int,
+    output_dir: Path,
+) -> dict:
+    """Compare soft probability, posterior-mean calls, and median calls."""
+    required_calls = {"mean", "median"}
+    if required_calls.difference(observed_by_call):
+        raise ValueError("comparison requires both mean and median selected profiles")
+    if required_calls.difference(neutral_by_call):
+        raise ValueError("comparison requires both mean and median neutral profiles")
+
+    called_column = f"frac_recent_{_threshold_suffix(threshold_years)}"
+    definitions = [
+        (
+            "soft_probability",
+            "mean",
+            "mean_p_tmrca_lt_threshold",
+            "Mean posterior P(TMRCA below threshold)",
+        ),
+        (
+            "posterior_mean_call",
+            "mean",
+            called_column,
+            "Fraction with posterior mean TMRCA below threshold",
+        ),
+        (
+            "posterior_median_call",
+            "median",
+            called_column,
+            "Fraction with posterior median TMRCA below threshold",
+        ),
+    ]
+    truth_profile = truth.set_index("position_0based")["truth_fraction_recent"]
+    metrics: dict[str, dict] = {}
+    center_rows = []
+    plot_rows = []
+    for slug, call, statistic_column, label in definitions:
+        observed = observed_by_call[call]
+        neutral = neutral_by_call[call]
+        scan = calibrate_spatial_windows(
+            observed,
+            neutral,
+            statistic_column=statistic_column,
+        )
+        regions = significant_regions(
+            scan,
+            sequence_length=sequence_length,
+            window_size=stride,
+        )
+        scan.to_csv(
+            output_dir / f"comparison_{slug}_spatial_calibration.tsv",
+            sep="\t",
+            index=False,
+        )
+        regions.to_csv(
+            output_dir / f"comparison_{slug}_significant_regions.tsv",
+            sep="\t",
+            index=False,
+        )
+        center_row = scan.iloc[
+            np.argmin(
+                np.abs(scan["position_0based"].to_numpy(dtype=float) - center)
+            )
+        ]
+        aligned_truth = truth_profile.reindex(
+            observed["position_0based"].to_numpy(dtype=float)
+        ).to_numpy(dtype=float)
+        estimate = observed[statistic_column].to_numpy(dtype=float)
+        error = estimate - aligned_truth
+        correlation = (
+            float(np.corrcoef(estimate, aligned_truth)[0, 1])
+            if np.std(estimate) > 0 and np.std(aligned_truth) > 0
+            else None
+        )
+        item = {
+            "recent_call": call if slug != "soft_probability" else None,
+            "statistic_column": statistic_column,
+            "statistic_label": label,
+            "center_position_0based": int(center_row["position_0based"]),
+            "center_selected": float(center_row["observed_fraction_recent"]),
+            "center_null_mean": float(center_row["neutral_mean_fraction_recent"]),
+            "center_null_median": float(
+                center_row["neutral_median_fraction_recent"]
+            ),
+            "center_null_ci95_lower": float(center_row["neutral_ci95_lower"]),
+            "center_null_ci95_upper": float(center_row["neutral_ci95_upper"]),
+            "center_neutral_exceedances": int(
+                center_row["neutral_exceedances"]
+            ),
+            "center_monte_carlo_p_upper": float(center_row["p_upper"]),
+            "profile_truth_bias": float(np.mean(error)),
+            "profile_truth_mae": float(np.mean(np.abs(error))),
+            "profile_truth_rmse": float(np.sqrt(np.mean(error**2))),
+            "profile_truth_correlation": correlation,
+            "n_pointwise_p_lt_0_05_windows": int(
+                np.count_nonzero(scan["p_upper"] < 0.05)
+            ),
+            "n_bh_q_lt_0_05_windows": int(
+                np.count_nonzero(scan["q_bh"] < 0.05)
+            ),
+            "n_significant_regions": int(len(regions)),
+        }
+        metrics[slug] = item
+        center_rows.append({"statistic": slug, **item})
+        plot_rows.append((slug, label, observed, neutral, scan))
+
+    truth_center_position = float(
+        truth.iloc[
+            np.argmin(
+                np.abs(truth["position_0based"].to_numpy(dtype=float) - center)
+            )
+        ]["position_0based"]
+    )
+    truth_center = float(
+        truth.loc[
+            np.isclose(truth["position_0based"], truth_center_position),
+            "truth_fraction_recent",
+        ].iloc[0]
+    )
+    metrics["truth"] = {
+        "center_position_0based": int(truth_center_position),
+        "center_fraction_recent": truth_center,
+    }
+    pd.DataFrame(center_rows).to_csv(
+        output_dir / "posterior_summary_rule_center_comparison.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    fig, axes = plt.subplots(
+        len(plot_rows),
+        2,
+        figsize=(20, 17),
+        constrained_layout=True,
+    )
+    for row_index, (slug, label, _observed, neutral, scan) in enumerate(plot_rows):
+        position = scan["position_0based"].to_numpy(dtype=float)
+        left = axes[row_index, 0]
+        left.fill_between(
+            position / 1e6,
+            scan["neutral_ci95_lower"].to_numpy(dtype=float),
+            scan["neutral_ci95_upper"].to_numpy(dtype=float),
+            color="0.78",
+            alpha=0.55,
+            linewidth=0,
+            label="neutral 95% interval",
+        )
+        left.plot(
+            position / 1e6,
+            scan["neutral_median_fraction_recent"],
+            color="0.35",
+            lw=1.2,
+            label="neutral median",
+        )
+        left.plot(
+            position / 1e6,
+            scan["observed_fraction_recent"],
+            color="#7c3aed",
+            lw=1.6,
+            label="selected pseudo-data",
+        )
+        left.axvline(center / 1e6, color="#e69f00", ls="--", lw=1.4)
+        left.set_xlim(0, sequence_length / 1e6)
+        left.set_xlabel("Position (Mb)", fontsize=15)
+        left.set_ylabel(label, fontsize=15)
+        left.tick_params(axis="both", labelsize=12)
+        left.grid(alpha=0.16)
+
+        center_row = scan.iloc[
+            np.argmin(
+                np.abs(scan["position_0based"].to_numpy(dtype=float) - center)
+            )
+        ]
+        center_position = float(center_row["position_0based"])
+        # Pull the null values through the calibrated scan's source definition.
+        definition = next(value for value in definitions if value[0] == slug)
+        null_values = neutral.loc[
+            np.isclose(neutral["position_0based"], center_position),
+            definition[2],
+        ].to_numpy(dtype=float)
+        right = axes[row_index, 1]
+        right.hist(null_values, bins=16, color="0.58", edgecolor="white")
+        right.axvline(
+            float(center_row["observed_fraction_recent"]),
+            color="#7c3aed",
+            lw=2.5,
+            label="selected pseudo-data",
+        )
+        right.set_xlabel(f"Center: {label}", fontsize=15)
+        right.set_ylabel("Neutral simulations", fontsize=15)
+        right.tick_params(axis="both", labelsize=12)
+        right.grid(axis="y", alpha=0.16)
+        right.text(
+            0.97,
+            0.92,
+            f"p={float(center_row['p_upper']):.4f}\n"
+            f"truth fraction={truth_center:.4f}",
+            transform=right.transAxes,
+            ha="right",
+            va="top",
+            fontsize=14,
+        )
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper left",
+        bbox_to_anchor=(1.002, 0.94),
+        fontsize=13,
+    )
+    fig.suptitle(
+        "Matched posterior-summary comparison on the same selected and null simulations",
+        fontsize=23,
+    )
+    fig.savefig(
+        output_dir / "posterior_mean_median_rule_comparison.png",
+        dpi=190,
+        bbox_inches="tight",
+    )
+    plt.close(fig)
+    with (output_dir / "posterior_summary_rule_comparison_metrics.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
+        json.dump(metrics, handle, indent=2)
+    return metrics
 
 
 def _load_design(source_dir: Path) -> dict:
@@ -248,6 +536,9 @@ def _run_stride_study(
     threads: int = 1,
     keep_vcfs: bool = False,
     workers: int = 1,
+    recent_call: str = "median",
+    comparison_recent_call: str | None = None,
+    calibration_statistic: str = "mean-posterior-probability",
 ) -> dict:
     """Decode a retained sweep and matched nulls with one decoder backend."""
     if (
@@ -260,6 +551,27 @@ def _run_stride_study(
         raise ValueError(
             "replicate count, stride, workers, cache size, and threads must be positive"
         )
+    if recent_call not in {"mean", "median"}:
+        raise ValueError("study recent_call must be mean or median")
+    if comparison_recent_call not in {None, "mean", "median"}:
+        raise ValueError("comparison_recent_call must be mean, median, or omitted")
+    if comparison_recent_call == recent_call:
+        raise ValueError("comparison_recent_call must differ from recent_call")
+    if calibration_statistic not in {
+        "mean-posterior-probability",
+        "called-fraction",
+    }:
+        raise ValueError(
+            "calibration_statistic must be mean-posterior-probability or called-fraction"
+        )
+    if executable is None and (
+        recent_call != "median"
+        or comparison_recent_call is not None
+        or calibration_statistic != "mean-posterior-probability"
+    ):
+        raise ValueError(
+            "posterior mean/median call comparisons require the optimized native decoder"
+        )
     source_dir = Path(source_dir).resolve()
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -270,10 +582,17 @@ def _run_stride_study(
     theta = 4 * design["ancestral_size"] * design["mutation_rate"]
     rho_over_theta = design["recombination_rate"] / design["mutation_rate"]
     threshold_years = design["variant_age"] * design["generation_time"]
+    statistic_column = _calibration_column(
+        calibration_statistic,
+        threshold_years,
+    )
+    call_rules = [recent_call]
+    if comparison_recent_call is not None:
+        call_rules.append(comparison_recent_call)
     started = perf_counter()
     backend = "container_v0.2" if executable is None else "native_optimized"
 
-    def decode(vcf_path: Path, summary_path: Path) -> dict:
+    def decode(vcf_path: Path, summary_path: Path, call_rule: str) -> dict:
         if executable is None:
             return run_container_decoder(
                 vcf_path,
@@ -300,6 +619,7 @@ def _run_stride_study(
             output_at_stride=stride,
             output_at_hets=False,
             only_within=True,
+            recent_call=call_rule,
             cache_size=cache_size,
             threads=threads,
         )
@@ -342,9 +662,33 @@ def _run_stride_study(
         selected_origin = "reproduced_from_seed"
     selected_vcf = work_dir / "selected.vcf.gz"
     tree_sequence_to_vcf(selected_tree_path, selected_vcf)
-    selected_summary = work_dir / "selected.tsv"
-    selected_decode = decode(selected_vcf, selected_summary)
-    observed = pd.read_csv(selected_summary, sep="\t")
+    selected_profiles: dict[str, pd.DataFrame] = {}
+    selected_decodes: dict[str, dict] = {}
+    for call_rule in call_rules:
+        selected_summary = (
+            work_dir / "selected.tsv"
+            if call_rule == recent_call
+            else work_dir / f"selected_{call_rule}_call.tsv"
+        )
+        selected_decodes[call_rule] = decode(
+            selected_vcf,
+            selected_summary,
+            call_rule,
+        )
+        selected_profiles[call_rule] = pd.read_csv(selected_summary, sep="\t")
+    observed = selected_profiles[recent_call]
+    selected_decode = selected_decodes[recent_call]
+    if comparison_recent_call is not None:
+        _assert_matched_soft_profiles(
+            observed,
+            selected_profiles[comparison_recent_call],
+        )
+        for call_rule, profile in selected_profiles.items():
+            profile.to_csv(
+                output_dir / f"selected_decoded_{call_rule}_call_profile.tsv",
+                sep="\t",
+                index=False,
+            )
     observed.to_csv(
         output_dir / "selected_decoded_recent_probability_profile.tsv",
         sep="\t",
@@ -373,7 +717,9 @@ def _run_stride_study(
         compression="gzip",
     )
 
-    def neutral_task(replicate: int) -> tuple[pd.DataFrame, dict]:
+    def neutral_task(
+        replicate: int,
+    ) -> tuple[dict[str, pd.DataFrame], dict[str, dict]]:
         tree_path = work_dir / f"neutral_{replicate:04d}.trees"
         neutral_ts, _ = _simulate(
             tree_path,
@@ -384,35 +730,79 @@ def _run_stride_study(
         del neutral_ts
         vcf_path = work_dir / f"neutral_{replicate:04d}.vcf.gz"
         tree_sequence_to_vcf(tree_path, vcf_path)
-        summary_path = work_dir / f"neutral_{replicate:04d}.tsv"
-        run = decode(vcf_path, summary_path)
-        profile = pd.read_csv(summary_path, sep="\t")
-        profile["replicate"] = replicate
+        profiles: dict[str, pd.DataFrame] = {}
+        runs: dict[str, dict] = {}
+        summary_paths: list[Path] = []
+        for call_rule in call_rules:
+            summary_path = (
+                work_dir / f"neutral_{replicate:04d}.tsv"
+                if call_rule == recent_call
+                else work_dir / f"neutral_{replicate:04d}_{call_rule}_call.tsv"
+            )
+            summary_paths.append(summary_path)
+            runs[call_rule] = {
+                "replicate": replicate,
+                **decode(vcf_path, summary_path, call_rule),
+            }
+            profile = pd.read_csv(summary_path, sep="\t")
+            profile["replicate"] = replicate
+            profiles[call_rule] = profile
+        if comparison_recent_call is not None:
+            _assert_matched_soft_profiles(
+                profiles[recent_call],
+                profiles[comparison_recent_call],
+            )
         if not keep_vcfs:
             vcf_path.unlink(missing_ok=True)
             tree_path.unlink(missing_ok=True)
-            summary_path.unlink(missing_ok=True)
-            summary_path.with_name(summary_path.name + ".run.json").unlink(
-                missing_ok=True
-            )
-        return profile, {"replicate": replicate, **run}
+            for summary_path in summary_paths:
+                summary_path.unlink(missing_ok=True)
+                summary_path.with_name(summary_path.name + ".run.json").unlink(
+                    missing_ok=True
+                )
+        return profiles, runs
 
     if workers == 1:
         neutral_results = [neutral_task(value) for value in range(neutral_replicates)]
     else:
         with ThreadPoolExecutor(max_workers=min(workers, neutral_replicates)) as executor:
             neutral_results = list(executor.map(neutral_task, range(neutral_replicates)))
-    neutral_profiles = [result[0] for result in neutral_results]
-    neutral_runs = [result[1] for result in neutral_results]
-
-    neutral = pd.concat(neutral_profiles, ignore_index=True)
+    neutral_by_call = {
+        call_rule: pd.concat(
+            [result[0][call_rule] for result in neutral_results],
+            ignore_index=True,
+        )
+        for call_rule in call_rules
+    }
+    neutral_runs_by_call = {
+        call_rule: [result[1][call_rule] for result in neutral_results]
+        for call_rule in call_rules
+    }
+    neutral = neutral_by_call[recent_call]
+    neutral_runs = neutral_runs_by_call[recent_call]
+    if comparison_recent_call is not None:
+        _assert_matched_soft_profiles(
+            neutral,
+            neutral_by_call[comparison_recent_call],
+        )
+        for call_rule, profile in neutral_by_call.items():
+            profile.to_csv(
+                output_dir / f"neutral_decoded_{call_rule}_call_profiles.tsv.gz",
+                sep="\t",
+                index=False,
+                compression="gzip",
+            )
     neutral.to_csv(
         output_dir / "neutral_decoded_recent_probability_profiles.tsv.gz",
         sep="\t",
         index=False,
         compression="gzip",
     )
-    scan = calibrate_spatial_windows(observed, neutral)
+    scan = calibrate_spatial_windows(
+        observed,
+        neutral,
+        statistic_column=statistic_column,
+    )
     regions = significant_regions(
         scan,
         sequence_length=design["sequence_length"],
@@ -437,6 +827,8 @@ def _run_stride_study(
         window_size=stride,
         output_path=output_dir / "selected_decoded_recent_probability_spatial.png",
         pair_count=design["sample_diploids"],
+        series_label=f"selected pseudo-data ({recent_call} call)",
+        statistic_label=_statistic_label(calibration_statistic, recent_call),
     )
     _plot_null_spatial_calibration(
         scan,
@@ -448,6 +840,8 @@ def _run_stride_study(
         window_size=stride,
         output_path=output_dir / "selected_decoded_vs_neutral_pvalues.png",
         pair_count=design["sample_diploids"],
+        series_label=f"selected pseudo-data ({recent_call} call)",
+        statistic_label=_statistic_label(calibration_statistic, recent_call),
     )
     density_calibration = scan_density_calibration(
         scan,
@@ -455,13 +849,46 @@ def _run_stride_study(
         center=center,
         local_half_width=500_000,
         output_dir=output_dir,
+        statistic_column=statistic_column,
+        statistic_label=_statistic_label(calibration_statistic, recent_call),
     )
     center_row = scan.iloc[
         np.argmin(np.abs(scan["position_0based"].to_numpy(dtype=float) - center))
     ]
+    _plot_decoded_center_calibration(
+        neutral,
+        center_position=float(center_row["position_0based"]),
+        observed_value=float(center_row["observed_fraction_recent"]),
+        pvalue=float(center_row["p_upper"]),
+        output_path=output_dir / "gamma_smc_center_null_and_selected_pvalue.png",
+        statistic_column=statistic_column,
+        statistic_label=(
+            f"{_statistic_label(calibration_statistic, recent_call)} across "
+            f"{design['sample_diploids']:,} pairs"
+        ),
+    )
+    comparison_metrics = None
+    if comparison_recent_call is not None:
+        comparison_metrics = _write_recent_call_comparison(
+            selected_profiles,
+            neutral_by_call,
+            truth,
+            threshold_years=threshold_years,
+            center=center,
+            sequence_length=design["sequence_length"],
+            stride=stride,
+            output_dir=output_dir,
+        )
     decode_times = np.asarray(
-        [selected_decode["decode_seconds"]]
-        + [run["decode_seconds"] for run in neutral_runs]
+        [
+            run["decode_seconds"]
+            for run in selected_decodes.values()
+        ]
+        + [
+            run["decode_seconds"]
+            for runs in neutral_runs_by_call.values()
+            for run in runs
+        ]
     )
     result = {
         "data_interpretation": "retained selected simulation treated as pseudo-empirical data",
@@ -472,6 +899,10 @@ def _run_stride_study(
         "native_executable": str(Path(executable).resolve()) if executable is not None else None,
         "cache_size_bp": int(cache_size) if executable is not None else None,
         "decoder_threads_per_replicate": int(threads) if executable is not None else None,
+        "recent_call": recent_call,
+        "comparison_recent_call": comparison_recent_call,
+        "calibration_statistic": calibration_statistic,
+        "calibration_statistic_column": statistic_column,
         "stride_bp": int(stride),
         "sequence_length": design["sequence_length"],
         "sample_diploids": design["sample_diploids"],
@@ -499,8 +930,15 @@ def _run_stride_study(
             )[0, 1]
         ),
         "center_position_0based": int(center_row["position_0based"]),
-        "center_observed_mean_p_recent": float(center_row["observed_fraction_recent"]),
-        "center_null_mean_p_recent": float(center_row["neutral_mean_fraction_recent"]),
+        "center_observed_statistic": float(center_row["observed_fraction_recent"]),
+        "center_null_mean_statistic": float(
+            center_row["neutral_mean_fraction_recent"]
+        ),
+        "center_null_median_statistic": float(
+            center_row["neutral_median_fraction_recent"]
+        ),
+        "center_null_ci95_lower": float(center_row["neutral_ci95_lower"]),
+        "center_null_ci95_upper": float(center_row["neutral_ci95_upper"]),
         "center_neutral_exceedances": int(center_row["neutral_exceedances"]),
         "center_monte_carlo_p_upper": float(center_row["p_upper"]),
         "n_pointwise_p_lt_0_05_windows": int(np.count_nonzero(scan["p_upper"] < 0.05)),
@@ -508,9 +946,41 @@ def _run_stride_study(
         "n_significant_regions": int(len(regions)),
         "significant_regions": regions.to_dict("records"),
         "scan_density_calibration": density_calibration,
+        "posterior_summary_rule_comparison": comparison_metrics,
         "multiple_testing_note": "regions use raw pointwise p<0.05; BH q-values are in the calibration TSV",
         "elapsed_seconds": float(perf_counter() - started),
     }
+    if calibration_statistic == "mean-posterior-probability":
+        result.update({
+            "center_observed_mean_p_recent": float(
+                center_row["observed_fraction_recent"]
+            ),
+            "center_null_mean_p_recent": float(
+                center_row["neutral_mean_fraction_recent"]
+            ),
+        })
+    else:
+        result.update({
+            "center_observed_called_fraction_recent": float(
+                center_row["observed_fraction_recent"]
+            ),
+            "center_null_mean_called_fraction_recent": float(
+                center_row["neutral_mean_fraction_recent"]
+            ),
+        })
+    if comparison_recent_call is not None:
+        comparison_selected_decode = selected_decodes[comparison_recent_call]
+        comparison_neutral_runs = neutral_runs_by_call[comparison_recent_call]
+        result.update({
+            "comparison_selected_decode_seconds": float(
+                comparison_selected_decode["decode_seconds"]
+            ),
+            "comparison_neutral_decode_seconds_mean": float(
+                np.mean(
+                    [run["decode_seconds"] for run in comparison_neutral_runs]
+                )
+            ),
+        })
     with (output_dir / "decoded_study_metrics.json").open(
         "w", encoding="utf-8"
     ) as handle:
@@ -556,6 +1026,9 @@ def run_native_stride_study(
     threads: int = 1,
     keep_vcfs: bool = False,
     workers: int = 1,
+    recent_call: str = "median",
+    comparison_recent_call: str | None = None,
+    calibration_statistic: str = "mean-posterior-probability",
 ) -> dict:
     """Decode a retained sweep and matched nulls with the optimized binary."""
     return _run_stride_study(
@@ -568,6 +1041,9 @@ def run_native_stride_study(
         threads=threads,
         keep_vcfs=keep_vcfs,
         workers=workers,
+        recent_call=recent_call,
+        comparison_recent_call=comparison_recent_call,
+        calibration_statistic=calibration_statistic,
     )
 
 

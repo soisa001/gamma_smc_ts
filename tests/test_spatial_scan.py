@@ -87,3 +87,25 @@ def test_spatial_calibration_drops_positions_missing_from_any_null():
     })
     scan = calibrate_spatial_windows(observed, neutral)
     assert scan["position_0based"].tolist() == [0.0]
+
+
+def test_spatial_calibration_accepts_posterior_call_fraction():
+    observed = pd.DataFrame({
+        "position_0based": [0.0],
+        "n_pairs": [2_000],
+        "frac_recent_4500": [0.25],
+    })
+    neutral = pd.DataFrame({
+        "position_0based": [0.0, 0.0, 0.0],
+        "n_pairs": [2_000, 2_000, 2_000],
+        "frac_recent_4500": [0.10, 0.20, 0.30],
+        "replicate": [0, 1, 2],
+    })
+    scan = calibrate_spatial_windows(
+        observed,
+        neutral,
+        statistic_column="frac_recent_4500",
+    )
+    assert scan.loc[0, "observed_fraction_recent"] == 0.25
+    assert scan.loc[0, "neutral_exceedances"] == 1
+    assert scan.loc[0, "p_upper"] == 0.5

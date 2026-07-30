@@ -38,10 +38,31 @@ def window_centers(sequence_length: int, window_size: int, center: int) -> np.nd
 def calibrate_spatial_windows(
     observed: pd.DataFrame,
     neutral: pd.DataFrame,
+    *,
+    statistic_column: str = "mean_p_tmrca_lt_threshold",
 ) -> pd.DataFrame:
-    """Calculate pointwise Monte Carlo p-values at matched spatial windows."""
+    """Calculate pointwise Monte Carlo p-values at matched spatial windows.
+
+    ``statistic_column`` may be the soft mean posterior probability or one of
+    the decoder's hard-call fractions (for example ``frac_recent_4500``).
+    """
+    required = {"position_0based", "n_pairs", statistic_column}
+    missing_observed = required.difference(observed.columns)
+    missing_neutral = (required | {"replicate"}).difference(neutral.columns)
+    if missing_observed:
+        raise ValueError(
+            "observed profile is missing columns: "
+            + ", ".join(sorted(missing_observed))
+        )
+    if missing_neutral:
+        raise ValueError(
+            "neutral profiles are missing columns: "
+            + ", ".join(sorted(missing_neutral))
+        )
     rows = []
     replicate_count = neutral["replicate"].nunique()
+    if replicate_count < 1:
+        raise ValueError("neutral profiles contain no replicates")
     coverage = neutral.groupby("position_0based")["replicate"].nunique()
     complete_positions = coverage.index[coverage.eq(replicate_count)].to_numpy(
         dtype=float
@@ -51,21 +72,22 @@ def calibrate_spatial_windows(
     ]
     if matched_observed.empty:
         raise ValueError("no output position is present in every neutral replicate")
-    for row in matched_observed.sort_values("position_0based").itertuples(index=False):
+    for _, row in matched_observed.sort_values("position_0based").iterrows():
+        position = float(row["position_0based"])
         values = neutral.loc[
-            np.isclose(neutral["position_0based"], row.position_0based),
-            "mean_p_tmrca_lt_threshold",
+            np.isclose(neutral["position_0based"], position),
+            statistic_column,
         ].to_numpy(dtype=float)
         if len(values) != replicate_count:
             raise ValueError(
-                f"position {row.position_0based:g} has {len(values)} null values; "
+                f"position {position:g} has {len(values)} null values; "
                 f"expected {replicate_count}"
             )
-        observed_value = float(row.mean_p_tmrca_lt_threshold)
+        observed_value = float(row[statistic_column])
         exceedances = int(np.count_nonzero(values >= observed_value))
         rows.append({
-            "position_0based": float(row.position_0based),
-            "n_pairs": int(row.n_pairs),
+            "position_0based": position,
+            "n_pairs": int(row["n_pairs"]),
             "observed_fraction_recent": observed_value,
             "neutral_mean_fraction_recent": float(values.mean()),
             "neutral_median_fraction_recent": float(np.median(values)),

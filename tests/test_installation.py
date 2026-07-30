@@ -58,6 +58,23 @@ def test_workbench_defaults_are_shared_by_the_cli():
     )
     assert study.output_at_stride == 10_000
     assert study.cache_size == 1_000
+    assert study.recent_call == "median"
+    assert study.compare_recent_call is None
+    assert study.calibration_statistic == "mean-posterior-probability"
+
+    comparison = parser().parse_args(
+        [
+            "run-native-study",
+            "--source-dir", "source",
+            "--output-dir", "output",
+            "--recent-call", "mean",
+            "--compare-recent-call", "median",
+            "--calibration-statistic", "called-fraction",
+        ]
+    )
+    assert comparison.recent_call == "mean"
+    assert comparison.compare_recent_call == "median"
+    assert comparison.calibration_statistic == "called-fraction"
 
     high_af = parser().parse_args(
         [
