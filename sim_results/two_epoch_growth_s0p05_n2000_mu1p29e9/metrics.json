@@ -1,0 +1,73 @@
+{
+  "demography": {
+    "ancestral_population_size": 10000,
+    "present_population_size": 20000,
+    "size_change_generations_ago": 100,
+    "interpretation": "forward growth from 10000 to 20000; backward-time size is 20000 from 0-100 generations and 10000 earlier"
+  },
+  "variant_age_generations": 180,
+  "generation_time_years": 25.0,
+  "variant_age_years": 4500.0,
+  "selection_coefficient": 0.05,
+  "sample_diploids": 2000,
+  "sequence_length": 10000000,
+  "mutation_rate": 1.29e-09,
+  "recombination_rate": 1e-08,
+  "neutral_replicates": 100,
+  "neutral_theoretical_fraction_recent": 0.006478920696552315,
+  "neutral_observed_mean_fraction_recent": 0.006555000000000001,
+  "neutral_fraction_recent_bias": 7.607930344768498e-05,
+  "neutral_fraction_recent_rmse": 0.0016689107406967832,
+  "neutral_leave_one_out_calibration": {
+    "n": 100,
+    "mean_p": 0.5458,
+    "ks_uniform_p": 0.03582511969274871,
+    "fraction_p_lt_0_05": 0.04,
+    "fraction_p_le_0_05": 0.04
+  },
+  "neutral_randomized_tie_calibration_diagnostic": {
+    "n": 100,
+    "mean_p": 0.4980891987884779,
+    "ks_uniform_p": 0.9602641796508475,
+    "fraction_p_lt_0_05": 0.05,
+    "fraction_p_le_0_05": 0.05
+  },
+  "selected_rejection": {
+    "acceptance_rule": "population allele retained and at least 2 sampled hom-alt plus 2 hom-ref diploid pairs",
+    "accepted_attempt_zero_based": 8,
+    "attempts_to_accept_in_seed_order": 9,
+    "trajectories_computed_in_parallel_batches": 20,
+    "population_allele_frequency": 0.102125,
+    "sample_allele_frequency": 0.10275,
+    "trajectory_file": "selected_allele_frequency_trajectory.tsv",
+    "trajectory_generations_logged": 181,
+    "initial_population_allele_frequency": 5e-05,
+    "n_hom_ref_pairs": 1610,
+    "n_heterozygous_pairs": 369,
+    "n_hom_alt_pairs": 21,
+    "observed_fraction_recent": 0.0185,
+    "neutral_exceedances": 0,
+    "monte_carlo_p_upper": 0.009900990099009901
+  },
+  "confidence_interval": "two-sided 95% log-Wald interval for the positive mean across diploid pairs, using a Student-t critical value",
+  "workers_requested": 20,
+  "workers_used": 20,
+  "base_seed": 515151,
+  "elapsed_seconds": 267.14145750005264,
+  "selected_center_carrier_tmrca": [
+    {
+      "pair_class": "hom_ref",
+      "n_pairs": 1610,
+      "mean_tmrca_generations": 28163.213760231825,
+      "ci95_lower_generations": 27169.59179777756,
+      "ci95_upper_generations": 29193.17357463542
+    },
+    {
+      "pair_class": "hom_alt",
+      "n_pairs": 21,
+      "mean_tmrca_generations": 130.85714285714286,
+      "ci95_lower_generations": 117.79896565848519,
+      "ci95_upper_generations": 145.3628369401668
+    }
+  ]
+}

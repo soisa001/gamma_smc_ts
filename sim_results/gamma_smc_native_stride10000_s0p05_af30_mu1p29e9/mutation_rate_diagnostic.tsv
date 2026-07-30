@@ -1,0 +1,3 @@
+configuration	mutation_rate	scaled_mutation_rate	recombination_to_mutation_ratio	retained_segregating_sites	segments	stride_bp	cache_size_bp	center_truth_fraction_recent	center_decoded_mean_p_recent	center_decoded_mean_tmrca_generations	decoder_overall_seconds	wrapper_elapsed_seconds	peak_memory_gb
+historical_mu_current_native	1.25e-08	0.0005	0.8	53186	54475	10000	1000	0.138	0.08805130038	19672.36156	13.254	13.405559562999997	0.609
+requested_mu_current_native	1.29e-09	5.16e-05	7.751937984496124	5436	13550	10000	1000	0.138	9.188428408e-05	19365.51064	8.121	8.20998818999999	0.585
