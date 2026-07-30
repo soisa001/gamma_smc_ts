@@ -44,9 +44,13 @@ def tree_sequence_to_vcf(source: str | Path, destination: str | Path) -> Path:
         output_handle = gzip.open(destination, "wt", encoding="utf-8")
     else:
         output_handle = destination.open("w", encoding="utf-8")
+    # Tskit coordinates are 0-based, while VCF POS must be at least 1. The
+    # legacy transform preserves the usual rounded positions, maps coordinate
+    # zero to one, and disambiguates any resulting duplicate integer positions.
+    write_options = {"position_transform": "legacy"}
     with output_handle as output:
         if individuals:
-            ts.write_vcf(output, individuals=individuals)
+            ts.write_vcf(output, individuals=individuals, **write_options)
         else:
-            ts.write_vcf(output, ploidy=2)
+            ts.write_vcf(output, ploidy=2, **write_options)
     return destination

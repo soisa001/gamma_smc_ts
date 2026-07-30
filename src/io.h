@@ -261,7 +261,8 @@ inline std::string convert_tree_sequence_to_vcf(
         "if assigned and assigned != sample_set: raise ValueError('unassigned sample nodes')\n"
         "if not assigned and ts.num_samples % 2: raise ValueError('odd unassigned sample count')\n"
         "with open(dst,'w',encoding='utf-8') as out:\n"
-        " ts.write_vcf(out,individuals=individuals) if individuals else ts.write_vcf(out,ploidy=2)\n";
+        " opts={'position_transform':'legacy'}\n"
+        " ts.write_vcf(out,individuals=individuals,**opts) if individuals else ts.write_vcf(out,ploidy=2,**opts)\n";
 
     pid_t pid = fork();
     if (pid == -1) {

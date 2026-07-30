@@ -23,6 +23,15 @@ def diploid_ts(length=50_000):
     )
 
 
+def diploid_ts_with_position_zero(length=50_000):
+    ts = diploid_ts(length)
+    tables = ts.dump_tables()
+    site = tables.sites.add_row(position=0, ancestral_state="0")
+    tables.mutations.add_row(site=site, node=ts.samples()[0], derived_state="1")
+    tables.sort()
+    return tables.tree_sequence()
+
+
 def test_tree_sequence_diploids_and_vcf_only_segregating_sites(tmp_path):
     ts = diploid_ts()
     assert len(diploid_individuals(ts)) == 4
@@ -33,6 +42,23 @@ def test_tree_sequence_diploids_and_vcf_only_segregating_sites(tmp_path):
     records = [line for line in vcf.read_text().splitlines() if not line.startswith("#")]
     assert len(records) == ts.num_sites
     assert all(len(record.split("\t")) == 9 + 4 for record in records)
+
+
+def test_tree_sequence_vcf_coerces_coordinate_zero_to_valid_pos(tmp_path):
+    ts = diploid_ts_with_position_zero()
+    source = tmp_path / "position_zero.trees"
+    vcf = tmp_path / "position_zero.vcf"
+    ts.dump(source)
+    tree_sequence_to_vcf(source, vcf)
+    records = [
+        line.split("\t")
+        for line in vcf.read_text().splitlines()
+        if not line.startswith("#")
+    ]
+    positions = [int(record[1]) for record in records]
+    assert len(records) == ts.num_sites
+    assert positions[0] == 1
+    assert all(left < right for left, right in zip(positions, positions[1:]))
 
 
 def test_tsz_conversion_uses_tszip_loader(tmp_path):
