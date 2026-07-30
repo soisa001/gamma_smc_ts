@@ -62,14 +62,17 @@
     "low_mu_10kb_center_monte_carlo_p_upper": 0.8910891089108911,
     "high_mu_1kb_center_monte_carlo_p_upper": 0.009900990099009901,
     "high_mu_1kb_center_neutral_exceedances": 0,
-    "high_mu_10kb_is_selected_only": true,
+    "high_mu_10kb_center_monte_carlo_p_upper": 0.009900990099009901,
+    "high_mu_10kb_center_neutral_exceedances": 0,
     "high_mu_1kb_center_selected": 0.07175696207,
     "high_mu_10kb_center_selected": 0.07184463826,
+    "high_mu_10kb_center_null_mean": 0.021981361892700006,
     "all_profiles_have_complete_100_replicate_coverage": true
   },
   "runtime": {
     "low_mu_1kb_elapsed_seconds_pre_optimization": 528.991700551,
     "high_mu_1kb_elapsed_seconds_optimized": 341.0298637980002,
+    "high_mu_10kb_elapsed_seconds_optimized": 308.35053111,
     "high_mu_neutral_preparation_executor": "process_pool_batched",
     "high_mu_neutral_decode_executor": "thread_pool_batched",
     "batch_size": 12,
@@ -84,6 +87,21 @@
     "level_9_bytes": 1052192,
     "size_ratio": 2.0387343754751983
   },
+  "high_mu_10kb_outputs": {
+    "dimensions": {
+      "selected_decoded_recent_probability_profile.tsv": [1000, 8],
+      "neutral_decoded_recent_probability_profiles.tsv.gz": [100000, 9],
+      "decoded_spatial_pointwise_calibration.tsv": [1000, 11],
+      "decoded_spatial_significant_regions.tsv": [33, 8],
+      "neutral_leave_one_out_scan_density.tsv": [100, 3]
+    },
+    "sha256": {
+      "selected_decoded_recent_probability_profile.tsv": "6d280b6f794bd2b795ca6948daa8b524ffd40fda6da75141cc1654451394c9b1",
+      "neutral_decoded_recent_probability_profiles.tsv.gz": "caa12f72ad1df122b36e9555468f7caf26e59d9537076e87525952720fe0a84f",
+      "decoded_study_metrics.json": "3dcf807ebaa5c8a918f370914805f4ddce8be725c90914561f94a16b3eb39ac7",
+      "decoded_spatial_pointwise_calibration.tsv": "4f6ec89b8810cfb83d1b3686b5d4e80886dc1e35558135f173ef8f831b47499f"
+    }
+  },
   "software": {
     "slim": "5.2",
     "msprime": "1.4.2",
@@ -93,14 +111,15 @@
     "pandas": "3.0.3"
   },
   "validation": {
-    "windows_pytest": "59 passed, 30 skipped in 13.84 s",
-    "wsl_pytest_with_native_decoder": "89 passed in 67.91 s",
-    "profile_and_pvalue_audit": "pass",
+    "windows_pytest": "59 passed, 30 skipped in 14.09 s",
+    "wsl_pytest_with_native_decoder_and_slim": "89 passed in 68.13 s",
+    "profile_and_pvalue_audit": "pass, including independent high-mu 10 kb 100-null recalculation",
     "git_diff_check": "pass"
   },
   "commands": {
     "low_mu_1kb": "gamma-smc-aou run-native-study --source-dir source_low_mu --output-dir low_mu_stride1kb --neutral-replicates 100 --output-at-stride 1000 --cache-size 1000 --threads 1 --workers 12 --recent-call mean --calibration-statistic mean-posterior-probability",
     "high_mu_1kb": "gamma-smc-aou run-native-study --source-dir source_high_mu --output-dir high_mu_stride1kb --neutral-replicates 100 --output-at-stride 1000 --cache-size 1000 --threads 1 --workers 12 --recent-call mean --calibration-statistic mean-posterior-probability",
+    "high_mu_10kb": "gamma-smc-aou run-native-study --source-dir source_high_mu --output-dir high_mu_stride10kb --neutral-replicates 100 --output-at-stride 10000 --cache-size 1000 --threads 1 --workers 12 --recent-call mean --calibration-statistic mean-posterior-probability",
     "analysis": "python scripts/analyze_selection_hypotheses.py --root sim_results/gamma_smc_stride_mutation_hypotheses_seed930777 --existing-low-10kb sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9_mean_vs_median_seed930777 --neutral-truth sim_results/two_epoch_growth_s0p05_n2000_mu1p29e9_seed525252 --executable bin/gamma_smc"
   }
 }

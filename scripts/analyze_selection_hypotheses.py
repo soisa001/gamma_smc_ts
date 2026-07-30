@@ -67,90 +67,65 @@ def _write_pair_files(carriers: pd.DataFrame, output_dir: Path) -> dict[str, Pat
     return paths
 
 
-def _compare_low_stride_outputs(low_1kb: Path, low_10kb: Path) -> dict:
+def _compare_stride_outputs(stride_1kb: Path, stride_10kb: Path) -> dict:
     selected_1 = _at_stride(
         pd.read_csv(
-            low_1kb / "selected_decoded_recent_probability_profile.tsv",
+            stride_1kb / "selected_decoded_recent_probability_profile.tsv",
             sep="\t",
         ),
         10_000,
     )
     selected_10 = pd.read_csv(
-        low_10kb / "selected_decoded_recent_probability_profile.tsv",
+        stride_10kb / "selected_decoded_recent_probability_profile.tsv",
         sep="\t",
     )
     neutral_1 = _at_stride(
         pd.read_csv(
-            low_1kb / "neutral_decoded_recent_probability_profiles.tsv.gz",
+            stride_1kb / "neutral_decoded_recent_probability_profiles.tsv.gz",
             sep="\t",
         ),
         10_000,
     ).sort_values(["replicate", "position_0based"]).reset_index(drop=True)
     neutral_10 = pd.read_csv(
-        low_10kb / "neutral_decoded_recent_probability_profiles.tsv.gz",
+        stride_10kb / "neutral_decoded_recent_probability_profiles.tsv.gz",
         sep="\t",
     ).sort_values(["replicate", "position_0based"]).reset_index(drop=True)
     if len(selected_1) != len(selected_10) or len(neutral_1) != len(neutral_10):
         raise RuntimeError("1 kb and 10 kb profiles do not share the expected grid")
+    if not np.array_equal(
+        selected_1["position_0based"].to_numpy(),
+        selected_10["position_0based"].to_numpy(),
+    ):
+        raise RuntimeError("selected profiles have different 10 kb positions")
+    for column in ["replicate", "position_0based"]:
+        if not np.array_equal(
+            neutral_1[column].to_numpy(),
+            neutral_10[column].to_numpy(),
+        ):
+            raise RuntimeError(
+                f"neutral profiles differ in aligned {column!r} values"
+            )
     result = {}
     for label, left, right in [
         ("selected", selected_1, selected_10),
         ("neutral", neutral_1, neutral_10),
     ]:
         for column in SOFT_COLUMNS:
+            left_values = left[column].to_numpy(dtype=float)
+            right_values = right[column].to_numpy(dtype=float)
             difference = np.abs(
-                left[column].to_numpy(dtype=float)
-                - right[column].to_numpy(dtype=float)
+                left_values
+                - right_values
             )
             result[f"{label}_{column}_max_abs_difference"] = float(
                 difference.max(initial=0.0)
             )
+            result[f"{label}_{column}_pearson_correlation"] = float(
+                np.corrcoef(left_values, right_values)[0, 1]
+            )
     result["selected_shared_positions"] = int(len(selected_1))
     result["neutral_shared_rows"] = int(len(neutral_1))
     return result
-
-
-def _decode_high_selected_at_10kb(
-    high_source: Path,
-    executable: Path,
-    output_dir: Path,
-) -> dict:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / "selected_decoded_recent_probability_profile.tsv"
-    run_path = path.with_suffix(path.suffix + ".run.json")
-    if path.exists() and run_path.exists():
-        return json.loads(run_path.read_text(encoding="utf-8"))
-    run = run_within_decoder(
-        executable,
-        high_source / "selected_s0p05_af30.vcf.gz",
-        path,
-        scaled_mutation_rate=0.0005,
-        recombination_to_mutation_ratio=0.8,
-        mutation_rate=1.25e-8,
-        threshold_years=4_500,
-        generation_time=25,
-        input_format="vcf",
-        output_at_stride=10_000,
-        output_at_hets=False,
-        only_within=True,
-        recent_call="mean",
-        cache_size=1_000,
-        threads=1,
-    )
-    (output_dir / "selected_only_metrics.json").write_text(
-        json.dumps({
-            "mutation_rate": 1.25e-8,
-            "stride_bp": 10_000,
-            "neutral_replicates": 0,
-            "interpretation": (
-                "Independent selected decode used only for the stride "
-                "sensitivity comparison; no 10 kb high-mutation null p-value."
-            ),
-            **run,
-        }, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    return run
 
 
 def _decode_carrier_classes(
@@ -345,15 +320,17 @@ def _plot_summary(
         x[~low], y[~low], color=colors["high_mu"], s=95,
         label="selected, high μ", zorder=3,
     )
-    axis.annotate(
-        "selected only",
-        (x[-1], y[-1]),
-        xytext=(0, -13),
-        textcoords="offset points",
-        ha="center",
-        va="top",
-        fontsize=10,
-    )
+    for index, row in enumerate(factor.itertuples()):
+        offset = 10 if row.center_selected_mean_p_recent < 0.04 else -20
+        axis.annotate(
+            f"p={row.center_monte_carlo_p_upper:.3g}",
+            (index, row.center_selected_mean_p_recent),
+            xytext=(0, offset),
+            textcoords="offset points",
+            ha="center",
+            va="bottom" if offset > 0 else "top",
+            fontsize=10,
+        )
     axis.set_xticks(x, [f"{row.stride_bp // 1000} kb\n$\\mu$={row.mutation_rate:.2g}" for row in factor.itertuples()])
     axis.set_ylabel("Mean posterior P(TMRCA < 180 generations)")
     axis.set_title("A. Center statistic: mutation information, not stride")
@@ -458,32 +435,23 @@ def main() -> None:
     high_source = root / "source_high_mu"
     low_1kb = root / "low_mu_stride1kb"
     high_1kb = root / "high_mu_stride1kb"
-    high_10kb = root / "high_mu_stride10kb_selected_only"
+    high_10kb = root / "high_mu_stride10kb"
     low_10kb = args.existing_low_10kb.resolve()
     analysis_dir = root / "analysis"
     analysis_dir.mkdir(parents=True, exist_ok=True)
 
-    stride_validation = _compare_low_stride_outputs(low_1kb, low_10kb)
-    _decode_high_selected_at_10kb(high_source, args.executable, high_10kb)
-    high_independent = pd.read_csv(
-        high_10kb / "selected_decoded_recent_probability_profile.tsv",
-        sep="\t",
-    )
-    high_1kb_at_10kb = _at_stride(
-        pd.read_csv(
-            high_1kb / "selected_decoded_recent_probability_profile.tsv",
-            sep="\t",
-        ),
-        10_000,
-    )
-    stride_validation["high_mu_selected_mean_p_recent_max_abs_difference"] = float(
-        np.max(
-            np.abs(
-                high_independent["mean_p_tmrca_lt_threshold"].to_numpy()
-                - high_1kb_at_10kb["mean_p_tmrca_lt_threshold"].to_numpy()
-            )
-        )
-    )
+    stride_validation = {}
+    for prefix, stride_1kb, stride_10kb in [
+        ("low_mu", low_1kb, low_10kb),
+        ("high_mu", high_1kb, high_10kb),
+    ]:
+        stride_validation.update({
+            f"{prefix}_{key}": value
+            for key, value in _compare_stride_outputs(
+                stride_1kb,
+                stride_10kb,
+            ).items()
+        })
 
     carriers = pd.read_csv(
         low_source / "selected_focal_carrier_pairs.tsv",
@@ -523,27 +491,8 @@ def main() -> None:
         ("low_mu_stride1kb", 1.29e-9, 1_000, low_1kb, low_sites, False),
         ("low_mu_stride10kb", 1.29e-9, 10_000, low_10kb, low_sites, False),
         ("high_mu_stride1kb", 1.25e-8, 1_000, high_1kb, high_sites, False),
+        ("high_mu_stride10kb", 1.25e-8, 10_000, high_10kb, high_sites, False),
     ])
-    high_10_center = _center_row(high_independent, 5_000_000)
-    factor = pd.concat([
-        factor,
-        pd.DataFrame([{
-            "configuration": "high_mu_stride10kb_selected_only",
-            "mutation_rate": 1.25e-8,
-            "retained_sites_selected": high_sites,
-            "stride_bp": 10_000,
-            "center_truth_fraction_recent": 0.098,
-            "center_selected_mean_p_recent": float(
-                high_10_center["mean_p_tmrca_lt_threshold"]
-            ),
-            "center_null_mean_p_recent": np.nan,
-            "center_null_ci95_lower": np.nan,
-            "center_null_ci95_upper": np.nan,
-            "center_neutral_exceedances": np.nan,
-            "center_monte_carlo_p_upper": np.nan,
-            "derived_by_downsampling_1kb": False,
-        }]),
-    ], ignore_index=True)
     factor.to_csv(
         analysis_dir / "stride_mutation_factorial_center.tsv",
         sep="\t",
@@ -571,8 +520,7 @@ def main() -> None:
         "stride_validation": stride_validation,
         "low_mu_null_exceedance_probability_clopper_pearson_95": exceedance_ci,
         "high_mu_10kb_calibration": (
-            "selected-only independent decode; the 100-null p-value is from "
-            "the complete high-mutation 1 kb run"
+            "independent complete selected plus 100-null calibration"
         ),
         "truth_null_summary": truth_null,
     }
