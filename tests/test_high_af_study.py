@@ -1,3 +1,5 @@
+import msprime
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -6,7 +8,10 @@ from gamma_smc_aou.container_study import (
     _plot_decoded_center_calibration,
     _write_recent_call_comparison,
 )
-from gamma_smc_aou.high_af_study import _check_null_compatibility
+from gamma_smc_aou.high_af_study import (
+    _check_null_compatibility,
+    focal_carrier_pair_table,
+)
 
 
 def _design():
@@ -37,6 +42,24 @@ def test_reused_truth_null_must_match_selected_design():
     metrics["mutation_rate"] = 2e-8
     with pytest.raises(ValueError, match="mutation_rate"):
         _check_null_compatibility(metrics, design)
+
+
+def test_focal_carrier_table_matches_vcf_haplotype_order():
+    ts = msprime.sim_ancestry(
+        samples=3,
+        ploidy=2,
+        population_size=10_000,
+        sequence_length=100,
+        random_seed=17,
+    )
+    table = focal_carrier_pair_table(ts, np.asarray([2, 0, 1], dtype=np.int8))
+    assert table["gamma_smc_haplotype_0"].tolist() == [0, 2, 4]
+    assert table["gamma_smc_haplotype_1"].tolist() == [1, 3, 5]
+    assert table["focal_genotype_class"].tolist() == [
+        "hom_alt",
+        "hom_ref",
+        "heterozygous",
+    ]
 
 
 def test_decoded_center_plot_reports_monte_carlo_distribution(tmp_path):

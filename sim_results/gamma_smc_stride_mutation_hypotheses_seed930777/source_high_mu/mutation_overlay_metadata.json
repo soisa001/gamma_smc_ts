@@ -1,0 +1,8 @@
+{
+  "mutation_rate": 1.25e-08,
+  "random_seed": 945460,
+  "model": "BinaryMutationModel",
+  "retained_sites": 53528,
+  "num_trees": 39515,
+  "num_samples": 4000
+}

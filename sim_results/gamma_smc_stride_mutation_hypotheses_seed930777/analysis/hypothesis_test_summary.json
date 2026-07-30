@@ -1,0 +1,33 @@
+{
+  "primary_statistic": "mean across pairs of posterior P(TMRCA < 180 generations)",
+  "posterior_mean_call_is_not_primary_statistic": true,
+  "stride_validation": {
+    "selected_mean_p_tmrca_lt_threshold_max_abs_difference": 7.45184823e-05,
+    "selected_mean_p_lt_4500_max_abs_difference": 7.45184823e-05,
+    "selected_mean_tmrca_generations_max_abs_difference": 460.6184899999971,
+    "neutral_mean_p_tmrca_lt_threshold_max_abs_difference": 0.00012266336659999996,
+    "neutral_mean_p_lt_4500_max_abs_difference": 0.00012266336659999996,
+    "neutral_mean_tmrca_generations_max_abs_difference": 567.3340900000003,
+    "selected_shared_positions": 1000,
+    "neutral_shared_rows": 100000,
+    "high_mu_selected_mean_p_recent_max_abs_difference": 0.00027200024999999434
+  },
+  "low_mu_null_exceedance_probability_clopper_pearson_95": [
+    0.8116988678035574,
+    0.9437929797145125
+  ],
+  "high_mu_10kb_calibration": "selected-only independent decode; the 100-null p-value is from the complete high-mutation 1 kb run",
+  "truth_null_summary": {
+    "neutral_replicates": 100,
+    "neutral_mean_fraction_recent": 0.0066500000000000005,
+    "neutral_fraction_recent_ci95": [
+      0.0035,
+      0.011024999999999991
+    ],
+    "neutral_mean_tmrca_generations": 19376.749708589454,
+    "neutral_mean_tmrca_ci95": [
+      8252.87168959961,
+      34834.54799920925
+    ]
+  }
+}

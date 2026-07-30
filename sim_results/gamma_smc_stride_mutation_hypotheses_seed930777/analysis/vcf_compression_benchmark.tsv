@@ -1,0 +1,3 @@
+sequence_length_bp	mutation_overlay	gzip_level	elapsed_seconds	compressed_bytes	speed_relative_to_level9	size_relative_to_level9
+1000000	high_mu_selected	1	0.6020140000	2145140	12.01288458	2.03873438
+1000000	high_mu_selected	9	7.2319247000	1052192	1.0	1.0

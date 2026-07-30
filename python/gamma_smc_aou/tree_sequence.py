@@ -6,6 +6,9 @@ from pathlib import Path
 import tskit
 
 
+VCF_GZIP_COMPRESSLEVEL = 1
+
+
 def load_tree_sequence(path: str | Path):
     path = Path(path)
     if path.suffix.lower() == ".tsz":
@@ -41,7 +44,15 @@ def tree_sequence_to_vcf(source: str | Path, destination: str | Path) -> Path:
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.suffix.lower() == ".gz":
-        output_handle = gzip.open(destination, "wt", encoding="utf-8")
+        # These files are transient decoder inputs. Compression level 1 is
+        # substantially faster for the repetitive, genotype-heavy VCF stream
+        # while preserving identical decompressed content.
+        output_handle = gzip.open(
+            destination,
+            "wt",
+            encoding="utf-8",
+            compresslevel=VCF_GZIP_COMPRESSLEVEL,
+        )
     else:
         output_handle = destination.open("w", encoding="utf-8")
     # Tskit coordinates are 0-based, while VCF POS must be at least 1. The

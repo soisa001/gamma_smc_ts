@@ -6,7 +6,11 @@ import pandas as pd
 import tszip
 
 from gamma_smc_aou.simulation import SimulationConfig, simulate_replicates, within_individual_truth
-from gamma_smc_aou.tree_sequence import diploid_individuals, tree_sequence_to_vcf
+from gamma_smc_aou.tree_sequence import (
+    VCF_GZIP_COMPRESSLEVEL,
+    diploid_individuals,
+    tree_sequence_to_vcf,
+)
 
 
 def diploid_ts(length=50_000):
@@ -72,6 +76,7 @@ def test_tsz_conversion_uses_tszip_loader(tmp_path):
 
 
 def test_tree_sequence_can_write_gzipped_vcf(tmp_path):
+    assert VCF_GZIP_COMPRESSLEVEL == 1
     ts = diploid_ts()
     source = tmp_path / "input.trees"
     vcf = tmp_path / "input.vcf.gz"

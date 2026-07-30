@@ -59,45 +59,55 @@ def calibrate_spatial_windows(
             "neutral profiles are missing columns: "
             + ", ".join(sorted(missing_neutral))
         )
-    rows = []
     replicate_count = neutral["replicate"].nunique()
     if replicate_count < 1:
         raise ValueError("neutral profiles contain no replicates")
-    coverage = neutral.groupby("position_0based")["replicate"].nunique()
-    complete_positions = coverage.index[coverage.eq(replicate_count)].to_numpy(
-        dtype=float
+    try:
+        neutral_matrix = neutral.pivot(
+            index="position_0based",
+            columns="replicate",
+            values=statistic_column,
+        )
+    except ValueError as error:
+        raise ValueError(
+            "neutral profiles contain duplicate replicate-position rows"
+        ) from error
+    if neutral_matrix.shape[1] != replicate_count:
+        raise RuntimeError("failed to construct the complete neutral matrix")
+    neutral_matrix = neutral_matrix.dropna(axis="index", how="any").sort_index()
+    matched_observed = (
+        observed.loc[
+            observed["position_0based"].isin(neutral_matrix.index),
+            ["position_0based", "n_pairs", statistic_column],
+        ]
+        .sort_values("position_0based")
+        .reset_index(drop=True)
     )
-    matched_observed = observed[
-        observed["position_0based"].isin(complete_positions)
-    ]
     if matched_observed.empty:
         raise ValueError("no output position is present in every neutral replicate")
-    for _, row in matched_observed.sort_values("position_0based").iterrows():
-        position = float(row["position_0based"])
-        values = neutral.loc[
-            np.isclose(neutral["position_0based"], position),
-            statistic_column,
-        ].to_numpy(dtype=float)
-        if len(values) != replicate_count:
-            raise ValueError(
-                f"position {position:g} has {len(values)} null values; "
-                f"expected {replicate_count}"
-            )
-        observed_value = float(row[statistic_column])
-        exceedances = int(np.count_nonzero(values >= observed_value))
-        rows.append({
-            "position_0based": position,
-            "n_pairs": int(row["n_pairs"]),
-            "observed_fraction_recent": observed_value,
-            "neutral_mean_fraction_recent": float(values.mean()),
-            "neutral_median_fraction_recent": float(np.median(values)),
-            "neutral_ci95_lower": float(np.quantile(values, 0.025)),
-            "neutral_ci95_upper": float(np.quantile(values, 0.975)),
-            "neutral_exceedances": exceedances,
-            "n_neutral_replicates": int(replicate_count),
-            "p_upper": float((1 + exceedances) / (1 + replicate_count)),
-        })
-    result = pd.DataFrame(rows)
+    neutral_values = neutral_matrix.loc[
+        matched_observed["position_0based"].to_numpy()
+    ].to_numpy(dtype=float)
+    observed_values = matched_observed[statistic_column].to_numpy(dtype=float)
+    exceedances = np.count_nonzero(
+        neutral_values >= observed_values[:, np.newaxis],
+        axis=1,
+    )
+    quantiles = np.quantile(neutral_values, [0.025, 0.975], axis=1)
+    result = pd.DataFrame({
+        "position_0based": matched_observed["position_0based"].to_numpy(
+            dtype=float
+        ),
+        "n_pairs": matched_observed["n_pairs"].to_numpy(dtype=int),
+        "observed_fraction_recent": observed_values,
+        "neutral_mean_fraction_recent": neutral_values.mean(axis=1),
+        "neutral_median_fraction_recent": np.median(neutral_values, axis=1),
+        "neutral_ci95_lower": quantiles[0],
+        "neutral_ci95_upper": quantiles[1],
+        "neutral_exceedances": exceedances,
+        "n_neutral_replicates": replicate_count,
+        "p_upper": (1 + exceedances) / (1 + replicate_count),
+    })
     result["q_bh"] = bh_fdr(result["p_upper"].to_numpy(dtype=float))
     return result
 

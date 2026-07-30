@@ -39,6 +39,54 @@ from .two_epoch import (
 )
 
 
+def focal_carrier_pair_table(ts, focal_carrier_counts: np.ndarray) -> pd.DataFrame:
+    """Map saved focal genotypes to the VCF haplotype-pair ordering.
+
+    ``tree_sequence_to_vcf`` writes diploid individuals in tree-sequence
+    individual order. Gamma-SMC numbers the resulting haplotypes consecutively,
+    so VCF diploid row ``k`` is pair ``(2*k, 2*k + 1)``.
+    """
+    counts = np.asarray(focal_carrier_counts, dtype=np.int8)
+    sample_nodes = set(ts.samples())
+    rows = []
+    for individual in ts.individuals():
+        nodes = [node for node in individual.nodes if node in sample_nodes]
+        if not nodes:
+            continue
+        vcf_diploid_index = len(rows)
+        if len(nodes) != 2:
+            raise ValueError(
+                f"individual {individual.id} has {len(nodes)} sample nodes; expected 2"
+            )
+        if individual.id >= len(counts):
+            raise ValueError("focal carrier counts do not cover every VCF individual")
+        copies = int(counts[individual.id])
+        if copies not in {0, 1, 2}:
+            raise ValueError("focal carrier counts must contain only 0, 1, or 2")
+        rows.append({
+            "vcf_diploid_index": vcf_diploid_index,
+            "tree_sequence_individual_id": individual.id,
+            "sample_node_0": nodes[0],
+            "sample_node_1": nodes[1],
+            "gamma_smc_haplotype_0": 2 * vcf_diploid_index,
+            "gamma_smc_haplotype_1": 2 * vcf_diploid_index + 1,
+            "focal_carrier_copies": copies,
+            "focal_genotype_class": (
+                "hom_ref"
+                if copies == 0
+                else "heterozygous"
+                if copies == 1
+                else "hom_alt"
+            ),
+        })
+    table = pd.DataFrame(rows)
+    if len(table) != len(counts):
+        raise ValueError(
+            f"VCF contains {len(table)} diploids but there are {len(counts)} carrier counts"
+        )
+    return table
+
+
 def _simulate_high_af_attempt(task: dict) -> dict:
     """Run one independent trajectory in a worker process."""
     attempt = int(task["attempt"])
@@ -318,6 +366,12 @@ def prepare_high_af_selected(
         output_dir / "selected_allele_frequency_trajectory.tsv", sep="\t", index=False
     )
     ts = tskit.load(selected_tree)
+    carrier_pairs = focal_carrier_pair_table(ts, accepted["carrier_counts"])
+    carrier_pairs.to_csv(
+        output_dir / "selected_focal_carrier_pairs.tsv",
+        sep="\t",
+        index=False,
+    )
     carrier_profile = pair_tmrca_profile_by_focal_copy(
         ts, carrier_positions, accepted["carrier_counts"]
     )

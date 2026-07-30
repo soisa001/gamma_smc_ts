@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-30T18:33:35.6271649-05:00",
+  "branch": "AOU_run_opt",
+  "starting_commit": "25cf3da8d81213e129ee51deeb44fc2463c7b8d9",
+  "purpose": "Test stride, Monte Carlo power, posterior-summary, and carrier-conditioning explanations for selected-sweep recovery",
+  "design": {
+    "base_seed": 930777,
+    "selected_attempt_zero_based": 1468,
+    "selected_slim_seed": 945457,
+    "mutation_overlay_seed": 945460,
+    "selection_coefficient": 0.05,
+    "minimum_population_allele_frequency": 0.30,
+    "population_allele_frequency": 0.3216,
+    "sample_allele_frequency": 0.31125,
+    "sample_diploids": 2000,
+    "sample_haplotypes": 4000,
+    "sequence_length_bp": 10000000,
+    "selected_position_0based": 5000000,
+    "variant_age_generations": 180,
+    "generation_time_years": 25,
+    "recombination_rate": 1e-8,
+    "neutral_replicates": 100,
+    "workers": 12,
+    "decoder_threads_per_replicate": 1,
+    "cache_size_bp": 1000,
+    "recent_call": "mean",
+    "primary_calibration_statistic": "mean-posterior-probability"
+  },
+  "mutation_cells": {
+    "low_mu": {
+      "mutation_rate": 1.29e-9,
+      "scaled_mutation_rate": 5.16e-5,
+      "recombination_to_mutation_ratio": 7.751937984496124,
+      "selected_segregating_sites": 5483
+    },
+    "high_mu": {
+      "mutation_rate": 1.25e-8,
+      "scaled_mutation_rate": 0.0005,
+      "recombination_to_mutation_ratio": 0.8,
+      "selected_segregating_sites": 53528
+    }
+  },
+  "tree_sequence": {
+    "trees": 39515,
+    "samples": 4000,
+    "mutation_free_table_collections_equal": true,
+    "low_mu_sha256": "CC7F2AAB66843FD498BF2C2FA1E7647F5477BDF3E4EDB2CD119D93F3B15AE43D",
+    "high_mu_sha256": "2F008B026F0EEE2F5A30091B77C5D4FF505463251204554E8C582C2A120EC503"
+  },
+  "decoder": {
+    "sha256": "E892D6C2FAEC30C590107B5821444737CB755E114565448D0BF3A3A33BC737ED",
+    "backend": "native_optimized",
+    "backward_alignment": "fixed",
+    "exp10": "accurate"
+  },
+  "assertions": {
+    "truth_center_fraction_recent": 0.098,
+    "truth_center_null_exceedances": 0,
+    "truth_center_monte_carlo_p_upper": 0.009900990099009901,
+    "low_mu_1kb_center_monte_carlo_p_upper": 0.900990099009901,
+    "low_mu_10kb_center_monte_carlo_p_upper": 0.8910891089108911,
+    "high_mu_1kb_center_monte_carlo_p_upper": 0.009900990099009901,
+    "high_mu_1kb_center_neutral_exceedances": 0,
+    "high_mu_10kb_is_selected_only": true,
+    "high_mu_1kb_center_selected": 0.07175696207,
+    "high_mu_10kb_center_selected": 0.07184463826,
+    "all_profiles_have_complete_100_replicate_coverage": true
+  },
+  "runtime": {
+    "low_mu_1kb_elapsed_seconds_pre_optimization": 528.991700551,
+    "high_mu_1kb_elapsed_seconds_optimized": 341.0298637980002,
+    "high_mu_neutral_preparation_executor": "process_pool_batched",
+    "high_mu_neutral_decode_executor": "thread_pool_batched",
+    "batch_size": 12,
+    "vectorized_low_mu_calibration_seconds": 0.29331149999052286
+  },
+  "vcf_compression_benchmark": {
+    "sequence_length_bp": 1000000,
+    "gzip_level_1_seconds": 0.6020140000036918,
+    "gzip_level_9_seconds": 7.231924699968658,
+    "speedup": 12.012884583953712,
+    "level_1_bytes": 2145140,
+    "level_9_bytes": 1052192,
+    "size_ratio": 2.0387343754751983
+  },
+  "software": {
+    "slim": "5.2",
+    "msprime": "1.4.2",
+    "pyslim": "1.1.1",
+    "tskit": "1.0.3",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3"
+  },
+  "validation": {
+    "windows_pytest": "59 passed, 30 skipped in 13.84 s",
+    "wsl_pytest_with_native_decoder": "89 passed in 67.91 s",
+    "profile_and_pvalue_audit": "pass",
+    "git_diff_check": "pass"
+  },
+  "commands": {
+    "low_mu_1kb": "gamma-smc-aou run-native-study --source-dir source_low_mu --output-dir low_mu_stride1kb --neutral-replicates 100 --output-at-stride 1000 --cache-size 1000 --threads 1 --workers 12 --recent-call mean --calibration-statistic mean-posterior-probability",
+    "high_mu_1kb": "gamma-smc-aou run-native-study --source-dir source_high_mu --output-dir high_mu_stride1kb --neutral-replicates 100 --output-at-stride 1000 --cache-size 1000 --threads 1 --workers 12 --recent-call mean --calibration-statistic mean-posterior-probability",
+    "analysis": "python scripts/analyze_selection_hypotheses.py --root sim_results/gamma_smc_stride_mutation_hypotheses_seed930777 --existing-low-10kb sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9_mean_vs_median_seed930777 --neutral-truth sim_results/two_epoch_growth_s0p05_n2000_mu1p29e9_seed525252 --executable bin/gamma_smc"
+  }
+}

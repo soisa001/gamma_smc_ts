@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from pathlib import Path
 from time import perf_counter
 
@@ -588,6 +588,26 @@ def _simulate(
     )
 
 
+def _prepare_neutral_input(task: dict) -> dict:
+    """Simulate and write one neutral VCF in an independent process."""
+    replicate = int(task["replicate"])
+    tree_path = Path(task["tree_path"])
+    vcf_path = Path(task["vcf_path"])
+    neutral_ts, _ = _simulate(
+        tree_path,
+        task["design"],
+        selection_coefficient=0.0,
+        seed=int(task["seed"]),
+    )
+    del neutral_ts
+    tree_sequence_to_vcf(tree_path, vcf_path)
+    return {
+        "replicate": replicate,
+        "tree_path": str(tree_path),
+        "vcf_path": str(vcf_path),
+    }
+
+
 def _run_stride_study(
     source_dir: str | Path,
     output_dir: str | Path,
@@ -783,18 +803,11 @@ def _run_stride_study(
     )
 
     def neutral_task(
-        replicate: int,
+        prepared: dict,
     ) -> tuple[dict[str, pd.DataFrame], dict[str, dict]]:
-        tree_path = work_dir / f"neutral_{replicate:04d}.trees"
-        neutral_ts, _ = _simulate(
-            tree_path,
-            design,
-            selection_coefficient=0.0,
-            seed=design["seed"] + 1_000_000 + replicate * 10,
-        )
-        del neutral_ts
-        vcf_path = work_dir / f"neutral_{replicate:04d}.vcf.gz"
-        tree_sequence_to_vcf(tree_path, vcf_path)
+        replicate = int(prepared["replicate"])
+        tree_path = Path(prepared["tree_path"])
+        vcf_path = Path(prepared["vcf_path"])
         profiles: dict[str, pd.DataFrame] = {}
         runs: dict[str, dict] = {}
         summary_paths: list[Path] = []
@@ -827,11 +840,35 @@ def _run_stride_study(
                 )
         return profiles, runs
 
+    neutral_tasks = [
+        {
+            "replicate": replicate,
+            "tree_path": str(work_dir / f"neutral_{replicate:04d}.trees"),
+            "vcf_path": str(work_dir / f"neutral_{replicate:04d}.vcf.gz"),
+            "design": design,
+            "seed": design["seed"] + 1_000_000 + replicate * 10,
+        }
+        for replicate in range(neutral_replicates)
+    ]
     if workers == 1:
-        neutral_results = [neutral_task(value) for value in range(neutral_replicates)]
+        neutral_results = [
+            neutral_task(_prepare_neutral_input(task)) for task in neutral_tasks
+        ]
     else:
-        with ThreadPoolExecutor(max_workers=min(workers, neutral_replicates)) as executor:
-            neutral_results = list(executor.map(neutral_task, range(neutral_replicates)))
+        worker_count = min(workers, neutral_replicates)
+        neutral_results = []
+        with (
+            ProcessPoolExecutor(max_workers=worker_count) as simulation_executor,
+            ThreadPoolExecutor(max_workers=worker_count) as decoder_executor,
+        ):
+            for batch_start in range(0, neutral_replicates, worker_count):
+                batch = neutral_tasks[batch_start : batch_start + worker_count]
+                prepared = list(
+                    simulation_executor.map(_prepare_neutral_input, batch)
+                )
+                neutral_results.extend(
+                    decoder_executor.map(neutral_task, prepared)
+                )
     neutral_by_call = {
         call_rule: pd.concat(
             [result[0][call_rule] for result in neutral_results],
@@ -979,6 +1016,13 @@ def _run_stride_study(
         "within_individual_pairs": design["sample_diploids"],
         "neutral_replicates": int(neutral_replicates),
         "neutral_workers": int(min(workers, neutral_replicates)),
+        "neutral_preparation_executor": (
+            "serial" if workers == 1 else "process_pool_batched"
+        ),
+        "neutral_decode_executor": (
+            "serial" if workers == 1 else "thread_pool_batched"
+        ),
+        "neutral_batch_size": int(min(workers, neutral_replicates)),
         "observed_output_positions": int(len(observed)),
         "calibrated_complete_positions": int(len(scan)),
         "dropped_incomplete_null_positions": int(len(observed) - len(scan)),

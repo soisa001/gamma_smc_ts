@@ -1,0 +1,5 @@
+configuration	mutation_rate	retained_sites_selected	stride_bp	center_truth_fraction_recent	center_selected_mean_p_recent	center_null_mean_p_recent	center_null_ci95_lower	center_null_ci95_upper	center_neutral_exceedances	center_monte_carlo_p_upper	derived_by_downsampling_1kb
+low_mu_stride1kb	1.29e-09	5483	1000	0.098	2.340454921e-05	6.24609672524e-05	1.9253057988500002e-05	0.0001632782213349998	90.0	0.900990099009901	False
+low_mu_stride10kb	1.29e-09	5483	10000	0.098	2.72040768e-05	6.595222898340001e-05	2.117906721275e-05	0.00016629596865249972	89.0	0.8910891089108911	False
+high_mu_stride1kb	1.25e-08	53528	1000	0.098	0.07175696207	0.021937520513900008	0.01478478340575	0.03198567812675	0.0	0.009900990099009901	False
+high_mu_stride10kb_selected_only	1.25e-08	53528	10000	0.098	0.07184463826						False

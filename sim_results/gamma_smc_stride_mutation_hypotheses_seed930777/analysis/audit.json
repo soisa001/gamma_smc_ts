@@ -1,0 +1,35 @@
+{
+  "status": "pass",
+  "low_mu_1kb": {
+    "selected_rows": 10000,
+    "neutral_rows": 1000000,
+    "neutral_replicates": 100,
+    "rows_per_neutral_replicate": 10000,
+    "center_selected": 2.340454921e-05,
+    "center_null_mean": 6.24609672524e-05,
+    "center_null_exceedances_recalculated": 90,
+    "center_p_recalculated": 0.900990099009901
+  },
+  "high_mu_1kb": {
+    "selected_rows": 10000,
+    "neutral_rows": 1000000,
+    "neutral_replicates": 100,
+    "rows_per_neutral_replicate": 10000,
+    "center_selected": 0.07175696207,
+    "center_null_mean": 0.021937520513900008,
+    "center_null_exceedances_recalculated": 0,
+    "center_p_recalculated": 0.009900990099009901
+  },
+  "carrier_weighted_centers": {
+    "low_mu_10kb": 2.7204076970505005e-05,
+    "high_mu_10kb": 0.071844638296265,
+    "matches_all_pair_profiles": true
+  },
+  "tree_sequence": {
+    "mutation_free_table_collections_equal": true,
+    "trees": 39515,
+    "samples": 4000,
+    "low_mu_sites": 5483,
+    "high_mu_sites": 53528
+  }
+}
