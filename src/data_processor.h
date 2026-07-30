@@ -76,7 +76,9 @@ class DataProcessor {
         position_t n_pos = -1;
         _seq_length = 0;
 
-        position_t last = _sites.pos.back();
+        const position_t last = _sites.sequence_length > 0
+            ? _sites.sequence_length - 1
+            : _sites.pos.back();
         position_t jump_to_pos;
         position_t next_output = 0;
         long next_site_index = 0;
@@ -84,8 +86,9 @@ class DataProcessor {
         _segment_index_of_site.assign((size_t) _sites.size(), -1);
 
         while (n_pos < last) {
-            jump_to_pos = _sites.pos[next_site_index];
-            if (_output_at_every) {
+            const bool has_next_site = next_site_index < _sites.size();
+            jump_to_pos = has_next_site ? _sites.pos[next_site_index] : last;
+            if (_output_at_every && next_output <= last) {
                 jump_to_pos = std::min(jump_to_pos, next_output);
             }
 
@@ -104,10 +107,12 @@ class DataProcessor {
                 prev_to_output = false;
             }
 
-            // output only if: (i) we output hets; or (ii) it's an output site
-            to_output = (_output_at_every && (jump_to_pos == next_output)) || _output_at_hets;
-
-            const bool ends_at_site = (jump_to_pos == _sites.pos[next_site_index]);
+            const bool ends_at_site =
+                has_next_site && (jump_to_pos == _sites.pos[next_site_index]);
+            // Heterozygous-site output applies only to actual sites; the
+            // synthetic invariant tail exists solely to reach stride points.
+            to_output = (_output_at_every && (jump_to_pos == next_output))
+                || (_output_at_hets && ends_at_site);
 
             // Now we can jump
             _segments.push_back({

@@ -12,6 +12,14 @@ import pandas as pd
 import zstandard
 from scipy.special import gammainc
 
+from .defaults import (
+    DEFAULT_GENERATION_TIME,
+    DEFAULT_MUTATION_RATE,
+    DEFAULT_OUTPUT_STRIDE,
+    DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    DEFAULT_SCALED_MUTATION_RATE,
+)
+
 
 DEFAULT_IMAGE = "docker.io/regevsch/gamma_smc:v0.2"
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
@@ -167,12 +175,12 @@ def run_container_decoder(
     input_path: str | Path,
     output_summary: str | Path,
     *,
-    scaled_mutation_rate: float = 0.00075,
-    recombination_to_mutation_ratio: float = 0.8,
-    mutation_rate: float = 1.25e-8,
+    scaled_mutation_rate: float = DEFAULT_SCALED_MUTATION_RATE,
+    recombination_to_mutation_ratio: float = DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    mutation_rate: float = DEFAULT_MUTATION_RATE,
     threshold_years: float = 4500,
-    generation_time: float = 25,
-    stride: int = 1000,
+    generation_time: float = DEFAULT_GENERATION_TIME,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
     runtime: str = "auto",
     image: str = DEFAULT_IMAGE,
     keep_raw: bool = False,

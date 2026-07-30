@@ -107,17 +107,20 @@ def test_generation_time_defaults_to_25_everywhere():
     expected = [
         ("src/gamma_smc.cpp", '("generation_time", "Generation time in years", '
                               'cxxopts::value<double>()->default_value("25"))'),
-        ("python/gamma_smc_aou/decoder.py", "generation_time: float = 25,"),
-        ("python/gamma_smc_aou/simulation.py", "generation_time: float = 25"),
-        ("python/gamma_smc_aou/container_decoder.py", "generation_time: float = 25,"),
+        ("python/gamma_smc_aou/decoder.py",
+         "generation_time: float = DEFAULT_GENERATION_TIME,"),
+        ("python/gamma_smc_aou/simulation.py",
+         "generation_time: float = DEFAULT_GENERATION_TIME"),
+        ("python/gamma_smc_aou/container_decoder.py",
+         "generation_time: float = DEFAULT_GENERATION_TIME,"),
     ]
     for relative, needle in expected:
         assert needle in (ROOT / relative).read_text(), relative
 
     cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
-    defaults = re.findall(r'"--generation-time", type=float, default=(\d+)', cli)
-    assert defaults, "the generation-time arguments moved; this check went blind"
-    assert set(defaults) == {"25"}, defaults
+    assert cli.count("default=DEFAULT_GENERATION_TIME") >= 5
+    defaults = (ROOT / "python" / "gamma_smc_aou" / "defaults.py").read_text()
+    assert "DEFAULT_GENERATION_TIME = 25" in defaults
 
 
 def test_reference_rates_are_the_defaults_everywhere():
@@ -128,7 +131,7 @@ def test_reference_rates_are_the_defaults_everywhere():
     source = (ROOT / "src" / "gamma_smc.cpp").read_text()
     assert "const float default_scaled_mutation_rate = 0.00075f;" in source
     assert "const float default_scaled_recombination_rate = 0.0006f;" in source
-    assert "const double default_unscaled_mutation_rate = 1.25e-8;" in source
+    assert "const double default_unscaled_mutation_rate = 1.29e-9;" in source
     # rho/theta must stay self-consistent with the ratio the wrappers pass.
     assert abs(0.0006 / 0.00075 - 0.8) < 1e-12
 
@@ -142,27 +145,42 @@ def test_reference_rates_are_the_defaults_everywhere():
         assert "default_value" not in line, option
 
     decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()
-    assert "scaled_mutation_rate: float = 0.00075," in decoder
-    assert "recombination_to_mutation_ratio: float = 0.8," in decoder
-    assert "mutation_rate: float = 1.25e-8," in decoder
+    assert "scaled_mutation_rate: float = DEFAULT_SCALED_MUTATION_RATE," in decoder
+    assert (
+        "recombination_to_mutation_ratio: float = "
+        "DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,"
+    ) in decoder
+    assert "mutation_rate: float = DEFAULT_MUTATION_RATE," in decoder
+    defaults = (ROOT / "python" / "gamma_smc_aou" / "defaults.py").read_text()
+    assert "DEFAULT_MUTATION_RATE = 1.29e-9" in defaults
 
     cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
     assert '"--theta", type=float, required=True' not in cli
     assert '"--mutation-rate", type=float, required=True' not in cli
 
 
-def test_stride_defaults_to_100kb_and_hets_are_off():
-    # 100 kb is the region size the paper scans. A stride default only means
+def test_stride_defaults_to_10kb_and_hets_are_off():
+    # 10 kb is the requested Workbench scan resolution. A stride default only means
     # anything if per-segregating-site output stops being the default too --
     # otherwise a bare run still emits ~1M positions per chromosome.
     source = (ROOT / "src" / "gamma_smc.cpp").read_text()
-    assert 'default_value("100000")' in source
+    assert 'default_value("10000")' in source
     assert 'if (vm.count("output_at_hets") == 0) {' in source
     assert "output_at_hets = false;" in source
 
     decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()
-    assert "output_at_stride: int = 100_000," in decoder
+    assert "output_at_stride: int = DEFAULT_OUTPUT_STRIDE," in decoder
     assert "output_at_hets: bool = False," in decoder
 
-    # theta / (2 mu) must land on the paper's effective size.
-    assert abs(0.00075 / (2 * 1.25e-8) - 30_000) < 1e-6      # 2Ne
+    defaults = (ROOT / "python" / "gamma_smc_aou" / "defaults.py").read_text()
+    assert "DEFAULT_OUTPUT_STRIDE = 10_000" in defaults
+
+    # The requested physical mutation rate fixes the time-axis conversion.
+    assert abs(0.00075 / (2 * 1.29e-9) - 290_697.67441860464) < 1e-6
+
+
+def test_cache_memory_estimate_scales_with_cache_size():
+    source = (ROOT / "src" / "gamma_smc.cpp").read_text()
+    assert "cache_steady_bytes" in source
+    assert "cache_build_scratch_bytes" in source
+    assert "489.6e6" not in source

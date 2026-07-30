@@ -3,18 +3,18 @@
 ## Scope and statistic
 
 This branch implements the reduced scan requested for a large phased panel. For
-each diploid, Gamma-SMC decodes only its two homologous haplotypes. At every
-biallelic segregating SNP in the input VCF, the streaming summary reports
+each diploid, Gamma-SMC decodes only its two homologous haplotypes. At the
+default 10 kb grid (and optionally at biallelic segregating SNPs), the streaming
+summary reports
 
 `mean_p_tmrca_lt_threshold = mean_i P(T_i < threshold | sequence data)`.
 
 The default threshold is 4,500 years, which is 180 generations at the default
 25 years/generation.
 The Gamma posterior CDF is used, not a hard threshold of posterior mean TMRCA.
-The summary also contains mean posterior TMRCA in generations. It has one row
-per retained VCF segregating site and does not create a dense base-pair or 200 bp
-grid. Indels and SVs are intentionally excluded from inference and can be joined
-back by genomic position after candidate loci are defined.
+The summary also contains mean posterior TMRCA in generations. Indels and SVs
+are intentionally excluded from inference and can be joined back by genomic
+position after candidate loci are defined.
 
 ## Install and test
 
@@ -47,35 +47,46 @@ attempted on a byte stream.
 
 Run one pair for every diploid. `theta` is the Gamma-SMC scaled mutation rate;
 `mu` is needed to convert its coalescent time scale back to generations.
+The requested defaults are `theta=0.00075` and `mu=1.29e-9`, which imply
+`2Ne = theta/(2*mu) = 290,698` generations. Confirm that time scale for the
+empirical analysis; the matched simulation study instead derives theta as
+`4*Ne*mu`, so its decoder and simulation are internally consistent.
 
 ```bash
 gamma-smc-aou decode \
   --executable bin/gamma_smc \
   --input AFR.phased.bcf --input-format vcf \
   --output AFR.within.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+  --no-output-at-hets --output-at-stride 10000
 ```
 
-The input contract is diploid, phased, biallelic SNP data. Missing alleles are
-handled as missing emissions. Unphased heterozygotes fail by default. Use a BED
-mask through `--mask`, or per-sample BED files through `--masks-per-sample`.
-Use exactly the same callable-region rule for empirical and simulated decoding.
+The input contract is one contig of diploid, phased, biallelic SNP data.
+Multi-contig files are rejected. Include the contig length in the VCF/BCF
+header so the 10 kb grid covers the invariant tail after the final variant.
+Missing alleles are handled as missing emissions. Unphased heterozygotes fail
+by default. Use a BED mask through `--mask`, or per-sample BED files through
+`--masks-per-sample`. BED comments and track/browser lines are skipped; records
+are filtered to the input contig, and a contig-name mismatch fails instead of
+silently applying another chromosome's coordinates. Relative per-sample BED
+paths resolve from the mask-manifest directory. Use exactly the same
+callable-region rule for empirical and simulated decoding.
 
 Raw alpha/beta output is optional (`--raw-output`). Omitting it is important at
-AoU scale: only five aggregate columns per segregating site are written.
+AoU scale: only the aggregate summary columns are written.
 
-### Official v0.2 container at 1 kb resolution
+### Official v0.2 container at 10 kb resolution
 
 The locked uv application also wraps the upstream
 `docker.io/regevsch/gamma_smc:v0.2` image. It auto-detects Apptainer,
 Singularity, or Docker, requests within-individual pairs only, disables output
-at every heterozygous site, and uses `--output_at_stride 1000`:
+at every heterozygous site, and uses `--output_at_stride 10000`:
 
 ```bash
 scripts/aou.sh decode-container \
-  --input AFR.phased.vcf.gz --output AFR.within.stride1000.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
-  --generation-time 25 --threshold-years 4500 --output-at-stride 1000
+  --input AFR.phased.vcf.gz --output AFR.within.stride10000.tsv \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+  --generation-time 25 --threshold-years 4500 --output-at-stride 10000
 ```
 
 The postprocessor reads one Gamma-SMC pair chunk at a time, evaluates the Gamma
@@ -89,13 +100,42 @@ pointwise Monte Carlo p-values, breakpoints, plots, runtime, and truth error) is
 ```bash
 scripts/aou.sh run-container-study \
   --source-dir sim_results/two_epoch_growth_s0p05_n2000 \
-  --output-dir sim_results/gamma_smc_container_stride1000 \
-  --neutral-replicates 100 --output-at-stride 1000 --workers 4
+  --output-dir sim_results/gamma_smc_container_stride10000 \
+  --neutral-replicates 100 --output-at-stride 10000 --workers 4
 ```
 
 The GitHub Actions workflow `Gamma-SMC container stride study` exposes the null
 count and stride as manual inputs for machines without a local Linux container
 runtime.
+
+For the optimized native decoder, first materialize the retained high-frequency
+selected replicate.  `--selected-attempt 2514` reproduces and validates the
+seed-ordered replicate accepted by the earlier study without recomputing all
+2,515 screening trajectories:
+
+```bash
+scripts/aou.sh prepare-high-af-selected \
+  --null-truth-dir sim_results/two_epoch_growth_s0p05_n2000_mu1p29e9 \
+  --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
+  --selected-attempt 2514 --output-at-stride 10000
+```
+
+Then use that prepared directory as the native study's source.  Pointing the
+study directly at the neutral-truth directory would decode its lower-frequency
+selected replicate instead:
+
+```bash
+scripts/aou.sh run-native-study \
+  --source-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
+  --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
+  --executable bin/gamma_smc \
+  --neutral-replicates 100 --output-at-stride 10000 \
+  --cache-size 1000 --threads 1 --workers 4
+```
+
+`workers * threads` is the maximum decoder concurrency; avoid oversubscribing
+the Workbench VM. Each selected/null profile records its exact command and
+decode time.
 
 ## 1b. Whole-genome scan over ~100,000 sampled haplotype pairs
 
@@ -110,9 +150,9 @@ for chrom in $(seq 1 22); do
     --input AFR.chr${chrom}.phased.bcf --input-format vcf \
     --output scan/chr${chrom}.tsv \
     --bitmatrix scan/chr${chrom}.bits \
-    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
+    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
     --generation-time 25 --threshold-years 4500 10000 \
-    --no-output-at-hets --output-at-stride 1000 \
+    --no-output-at-hets --output-at-stride 10000 \
     --n-random-pairs 100000 --pairs-seed 1729 \
     --threads 32 --mask callable.chr${chrom}.bed
 done
@@ -127,7 +167,7 @@ what you want if every chromosome must use the same pairs.
 
 **Set `--no-output-at-hets`.** With output at every segregating site, a large
 panel produces millions of output positions and the per-thread posterior buffers
-grow with it; at stride 1000 chr1 has ~249,000 columns instead of ~3,000,000.
+grow with it; at stride 10,000 chr1 has ~25,000 columns instead of ~3,000,000.
 
 ### Per-position summary
 
@@ -176,7 +216,7 @@ the clipping, not by the data.
 Every random draw is written out literally, to a manifest next to the summary:
 
 ```
-chr1.stride1000.tsv.pairs.tsv
+chr1.stride10000.tsv.pairs.tsv
 ```
 
 No flag is needed — it is derived from the output path whenever
@@ -209,7 +249,7 @@ manifest is a valid `--pairs-file` with no conversion — decode chr1, then hold
 the pair set fixed across the other 21 chromosomes:
 
 ```bash
-scripts/aou.sh decode --input chr2.vcf.gz --output chr2.tsv --pairs-file chr1.tsv.pairs.tsv --no-output-at-hets --output-at-stride 1000 --threads 0
+scripts/aou.sh decode --input chr2.vcf.gz --output chr2.tsv --pairs-file chr1.tsv.pairs.tsv --no-output-at-hets --output-at-stride 10000 --threads 0
 ```
 
 **Why not just keep the seed.** The draw is reproducible from `--pairs-seed`,
@@ -233,7 +273,8 @@ Error: --pairs_file chr1.tsv.pairs.tsv was drawn against a different panel.
 
 Range validation alone would not catch this: the indices usually remain inside
 the new panel's range, so the run would look perfectly healthy. `pairs_digest`
-covers the pair list itself, for checking a manifest has not been edited.
+and `n_pairs` are also checked against the literal rows, so a truncated or
+edited manifest is refused before decoding.
 
 The bit-matrix `.meta` also carries the full `pairs` array and `sample_names`,
 so a bit matrix stays interpretable on its own; the manifest is the portable,
@@ -241,9 +282,9 @@ reusable form.
 
 ### Bit matrix
 
-`--bitmatrix` writes one bit per (pair, position, threshold): ~6 GB per
-chromosome before compression for 100,000 pairs at stride 1000 with two
-thresholds, against ~200 GB for the equivalent raw alpha/beta. It is a
+`--bitmatrix` writes one bit per (pair, position, threshold): ~0.6 GiB for
+human chr1 before compression for 100,000 pairs at the 10 kb stride with two
+thresholds, against ~19 GiB for the equivalent raw alpha/beta. It is a
 concatenation of independent zstd frames indexed by a `.meta` sidecar, so a
 subset of pairs can be read without touching the rest of the file.
 
@@ -266,9 +307,11 @@ The decode is parallel over blocks of pairs; `--threads 0` uses every core.
 `--pair-block` sets how many pairs each work unit covers (default 256) and is
 also the bit-matrix frame size. Per-thread scratch is roughly
 `2 x n_positions x 8 x 4` bytes of posteriors plus `n_segments x 8` bytes of
-emission types; the genotype matrix, the callability bitmap and the 490 MB
-flow-field cache are shared. The decoder prints its own estimate before starting
-and warns when `--output-at-hets` would blow it up.
+emission types; the genotype matrix, the callability bitmap and the flow-field
+cache are shared. At the 1 kb cache default, the steady cache is about 490 MB
+and construction needs about 122 MB of temporary storage. Both scale linearly
+with `--cache_size`. The decoder prints the values from the actual flow-field
+grid before starting and warns when `--output-at-hets` would blow it up.
 
 ### Measured
 
@@ -379,7 +422,12 @@ write than the forward pass whenever the final segment is itself an output
 position; every backward message is then paired with the forward message one
 output position to its right, and position 0 receives none at all.
 
-Whether that is reachable depends on the output mode, and this matters for
+The bullets and measurements below describe the historical pre-tail-fix
+benchmark. The current decoder extends segments to the declared contig end and
+emits heterozygous-site output only at real sites, so the final segment is
+normally not an output position in either mode.
+
+Whether that was reachable depended on the output mode, and this matters for
 interpreting old results:
 
 - **`--output-at-hets`** — every segment ending at a segregating site is an
@@ -394,7 +442,7 @@ Leaving the final position with only a forward contribution is correct, not a
 gap: the backward message there is the Exp(1) prior, and the
 `alpha_f + alpha_b − 1` convention makes adding it a no-op.
 
-**Measured effect of each correction**, on the benchmark panel, each against
+**Historical measured effect of each correction**, on the benchmark panel, each against
 upstream numerics with everything else held fixed:
 
 | correction | mode | `mean_p` max abs | `n_recent_4500` |
@@ -435,7 +483,7 @@ Only three things, since the rates now have reference defaults:
 | `--generation_time` | `25` | 4500 years = 180 generations |
 | `--scaled_mutation_rate` / `-m` | `0.00075` | the paper's value; fixed, not per-file |
 | `--scaled_recombination_rate` / `-r` | `0.0006` | rho/theta = 0.8 |
-| `--unscaled_mutation_rate` | `1.25e-8` | with theta gives 2Ne = 30,000, Ne = 15,000 |
+| `--unscaled_mutation_rate` | `1.29e-9` | requested project default; with theta 0.00075 gives 2Ne = 290,698 generations |
 | `--estimate_mutation_rate` | off | estimating theta rescales the time axis per file |
 | `--recent_call` | `median` | `median`, `mean`, or `prob` |
 | `--recent_call_probability` | `0.5` | only read by `--recent_call prob` |
@@ -450,9 +498,9 @@ Only three things, since the rates now have reference defaults:
 | `--allow_panel_mismatch` | off | downgrades the panel-digest check to a warning |
 | `--samples` / `-S`, `--samples_against` / `-T` | — | |
 | `--output_at_hets` / `-h` | **off unless given** | ~1M positions/chr when on |
-| `--output_at_stride` / `-s` | `100000` | the paper's region size; `-1` disables |
+| `--output_at_stride` / `-s` | `10000` | 10 kb; `-1` disables when heterozygous-site output is on |
 | `--mask` / `-a`, `--masks_per_sample` / `-b` | — | mutually exclusive |
-| `--cache_size` / `-z` | `1000` bp | no gain above the typical inter-SNP distance |
+| `--cache_size` / `-z` | `1000` bp | validated; larger values were slower and used more memory |
 | `--threads` / `-j` | `0` (all cores) | |
 | `--pair_block` | `256` | pairs per work unit and per bit-matrix frame |
 | `--exp10` | `accurate` | `fast` reproduces upstream |
@@ -490,21 +538,23 @@ Not flags; change them in the source and rebuild.
 | P(T<t) table | 1024 x 1024, 4.0 MB | alpha-coord `[-2,16]`, v `[-8,8]` |
 | table accuracy | 4.9e-5 max abs vs Boost | asserted in CI |
 
-### Three defaults that bite
+### Defaults and scale checks
 
 **Pair selection defaults to exhaustive.** With no selector the binary builds
 every O(n^2) haplotype pair, which at panel scale allocates before it fails.
 Always pass one of `--n_random_pairs`, `--only_within`, `--pairs_file`. The
 Python wrapper refuses instead of defaulting.
 
-**Output defaults to every segregating site.** `--output_at_hets` is `true` and
-the stride is off, so a whole-genome run without
-`--output_at_hets=false --output_at_stride 1000` emits roughly 1M positions per
-chromosome rather than 250k, and the bit matrix grows with it.
+**Output defaults to a 10 kb grid.** `--output_at_hets` is off unless explicitly
+given. Enabling it at panel scale adds millions of output positions and grows
+the per-thread buffers and bit matrix accordingly.
 
 **`--cache_size` interacts with the stride.** It bounds how far the decoder can
-skip in one step; there is no benefit above the typical distance between
-segregating sites, and raising it enlarges the flow-field cache.
+skip in one step. The measured 10 kb-stride benchmark found no decode speedup
+above 1 kb, while cache memory and startup time rose nearly linearly. A 500 bp
+cache changed a small number of calls. Keep the 1 kb default and hold it fixed
+between observed data and nulls; see
+[`sim_results/gamma_smc_cache_size_stride10000`](sim_results/gamma_smc_cache_size_stride10000).
 
 ## 2. Neutral simulations
 
@@ -514,7 +564,7 @@ not used. A constant demography is the baseline:
 ```bash
 gamma-smc-aou simulate --output-dir sims/AFR/region_001 \
   --replicates 1000 --diploids 2000 --length 1000000 \
-  --ne 10000 --mutation-rate 1.25e-8 --recombination-rate 1e-8 \
+  --ne 10000 --mutation-rate 1.29e-9 --recombination-rate 1e-8 \
   --save-trees --seed 1729 --workers 20
 ```
 

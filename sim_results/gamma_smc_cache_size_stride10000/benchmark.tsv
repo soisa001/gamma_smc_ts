@@ -1,0 +1,5 @@
+cache_size_bp	segments	cache_build_seconds	decode_wall_seconds	decoder_overall_seconds	elapsed_seconds	peak_rss_gb	speed_relative_to_1000bp	peak_rss_delta_vs_1000bp_gb
+500	58183	2.58	2.954	9.762	9.81	0.324	1.3476	-0.285
+1000	54474	5.28	3.440	13.181	13.22	0.609	1.0000	0.000
+2000	54181	10.60	3.937	18.615	18.75	1.179	0.7051	0.570
+5000	54178	26.50	3.436	34.113	34.35	2.889	0.3849	2.280

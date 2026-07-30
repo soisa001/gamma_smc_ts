@@ -13,7 +13,7 @@ $aou = Join-Path $PSScriptRoot "aou.ps1"
 & $aou simulate `
     --output-dir (Join-Path $repo $OutputDir) `
     --replicates $Replicates --diploids $Diploids --length $Length `
-    --ne 10000 --mutation-rate 1.25e-8 --recombination-rate 1e-8 --seed 1729 --workers $Workers
+    --ne 10000 --mutation-rate 1.29e-9 --recombination-rate 1e-8 --seed 1729 --workers $Workers
 
 & $aou validate-null `
     --sim-glob "$repo/$OutputDir/truth_summaries/*.tsv" `

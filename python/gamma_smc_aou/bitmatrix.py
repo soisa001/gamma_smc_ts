@@ -2,7 +2,8 @@
 
 The decoder writes one bit per (haplotype pair, output position, time
 threshold): set when that pair's posterior TMRCA is called below the threshold.
-At 100,000 pairs and stride 1000 that is ~3 GB per chromosome per threshold,
+At 100,000 pairs and the 10 kb default stride that is ~0.4 GB per chromosome
+per threshold,
 against ~200 GB for the raw alpha/beta posteriors the same run would produce.
 
 FILE LAYOUT

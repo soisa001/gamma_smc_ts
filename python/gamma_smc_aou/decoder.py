@@ -4,6 +4,16 @@ import json
 import subprocess
 from collections.abc import Sequence
 from pathlib import Path
+from time import perf_counter
+
+from .defaults import (
+    DEFAULT_CACHE_SIZE,
+    DEFAULT_GENERATION_TIME,
+    DEFAULT_MUTATION_RATE,
+    DEFAULT_OUTPUT_STRIDE,
+    DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    DEFAULT_SCALED_MUTATION_RATE,
+)
 
 
 def run_within_decoder(
@@ -11,17 +21,17 @@ def run_within_decoder(
     input_path: str | Path,
     output_summary: str | Path,
     *,
-    scaled_mutation_rate: float = 0.00075,
-    recombination_to_mutation_ratio: float = 0.8,
-    mutation_rate: float = 1.25e-8,
+    scaled_mutation_rate: float = DEFAULT_SCALED_MUTATION_RATE,
+    recombination_to_mutation_ratio: float = DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    mutation_rate: float = DEFAULT_MUTATION_RATE,
     threshold_years: float | Sequence[float] = 4500,
-    generation_time: float = 25,
+    generation_time: float = DEFAULT_GENERATION_TIME,
     input_format: str = "auto",
     raw_output: str | Path | None = None,
     bitmatrix_output: str | Path | None = None,
     mask: str | Path | None = None,
     masks_per_sample: str | Path | None = None,
-    output_at_stride: int = 100_000,
+    output_at_stride: int = DEFAULT_OUTPUT_STRIDE,
     output_at_hets: bool = False,
     only_within: bool = True,
     n_random_pairs: int = 0,
@@ -32,6 +42,7 @@ def run_within_decoder(
     recent_call: str = "median",
     recent_call_probability: float = 0.5,
     threads: int = 0,
+    cache_size: int = DEFAULT_CACHE_SIZE,
     pair_block: int = 256,
     exp10: str = "accurate",
     backward_alignment: str = "fixed",
@@ -79,8 +90,12 @@ def run_within_decoder(
         "--recent_summary", str(output_summary),
         "--recent_call", recent_call,
         "--recent_call_probability", str(recent_call_probability),
-        "--output_at_hets", str(output_at_hets).lower(),
+        # cxxopts boolean options use an implicit ``true`` value when the flag
+        # is a standalone token.  Keep the value attached so ``false`` is not
+        # misread as an unused positional argument.
+        f"--output_at_hets={str(output_at_hets).lower()}",
         "--output_at_stride", str(output_at_stride),
+        "--cache_size", str(cache_size),
         "--threads", str(threads),
         "--pair_block", str(pair_block),
         "--backward_alignment", backward_alignment,
@@ -109,7 +124,11 @@ def run_within_decoder(
     if extra_args:
         command.extend(str(value) for value in extra_args)
 
+    started = perf_counter()
     completed = subprocess.run(command, check=True, text=True, capture_output=True)
+    decode_seconds = perf_counter() - started
+    with output_summary.open(encoding="utf-8") as handle:
+        n_output_positions = max(0, sum(1 for _ in handle) - 1)
 
     # Record where the draw was written. Without an explicit --pairs_manifest
     # the binary derives one next to the output whenever it sampled at random,
@@ -124,6 +143,10 @@ def run_within_decoder(
         "command": command,
         "stdout": completed.stdout,
         "stderr": completed.stderr,
+        "decode_seconds": float(decode_seconds),
+        "stride_bp": int(output_at_stride),
+        "cache_size_bp": int(cache_size),
+        "n_output_positions": int(n_output_positions),
         "pairs_manifest": str(manifest) if manifest is not None else None,
         "n_pairs_recorded": (
             sum(

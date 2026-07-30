@@ -81,6 +81,8 @@ struct SiteMatrix {
     long n_sites = 0;
     int n_haplotypes = 0;
     long words_per_site = 0;               // ceil(n_haplotypes / 64)
+    position_t sequence_length = 0;         // bases, from the VCF contig header
+    string contig_name;
 
     vector<position_t> pos;                // n_sites
     vector<vector<uint64_t>> alt_blocks;   // bit set = ALT allele
@@ -94,6 +96,8 @@ struct SiteMatrix {
         n_haplotypes = n_haplotypes_;
         words_per_site = (n_haplotypes_ + 63) / 64;
         n_sites = 0;
+        sequence_length = 0;
+        contig_name.clear();
         pos.clear();
         alt_blocks.clear();
         missing_row.clear();

@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         ("recent_call_probability", "Probability used by --recent_call prob", cxxopts::value<double>()->default_value("0.5"))
         ("no_recent_probability", "Skip the across-pair mean of P(T<t); counts only")
         ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("25"))
-        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.25e-8)", cxxopts::value<double>())
+        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.29e-9)", cxxopts::value<double>())
         ("m,scaled_mutation_rate", "Scaled mutation rate (default 0.00075)", cxxopts::value<float>())
         ("estimate_mutation_rate", "Estimate the scaled mutation rate from data heterozygosity instead of using the fixed default")
         ("r,scaled_recombination_rate", "Scaled recombination rate (default 0.0006)", cxxopts::value<float>())
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
         ("exclude_within", "Exclude within-individual pairs when sampling at random")
         ("pairs_manifest", "Write the decoded pair list here; reusable as --pairs_file. Written automatically next to the output when --n_random_pairs is used", cxxopts::value<std::string>())
         ("allow_panel_mismatch", "Downgrade the --pairs_file panel-digest check to a warning")
-        ("s,output_at_stride", "Output at positions which are multiples of this number (default 100000; -1 disables)", cxxopts::value<int>()->default_value("100000"))
+        ("s,output_at_stride", "Output at positions which are multiples of this number (default 10000; -1 disables)", cxxopts::value<int>()->default_value("10000"))
         ("h,output_at_hets", "Output at segregating sites as well as at the stride (off unless given explicitly)", cxxopts::value<bool>()->default_value("true"))
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
         ("j,threads", "Worker threads (0 = all available)", cxxopts::value<int>()->default_value("0"))
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
     // Check for --help or --version here, before notify
     if (vm.count("help")) {
         std::cout << options.help() << "\n";
-        exit(-1);
+        return 0;
     }
 
     //
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     // default_value, otherwise presence checks below cannot tell the two apart.
     const float default_scaled_mutation_rate = 0.00075f;
     const float default_scaled_recombination_rate = 0.0006f;
-    const double default_unscaled_mutation_rate = 1.25e-8;
+    const double default_unscaled_mutation_rate = 1.29e-9;
 
     const bool estimate_mutation_rate = (vm.count("estimate_mutation_rate") > 0);
     if (estimate_mutation_rate && vm.count("scaled_mutation_rate")) {
@@ -330,9 +330,13 @@ int main(int argc, char** argv) {
     }
 
     int output_at_stride = vm["output_at_stride"].as<int>();
+    if (output_at_stride == 0 || output_at_stride < -1) {
+        cout << "Error: --output_at_stride must be positive or -1 to disable it.\n";
+        exit(-1);
+    }
 
     // Stride-only unless --output_at_hets is given. Segregating-site output is
-    // ~1M positions per chromosome, which would swamp the 100 kb stride default
+    // ~1M positions per chromosome, which would swamp the 10 kb stride default
     // and the bit matrix with it. cxxopts count() is 0 when the value came from
     // default_value, so this distinguishes "not mentioned" from "asked for".
     bool output_at_hets = vm["output_at_hets"].as<bool>();
@@ -340,7 +344,9 @@ int main(int argc, char** argv) {
         output_at_hets = false;
     }
     if (!output_at_hets && (output_at_stride == -1)) {
-        cout << "Warning: No output flags provided.\n";
+        cout << "Error: --output_at_hets=false with --output_at_stride=-1 "
+                "selects no output positions.\n";
+        exit(-1);
     }
 
     bool only_forward = (vm.count("only_forward") > 0);
@@ -407,6 +413,11 @@ int main(int argc, char** argv) {
     screen.print_item(boost::str(boost::format("Read %d samples.") % sample_names.size()));
     screen.print_item(boost::str(boost::format("Read %d segregating sites.") % input_sites.size()));
     screen.print_item(boost::str(
+        boost::format("Contig %s: %ld bp.")
+        % (input_sites.contig_name.empty() ? string("(unnamed)") : input_sites.contig_name)
+        % input_sites.sequence_length
+    ));
+    screen.print_item(boost::str(
         boost::format("Genotype matrix: %.3f GB (bit-packed).") % (input_sites.bytes() / 1073741824.0)
     ));
     if (input_sites.empty()) {
@@ -422,15 +433,24 @@ int main(int argc, char** argv) {
 
     vector<pair<int, int>> global_mask;
     if (vm.count("mask")) {
-        readMask(mask_filename, global_mask);
+        readMask(mask_filename, global_mask, input_sites.contig_name);
     } else {
         // If no global mask is given, assume no mask
-        global_mask.push_back(make_pair(0, input_sites.pos.back()+1));
+        if (input_sites.sequence_length > std::numeric_limits<int>::max()) {
+            cout << "Error: contig length exceeds the current mask-coordinate limit.\n";
+            exit(-1);
+        }
+        global_mask.push_back(make_pair(0, (int) input_sites.sequence_length));
     }
 
     unordered_map<string, vector<pair<int, int>>> mask_map;
     if (vm.count("masks_per_sample")) {
-        readMasks(masks_per_sample_filename, mask_map, sample_names);
+        readMasks(
+            masks_per_sample_filename,
+            mask_map,
+            sample_names,
+            input_sites.contig_name
+        );
         if (mask_map.size() != sample_names.size()) {
             cout << boost::format("Error: Expected one mask for each of %d samples, but read %d.\n")
                     % sample_names.size() % mask_map.size();
@@ -504,13 +524,20 @@ int main(int argc, char** argv) {
         // Indices in a pairs file only mean something relative to the sample
         // order they were drawn against, so check that first.
         pair_mode = "file";
+        const PairManifestHeader pair_manifest =
+            read_pair_manifest_header(pairs_filename);
         verify_pair_manifest(
-            read_pair_manifest_header(pairs_filename),
+            pair_manifest,
             sample_names,
             pairs_filename,
             vm.count("allow_panel_mismatch") > 0
         );
         read_pairs_file(pairs_filename, n_haplotypes, haplotype_pairs);
+        verify_pair_manifest_pairs(
+            pair_manifest,
+            haplotype_pairs,
+            pairs_filename
+        );
     } else if (vm.count("only_within")) {
         pair_mode = "only_within";
         for (uint i = 0; i < n_samples; i++) {
@@ -592,6 +619,46 @@ int main(int argc, char** argv) {
     ));
 
     //
+    // Load the flow field before estimating memory: cache memory is linear in
+    // both the actual grid size and --cache_size.
+    //
+    vector<float> mean_grid_def;
+    vector<float> cv_grid_def;
+    vector<float> flow_field_unravelled;
+
+    if (vm.count("flow_field")) {
+        read_flow_field_raw(
+            flow_field_filename,
+            mean_grid_def,
+            cv_grid_def,
+            flow_field_unravelled
+        );
+    } else {
+        read_flow_field_default(
+            mean_grid_def,
+            cv_grid_def,
+            flow_field_unravelled
+        );
+    }
+    if (flow_field_unravelled.empty()) {
+        cout << "Error: flow field is empty.\n";
+        exit(-1);
+    }
+    const double cache_flat_elements_per_table =
+        4.0 * (double) flow_field_unravelled.size() * (double) cache_size;
+    if (cache_flat_elements_per_table
+            > (double) std::numeric_limits<int32_t>::max()) {
+        cout << "Error: --cache_size is too large for the 32-bit SIMD cache index.\n";
+        exit(-1);
+    }
+    const double cache_steady_bytes =
+        24.0 * (double) flow_field_unravelled.size()
+        * (double) cache_size * sizeof(float);
+    const double cache_build_scratch_bytes =
+        6.0 * (double) flow_field_unravelled.size()
+        * (double) cache_size * sizeof(float);
+
+    //
     // Memory budget. Per-thread scratch scales with the number of output
     // positions and with the number of segments, both of which explode when
     // --output_at_hets is left on for a large panel, so say so up front rather
@@ -621,7 +688,7 @@ int main(int argc, char** argv) {
             + (mask_map.empty()
                ? (double) data_processor._n_segments * parallel_vector_size * sizeof(int32_t)
                : 0.0)
-            + 489.6e6;   // flow-field cache, six flat tables
+            + cache_steady_bytes;
 
         screen.print_item(boost::str(
             boost::format("Memory estimate: %.2f GB shared + %.2f GB x %d threads = %.2f GB")
@@ -630,10 +697,17 @@ int main(int argc, char** argv) {
             % n_threads
             % ((shared + per_thread * n_threads) / 1073741824.0)
         ));
+        screen.print_item(boost::str(
+            boost::format(
+                "Flow-field cache: %.2f GB resident; cache construction can peak %.2f GB higher"
+            )
+            % (cache_steady_bytes / 1073741824.0)
+            % (cache_build_scratch_bytes / 1073741824.0)
+        ));
         if (output_at_hets && data_processor._seq_length > 1000000) {
             cout << boost::format(
                 "Warning: --output_at_hets is on with %ld output positions. For a whole-genome "
-                "scan use --output_at_hets=false --output_at_stride 1000 to cut per-thread "
+                "scan use --output_at_hets=false --output_at_stride 10000 to cut per-thread "
                 "memory and output volume by an order of magnitude.\n"
             ) % (long) data_processor._seq_length;
         }
@@ -654,44 +728,36 @@ int main(int argc, char** argv) {
 
 
     //
-    // Load flow field file
-    //
-    vector<float> mean_grid_def;
-    vector<float> cv_grid_def;
-    vector<float> flow_field_unravelled;
-
-    if (vm.count("flow_field")) {
-        read_flow_field_raw(
-            flow_field_filename,
-            mean_grid_def,
-            cv_grid_def,
-            flow_field_unravelled
-        );
-    } else {
-        read_flow_field_default(
-            mean_grid_def,
-            cv_grid_def,
-            flow_field_unravelled
-        );
-    }
-
-    //
     // Prepare output files
     //
-    // TODO: Check errors
     ofstream* output_file_raw_meta = NULL;
     ofstream* output_file_raw = NULL;
     if (output_filename.size() > 0) {
         output_file_raw = new ofstream(output_filename, ios_base::out | ios_base::binary);
         output_file_raw_meta = new ofstream(output_filename + ".meta", ios_base::out);
+        if (!output_file_raw->good() || !output_file_raw_meta->good()) {
+            cout << boost::format("Error: Cannot open output %s (or its .meta file).\n")
+                    % output_filename;
+            exit(-1);
+        }
     }
     ofstream* recent_summary_file = NULL;
     if (recent_summary_filename.size() > 0) {
         recent_summary_file = new ofstream(recent_summary_filename, ios_base::out);
+        if (!recent_summary_file->good()) {
+            cout << boost::format("Error: Cannot open --recent_summary %s.\n")
+                    % recent_summary_filename;
+            exit(-1);
+        }
     }
     ofstream* bitmatrix_file = NULL;
     if (bitmatrix_filename.size() > 0) {
         bitmatrix_file = new ofstream(bitmatrix_filename, ios_base::out | ios_base::binary);
+        if (!bitmatrix_file->good()) {
+            cout << boost::format("Error: Cannot open --recent_bitmatrix %s.\n")
+                    % bitmatrix_filename;
+            exit(-1);
+        }
     }
 
     //

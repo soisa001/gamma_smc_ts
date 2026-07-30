@@ -15,10 +15,10 @@ bin/gamma_smc \
   --input chr2.phased.bcf \
   --recent_summary chr2.tsv --recent_bitmatrix chr2.bits \
   --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 \
-  --unscaled_mutation_rate 1.25e-8 --generation_time 25 \
+  --unscaled_mutation_rate 1.29e-9 --generation_time 25 \
   --recent_threshold_years 4500,10000 \
   --n_random_pairs 100000 --pairs_seed 1729 \
-  --output_at_hets=false --output_at_stride 1000 \
+  --output_at_hets=false --output_at_stride 10000 \
   --threads 32 --mask callable.chr2.bed
 ```
 
@@ -32,6 +32,12 @@ bin/gamma_smc \
   decompressible frames. Read it with `gamma_smc_aou.bitmatrix`.
 - `--threads 0` uses every core.
 
+The requested defaults are a 10 kb stride, a 1 kb cache, and
+`--unscaled_mutation_rate 1.29e-9`. With the independent default
+`theta=0.00075`, that mutation rate implies `2Ne=290,698` generations; confirm
+that time scale for empirical runs. Matched simulation studies derive theta
+from the simulated `Ne` and mutation rate.
+
 Two corrections to upstream numerics are **on by default**: an accurate `10^x`
 in place of Schraudolph's bit trick, and a fix to a one-output-position shift of
 the backward message. `--exp10 fast --backward_alignment legacy` reproduces the
@@ -44,7 +50,7 @@ correction moves the statistic.
 
 ## Reproducible one-command environment
 
-The `AOU_run` workflow is self-contained apart from network access during the
+The `AOU_run_opt` workflow is self-contained apart from network access during the
 first installation and your own empirical/PHLASH input files. Python and all
 Python packages are pinned in `uv.lock`; SLiM is pinned to 5.2 in a local
 `.native` environment. On Linux x86_64, the bootstrap also installs a local C++
@@ -54,7 +60,7 @@ Gamma-SMC without root access.
 Linux/HPC, including the decoder:
 
 ```bash
-git clone --branch AOU_run https://github.com/soisa001/gamma_smc_ts.git
+git clone --branch AOU_run_opt https://github.com/soisa001/gamma_smc_ts.git
 cd gamma_smc_ts
 bash scripts/bootstrap_uv.sh
 scripts/aou.sh --help
@@ -63,7 +69,7 @@ scripts/aou.sh --help
 Windows, for msprime/SLiM simulation and truth analyses:
 
 ```powershell
-git clone --branch AOU_run https://github.com/soisa001/gamma_smc_ts.git
+git clone --branch AOU_run_opt https://github.com/soisa001/gamma_smc_ts.git
 cd gamma_smc_ts
 powershell -ExecutionPolicy Bypass -File scripts/bootstrap_uv.ps1
 scripts/aou.ps1 --help
@@ -81,13 +87,13 @@ the repository-local SLiM/Gamma-SMC binaries automatically.
 
 The uv CLI can also launch the official `regevsch/gamma_smc:v0.2` image through
 Apptainer, Singularity, or Docker and stream its large alpha/beta output into a
-small across-pair probability profile. For a 1 kb within-individual scan:
+small across-pair probability profile. For the default 10 kb within-individual scan:
 
 ```bash
 scripts/aou.sh decode-container \
-  --input AFR.phased.vcf.gz --output AFR.within.stride1000.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
-  --generation-time 25 --threshold-years 4500 --output-at-stride 1000
+  --input AFR.phased.vcf.gz --output AFR.within.stride10000.tsv \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+  --generation-time 25 --threshold-years 4500 --output-at-stride 10000
 ```
 
 The input and output must be in the same directory because that directory is
@@ -227,7 +233,11 @@ There are more options. Below we discuss each in detail.
 </pre>
 The input file is in `vcf`, `vcf.gz`, `bcf` or `bcf.gz` formats. 
 
-Use a separate file per chromosome.
+Use a separate file per chromosome. Multi-contig input is rejected rather than
+risking negative segment lengths when coordinates reset. Include
+`##contig=<ID=...,length=...>` in the VCF/BCF header: the declared length lets
+the stride grid cover the invariant tail after the last variant. Without a
+declared length, decoding ends at the final retained SNP.
 
 Positions that are not specified explicitly in the `vcf` are assumed to be homozygous (unless masked out). It is therefore better and faster to process the `vcf` such that all sites are segregating (i.e. there is at least one derived allele in the sample). 
 
@@ -315,7 +325,16 @@ $ bin/generate_canonical_flow_field ...
 <pre>
 --cache_size, -z <i>cache_size</i>
 </pre>
-Gamma-SMC caches operating on stretches of homozygosity or missingness for fast inference. Larger cache may result in faster running times, but in slower startup time and somewhat larger memory footprint. Note that there is little advantage in increasing cache size above the typical distance between segregating sites in your sample. Defaults to 1000 basepairs.
+Gamma-SMC caches operations on stretches of homozygosity or missingness. The
+default remains 1000 bp. On the retained 10 Mb/2,000-pair selected simulation
+at 10 kb output stride, increasing the cache from 1 kb to 2 kb raised peak RSS
+from 0.609 to 1.179 GB and wall time from 13.22 to 18.75 seconds; 5 kb raised
+them to 2.889 GB and 34.35 seconds. Decode time did not improve. A 500 bp cache
+was faster and smaller but changed the numerical segmentation and a small
+number of calls, so it is not a safe drop-in default for an observed/null study.
+Keep 1 kb and use exactly the same cache size for observed data and nulls. The
+full benchmark is in
+[`sim_results/gamma_smc_cache_size_stride10000`](sim_results/gamma_smc_cache_size_stride10000).
 
 ## Output
 <pre>
@@ -330,12 +349,14 @@ Inferring the posterior TMRCA distribution at each and every position is too com
 <pre>
 --output_at_hets, -h <i>or</i> --output_at_hets=false
 </pre>
-Output at segregating sites - these are assumed to be all the sites in your input file. This is the default.
+Output at segregating sites. This is off unless requested explicitly.
 
 <pre>
 --output_at_stride, -s <i>jump_size</i>
 </pre>
-Output every <i>jump_size</i> basepairs. Turned off by default. A good value is `-s 1000` or `-s 100`; smaller values will probably be too long to run and generate huge files.
+Output every <i>jump_size</i> basepairs. The default is 10,000 bp; use `-1`
+to disable stride output when `--output_at_hets` is enabled. Smaller values
+increase runtime, memory, and output size.
 
 # Interpreting the output
 If you haven't already, clone the repository:

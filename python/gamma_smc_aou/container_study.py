@@ -2,17 +2,21 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from time import perf_counter
 
 import numpy as np
 import pandas as pd
+import tskit
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
+from .decoder import run_within_decoder
+from .defaults import DEFAULT_CACHE_SIZE, DEFAULT_OUTPUT_STRIDE
 from .selection import run_slim_recent_sweep, within_individual_tmrca_grid
 from .spatial_scan import (
     _plot_null_spatial_calibration,
@@ -231,20 +235,31 @@ def _simulate(
     )
 
 
-def run_container_stride_study(
+def _run_stride_study(
     source_dir: str | Path,
     output_dir: str | Path,
     *,
     neutral_replicates: int = 100,
-    stride: int = 1_000,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
     runtime: str = "auto",
     image: str = DEFAULT_IMAGE,
+    executable: str | Path | None = None,
+    cache_size: int = DEFAULT_CACHE_SIZE,
+    threads: int = 1,
     keep_vcfs: bool = False,
     workers: int = 1,
 ) -> dict:
-    """Decode a retained sweep and matched nulls with official Gamma-SMC v0.2."""
-    if neutral_replicates < 1 or stride < 1 or workers < 1:
-        raise ValueError("replicate count, stride, and workers must be positive")
+    """Decode a retained sweep and matched nulls with one decoder backend."""
+    if (
+        neutral_replicates < 1
+        or stride < 1
+        or workers < 1
+        or cache_size < 1
+        or threads < 1
+    ):
+        raise ValueError(
+            "replicate count, stride, workers, cache size, and threads must be positive"
+        )
     source_dir = Path(source_dir).resolve()
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -256,37 +271,79 @@ def run_container_stride_study(
     rho_over_theta = design["recombination_rate"] / design["mutation_rate"]
     threshold_years = design["variant_age"] * design["generation_time"]
     started = perf_counter()
+    backend = "container_v0.2" if executable is None else "native_optimized"
+
+    def decode(vcf_path: Path, summary_path: Path) -> dict:
+        if executable is None:
+            return run_container_decoder(
+                vcf_path,
+                summary_path,
+                scaled_mutation_rate=theta,
+                recombination_to_mutation_ratio=rho_over_theta,
+                mutation_rate=design["mutation_rate"],
+                threshold_years=threshold_years,
+                generation_time=design["generation_time"],
+                stride=stride,
+                runtime=runtime,
+                image=image,
+            )
+        return run_within_decoder(
+            executable,
+            vcf_path,
+            summary_path,
+            scaled_mutation_rate=theta,
+            recombination_to_mutation_ratio=rho_over_theta,
+            mutation_rate=design["mutation_rate"],
+            threshold_years=threshold_years,
+            generation_time=design["generation_time"],
+            input_format="vcf",
+            output_at_stride=stride,
+            output_at_hets=False,
+            only_within=True,
+            cache_size=cache_size,
+            threads=threads,
+        )
 
     selected_tree_path = work_dir / "selected.trees"
-    selected_ts, selected_run = _simulate(
-        selected_tree_path,
-        design,
-        selection_coefficient=design["selection_coefficient"],
-        seed=design["seed"] + 10_000_000 + design["selected_attempt"] * 10,
-        capture_focal_genotypes=True,
-    )
-    if not np.isclose(
-        selected_run["realized_population_allele_frequency"],
-        design["selected_population_af"],
-        atol=1e-12,
-        rtol=0,
-    ):
-        raise RuntimeError("selected replicate did not reproduce the retained allele")
+    prepared_selected_tree = source_dir / "selected_s0p05_af30.trees"
+    if prepared_selected_tree.exists():
+        shutil.copy2(prepared_selected_tree, selected_tree_path)
+        selected_ts = tskit.load(selected_tree_path)
+        if not np.isclose(
+            selected_ts.sequence_length,
+            design["sequence_length"],
+            atol=0,
+            rtol=0,
+        ):
+            raise RuntimeError("prepared selected tree has the wrong sequence length")
+        n_diploids = sum(
+            len(individual.nodes) == 2 for individual in selected_ts.individuals()
+        )
+        if n_diploids != design["sample_diploids"]:
+            raise RuntimeError(
+                "prepared selected tree has the wrong number of diploid individuals"
+            )
+        selected_origin = "prepared_selected_tree"
+    else:
+        selected_ts, selected_run = _simulate(
+            selected_tree_path,
+            design,
+            selection_coefficient=design["selection_coefficient"],
+            seed=design["seed"] + 10_000_000 + design["selected_attempt"] * 10,
+            capture_focal_genotypes=True,
+        )
+        if not np.isclose(
+            selected_run["realized_population_allele_frequency"],
+            design["selected_population_af"],
+            atol=1e-12,
+            rtol=0,
+        ):
+            raise RuntimeError("selected replicate did not reproduce the retained allele")
+        selected_origin = "reproduced_from_seed"
     selected_vcf = work_dir / "selected.vcf.gz"
     tree_sequence_to_vcf(selected_tree_path, selected_vcf)
     selected_summary = work_dir / "selected.tsv"
-    selected_decode = run_container_decoder(
-        selected_vcf,
-        selected_summary,
-        scaled_mutation_rate=theta,
-        recombination_to_mutation_ratio=rho_over_theta,
-        mutation_rate=design["mutation_rate"],
-        threshold_years=threshold_years,
-        generation_time=design["generation_time"],
-        stride=stride,
-        runtime=runtime,
-        image=image,
-    )
+    selected_decode = decode(selected_vcf, selected_summary)
     observed = pd.read_csv(selected_summary, sep="\t")
     observed.to_csv(
         output_dir / "selected_decoded_recent_probability_profile.tsv",
@@ -328,18 +385,7 @@ def run_container_stride_study(
         vcf_path = work_dir / f"neutral_{replicate:04d}.vcf.gz"
         tree_sequence_to_vcf(tree_path, vcf_path)
         summary_path = work_dir / f"neutral_{replicate:04d}.tsv"
-        run = run_container_decoder(
-            vcf_path,
-            summary_path,
-            scaled_mutation_rate=theta,
-            recombination_to_mutation_ratio=rho_over_theta,
-            mutation_rate=design["mutation_rate"],
-            threshold_years=threshold_years,
-            generation_time=design["generation_time"],
-            stride=stride,
-            runtime=runtime,
-            image=image,
-        )
+        run = decode(vcf_path, summary_path)
         profile = pd.read_csv(summary_path, sep="\t")
         profile["replicate"] = replicate
         if not keep_vcfs:
@@ -419,8 +465,13 @@ def run_container_stride_study(
     )
     result = {
         "data_interpretation": "retained selected simulation treated as pseudo-empirical data",
-        "container_image": image,
-        "container_runtime": selected_decode["runtime"],
+        "selected_input_origin": selected_origin,
+        "decoder_backend": backend,
+        "container_image": image if executable is None else None,
+        "container_runtime": selected_decode.get("runtime"),
+        "native_executable": str(Path(executable).resolve()) if executable is not None else None,
+        "cache_size_bp": int(cache_size) if executable is not None else None,
+        "decoder_threads_per_replicate": int(threads) if executable is not None else None,
         "stride_bp": int(stride),
         "sequence_length": design["sequence_length"],
         "sample_diploids": design["sample_diploids"],
@@ -438,14 +489,22 @@ def run_container_stride_study(
             np.mean([run["decode_seconds"] for run in neutral_runs])
         ),
         "all_decode_seconds_sum": float(decode_times.sum()),
+        "selected_profile_truth_bias": float(np.mean(error)),
         "selected_profile_truth_mae": float(np.mean(np.abs(error))),
         "selected_profile_truth_rmse": float(np.sqrt(np.mean(error**2))),
+        "selected_profile_truth_correlation": float(
+            np.corrcoef(
+                comparison["mean_p_tmrca_lt_threshold"],
+                comparison["truth_fraction_recent"],
+            )[0, 1]
+        ),
         "center_position_0based": int(center_row["position_0based"]),
         "center_observed_mean_p_recent": float(center_row["observed_fraction_recent"]),
         "center_null_mean_p_recent": float(center_row["neutral_mean_fraction_recent"]),
         "center_neutral_exceedances": int(center_row["neutral_exceedances"]),
         "center_monte_carlo_p_upper": float(center_row["p_upper"]),
         "n_pointwise_p_lt_0_05_windows": int(np.count_nonzero(scan["p_upper"] < 0.05)),
+        "n_bh_q_lt_0_05_windows": int(np.count_nonzero(scan["q_bh"] < 0.05)),
         "n_significant_regions": int(len(regions)),
         "significant_regions": regions.to_dict("records"),
         "scan_density_calibration": density_calibration,
@@ -462,11 +521,61 @@ def run_container_stride_study(
     return result
 
 
+def run_container_stride_study(
+    source_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    neutral_replicates: int = 100,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
+    runtime: str = "auto",
+    image: str = DEFAULT_IMAGE,
+    keep_vcfs: bool = False,
+    workers: int = 1,
+) -> dict:
+    """Decode a retained sweep and matched nulls with official Gamma-SMC v0.2."""
+    return _run_stride_study(
+        source_dir,
+        output_dir,
+        neutral_replicates=neutral_replicates,
+        stride=stride,
+        runtime=runtime,
+        image=image,
+        keep_vcfs=keep_vcfs,
+        workers=workers,
+    )
+
+
+def run_native_stride_study(
+    source_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    executable: str | Path,
+    neutral_replicates: int = 100,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
+    cache_size: int = DEFAULT_CACHE_SIZE,
+    threads: int = 1,
+    keep_vcfs: bool = False,
+    workers: int = 1,
+) -> dict:
+    """Decode a retained sweep and matched nulls with the optimized binary."""
+    return _run_stride_study(
+        source_dir,
+        output_dir,
+        neutral_replicates=neutral_replicates,
+        stride=stride,
+        executable=executable,
+        cache_size=cache_size,
+        threads=threads,
+        keep_vcfs=keep_vcfs,
+        workers=workers,
+    )
+
+
 def finalize_container_stride_study(
     source_dir: str | Path,
     output_dir: str | Path,
     *,
-    stride: int = 1_000,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
     workflow_elapsed_seconds: float | None = None,
     neutral_profiles_path: str | Path | None = None,
 ) -> dict:

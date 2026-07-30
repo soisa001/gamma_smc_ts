@@ -510,6 +510,7 @@ void readVcf(
     // haplotype 2*s and 2*s+1 belong to retained sample s.
     const int n_haplotypes = n_relevant_sample * 2;
     ret.init(n_haplotypes);
+    int input_rid = -1;
 
     int32_t *gt_arr = NULL, ngt_arr = 0;
     int ngt;
@@ -535,6 +536,33 @@ void readVcf(
                 exit(-1);
             }
             break;
+        }
+
+        // A decoder invocation is deliberately chromosome-local. Mixing
+        // records from several contigs would turn the next contig's coordinate
+        // reset into a negative segment length, so reject it explicitly.
+        if (record->rid < 0) {
+            cout << "Error: VCF record has no contig ID." << endl;
+            exit(-1);
+        }
+        if (input_rid < 0) {
+            input_rid = record->rid;
+            const char* name = bcf_hdr_id2name(header, input_rid);
+            ret.contig_name = name == NULL ? string() : string(name);
+            if (input_rid < header->n[BCF_DT_CTG]
+                    && header->id[BCF_DT_CTG][input_rid].val != NULL) {
+                const uint64_t declared_length =
+                    header->id[BCF_DT_CTG][input_rid].val->info[0];
+                if (declared_length <= (uint64_t) std::numeric_limits<position_t>::max()) {
+                    ret.sequence_length = (position_t) declared_length;
+                }
+            }
+        } else if (record->rid != input_rid) {
+            cout << boost::format(
+                "Error: input contains more than one contig (%s and %s). "
+                "Run one contig per Gamma-SMC invocation.\n"
+            ) % ret.contig_name % bcf_hdr_id2name(header, record->rid);
+            exit(-1);
         }
 
         // Unpack only through ALT: enough for the biallelic-SNP filter, and it
@@ -642,6 +670,11 @@ void readVcf(
         cout << boost::format("  %ld of %ld sites carry a missing genotype.\n")
                 % n_sites_with_missing % ret.size();
     }
+    if (!ret.empty()) {
+        // Headerless/lengthless VCFs still work, but a declared contig length
+        // lets stride output cover the invariant tail after the final variant.
+        ret.sequence_length = max(ret.sequence_length, ret.pos.back() + 1);
+    }
 
     free(gt_arr);
     bcf_destroy(record);
@@ -651,7 +684,8 @@ void readVcf(
 
 void readMask(
     string filename,
-    vector<pair<int, int>>& global_mask
+    vector<pair<int, int>>& global_mask,
+    const string& expected_contig = ""
 ) {
     ifstream bedfile;
     bedfile.open(filename);
@@ -661,10 +695,51 @@ void readMask(
     }
 
     string bedline;
+    long line_number = 0;
+    long data_records = 0;
+    long matching_records = 0;
     while (getline(bedfile, bedline)) {
+        line_number++;
+        boost::algorithm::trim(bedline);
+        if (bedline.empty() || bedline[0] == '#'
+                || boost::istarts_with(bedline, "track ")
+                || boost::istarts_with(bedline, "browser ")) {
+            continue;
+        }
         vector<string> bedparts;
         boost::algorithm::split(bedparts, bedline, boost::is_any_of("\t"));
-        global_mask.push_back(make_pair(stoi(bedparts[1]), stoi(bedparts[2])));  // TODO: Check errors
+        if (bedparts.size() < 3) {
+            cout << boost::format(
+                "Error: malformed BED record in %s at line %ld (need at least 3 columns).\n"
+            ) % filename % line_number;
+            exit(-1);
+        }
+        data_records++;
+        if (!expected_contig.empty() && bedparts[0] != expected_contig) {
+            continue;
+        }
+        matching_records++;
+        try {
+            const long start = stol(bedparts[1]);
+            const long end = stol(bedparts[2]);
+            if (start < 0 || end < 0
+                    || start > std::numeric_limits<int>::max()
+                    || end > std::numeric_limits<int>::max()) {
+                throw std::out_of_range("BED coordinate");
+            }
+            global_mask.push_back(make_pair((int) start, (int) end));
+        } catch (const std::exception&) {
+            cout << boost::format(
+                "Error: invalid BED coordinates in %s at line %ld.\n"
+            ) % filename % line_number;
+            exit(-1);
+        }
+    }
+    if (!expected_contig.empty() && data_records > 0 && matching_records == 0) {
+        cout << boost::format(
+            "Error: BED file %s has no records for input contig %s.\n"
+        ) % filename % expected_contig;
+        exit(-1);
     }
 
     // Sort and merge. intersect_masks accumulates n_called per overlapping
@@ -690,7 +765,8 @@ void readMask(
 void readMasks(
     string filename,
     unordered_map<string, vector<pair<int, int>>>& mask_map,
-    const vector<string>& sample_names
+    const vector<string>& sample_names,
+    const string& expected_contig = ""
     ) 
     {
     ifstream fin;
@@ -701,14 +777,38 @@ void readMasks(
     }
 
     string line;
+    long line_number = 0;
+    const std::filesystem::path manifest_directory =
+        std::filesystem::path(filename).parent_path();
     while (getline(fin, line)) {
+        line_number++;
+        boost::algorithm::trim(line);
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
         // Split line into tab-separated parts
         vector<string> parts;
         boost::algorithm::split(parts, line, boost::is_any_of("\t"));
+        if (parts.size() < 2 || parts[0].empty() || parts[1].empty()) {
+            cout << boost::format(
+                "Error: malformed sample-mask record in %s at line %ld.\n"
+            ) % filename % line_number;
+            exit(-1);
+        }
 
         if ((std::find(sample_names.begin(), sample_names.end(), parts[0]) != sample_names.end())) {
+            if (mask_map.count(parts[0]) > 0) {
+                cout << boost::format(
+                    "Error: duplicate mask for sample %s in %s at line %ld.\n"
+                ) % parts[0] % filename % line_number;
+                exit(-1);
+            }
+            std::filesystem::path mask_path(parts[1]);
+            if (mask_path.is_relative() && !manifest_directory.empty()) {
+                mask_path = manifest_directory / mask_path;
+            }
             mask_map.emplace(parts[0], vector<pair<int, int>>());
-            readMask(parts[1], mask_map[parts[0]]);
+            readMask(mask_path.string(), mask_map[parts[0]], expected_contig);
             // cout << boost::format("Mask for %s - %d segments\n") % parts[0] % mask_map[parts[0]].size();
         }
     }

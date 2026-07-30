@@ -10,7 +10,7 @@ on:
       output_at_stride:
         description: Posterior output stride in bp
         required: true
-        default: "1000"
+        default: "10000"
       workers:
         description: Concurrent neutral simulation/decode workers
         required: true
@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 360
     env:
       NEUTRAL_REPLICATES: ${{ inputs.neutral_replicates || '1' }}
-      OUTPUT_AT_STRIDE: ${{ inputs.output_at_stride || '1000' }}
+      OUTPUT_AT_STRIDE: ${{ inputs.output_at_stride || '10000' }}
       NULL_WORKERS: ${{ inputs.workers || '4' }}
     steps:
       - uses: actions/checkout@v4
@@ -35,16 +35,18 @@ jobs:
         run: bash scripts/bootstrap_uv.sh --simulation-only --skip-tests
       - name: Record runner and container
         run: |
-          mkdir -p sim_results/gamma_smc_container_stride1000
-          lscpu > sim_results/gamma_smc_container_stride1000/run_environment.txt
+          RESULT="sim_results/gamma_smc_container_stride${OUTPUT_AT_STRIDE}"
+          mkdir -p "$RESULT"
+          lscpu > "$RESULT/run_environment.txt"
           docker pull docker.io/regevsch/gamma_smc:v0.2
           docker image inspect docker.io/regevsch/gamma_smc:v0.2 \
-            >> sim_results/gamma_smc_container_stride1000/run_environment.txt
+            >> "$RESULT/run_environment.txt"
       - name: Decode selected pseudo-data and neutral simulations
         run: |
+          RESULT="sim_results/gamma_smc_container_stride${OUTPUT_AT_STRIDE}"
           scripts/aou.sh run-container-study \
             --source-dir sim_results/two_epoch_growth_s0p05_n2000 \
-            --output-dir sim_results/gamma_smc_container_stride1000 \
+            --output-dir "$RESULT" \
             --neutral-replicates "$NEUTRAL_REPLICATES" \
             --output-at-stride "$OUTPUT_AT_STRIDE" \
             --workers "$NULL_WORKERS" \
@@ -54,6 +56,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gamma-smc-stride-${{ env.OUTPUT_AT_STRIDE }}-null-${{ env.NEUTRAL_REPLICATES }}
-          path: sim_results/gamma_smc_container_stride1000
+          path: sim_results/gamma_smc_container_stride*
           if-no-files-found: error
           retention-days: 14

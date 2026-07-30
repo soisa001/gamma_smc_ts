@@ -39,3 +39,32 @@ def test_decode_defaults_to_wrapper_decoder_environment(monkeypatch):
         ]
     )
     assert arguments.executable == "/portable/bin/gamma_smc"
+
+
+def test_workbench_defaults_are_shared_by_the_cli():
+    arguments = parser().parse_args(
+        ["decode", "--input", "input.vcf.gz", "--output", "output.tsv"]
+    )
+    assert arguments.mutation_rate == 1.29e-9
+    assert arguments.output_at_stride == 10_000
+    assert arguments.cache_size == 1_000
+
+    study = parser().parse_args(
+        [
+            "run-native-study",
+            "--source-dir", "source",
+            "--output-dir", "output",
+        ]
+    )
+    assert study.output_at_stride == 10_000
+    assert study.cache_size == 1_000
+
+    high_af = parser().parse_args(
+        [
+            "prepare-high-af-selected",
+            "--null-truth-dir", "null",
+            "--output-dir", "output",
+            "--selected-attempt", "2514",
+        ]
+    )
+    assert high_af.selected_attempt == 2514

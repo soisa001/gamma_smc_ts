@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import msprime
 import numpy as np
 import pandas as pd
+
+from .defaults import DEFAULT_OUTPUT_STRIDE
 import pyslim
 import tskit
 
@@ -151,7 +153,8 @@ def prepare_high_af_selected(
     workers: int = 20,
     max_attempts: int = 2_000,
     seed: int = 910_241,
-    stride: int = 1_000,
+    selected_attempt: int | None = None,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
     full_step: int = 50_000,
     zoom_half_width: int = 500_000,
     zoom_step: int = 5_000,
@@ -161,6 +164,8 @@ def prepare_high_af_selected(
         raise ValueError("minimum_population_af must be in (0, 1]")
     if workers < 1 or max_attempts < 1 or stride < 1:
         raise ValueError("workers, max_attempts, and stride must be positive")
+    if selected_attempt is not None and selected_attempt < 0:
+        raise ValueError("selected_attempt must be non-negative")
     null_truth_dir = Path(null_truth_dir).resolve()
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -220,17 +225,17 @@ def prepare_high_af_selected(
         )
         shared_ancestry_seconds = perf_counter() - ancestry_started
 
-        next_attempt = 0
-        while accepted is None and next_attempt < max_attempts:
-            batch = list(range(next_attempt, min(next_attempt + workers, max_attempts)))
-            tasks = [{
+        def attempt_task(attempt: int, *, screen_only: bool) -> dict:
+            return {
                 "attempt": attempt,
                 "seed": seed,
                 "temporary": str(temporary),
                 "executable": None if executable is None else str(executable),
                 "ancestral_population_size": design["ancestral_population_size"],
                 "present_population_size": design["present_population_size"],
-                "size_change_generations_ago": design["size_change_generations_ago"],
+                "size_change_generations_ago": design[
+                    "size_change_generations_ago"
+                ],
                 "sample_diploids": design["sample_diploids"],
                 "sequence_length": design["sequence_length"],
                 "center": center,
@@ -240,40 +245,62 @@ def prepare_high_af_selected(
                 "recombination_rate": design["recombination_rate"],
                 "minimum_population_af": minimum_population_af,
                 "initial_annotated_path": str(initial_annotated_path),
-                "screen_only": True,
-            } for attempt in batch]
-            if workers == 1:
-                results = [_simulate_high_af_attempt(task) for task in tasks]
-            else:
-                with ProcessPoolExecutor(max_workers=workers) as executor:
-                    results = list(executor.map(_simulate_high_af_attempt, tasks))
-            for result in results:
-                attempt_rows.append(result["row"])
-                if accepted is None and result["row"]["accepted"]:
-                    accepted = result
-            pd.DataFrame(attempt_rows).sort_values("attempt").to_csv(
-                output_dir / "selected_rejection_screen_checkpoint.tsv",
-                sep="\t",
-                index=False,
+                "screen_only": screen_only,
+            }
+
+        next_attempt = 0
+        if selected_attempt is not None:
+            accepted = _simulate_high_af_attempt(
+                attempt_task(selected_attempt, screen_only=False)
             )
-            next_attempt += len(batch)
-        if accepted is None:
-            failed = pd.DataFrame(attempt_rows).sort_values("attempt")
-            failed["used_for_rejection_decision"] = True
-            failed.to_csv(
-                output_dir / "selected_rejection_attempts.tsv", sep="\t", index=False
+            attempt_rows.append(accepted["row"])
+            if not accepted["row"]["accepted"]:
+                raise RuntimeError(
+                    f"explicit attempt {selected_attempt} did not reach population "
+                    f"AF >= {minimum_population_af:g}"
+                )
+        else:
+            while accepted is None and next_attempt < max_attempts:
+                batch = list(
+                    range(next_attempt, min(next_attempt + workers, max_attempts))
+                )
+                tasks = [
+                    attempt_task(attempt, screen_only=True) for attempt in batch
+                ]
+                if workers == 1:
+                    results = [_simulate_high_af_attempt(task) for task in tasks]
+                else:
+                    with ProcessPoolExecutor(max_workers=workers) as executor:
+                        results = list(executor.map(_simulate_high_af_attempt, tasks))
+                for result in results:
+                    attempt_rows.append(result["row"])
+                    if accepted is None and result["row"]["accepted"]:
+                        accepted = result
+                pd.DataFrame(attempt_rows).sort_values("attempt").to_csv(
+                    output_dir / "selected_rejection_screen_checkpoint.tsv",
+                    sep="\t",
+                    index=False,
+                )
+                next_attempt += len(batch)
+            if accepted is None:
+                failed = pd.DataFrame(attempt_rows).sort_values("attempt")
+                failed["used_for_rejection_decision"] = True
+                failed.to_csv(
+                    output_dir / "selected_rejection_attempts.tsv",
+                    sep="\t",
+                    index=False,
+                )
+                raise RuntimeError(
+                    f"no s={selection_coefficient:g} trajectory reached population AF "
+                    f">={minimum_population_af:g} in {max_attempts} attempts"
+                )
+            accepted = _simulate_high_af_attempt(
+                attempt_task(int(accepted["row"]["attempt"]), screen_only=False)
             )
-            raise RuntimeError(
-                f"no s={selection_coefficient:g} trajectory reached population AF "
-                f">={minimum_population_af:g} in {max_attempts} attempts"
-            )
-        materialize_task = {
-            **tasks[batch.index(int(accepted["row"]["attempt"]))],
-            "screen_only": False,
-        }
-        accepted = _simulate_high_af_attempt(materialize_task)
-        if not accepted["row"]["accepted"]:
-            raise RuntimeError("accepted trajectory was not reproducible on materialization")
+            if not accepted["row"]["accepted"]:
+                raise RuntimeError(
+                    "accepted trajectory was not reproducible on materialization"
+                )
         selected_tree = output_dir / "selected_s0p05_af30.trees"
         shutil.copy2(Path(accepted["tree_path"]), selected_tree)
 
@@ -387,6 +414,11 @@ def prepare_high_af_selected(
         "neutral_truth_source": os.path.relpath(null_truth_dir, output_dir),
         "neutral_theoretical_fraction_recent": float(theoretical),
         "selected_rejection": {
+            "search_mode": (
+                "explicit_deterministic_attempt"
+                if selected_attempt is not None
+                else "seed_order_rejection_search"
+            ),
             "accepted_attempt_zero_based": int(accepted_row["attempt"]),
             "attempts_to_accept_in_seed_order": int(accepted_row["attempt"] + 1),
             "trajectories_computed_in_parallel_batches": int(len(attempts)),
@@ -404,7 +436,7 @@ def prepare_high_af_selected(
             "truth_center_monte_carlo_p_upper": float(truth_p),
         },
         "workers_requested": int(workers),
-        "workers_used": int(workers),
+        "workers_used": int(1 if selected_attempt is not None else workers),
         "shared_neutral_ancestry_seconds": float(shared_ancestry_seconds),
         "base_seed": int(seed),
         "stride_bp": int(stride),
@@ -419,7 +451,7 @@ def finalize_high_af_selected(
     source_dir: str | Path,
     neutral_decoded_profiles: str | Path,
     *,
-    stride: int = 1_000,
+    stride: int = DEFAULT_OUTPUT_STRIDE,
 ) -> dict:
     """Join the selected official decode to truth and reuse decoded nulls."""
     source_dir = Path(source_dir).resolve()

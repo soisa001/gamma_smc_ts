@@ -15,7 +15,19 @@ from .bitmatrix import to_frame as bitmatrix_to_frame
 from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
 from .carrier_profiles import plot_retained_carrier_tmrca_profiles
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
-from .container_study import finalize_container_stride_study, run_container_stride_study
+from .container_study import (
+    finalize_container_stride_study,
+    run_container_stride_study,
+    run_native_stride_study,
+)
+from .defaults import (
+    DEFAULT_CACHE_SIZE,
+    DEFAULT_GENERATION_TIME,
+    DEFAULT_MUTATION_RATE,
+    DEFAULT_OUTPUT_STRIDE,
+    DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    DEFAULT_SCALED_MUTATION_RATE,
+)
 from .high_af_study import finalize_high_af_selected, prepare_high_af_selected
 from .decoder import run_within_decoder
 from .evaluation import evaluate_pairs
@@ -157,6 +169,7 @@ def command_decode(args):
         recent_call=args.recent_call,
         recent_call_probability=args.recent_call_probability,
         threads=args.threads,
+        cache_size=args.cache_size,
         pair_block=args.pair_block,
         pairs_manifest=args.pairs_manifest,
         exp10=args.exp10,
@@ -206,6 +219,20 @@ def command_container_study(args):
     )
 
 
+def command_native_study(args):
+    run_native_stride_study(
+        args.source_dir,
+        args.output_dir,
+        executable=args.executable,
+        neutral_replicates=args.neutral_replicates,
+        stride=args.output_at_stride,
+        cache_size=args.cache_size,
+        threads=args.threads,
+        keep_vcfs=args.keep_vcfs,
+        workers=args.workers,
+    )
+
+
 def command_finalize_container_study(args):
     finalize_container_stride_study(
         args.source_dir,
@@ -226,6 +253,7 @@ def command_prepare_high_af_selected(args):
         workers=args.workers,
         max_attempts=args.max_attempts,
         seed=args.seed,
+        selected_attempt=args.selected_attempt,
         stride=args.output_at_stride,
     )
 
@@ -369,13 +397,13 @@ def parser() -> argparse.ArgumentParser:
     sim.add_argument("--diploids", type=int, default=2000)
     sim.add_argument("--length", type=int, default=1_000_000)
     sim.add_argument("--ne", type=float, default=10_000)
-    sim.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    sim.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
     sim.add_argument("--recombination-rate", type=float, default=1e-8)
     sim.add_argument("--mutation-map")
     sim.add_argument("--recombination-map")
     sim.add_argument("--histories", help="TSV with draw,time_generations,ne (e.g. PHLASH MVN draws)")
     sim.add_argument("--threshold-years", type=float, default=4500)
-    sim.add_argument("--generation-time", type=float, default=25)
+    sim.add_argument("--generation-time", type=float, default=DEFAULT_GENERATION_TIME)
     sim.add_argument("--seed", type=int, default=1729)
     sim.add_argument("--save-trees", action="store_true")
     sim.add_argument("--workers", type=int, default=1, help="independent simulation processes")
@@ -420,23 +448,23 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--mask", help="global BED mask; use the same callable-region policy in data and simulations")
     decode.add_argument("--masks-per-sample", help="sample-to-BED TSV")
     decode.add_argument(
-        "--theta", type=float, default=0.00075,
+        "--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE,
         help="scaled mutation rate; fixed by default so coalescent-time units, "
              "and therefore P(T<t), are comparable across datasets",
     )
     decode.add_argument(
-        "--rho-over-theta", type=float, default=0.8,
+        "--rho-over-theta", type=float, default=DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
         help="0.8 with the default theta gives the reference rho = 0.0006",
     )
-    decode.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    decode.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
     decode.add_argument(
         "--threshold-years", type=float, nargs="+", default=[4500],
         help="one or more thresholds, e.g. --threshold-years 4500 10000",
     )
-    decode.add_argument("--generation-time", type=float, default=25)
+    decode.add_argument("--generation-time", type=float, default=DEFAULT_GENERATION_TIME)
     decode.add_argument(
-        "--output-at-stride", type=int, default=100_000,
-        help="100 kb matches the region size the paper scans; use 1000 for a fine scan",
+        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE,
+        help="10 kb balances scan resolution, output size, and Workbench runtime",
     )
     decode.add_argument("--no-output-at-hets", action="store_true")
     decode.add_argument(
@@ -455,6 +483,10 @@ def parser() -> argparse.ArgumentParser:
     )
     decode.add_argument("--recent-call-probability", type=float, default=0.5)
     decode.add_argument("--threads", type=int, default=0, help="0 uses every available core")
+    decode.add_argument(
+        "--cache-size", type=int, default=DEFAULT_CACHE_SIZE,
+        help="maximum transition-cache segment in bp; 1 kb is the validated default",
+    )
     decode.add_argument("--pair-block", type=int, default=256)
     decode.add_argument(
         "--pairs-manifest",
@@ -486,12 +518,19 @@ def parser() -> argparse.ArgumentParser:
     )
     container.add_argument("--input", required=True)
     container.add_argument("--output", required=True)
-    container.add_argument("--theta", type=float, default=0.00075)
-    container.add_argument("--rho-over-theta", type=float, default=0.8)
-    container.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    container.add_argument("--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE)
+    container.add_argument(
+        "--rho-over-theta", type=float,
+        default=DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    )
+    container.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
     container.add_argument("--threshold-years", type=float, default=4500)
-    container.add_argument("--generation-time", type=float, default=25)
-    container.add_argument("--output-at-stride", type=int, default=1000)
+    container.add_argument(
+        "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
+    )
+    container.add_argument(
+        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
+    )
     container.add_argument(
         "--runtime", choices=["auto", "apptainer", "singularity", "docker"], default="auto"
     )
@@ -506,7 +545,7 @@ def parser() -> argparse.ArgumentParser:
     study.add_argument("--source-dir", required=True)
     study.add_argument("--output-dir", required=True)
     study.add_argument("--neutral-replicates", type=int, default=100)
-    study.add_argument("--output-at-stride", type=int, default=1000)
+    study.add_argument("--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE)
     study.add_argument(
         "--runtime", choices=["auto", "apptainer", "singularity", "docker"], default="auto"
     )
@@ -515,13 +554,33 @@ def parser() -> argparse.ArgumentParser:
     study.add_argument("--workers", type=int, default=1)
     study.set_defaults(func=command_container_study)
 
+    native_study = commands.add_parser(
+        "run-native-study",
+        help="decode the retained selected simulation and matched nulls with the optimized binary",
+    )
+    native_study.add_argument("--source-dir", required=True)
+    native_study.add_argument("--output-dir", required=True)
+    native_study.add_argument(
+        "--executable",
+        default=os.environ.get("GAMMA_SMC_BIN", "gamma_smc"),
+    )
+    native_study.add_argument("--neutral-replicates", type=int, default=100)
+    native_study.add_argument(
+        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
+    )
+    native_study.add_argument("--cache-size", type=int, default=DEFAULT_CACHE_SIZE)
+    native_study.add_argument("--threads", type=int, default=1)
+    native_study.add_argument("--keep-vcfs", action="store_true")
+    native_study.add_argument("--workers", type=int, default=1)
+    native_study.set_defaults(func=command_native_study)
+
     finalize = commands.add_parser(
         "finalize-container-study",
         help="calculate plots and p-values from existing selected/null decoded profiles",
     )
     finalize.add_argument("--source-dir", required=True)
     finalize.add_argument("--output-dir", required=True)
-    finalize.add_argument("--output-at-stride", type=int, default=1000)
+    finalize.add_argument("--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE)
     finalize.add_argument("--workflow-elapsed-seconds", type=float)
     finalize.add_argument("--neutral-profiles")
     finalize.set_defaults(func=command_finalize_container_study)
@@ -538,7 +597,12 @@ def parser() -> argparse.ArgumentParser:
     high_af.add_argument("--workers", type=int, default=20)
     high_af.add_argument("--max-attempts", type=int, default=2_000)
     high_af.add_argument("--seed", type=int, default=910_241)
-    high_af.add_argument("--output-at-stride", type=int, default=1_000)
+    high_af.add_argument(
+        "--selected-attempt",
+        type=int,
+        help="materialize and validate one known deterministic attempt instead of re-screening",
+    )
+    high_af.add_argument("--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE)
     high_af.set_defaults(func=command_prepare_high_af_selected)
 
     finish_high_af = commands.add_parser(
@@ -547,7 +611,9 @@ def parser() -> argparse.ArgumentParser:
     )
     finish_high_af.add_argument("--source-dir", required=True)
     finish_high_af.add_argument("--neutral-decoded-profiles", required=True)
-    finish_high_af.add_argument("--output-at-stride", type=int, default=1_000)
+    finish_high_af.add_argument(
+        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
+    )
     finish_high_af.set_defaults(func=command_finalize_high_af_selected)
 
     evaluate = commands.add_parser("evaluate-decoder", help="compare decoded simulations with tree-sequence truth")
@@ -561,7 +627,9 @@ def parser() -> argparse.ArgumentParser:
     truth_plot.add_argument("--sequence-length", type=float, required=True)
     truth_plot.add_argument("--ne", type=float, required=True)
     truth_plot.add_argument("--threshold-years", type=float, default=4500)
-    truth_plot.add_argument("--generation-time", type=float, default=25)
+    truth_plot.add_argument(
+        "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
+    )
     truth_plot.add_argument("--relative-position", type=float, default=0.5)
     truth_plot.add_argument("--output-dir", required=True)
     truth_plot.set_defaults(func=command_plot_truth)
@@ -574,7 +642,9 @@ def parser() -> argparse.ArgumentParser:
     sweep.add_argument("--selection-coefficient", type=float, default=0.5)
     sweep.add_argument("--recombination-rate", type=float, default=1e-7)
     sweep.add_argument("--threshold-years", type=float, default=4500)
-    sweep.add_argument("--generation-time", type=float, default=25)
+    sweep.add_argument(
+        "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
+    )
     sweep.add_argument("--neutral-replicates", type=int, default=39)
     sweep.add_argument("--seed", type=int, default=24681357)
     sweep.set_defaults(func=command_validate_sweep)
@@ -592,7 +662,7 @@ def parser() -> argparse.ArgumentParser:
         "--selection-coefficients", type=float, nargs="+", default=[0.0, 0.001, 0.01]
     )
     recent.add_argument("--age-generations", type=int, default=180)
-    recent.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    recent.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
     recent.add_argument("--recombination-rate", type=float, default=1e-8)
     recent.add_argument("--neutral-replicates", type=int, default=100)
     recent.add_argument("--selected-replicates", type=int, default=1)
@@ -655,9 +725,11 @@ def parser() -> argparse.ArgumentParser:
     two_epoch.add_argument("--sample-diploids", type=int, default=2_000)
     two_epoch.add_argument("--sequence-length", type=int, default=10_000_000)
     two_epoch.add_argument("--variant-age-generations", type=int, default=180)
-    two_epoch.add_argument("--generation-time-years", type=float, default=25)
+    two_epoch.add_argument(
+        "--generation-time-years", type=float, default=DEFAULT_GENERATION_TIME
+    )
     two_epoch.add_argument("--selection-coefficient", type=float, default=0.05)
-    two_epoch.add_argument("--mutation-rate", type=float, default=1.25e-8)
+    two_epoch.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
     two_epoch.add_argument("--recombination-rate", type=float, default=1e-8)
     two_epoch.add_argument("--neutral-replicates", type=int, default=100)
     two_epoch.add_argument("--workers", type=int, default=20)

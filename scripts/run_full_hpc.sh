@@ -9,11 +9,18 @@ OUT="${OUT:-$REPO/sim_results/full}"
 N_SIMS="${N_SIMS:-1000}"
 N_DIPLOIDS="${N_DIPLOIDS:-2000}"
 LENGTH="${LENGTH:-1000000}"
-MU="${MU:-1.25e-8}"
+MU="${MU:-1.29e-9}"
 R="${R:-1e-8}"
 NE="${NE:-10000}"
 SEED="${SEED:-1729}"
 SIM_WORKERS="${SIM_WORKERS:-20}"
+STRIDE="${STRIDE:-10000}"
+CACHE_SIZE="${CACHE_SIZE:-1000}"
+DECODE_THREADS="${DECODE_THREADS:-0}"
+
+: "${EMPIRICAL_VCF:?Set EMPIRICAL_VCF to one phased, single-contig VCF/BCF}"
+: "${THETA:?Set THETA to the scaled mutation rate for this population}"
+: "${RHO_OVER_THETA:?Set RHO_OVER_THETA to rho/theta for this region}"
 
 extra_sim_args=()
 [[ -n "${HISTORIES:-}" ]] && extra_sim_args+=(--histories "$HISTORIES")
@@ -29,12 +36,17 @@ extra_sim_args=()
 "$AOU" decode \
   --executable "$GAMMA_SMC" --input "$EMPIRICAL_VCF" --input-format vcf \
   --output "$OUT/empirical.within.tsv" --theta "$THETA" \
-  --rho-over-theta "$RHO_OVER_THETA" --mutation-rate "$MU"
+  --rho-over-theta "$RHO_OVER_THETA" --mutation-rate "$MU" \
+  --no-output-at-hets --output-at-stride "$STRIDE" \
+  --cache-size "$CACHE_SIZE" --threads "$DECODE_THREADS" \
+  --pairs-manifest "$OUT/empirical.within.pairs.tsv"
 
 # Decode each saved tree replicate as a separate scheduler array job, for example:
 # gamma-smc-aou decode --input "$OUT/trees/replicate_${TASK_ID}.trees" --input-format trees \
 #   --output "$OUT/decoded/replicate_${TASK_ID}.tsv" --theta "$THETA" \
-#   --rho-over-theta "$RHO_OVER_THETA" --mutation-rate "$MU"
+#   --rho-over-theta "$RHO_OVER_THETA" --mutation-rate "$MU" \
+#   --no-output-at-hets --output-at-stride "$STRIDE" \
+#   --cache-size "$CACHE_SIZE" --threads "$DECODE_THREADS"
 
 # After the array completes:
 # gamma-smc-aou calibrate --observed "$OUT/empirical.within.tsv" \

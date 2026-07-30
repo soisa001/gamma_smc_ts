@@ -23,6 +23,7 @@ from .carrier_profiles import (
     plot_carrier_profile_figure,
 )
 from .selection import run_slim_recent_sweep, within_individual_tmrca_details
+from .defaults import DEFAULT_GENERATION_TIME, DEFAULT_MUTATION_RATE
 
 
 LARGE_FONTS = {
@@ -314,9 +315,9 @@ def validate_two_epoch_growth(
     sample_diploids: int = 2_000,
     sequence_length: int = 10_000_000,
     variant_age_generations: int = 180,
-    generation_time_years: float = 25,
+    generation_time_years: float = DEFAULT_GENERATION_TIME,
     selection_coefficient: float = 0.05,
-    mutation_rate: float = 1.25e-8,
+    mutation_rate: float = DEFAULT_MUTATION_RATE,
     recombination_rate: float = 1e-8,
     neutral_replicates: int = 100,
     workers: int = 20,

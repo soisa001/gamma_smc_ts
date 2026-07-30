@@ -1,0 +1,4 @@
+comparison	n_positions	max_abs_mean_p_recent_difference	max_abs_mean_tmrca_generations_difference	n_positions_with_different_n_recent_4500	max_abs_n_recent_4500_difference
+500_vs_1000	1000	0.00023256686	325.61733	13	1
+2000_vs_1000	1000	0.00005027746	168.97676	1	1
+5000_vs_1000	1000	0.00005027761	168.97676	1	1

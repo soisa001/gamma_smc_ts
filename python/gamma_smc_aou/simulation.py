@@ -13,6 +13,8 @@ import msprime
 import numpy as np
 import pandas as pd
 
+from .defaults import DEFAULT_GENERATION_TIME, DEFAULT_MUTATION_RATE
+
 
 @dataclass(frozen=True)
 class SimulationConfig:
@@ -20,10 +22,10 @@ class SimulationConfig:
     n_diploids: int = 2000
     sequence_length: int = 1_000_000
     effective_size: float = 10_000
-    mutation_rate: float = 1.25e-8
+    mutation_rate: float = DEFAULT_MUTATION_RATE
     recombination_rate: float = 1.0e-8
     threshold_years: float = 4500
-    generation_time: float = 25
+    generation_time: float = DEFAULT_GENERATION_TIME
     seed: int = 1729
     save_trees: bool = False
 

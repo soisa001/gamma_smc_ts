@@ -21,6 +21,7 @@ import pandas as pd
 import tskit
 
 from .calibration import calibration_metrics, monte_carlo_pvalue
+from .defaults import DEFAULT_GENERATION_TIME, DEFAULT_MUTATION_RATE
 
 
 def slim_executable(explicit: str | Path | None = None) -> str | None:
@@ -196,7 +197,7 @@ def run_slim_recent_sweep(
     sweep_position: int | None = None,
     selection_coefficient: float = 0.01,
     age_generations: int = 180,
-    mutation_rate: float = 1.25e-8,
+    mutation_rate: float = DEFAULT_MUTATION_RATE,
     recombination_rate: float = 1e-8,
     seed: int = 24681357,
     capture_focal_genotypes: bool = False,
@@ -559,7 +560,7 @@ def validate_recent_sweep_grid(
     sequence_length: int = 10_000_000,
     selection_coefficients: tuple[float, ...] = (0.0, 0.001, 0.01),
     age_generations: int = 180,
-    mutation_rate: float = 1.25e-8,
+    mutation_rate: float = DEFAULT_MUTATION_RATE,
     recombination_rate: float = 1e-8,
     neutral_replicates: int = 100,
     selected_replicates: int = 1,
@@ -783,8 +784,8 @@ def validate_recent_sweep_grid(
             float(x) for x in stats["selection_coefficient"].unique()
         ),
         "age_generations": age_generations,
-        "generation_time_years": 25,
-        "threshold_years": age_generations * 25,
+        "generation_time_years": DEFAULT_GENERATION_TIME,
+        "threshold_years": age_generations * DEFAULT_GENERATION_TIME,
         "mutation_rate": mutation_rate,
         "recombination_rate": recombination_rate,
         "neutral_replicates": neutral_replicates,

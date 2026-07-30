@@ -87,6 +87,8 @@ struct PairManifestHeader {
     int n_haplotypes = -1;
     uint64_t panel_digest = 0;
     bool has_panel_digest = false;
+    uint64_t pairs_digest = 0;
+    bool has_pairs_digest = false;
     string source;
 };
 
@@ -187,6 +189,9 @@ inline PairManifestHeader read_pair_manifest_header(const string& filename) {
             } else if (key == "panel_digest") {
                 header.panel_digest = std::stoull(value, NULL, 16);
                 header.has_panel_digest = true;
+            } else if (key == "pairs_digest") {
+                header.pairs_digest = std::stoull(value, NULL, 16);
+                header.has_pairs_digest = true;
             } else if (key == "input") {
                 header.source = value;
             }
@@ -241,4 +246,39 @@ inline void verify_pair_manifest(
         cout << "  Pass --allow_panel_mismatch to proceed anyway.\n";
         exit(-1);
     }
+}
+
+// A manifest can be edited or truncated while remaining syntactically valid.
+// Verify the literal rows after read_pairs_file, not just the panel they index.
+inline void verify_pair_manifest_pairs(
+    const PairManifestHeader& header,
+    const vector<pair<int, int>>& pairs,
+    const string& filename
+) {
+    if (!header.present) {
+        return;
+    }
+    const bool count_differs =
+        (header.n_pairs >= 0) && (header.n_pairs != (long) pairs.size());
+    const uint64_t digest = pairs_digest(pairs);
+    const bool digest_differs =
+        header.has_pairs_digest && (header.pairs_digest != digest);
+    if (!count_differs && !digest_differs) {
+        return;
+    }
+
+    cout << boost::format(
+        "Error: --pairs_file %s does not match its manifest header.\n"
+    ) % filename;
+    if (count_differs) {
+        cout << boost::format("  pairs: manifest %ld, rows read %ld\n")
+                % header.n_pairs % (long) pairs.size();
+    }
+    if (digest_differs) {
+        cout << boost::format("  pairs digest: manifest %s, rows read %s\n")
+                % hex64(header.pairs_digest) % hex64(digest);
+    }
+    cout << "  Restore the original manifest, or remove the Gamma-SMC manifest "
+            "header if this is an intentional hand-written pairs file.\n";
+    exit(-1);
 }

@@ -9,6 +9,7 @@ and that random pair sampling is reproducible.
 import json
 import os
 import re
+import struct
 import subprocess
 from pathlib import Path
 
@@ -63,6 +64,7 @@ def decode(tmp_path, ts, *, name, extra=(), n_random_pairs=0, threads=1, bits=Tr
         "--recent_summary", str(summary),
         "--output_at_hets=false",
         "--output_at_stride", str(STRIDE),
+        "--cache_size", "10",
         "--threads", str(threads),
     ]
     if only_within is None:
@@ -308,6 +310,27 @@ def test_manifest_replays_as_a_pairs_file(tmp_path):
     )
 
 
+def test_truncated_manifest_is_refused(tmp_path):
+    ts = panel_ts()
+    _, _, completed = decode(tmp_path, ts, name="complete", n_random_pairs=16)
+    manifest = manifest_path(completed)
+    lines = manifest.read_text().splitlines()
+    pair_rows = [index for index, line in enumerate(lines) if line and not line.startswith("#")]
+    assert pair_rows
+    lines.pop(pair_rows[-1])
+    truncated = tmp_path / "truncated.pairs.tsv"
+    truncated.write_text("\n".join(lines) + "\n")
+
+    with pytest.raises(subprocess.CalledProcessError) as caught:
+        decode(
+            tmp_path,
+            ts,
+            name="truncated",
+            extra=["--pairs_file", str(truncated)],
+        )
+    assert "does not match its manifest header" in strip_ansi(caught.value.stdout)
+
+
 def test_manifest_records_haplotype_names_alongside_indices(tmp_path):
     _, _, completed = decode(tmp_path, panel_ts(), name="named", n_random_pairs=16)
     manifest = manifest_path(completed)
@@ -334,6 +357,17 @@ def reduced_manifest(tmp_path, completed, n_haplotypes, destination):
     _, pairs = read_manifest(source)
     usable = [pair for pair in pairs if max(pair) < n_haplotypes]
     assert usable, "no drawn pair fits the smaller panel"
+    digest = 1469598103934665603
+    for pair in usable:
+        for value in struct.pack("=ii", *pair):
+            digest ^= value
+            digest = (digest * 1099511628211) & ((1 << 64) - 1)
+    header = [
+        f"# n_pairs\t{len(usable)}" if line.startswith("# n_pairs\t")
+        else f"# pairs_digest\t0x{digest:016x}" if line.startswith("# pairs_digest\t")
+        else line
+        for line in header
+    ]
     rows = [f"{i}\t{j}" for i, j in usable]
     destination.write_text("\n".join(header + rows) + "\n")
     return destination, usable
@@ -396,6 +430,7 @@ def test_runs_with_no_rate_flags_at_all(tmp_path):
             "--input_format", "trees", "--only_within",
             "--recent_summary", str(summary),
             "--output_at_hets=false", "--output_at_stride", str(STRIDE),
+            "--cache_size", "10",
             "--threads", "1",
         ],
         check=True, text=True, capture_output=True,
@@ -405,6 +440,70 @@ def test_runs_with_no_rate_flags_at_all(tmp_path):
     assert "Scaled recombination rate: 0.000600" in stdout
     frame = pd.read_csv(summary, sep="\t")
     assert frame["mean_p_tmrca_lt_threshold"].between(0, 1).all()
+
+
+def test_stride_output_covers_declared_invariant_tail(tmp_path):
+    ts = panel_ts(length=60_000)
+    summary, _, _ = decode(tmp_path, ts, name="tail", bits=False)
+    positions = pd.read_csv(summary, sep="\t")["position_0based"].tolist()
+    assert positions == list(range(0, 60_000, STRIDE))
+
+
+def test_multi_contig_vcf_is_refused(tmp_path):
+    vcf = tmp_path / "two_contigs.vcf"
+    vcf.write_text(
+        "##fileformat=VCFv4.2\n"
+        "##contig=<ID=chr1,length=2000>\n"
+        "##contig=<ID=chr2,length=2000>\n"
+        "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
+        "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\ta\tb\n"
+        "chr1\t101\t.\tA\tG\t.\tPASS\t.\tGT\t0|0\t1|1\n"
+        "chr2\t101\t.\tA\tG\t.\tPASS\t.\tGT\t0|0\t1|1\n"
+    )
+    completed = subprocess.run(
+        [
+            os.environ["GAMMA_SMC_BIN"],
+            "--input", str(vcf),
+            "--input_format", "vcf",
+            "--only_within",
+            "--recent_summary", str(tmp_path / "multi.tsv"),
+            "--output_at_stride", "1000",
+            "--cache_size", "10",
+        ],
+        text=True,
+        capture_output=True,
+    )
+    assert completed.returncode != 0
+    assert "more than one contig" in strip_ansi(completed.stdout)
+
+
+def test_mask_must_cover_the_input_contig(tmp_path):
+    vcf = tmp_path / "chr1.vcf"
+    vcf.write_text(
+        "##fileformat=VCFv4.2\n"
+        "##contig=<ID=chr1,length=2000>\n"
+        "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
+        "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\ta\tb\n"
+        "chr1\t101\t.\tA\tG\t.\tPASS\t.\tGT\t0|0\t1|1\n"
+    )
+    mask = tmp_path / "wrong.bed"
+    mask.write_text("chr2\t0\t2000\n")
+    completed = subprocess.run(
+        [
+            os.environ["GAMMA_SMC_BIN"],
+            "--input", str(vcf),
+            "--input_format", "vcf",
+            "--only_within",
+            "--recent_summary", str(tmp_path / "wrong.tsv"),
+            "--mask", str(mask),
+            "--output_at_stride", "1000",
+            "--cache_size", "10",
+        ],
+        text=True,
+        capture_output=True,
+    )
+    assert completed.returncode != 0
+    assert "has no records for input contig chr1" in strip_ansi(completed.stdout)
 
 
 def test_estimating_theta_is_opt_in(tmp_path):
@@ -417,6 +516,7 @@ def test_estimating_theta_is_opt_in(tmp_path):
         os.environ["GAMMA_SMC_BIN"], "--input", str(source),
         "--input_format", "trees", "--only_within",
         "--output_at_hets=false", "--output_at_stride", str(STRIDE),
+        "--cache_size", "10",
         "--threads", "1", "--recombination_to_mutation_ratio", "0.8",
     ]
     estimated = subprocess.run(
