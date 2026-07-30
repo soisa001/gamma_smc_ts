@@ -139,9 +139,14 @@ def test_reference_rates_are_the_defaults_everywhere():
     # because count() stays 0 for an option that only received its default.
     for option in ("scaled_mutation_rate", "scaled_recombination_rate",
                    "unscaled_mutation_rate"):
-        line = next(l for l in source.splitlines() if f'("{option}"' in l
-                    or f',{option}"' in l or f'"m,{option}"' in l
-                    or f'"r,{option}"' in l)
+        line = next(
+            source_line
+            for source_line in source.splitlines()
+            if f'("{option}"' in source_line
+            or f',{option}"' in source_line
+            or f'"m,{option}"' in source_line
+            or f'"r,{option}"' in source_line
+        )
         assert "default_value" not in line, option
 
     decoder = (ROOT / "python" / "gamma_smc_aou" / "decoder.py").read_text()

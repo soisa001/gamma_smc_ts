@@ -10,7 +10,6 @@ from time import perf_counter
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import msprime
 import numpy as np
 import pandas as pd

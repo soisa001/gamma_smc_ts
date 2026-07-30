@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pandas as pd
 
 from gamma_smc_aou.plotting import plot_truth_tmrca_relationship
