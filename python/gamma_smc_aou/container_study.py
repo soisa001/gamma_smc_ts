@@ -171,6 +171,19 @@ def _plot_decoded_center_calibration(
     axis.set_xlabel(statistic_label, fontsize=20)
     axis.set_ylabel("Decoded neutral simulations", fontsize=20)
     axis.tick_params(axis="both", labelsize=17)
+    if np.ptp(values) == 0:
+        value = float(values[0])
+        pad = max(0.005, abs(value) * 0.5)
+        axis.set_xlim(value - pad, value + pad)
+        axis.text(
+            0.03,
+            0.93,
+            f"all {len(values)} neutral simulations = {value:g}",
+            transform=axis.transAxes,
+            ha="left",
+            va="top",
+            fontsize=18,
+        )
     axis.text(
         0.97,
         0.93,
@@ -267,19 +280,19 @@ def _write_recent_call_comparison(
             "soft_probability",
             "mean",
             "mean_p_tmrca_lt_threshold",
-            "Mean posterior P(TMRCA below threshold)",
+            "Mean posterior P(TMRCA < 4,500 years)",
         ),
         (
             "posterior_mean_call",
             "mean",
             called_column,
-            "Fraction with posterior mean TMRCA below threshold",
+            "Fraction: posterior mean TMRCA < 4,500 years",
         ),
         (
             "posterior_median_call",
             "median",
             called_column,
-            "Fraction with posterior median TMRCA below threshold",
+            "Fraction: posterior median TMRCA < 4,500 years",
         ),
     ]
     truth_profile = truth.set_index("position_0based")["truth_fraction_recent"]
@@ -382,7 +395,8 @@ def _write_recent_call_comparison(
     fig, axes = plt.subplots(
         len(plot_rows),
         2,
-        figsize=(20, 17),
+        figsize=(22, 16),
+        gridspec_kw={"width_ratios": [1.6, 1]},
         constrained_layout=True,
     )
     for row_index, (slug, label, _observed, neutral, scan) in enumerate(plot_rows):
@@ -411,6 +425,28 @@ def _write_recent_call_comparison(
             lw=1.6,
             label="selected pseudo-data",
         )
+        if slug != "soft_probability":
+            left.plot(
+                truth["position_0based"].to_numpy(dtype=float) / 1e6,
+                truth["truth_fraction_recent"].to_numpy(dtype=float),
+                color="#009e73",
+                lw=1.8,
+                label="tree-sequence truth",
+            )
+            left.set_ylim(
+                0,
+                max(
+                    0.01,
+                    1.08
+                    * float(
+                        np.nanmax(
+                            truth["truth_fraction_recent"].to_numpy(dtype=float)
+                        )
+                    ),
+                ),
+            )
+        else:
+            left.set_ylim(bottom=0)
         left.axvline(center / 1e6, color="#e69f00", ls="--", lw=1.4)
         left.set_xlim(0, sequence_length / 1e6)
         left.set_xlabel("Position (Mb)", fontsize=15)
@@ -431,7 +467,29 @@ def _write_recent_call_comparison(
             definition[2],
         ].to_numpy(dtype=float)
         right = axes[row_index, 1]
-        right.hist(null_values, bins=16, color="0.58", edgecolor="white")
+        if np.ptp(null_values) == 0:
+            value = float(null_values[0])
+            width = max(0.001, abs(value) * 0.2)
+            right.bar(
+                [value],
+                [len(null_values)],
+                width=width,
+                color="0.58",
+                edgecolor="white",
+            )
+            pad = max(0.005, abs(value) * 0.5)
+            right.set_xlim(value - pad, value + pad)
+            right.text(
+                0.03,
+                0.92,
+                f"all {len(null_values)} nulls = {value:g}",
+                transform=right.transAxes,
+                ha="left",
+                va="top",
+                fontsize=14,
+            )
+        else:
+            right.hist(null_values, bins=16, color="0.58", edgecolor="white")
         right.axvline(
             float(center_row["observed_fraction_recent"]),
             color="#7c3aed",
@@ -452,17 +510,24 @@ def _write_recent_call_comparison(
             va="top",
             fontsize=14,
         )
-    handles, labels = axes[0, 0].get_legend_handles_labels()
+    handles, labels = [], []
+    for axis in axes[:, 0]:
+        for handle, label in zip(*axis.get_legend_handles_labels()):
+            if label not in labels:
+                handles.append(handle)
+                labels.append(label)
     fig.legend(
         handles,
         labels,
-        loc="upper left",
-        bbox_to_anchor=(1.002, 0.94),
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.995),
+        ncol=len(labels),
         fontsize=13,
     )
     fig.suptitle(
         "Matched posterior-summary comparison on the same selected and null simulations",
         fontsize=23,
+        y=1.02,
     )
     fig.savefig(
         output_dir / "posterior_mean_median_rule_comparison.png",
@@ -829,6 +894,11 @@ def _run_stride_study(
         pair_count=design["sample_diploids"],
         series_label=f"selected pseudo-data ({recent_call} call)",
         statistic_label=_statistic_label(calibration_statistic, recent_call),
+        profile_title=(
+            "Recent-coalescence call profile"
+            if calibration_statistic == "called-fraction"
+            else "Recent-coalescence probability profile"
+        ),
     )
     _plot_null_spatial_calibration(
         scan,
@@ -1025,7 +1095,7 @@ def run_native_stride_study(
     cache_size: int = DEFAULT_CACHE_SIZE,
     threads: int = 1,
     keep_vcfs: bool = False,
-    workers: int = 1,
+    workers: int = 12,
     recent_call: str = "median",
     comparison_recent_call: str | None = None,
     calibration_statistic: str = "mean-posterior-probability",

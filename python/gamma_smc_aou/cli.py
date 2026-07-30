@@ -574,7 +574,7 @@ def parser() -> argparse.ArgumentParser:
     native_study.add_argument("--cache-size", type=int, default=DEFAULT_CACHE_SIZE)
     native_study.add_argument("--threads", type=int, default=1)
     native_study.add_argument("--keep-vcfs", action="store_true")
-    native_study.add_argument("--workers", type=int, default=1)
+    native_study.add_argument("--workers", type=int, default=12)
     native_study.add_argument(
         "--recent-call",
         choices=["mean", "median"],

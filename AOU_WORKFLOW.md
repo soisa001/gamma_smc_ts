@@ -130,13 +130,14 @@ scripts/aou.sh run-native-study \
   --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
   --executable bin/gamma_smc \
   --neutral-replicates 100 --output-at-stride 10000 \
-  --cache-size 1000 --threads 1 --workers 4 \
+  --cache-size 1000 --threads 1 --workers 12 \
   --recent-call mean --compare-recent-call median \
   --calibration-statistic called-fraction
 ```
 
-`workers * threads` is the maximum decoder concurrency; avoid oversubscribing
-the Workbench VM. Each selected/null profile records its exact command and
+The native-study default is 12 workers. `workers * threads` is the maximum
+decoder concurrency; lower `--workers` on smaller Workbench VMs to avoid
+oversubscription. Each selected/null profile records its exact command and
 decode time. With `--compare-recent-call`, each selected or neutral simulation
 is generated once and decoded under both rules. The standard spatial outputs
 use `--calibration-statistic`; the additional `comparison_*` tables and

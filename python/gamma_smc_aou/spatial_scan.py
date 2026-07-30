@@ -168,6 +168,7 @@ def _plot_observed_profile(
     pair_count: int = 2_000,
     series_label: str = "selected pseudo-empirical decode",
     statistic_label: str = "Mean inferred P",
+    profile_title: str = "Recent-coalescence probability profile",
 ) -> None:
     fig, axes = plt.subplots(
         1, 2, figsize=(19, 7.2), sharey=True, constrained_layout=True
@@ -203,6 +204,24 @@ def _plot_observed_profile(
                 else None
             ),
         )
+    if np.allclose(
+        scan["observed_fraction_recent"].to_numpy(dtype=float),
+        0,
+        rtol=0,
+        atol=0,
+    ):
+        axes[0].set_ylim(0, max(0.0025, 5 / pair_count))
+        for axis in axes:
+            axis.text(
+                0.5,
+                0.82,
+                "No pairs called recent",
+                transform=axis.transAxes,
+                ha="center",
+                va="center",
+                fontsize=FONTS["annotation"],
+                color="#7c3aed",
+            )
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(
         handles,
@@ -212,7 +231,7 @@ def _plot_observed_profile(
         fontsize=FONTS["legend"],
     )
     fig.suptitle(
-        f"Recent-coalescence probability profile ({window_size / 1e3:g} kb grid)",
+        f"{profile_title} ({window_size / 1e3:g} kb grid)",
         fontsize=FONTS["suptitle"],
     )
     fig.savefig(output_path, dpi=190, bbox_inches="tight")
@@ -323,6 +342,30 @@ def _plot_null_spatial_calibration(
                 ha="right",
                 va="top",
                 fontsize=FONTS["annotation"],
+            )
+    if np.allclose(
+        scan[
+            [
+                "observed_fraction_recent",
+                "neutral_ci95_lower",
+                "neutral_ci95_upper",
+            ]
+        ].to_numpy(dtype=float),
+        0,
+        rtol=0,
+        atol=0,
+    ):
+        for axis in axes[0, :]:
+            axis.set_ylim(0, max(0.0025, 5 / pair_count))
+            axis.text(
+                0.5,
+                0.82,
+                "Selected and all neutral profiles are zero",
+                transform=axis.transAxes,
+                ha="center",
+                va="center",
+                fontsize=FONTS["annotation"],
+                color="#7c3aed",
             )
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(

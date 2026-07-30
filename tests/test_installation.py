@@ -58,6 +58,7 @@ def test_workbench_defaults_are_shared_by_the_cli():
     )
     assert study.output_at_stride == 10_000
     assert study.cache_size == 1_000
+    assert study.workers == 12
     assert study.recent_call == "median"
     assert study.compare_recent_call is None
     assert study.calibration_statistic == "mean-posterior-probability"
