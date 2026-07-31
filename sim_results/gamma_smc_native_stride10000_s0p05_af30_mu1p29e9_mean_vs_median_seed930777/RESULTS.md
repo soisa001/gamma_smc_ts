@@ -3,8 +3,8 @@
 > **Correction (2026-07-31):** the intended project default is `1.29e-8`.
 > This directory remains a valid tenfold sparse-mutation sensitivity test of
 > the hard-call rule, but it is not a default-rate evaluation. See
-> [`../gamma_smc_mu1p29e8_vs1p25e8_seed930777/RESULTS.md`](../gamma_smc_mu1p29e8_vs1p25e8_seed930777/RESULTS.md)
-> for the corrected mean-call runs.
+> [`../gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777/RESULTS.md`](../gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777/RESULTS.md)
+> for the corrected paired mean/median runs at 1 kb and 10 kb.
 
 ## Answer
 

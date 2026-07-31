@@ -7,6 +7,9 @@ run was a tenfold sparse-mutation sensitivity experiment caused by a decimal
 place error; it is not evidence that Gamma-SMC fails under the intended
 default.
 
+The paired posterior mean-versus-median follow-up at both 1 kb and 10 kb is in
+[`../gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777/RESULTS.md`](../gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777/RESULTS.md).
+
 With the same selected genealogy and matched decoder scaling, both
 `mu=1.29e-8` and `mu=1.25e-8` recover the sweep at both 1 kb and 10 kb output
 stride:

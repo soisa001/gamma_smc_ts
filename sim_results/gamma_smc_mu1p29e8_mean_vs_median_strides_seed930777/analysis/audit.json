@@ -1,0 +1,82 @@
+{
+  "audit_date": "2026-07-31",
+  "method": "independent read-back of all selected and neutral call profiles; centers, exceedances, p-values, soft-column equality, and shared-stride values recomputed without analysis helpers",
+  "cells": {
+    "1kb_mean": {
+      "selected_rows": 10000,
+      "neutral_rows": 1000000,
+      "neutral_replicates": 100,
+      "selected_center": 0.05,
+      "null_center_mean": 0.007715,
+      "exceedances": 0,
+      "p_upper": 0.009900990099009901,
+      "recomputed_matches_summary": true
+    },
+    "1kb_median": {
+      "selected_rows": 10000,
+      "neutral_rows": 1000000,
+      "neutral_replicates": 100,
+      "selected_center": 0.0685,
+      "null_center_mean": 0.011259999999999997,
+      "exceedances": 0,
+      "p_upper": 0.009900990099009901,
+      "recomputed_matches_summary": true
+    },
+    "10kb_mean": {
+      "selected_rows": 1000,
+      "neutral_rows": 100000,
+      "neutral_replicates": 100,
+      "selected_center": 0.05,
+      "null_center_mean": 0.007715,
+      "exceedances": 0,
+      "p_upper": 0.009900990099009901,
+      "recomputed_matches_summary": true
+    },
+    "10kb_median": {
+      "selected_rows": 1000,
+      "neutral_rows": 100000,
+      "neutral_replicates": 100,
+      "selected_center": 0.0685,
+      "null_center_mean": 0.011264999999999999,
+      "exceedances": 0,
+      "p_upper": 0.009900990099009901,
+      "recomputed_matches_summary": true
+    }
+  },
+  "soft_identity": {
+    "1kb_selected_max_abs_difference": 0.0,
+    "1kb_neutral_max_abs_difference": 0.0,
+    "10kb_selected_max_abs_difference": 0.0,
+    "10kb_neutral_max_abs_difference": 0.0
+  },
+  "canonical_mean_alias": {
+    "1kb_selected_exact": true,
+    "1kb_neutral_exact": true,
+    "10kb_selected_exact": true,
+    "10kb_neutral_exact": true
+  },
+  "shared_selected_stride": {
+    "mean": {
+      "rows": 1000,
+      "pearson_correlation": 0.9999904164438399,
+      "maximum_absolute_difference": 0.0005000000000000004,
+      "identical_rows": 988
+    },
+    "median": {
+      "rows": 1000,
+      "pearson_correlation": 0.9999812047807317,
+      "maximum_absolute_difference": 0.0010000000000000009,
+      "identical_rows": 973
+    }
+  },
+  "hashes_sha256": {
+    "analysis/mu1p29e8_mean_vs_median_1kb_10kb.png": "bb6c17203bfa375d78a56d5b5123ffac26190c2d281a0d7468ef6cd2c8b7af28",
+    "analysis/mean_median_stride_center_summary.tsv": "710ae38a0c6e53763c1aeaf6b48149a0a6006ea08efee6384a5e25a915192e59",
+    "analysis/mean_median_stride_metrics.json": "d609a6a43c400948e2873f16ccc39598355c770414b1ed00ac4ea7d10b2287de",
+    "stride1kb/neutral_decoded_mean_call_profiles.tsv.gz": "911451f06361903b28ebeb63303a7122f5d8c1170ae07dc7e5e6a7f8953e7254",
+    "stride1kb/neutral_decoded_median_call_profiles.tsv.gz": "5a5177207d42768572676c8dac4f06d227154670e04472c7965a615a608802ea",
+    "stride10kb/neutral_decoded_mean_call_profiles.tsv.gz": "be090b44b85dfcbe7894f73ac4629c2d79e0ece670ba7f2037b518dd485dff34",
+    "stride10kb/neutral_decoded_median_call_profiles.tsv.gz": "b74b6f4f75845cda457a843b50e026c748f1e057305524a6d3545f6874c9afc6"
+  },
+  "status": "passed"
+}

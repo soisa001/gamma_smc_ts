@@ -1,0 +1,121 @@
+{
+  "study": "paired posterior mean versus median hard calls at 1 kb and 10 kb",
+  "created": "2026-07-31",
+  "branch": "AOU_run_opt",
+  "base_commit": "8474ecc14654bf326d82d36d8511b44d45d7ae66",
+  "source": {
+    "path": "../gamma_smc_mu1p29e8_vs1p25e8_seed930777/source_mu1p29e8",
+    "mutation_rate": 1.29e-08,
+    "mutation_seed": 945460,
+    "tree_sha256": "5f4191a8ef3f44d946897cf430b14c058a455461db8f54ac28de9eba046c7c4b",
+    "selection_coefficient": 0.05,
+    "population_allele_frequency": 0.3216,
+    "sample_allele_frequency": 0.31125,
+    "variant_age_generations": 180,
+    "sequence_length": 10000000,
+    "sample_diploids": 2000
+  },
+  "decoder": {
+    "backend": "native optimized Linux binary",
+    "executable": "bin/gamma_smc",
+    "scaled_mutation_rate": 0.000516,
+    "recombination_to_mutation_ratio": 0.7751937984496124,
+    "neutral_replicates_per_stride": 100,
+    "workers": 12,
+    "threads_per_replicate": 1,
+    "cache_size_bp": 1000,
+    "primary_recent_call": "mean",
+    "paired_comparison_recent_call": "median",
+    "calibration_statistic": "called-fraction",
+    "soft_posterior_columns_required_identical": true
+  },
+  "runs": {
+    "stride_1kb": {
+      "output_dir": "stride1kb",
+      "stride_bp": 1000,
+      "selected_rows_per_call": 10000,
+      "neutral_rows_per_call": 1000000,
+      "elapsed_seconds": 606.0548067340001
+    },
+    "stride_10kb": {
+      "output_dir": "stride10kb",
+      "stride_bp": 10000,
+      "selected_rows_per_call": 1000,
+      "neutral_rows_per_call": 100000,
+      "elapsed_seconds": 539.5430056149999
+    }
+  },
+  "commands": {
+    "stride_1kb": [
+      "python",
+      "-m",
+      "gamma_smc_aou.cli",
+      "run-native-study",
+      "--source-dir",
+      "sim_results/gamma_smc_mu1p29e8_vs1p25e8_seed930777/source_mu1p29e8",
+      "--output-dir",
+      "sim_results/gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777/stride1kb",
+      "--executable",
+      "bin/gamma_smc",
+      "--neutral-replicates",
+      "100",
+      "--output-at-stride",
+      "1000",
+      "--cache-size",
+      "1000",
+      "--threads",
+      "1",
+      "--workers",
+      "12",
+      "--recent-call",
+      "mean",
+      "--compare-recent-call",
+      "median",
+      "--calibration-statistic",
+      "called-fraction"
+    ],
+    "stride_10kb": [
+      "python",
+      "-m",
+      "gamma_smc_aou.cli",
+      "run-native-study",
+      "--source-dir",
+      "sim_results/gamma_smc_mu1p29e8_vs1p25e8_seed930777/source_mu1p29e8",
+      "--output-dir",
+      "sim_results/gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777/stride10kb",
+      "--executable",
+      "bin/gamma_smc",
+      "--neutral-replicates",
+      "100",
+      "--output-at-stride",
+      "10000",
+      "--cache-size",
+      "1000",
+      "--threads",
+      "1",
+      "--workers",
+      "12",
+      "--recent-call",
+      "mean",
+      "--compare-recent-call",
+      "median",
+      "--calibration-statistic",
+      "called-fraction"
+    ],
+    "combined_analysis": [
+      "python",
+      "scripts/analyze_mean_median_strides.py",
+      "--root",
+      "sim_results/gamma_smc_mu1p29e8_mean_vs_median_strides_seed930777",
+      "--source",
+      "sim_results/gamma_smc_mu1p29e8_vs1p25e8_seed930777/source_mu1p29e8"
+    ]
+  },
+  "software": {
+    "python": "3.11.15",
+    "msprime": "1.4.2",
+    "tskit": "1.0.3",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3"
+  }
+}

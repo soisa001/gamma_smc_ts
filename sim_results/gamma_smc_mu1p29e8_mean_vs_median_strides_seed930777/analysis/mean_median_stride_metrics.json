@@ -1,0 +1,98 @@
+{
+  "mutation_rate": 1.29e-08,
+  "interpretation": "recent-call mean versus median changes only hard calls; soft posterior probabilities are invariant",
+  "run_contract": {
+    "1 kb": {
+      "stride_bp": 1000,
+      "neutral_replicates": 100,
+      "neutral_workers": 12,
+      "recent_call": "mean",
+      "comparison_recent_call": "median",
+      "cache_size_bp": 1000,
+      "observed_output_positions": 10000,
+      "elapsed_seconds": 606.0548067340001
+    },
+    "10 kb": {
+      "stride_bp": 10000,
+      "neutral_replicates": 100,
+      "neutral_workers": 12,
+      "recent_call": "mean",
+      "comparison_recent_call": "median",
+      "cache_size_bp": 1000,
+      "observed_output_positions": 1000,
+      "elapsed_seconds": 539.5430056149999
+    }
+  },
+  "soft_posterior_identity": {
+    "1 kb": {
+      "selected_rows": 10000,
+      "neutral_rows": 1000000,
+      "all_soft_columns_identical_at_tolerance_1e-12": true
+    },
+    "10 kb": {
+      "selected_rows": 1000,
+      "neutral_rows": 100000,
+      "all_soft_columns_identical_at_tolerance_1e-12": true
+    }
+  },
+  "stride_comparison": {
+    "mean": {
+      "selected_stride": {
+        "shared_rows": 1000,
+        "pearson_correlation": 0.9999904164438399,
+        "mean_difference_1kb_minus_10kb": -4.999999999999998e-06,
+        "mean_absolute_difference": 5.9999999999999985e-06,
+        "maximum_absolute_difference": 0.0005000000000000004,
+        "identical_rows": 988
+      },
+      "neutral_stride": {
+        "shared_rows": 100000,
+        "pearson_correlation": 0.9996391072781584,
+        "mean_difference_1kb_minus_10kb": -6.39e-06,
+        "mean_absolute_difference": 6.459999999999999e-06,
+        "maximum_absolute_difference": 0.0014999999999999996,
+        "identical_rows": 98730
+      }
+    },
+    "median": {
+      "selected_stride": {
+        "shared_rows": 1000,
+        "pearson_correlation": 0.9999812047807317,
+        "mean_difference_1kb_minus_10kb": -1.3999999999999998e-05,
+        "mean_absolute_difference": 1.3999999999999998e-05,
+        "maximum_absolute_difference": 0.0010000000000000009,
+        "identical_rows": 973
+      },
+      "neutral_stride": {
+        "shared_rows": 100000,
+        "pearson_correlation": 0.9997045638421337,
+        "mean_difference_1kb_minus_10kb": -8.47e-06,
+        "mean_absolute_difference": 8.58e-06,
+        "maximum_absolute_difference": 0.0015000000000000013,
+        "identical_rows": 98321
+      }
+    }
+  },
+  "call_rule_effect": {
+    "1 kb": {
+      "selected_center_mean_call": 0.05,
+      "selected_center_median_call": 0.0685,
+      "selected_center_median_minus_mean": 0.018500000000000003,
+      "selected_center_truth": 0.098,
+      "neutral_center_mean_call_average": 0.007715,
+      "neutral_center_median_call_average": 0.011259999999999997,
+      "neutral_center_median_minus_mean_average": 0.003545000000000001,
+      "neutral_center_rule_correlation": 0.813037381983723
+    },
+    "10 kb": {
+      "selected_center_mean_call": 0.05,
+      "selected_center_median_call": 0.0685,
+      "selected_center_median_minus_mean": 0.018500000000000003,
+      "selected_center_truth": 0.098,
+      "neutral_center_mean_call_average": 0.007715,
+      "neutral_center_median_call_average": 0.011264999999999999,
+      "neutral_center_median_minus_mean_average": 0.00355,
+      "neutral_center_rule_correlation": 0.8119172644171264
+    }
+  }
+}
