@@ -64,10 +64,13 @@ The selected scan is also regionally enriched:
 
 There are no BH discoveries across the full position-by-position scan. That
 is a calibration-resolution issue, not absence of a signal: with 100 nulls,
-the smallest attainable empirical p-value is `1/101`, which cannot pass BH
-across 1,000 or 10,000 windows. The prespecified center and null-calibrated
-regional-density tests are the appropriate evidence here. More nulls would be
-needed for a powered genome-wide multiple-testing analysis.
+the smallest attainable empirical p-value is `1/101`. An isolated minimum
+p-value cannot pass BH across 1,000 or 10,000 windows; crossing at that value
+would require at least 199 or 1,981 windows, respectively, at or below it.
+The observed p-value distributions do not meet that condition. The
+prespecified center and null-calibrated regional-density tests are the
+appropriate evidence here. More nulls would be needed for a powered
+genome-wide multiple-testing analysis.
 
 ## Carrier-class check
 
