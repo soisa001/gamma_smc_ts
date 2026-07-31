@@ -1,0 +1,67 @@
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+import pytest
+
+
+def _runner_command(repo: Path, arguments: list[str]) -> tuple[list[str], Path]:
+    if os.name == "nt":
+        git_bash = Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Git/usr/bin/bash.exe"
+        if not git_bash.is_file():
+            pytest.skip("Git Bash is not available")
+        command = "bash scripts/run_aou_workbench.sh " + " ".join(arguments)
+        return [str(git_bash), "-lc", command], repo
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("bash is not available")
+    return [bash, str(repo / "scripts" / "run_aou_workbench.sh"), *arguments], repo
+
+
+def test_runner_dry_run_resolves_case_insensitive_defaults():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    command, cwd = _runner_command(
+        repo, ["-chr", "1", "-pops", "afr", "--dry-run"]
+    )
+    completed = subprocess.run(
+        command,
+        check=True,
+        text=True,
+        capture_output=True,
+        env=environment,
+        cwd=cwd,
+    )
+    output = completed.stdout
+    assert "populations: AFR" in output
+    assert "chromosomes: 1" in output
+    assert "threads=12" in output
+    assert "recent_call=mean" in output
+    assert "stride=10000 bp, cache=1000 bp" in output
+    assert "100000 random haplotype pairs/pop, seed=1729, exclude_within=0" in output
+    assert "candidates: fraction>0.05, merge_gap=20000 bp" in output
+    assert "aou_lr_phase2_v1.chr1.bubble.split.bcf" in output
+    assert "ancestry_preds.tsv (column ancestry_pred_other)" in output
+    assert "flagged_samples.tsv" in output
+    assert "relatedness_flagged_samples.tsv" in output
+    assert "hardmask.hg38.v4.over99.bed" in output
+
+
+def test_runner_requires_explicit_scope():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    command, cwd = _runner_command(repo, ["--dry-run"])
+    completed = subprocess.run(
+        command,
+        text=True,
+        capture_output=True,
+        env=environment,
+        cwd=cwd,
+    )
+    assert completed.returncode == 2
+    assert "-chr is required" in completed.stderr

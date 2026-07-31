@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
         ("pairs_manifest", "Write the decoded pair list here; reusable as --pairs_file. Written automatically next to the output when --n_random_pairs is used", cxxopts::value<std::string>())
         ("allow_panel_mismatch", "Downgrade the --pairs_file panel-digest check to a warning")
         ("s,output_at_stride", "Output at positions which are multiples of this number (default 10000; -1 disables)", cxxopts::value<int>()->default_value("10000"))
+        ("output_positions_file", "File with one exact 0-based output position per line", cxxopts::value<std::string>())
         ("h,output_at_hets", "Output at segregating sites as well as at the stride (off unless given explicitly)", cxxopts::value<bool>()->default_value("true"))
         ("z,cache_size", "Maximum cache size in basepairs", cxxopts::value<int>()->default_value("1000"))
         ("j,threads", "Worker threads (0 = all available)", cxxopts::value<int>()->default_value("0"))
@@ -343,9 +344,10 @@ int main(int argc, char** argv) {
     if (vm.count("output_at_hets") == 0) {
         output_at_hets = false;
     }
-    if (!output_at_hets && (output_at_stride == -1)) {
+    if (!output_at_hets && (output_at_stride == -1)
+            && vm.count("output_positions_file") == 0) {
         cout << "Error: --output_at_hets=false with --output_at_stride=-1 "
-                "selects no output positions.\n";
+                "and no --output_positions_file selects no output positions.\n";
         exit(-1);
     }
 
@@ -426,6 +428,24 @@ int main(int argc, char** argv) {
     }
     screen.print_done();
 
+    vector<position_t> requested_output_positions;
+    if (vm.count("output_positions_file")) {
+        const string output_positions_filename = vm["output_positions_file"].as<string>();
+        if (!std::filesystem::exists(output_positions_filename)) {
+            cout << boost::format("Error: Cannot open --output_positions_file: %s\n")
+                    % output_positions_filename;
+            exit(-1);
+        }
+        readOutputPositions(
+            output_positions_filename,
+            requested_output_positions,
+            input_sites.sequence_length
+        );
+        screen.print_item(boost::str(
+            boost::format("Read %d exact output positions.") % requested_output_positions.size()
+        ));
+    }
+
     //
     // Load masks
     //
@@ -473,7 +493,8 @@ int main(int argc, char** argv) {
         mask_map,
         output_at_stride,
         cache_size,
-        output_at_hets
+        output_at_hets,
+        requested_output_positions
     );
 
     screen.print_item(boost::str(

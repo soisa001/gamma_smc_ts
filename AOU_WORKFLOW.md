@@ -45,6 +45,14 @@ attempted on a byte stream.
 
 ## 1. Empirical within-sample scan
 
+For an end-to-end Researcher Workbench run over chromosome/population scopes,
+including GCS staging, a deterministic 100,000-pair within-population scan,
+restart validation, candidate-variant analysis, upload, and separate
+per-population chromosome/whole-genome plots, use
+[`WORKBENCH_RUNNER.md`](WORKBENCH_RUNNER.md). The Workbench runner defaults to
+12 decoder threads, the posterior-mean call rule, a 10 kb output stride, a 1 kb
+transition cache, and mutation rate `1.29e-8`.
+
 Run one pair for every diploid. `theta` is the Gamma-SMC scaled mutation rate;
 `mu` is needed to convert its coalescent time scale back to generations.
 The requested defaults are `theta=0.00075` and `mu=1.29e-8`, which imply
@@ -57,8 +65,9 @@ gamma-smc-aou decode \
   --executable bin/gamma_smc \
   --input AFR.phased.bcf --input-format vcf \
   --output AFR.within.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
-  --no-output-at-hets --output-at-stride 10000
+  --theta 0.00075 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
+  --recent-call mean --no-output-at-hets --output-at-stride 10000 \
+  --threads 12 --cache-size 1000
 ```
 
 The input contract is one contig of diploid, phased, biallelic SNP data.

@@ -74,7 +74,7 @@ if [[ "$INSTALL_NATIVE" -eq 1 ]]; then
             echo "Gamma-SMC decoding requires Linux x86_64/AVX2; use --simulation-only here." >&2
             exit 2
         fi
-        native_packages+=("gxx_linux-64" "make" "boost-cpp" "htslib" "zstd")
+        native_packages+=("gxx_linux-64" "make" "boost-cpp" "htslib" "bcftools" "zstd")
     fi
     if [[ -d "$NATIVE/conda-meta" ]]; then
         "$MAMBA" install -y -p "$NATIVE" -c conda-forge -c bioconda \

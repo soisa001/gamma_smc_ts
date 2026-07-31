@@ -22,10 +22,14 @@ def test_output_at_hets_false_is_attached_to_boolean_option(tmp_path, monkeypatc
         "input.vcf.gz",
         tmp_path / "summary.tsv",
         output_at_hets=False,
+        samples=tmp_path / "samples.txt",
     )
 
     assert "--output_at_hets=false" in captured["command"]
     assert "--output_at_hets" not in captured["command"]
+    assert captured["command"][captured["command"].index("--samples") + 1] == str(
+        tmp_path / "samples.txt"
+    )
 
 
 def test_output_at_hets_true_is_attached_to_boolean_option(tmp_path, monkeypatch):

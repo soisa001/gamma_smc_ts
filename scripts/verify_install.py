@@ -80,6 +80,23 @@ def main() -> int:
     if args.require_decoder and not decoder:
         raise RuntimeError("compiled Gamma-SMC decoder not found")
 
+    bcftools = executable([
+        os.environ.get("BCFTOOLS_BIN", ""),
+        REPO / ".native" / "bin" / "bcftools",
+        "bcftools",
+    ])
+    report["bcftools"] = None
+    if bcftools:
+        completed = subprocess.run(
+            [bcftools, "--version"], check=True, capture_output=True, text=True
+        )
+        report["bcftools"] = {
+            "path": bcftools,
+            "version": completed.stdout.splitlines()[0],
+        }
+    elif args.require_decoder:
+        raise RuntimeError("bcftools not found; rerun the full bootstrap")
+
     if platform.system() == "Linux":
         cpuinfo = Path("/proc/cpuinfo")
         report["cpu_has_avx2"] = bool(

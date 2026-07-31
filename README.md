@@ -4,6 +4,11 @@ For the AoU selection scan, fixed-standard-coalescent simulations,
 tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries, and
 simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).
 
+For a fresh All of Us Researcher Workbench run with GCS staging, restart-safe
+chromosome/population selection, 100,000 ordered within-population haplotype
+pairs, candidate-variant analysis, 12-thread decoding, and separate
+per-population plots, see [WORKBENCH_RUNNER.md](WORKBENCH_RUNNER.md).
+
 ## Large scans: many sampled pairs, one bit per pair
 
 The decoder in this branch is parallel over haplotype pairs and can record the

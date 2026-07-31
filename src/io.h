@@ -763,6 +763,53 @@ void readMask(
     global_mask.swap(merged);
 }
 
+void readOutputPositions(
+    const string& filename,
+    vector<position_t>& output_positions,
+    position_t sequence_length
+) {
+    ifstream input(filename);
+    if (!input.is_open() || !input.good()) {
+        cout << boost::format("Error: Cannot open --output_positions_file: %s\n") % filename;
+        exit(-1);
+    }
+
+    string line;
+    long line_number = 0;
+    while (getline(input, line)) {
+        line_number++;
+        boost::algorithm::trim(line);
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
+        std::istringstream fields(line);
+        long long position;
+        string trailing;
+        if (!(fields >> position) || (fields >> trailing)) {
+            cout << boost::format(
+                "Error: --output_positions_file %s line %ld must contain one integer.\n"
+            ) % filename % line_number;
+            exit(-1);
+        }
+        if (position < 0 || position >= sequence_length) {
+            cout << boost::format(
+                "Error: --output_positions_file %s line %ld position %lld is outside [0, %ld).\n"
+            ) % filename % line_number % position % sequence_length;
+            exit(-1);
+        }
+        output_positions.push_back((position_t) position);
+    }
+    std::sort(output_positions.begin(), output_positions.end());
+    output_positions.erase(
+        std::unique(output_positions.begin(), output_positions.end()),
+        output_positions.end()
+    );
+    if (output_positions.empty()) {
+        cout << boost::format("Error: --output_positions_file %s contains no positions.\n") % filename;
+        exit(-1);
+    }
+}
+
 void readMasks(
     string filename,
     unordered_map<string, vector<pair<int, int>>>& mask_map,

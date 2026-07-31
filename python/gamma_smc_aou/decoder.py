@@ -31,6 +31,8 @@ def run_within_decoder(
     bitmatrix_output: str | Path | None = None,
     mask: str | Path | None = None,
     masks_per_sample: str | Path | None = None,
+    samples: str | Path | None = None,
+    output_positions_file: str | Path | None = None,
     output_at_stride: int = DEFAULT_OUTPUT_STRIDE,
     output_at_hets: bool = False,
     only_within: bool = True,
@@ -121,6 +123,10 @@ def run_within_decoder(
         command.extend(["--mask", str(mask)])
     if masks_per_sample is not None:
         command.extend(["--masks_per_sample", str(masks_per_sample)])
+    if samples is not None:
+        command.extend(["--samples", str(samples)])
+    if output_positions_file is not None:
+        command.extend(["--output_positions_file", str(output_positions_file)])
     if extra_args:
         command.extend(str(value) for value in extra_args)
 

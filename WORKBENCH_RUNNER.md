@@ -1,0 +1,206 @@
+# All of Us Workbench runner
+
+`scripts/run_aou_workbench.sh` stages controlled inputs from their v9 GCS
+buckets, samples 100,000 arbitrary within-population haplotype pairs, validates
+every chromosome, uploads aggregate and pair-level candidate outputs, and
+makes separate plots for each population. It is CPU-only and runs
+populations/chromosomes sequentially while using 12 decoder threads by default.
+
+## Fresh notebook cell
+
+This is the complete setup-and-run cell for a fresh Researcher Workbench cloud
+environment. Change the final scope to `-chr 1 -pops afr` for the chromosome 1
+pilot before launching all 132 population/chromosome jobs.
+
+```bash
+%%bash
+set -euo pipefail
+REPO=/home/jupyter/gamma_smc_ts
+
+if [[ -d "$REPO/.git" ]]; then
+  git -C "$REPO" fetch origin AOU_run_opt
+  git -C "$REPO" switch AOU_run_opt
+  git -C "$REPO" pull --ff-only origin AOU_run_opt
+else
+  git clone --branch AOU_run_opt \
+    https://github.com/soisa001/gamma_smc_ts.git "$REPO"
+fi
+
+bash "$REPO/scripts/bootstrap_uv.sh" --skip-tests
+bash "$REPO/scripts/run_aou_workbench.sh" -chr all -pops all
+```
+
+The runner intentionally requires both scope arguments. Values are
+case-insensitive, and comma lists work too:
+
+```bash
+# Pilot
+bash scripts/run_aou_workbench.sh -chr 1 -pops afr
+
+# Selected chromosomes and populations
+bash scripts/run_aou_workbench.sh -chr 1,2,22 -pops AFR,EUR
+
+# Resolve every path and parameter without accessing GCS
+bash scripts/run_aou_workbench.sh -chr all -pops all --dry-run
+```
+
+## Suggested Workbench VM
+
+Use an `n2-highmem-16` CPU VM (16 vCPUs, 128 GB RAM), no GPU, with a 1 TB
+balanced persistent disk as the starting configuration. This leaves four
+vCPUs outside the 12-thread decoder and gives the full-panel genotype data,
+plots, and candidate conversion room to coexist. Google currently lists
+`n2-highmem-16` as 16 vCPUs and 128 GB RAM in the
+[N2 machine-type table](https://docs.cloud.google.com/compute/docs/general-purpose-machines#n2_high-mem).
+
+The controlled BCF object sizes cannot be verified outside Workbench, so 1 TB
+is a starting point rather than a guaranteed minimum. Before each download the
+runner reads the actual GCS BCF/CSI sizes and requires those bytes plus a 20 GiB
+reserve. Before candidate replay it independently requires 16 bytes per
+requested-position/pair cell plus 5 GiB. Increase the disk if either preflight
+stops the run; 2 TB is the low-intervention choice if disk resizing later is
+undesirable.
+
+## Default input contract and paths
+
+The source is the phased lrWGS phase-2 full panel. One BCF is downloaded per
+requested chromosome and reused sequentially across the requested populations,
+then removed by default. The files may contain SNVs, indels, and SVs; the native
+reader retains only biallelic segregating SNPs for Gamma-SMC and rejects an
+unphased heterozygous SNP.
+
+The runner reads `ancestry_pred_other`, retaining only `AFR`, `AMR`, `EAS`,
+`EUR`, `MID`, and `SAS`. `oth`, missing ancestry rows, and every ID in either
+exclusion table are dropped. It obtains the chromosome's actual BCF sample
+order with `bcftools query -l`, intersects that order with the filtered
+ancestry set, and writes one deterministic sample list per population and
+chromosome. Thus an ancestry-table participant absent from the long-read BCF is
+also excluded.
+
+The complete default controlled-input and output layout is:
+
+| Artifact | Default path |
+|---|---|
+| Full-panel phased BCF | `gs://rw-long-reads-transfer-2026-06-17/v9/lrWGS/panel/panel/panel_bubble_split_vcf/aou_lr_phase2_v1.chr{chr}.bubble.split.bcf` |
+| Required BCF index | the full-panel BCF path plus `.csi` |
+| Ancestry assignments | `gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/ancestry/ancestry_preds.tsv` |
+| QC exclusions | `gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/qc/flagged_samples.tsv` |
+| Relatedness exclusions | `gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/relatedness/relatedness_flagged_samples.tsv` |
+| Exclusion hard mask | `gs://rw-migration-aou-rw-fa99430f/hardmask.hg38.v4.over99.bed` |
+| Staging/results root | `/home/jupyter/gamma_smc_workbench` |
+| Chromosome outputs | `$WORKSPACE_BUCKET/gamma_smc/results/{POP}/chromosomes/` |
+| Plot outputs | `$WORKSPACE_BUCKET/gamma_smc/results/{POP}/plots/{scope}/` |
+| Callable-mask QC | `$WORKSPACE_BUCKET/gamma_smc/results/shared/masks/` |
+
+The supplied hard mask describes bases to exclude, whereas Gamma-SMC's
+`--mask` accepts bases to include. The runner reads the single-contig name and
+length from the BCF/CSI, merges and clips that chromosome's hard-mask
+intervals, writes their exact complement using the BCF contig name, and audits
+excluded and callable bases. Passing the raw hard mask directly would invert
+the intended filter.
+
+For each chromosome, the output directory receives:
+
+- `chrN.gamma_smc.tsv`: aggregate Gamma-SMC scan;
+- `chrN.gamma_smc.tsv.run.json`: exact native command, decoder output, and runtime;
+- `chrN.pairs.tsv`: ordered manifest for the 100,000 sampled haplotype pairs;
+- `chrN.recent.bits[.meta]`: one deterministic recent/not-recent bit per output
+  position and manifest pair;
+- `chrN.samples.txt`: BCF-ordered, ancestry/QC/relatedness-filtered sample IDs;
+- `chrN.samples.audit.json`: columns, source hashes, and all filter counts;
+- `chrN.candidate_regions.tsv`: windows with `frac_recent_4500 > 0.05`, merged
+  when the intervening gap is no more than 20 kb;
+- `chrN.candidates/`: candidate TMRCA profiles, all-variant score tables,
+  representative variants, PNG/PDF plots, and a deterministic artifact
+  manifest;
+- `chrN.decode.log`: wall-time and peak-memory log;
+- `chrN.complete.json`: input fingerprints, code commit, exact settings, and
+  SHA-256 hashes for required outputs, sample list/audit, and callable mask.
+
+Each population gets chromosome PNG/PDF scans, a chromosome summary table, and
+a plot manifest. `-chr all` additionally requires all autosomes to validate
+before it writes the population's whole-genome PNG/PDF and top-window table.
+Plots show the posterior-mean hard-call fraction, the mean posterior
+probability, and mean posterior TMRCA; they are descriptive scans, not
+simulation-calibrated p-values.
+
+The candidate pass is population-specific. It plots all decoded-pair TMRCA
+quantiles within 500 kb of each peak, queries every BCF record within 100 kb,
+and ranks each ALT allele by the fraction of raw TMRCA variance explained by
+the ref/ref versus matching-ALT/matching-ALT pair label. These are allele pairs,
+not diploid genotypes: for example, haplotype 1 from one person and haplotype 1
+from another person can form either class. Mixed pairs and pairs carrying two
+different ALT alleles are omitted for that ALT-specific comparison. At the
+10 kb scan resolution, each variant is tested against the nearest decoded
+TMRCA position; that position is written explicitly in every score row.
+
+Only candidate chromosomes receive the targeted raw-posterior replay. It uses
+the literal `chrN.pairs.tsv` as input, verifies the native pair array exactly,
+and writes `candidate_tmrca.f32.zst` in position-major order where column `k`
+is data row `k` of the pair manifest. The large native alpha/beta stream is
+deleted after this validated conversion. No additional samples or pairs are
+drawn for candidate regions.
+
+## Analysis defaults
+
+| Setting | Default |
+|---|---:|
+| decoder threads | 12 |
+| posterior call rule | `mean` |
+| output stride | 10,000 bp |
+| mutation rate | `1.29e-8` |
+| transition cache | 1,000 bp |
+| scaled mutation rate (`theta`) | `0.00075` |
+| recombination/theta ratio | `0.8` |
+| recent threshold | 4,500 years |
+| generation time | 25 years |
+| pair mode | 100,000 distinct unordered haplotype pairs per population |
+| pair seed | `1729` |
+| signal screen | `frac_recent_4500 > 0.05` |
+| signal merge gap | 20,000 bp |
+| candidate profile | peak +/-500,000 bp |
+| variant search | peak +/-100,000 bp |
+| minimum class size | 20 ref/ref and 20 matching-alt/matching-alt pairs |
+
+The 1 kb cache is retained because increasing it has linear cache-memory cost
+without a demonstrated 10 kb-stride speed benefit. Its steady shared cache is
+about 490 MB (plus about 122 MB while constructing it); a 10 kb cache would be
+about 4.9 GB (plus about 1.2 GB during construction). Cache size and stride are
+independent: the output grid is 10 kb while transition-cache segments stay at
+1 kb.
+
+## Overrides and restart behavior
+
+Every path can be changed without editing the script:
+
+```bash
+bash scripts/run_aou_workbench.sh -chr 1 -pops AFR \
+  --output-prefix gs://my-bucket/gamma_results \
+  --bcf-template 'gs://my-bucket/full_panel/chr{chr}.bcf' \
+  --index-template '{bcf}.csi' \
+  --mask-template 'gs://my-bucket/hardmask.excluded.bed' \
+  --ancestry-uri gs://my-bucket/ancestry_preds.tsv \
+  --qc-exclusions-uri gs://my-bucket/flagged_samples.tsv \
+  --relatedness-exclusions-uri gs://my-bucket/relatedness_flagged_samples.tsv
+```
+
+Equivalent `AOU_GAMMA_*` environment variables are documented by
+`scripts/run_aou_workbench.sh --help`. Use `--no-mask` only when that is the
+intended callable-region policy, and apply the identical policy to the matched
+null simulations.
+
+The random draw is over all distinct unordered pairs among the filtered
+population haplotypes. A pair can span two people, use either phased haplotype
+from either person, or occasionally contain the two haplotypes of one person.
+Use `--exclude-within` only if that last category should be removed; it is off
+by default.
+
+A chromosome/population is skipped only when the BCF, CSI, ancestry,
+QC-exclusion, relatedness-exclusion, and hard-mask GCS fingerprints; sample and
+pair manifests; decoder/code settings; summary and bit-matrix structure;
+candidate artifact hashes; and output hashes match its completion record. The
+completion object is uploaded last. This makes a rerun resume safely after an
+interrupted decode, candidate analysis, or upload. Staged chromosome BCFs are
+removed only after every requested population for that chromosome succeeds;
+`--keep-inputs` retains them, `--force` recomputes, and `--no-upload` keeps the
+run local.

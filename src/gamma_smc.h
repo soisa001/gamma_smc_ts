@@ -894,7 +894,9 @@ class CachedPairwiseGammaSMC {
 
         // Positions on a plain stride are implied rather than listed; a
         // genome-wide list would otherwise dominate the metadata file.
-        const bool strided = (!_output_at_hets) && (_posterior_every > 0);
+        const bool strided = (!_output_at_hets)
+            && (_posterior_every > 0)
+            && _data_processor._requested_output_positions.empty();
         out << "\t\"positions_are_strided\": " << (strided ? "true" : "false") << ",\n";
         out << boost::format("\t\"stride\": %d,\n") % _posterior_every;
         if (strided) {

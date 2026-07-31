@@ -13,6 +13,7 @@ class DataProcessor {
     int _flow_field_cache_n_steps;
     bool _output_at_every;
     bool _output_at_hets;
+    const vector<position_t>& _requested_output_positions;
 
     bool _is_global_mask;
     vector<position_t> _output_positions;
@@ -47,7 +48,8 @@ class DataProcessor {
         unordered_map<string, vector<pair<int, int>>>& mask_map,
         int posterior_every,
         int flow_field_cache_n_steps,
-        bool output_at_hets
+        bool output_at_hets,
+        const vector<position_t>& requested_output_positions
     ) :
         _sites(sites),
         _sample_names(sample_names),
@@ -57,6 +59,7 @@ class DataProcessor {
         _flow_field_cache_n_steps(flow_field_cache_n_steps),
         _output_at_every(_posterior_every > 0),
         _output_at_hets(output_at_hets),
+        _requested_output_positions(requested_output_positions),
         _is_global_mask(_mask_map.size() == 0)
     {
         prepare_segments();
@@ -82,6 +85,7 @@ class DataProcessor {
         position_t jump_to_pos;
         position_t next_output = 0;
         long next_site_index = 0;
+        size_t next_requested_index = 0;
 
         _segment_index_of_site.assign((size_t) _sites.size(), -1);
 
@@ -90,6 +94,12 @@ class DataProcessor {
             jump_to_pos = has_next_site ? _sites.pos[next_site_index] : last;
             if (_output_at_every && next_output <= last) {
                 jump_to_pos = std::min(jump_to_pos, next_output);
+            }
+            if (next_requested_index < _requested_output_positions.size()) {
+                jump_to_pos = std::min(
+                    jump_to_pos,
+                    _requested_output_positions[next_requested_index]
+                );
             }
 
             // While we can't jump to the next site within the cache
@@ -112,7 +122,11 @@ class DataProcessor {
             // Heterozygous-site output applies only to actual sites; the
             // synthetic invariant tail exists solely to reach stride points.
             to_output = (_output_at_every && (jump_to_pos == next_output))
-                || (_output_at_hets && ends_at_site);
+                || (_output_at_hets && ends_at_site)
+                || (
+                    next_requested_index < _requested_output_positions.size()
+                    && jump_to_pos == _requested_output_positions[next_requested_index]
+                );
 
             // Now we can jump
             _segments.push_back({
@@ -136,6 +150,10 @@ class DataProcessor {
             }
             if (_output_at_every && (jump_to_pos == next_output)) {
                 next_output += _posterior_every;
+            }
+            if (next_requested_index < _requested_output_positions.size()
+                    && jump_to_pos == _requested_output_positions[next_requested_index]) {
+                next_requested_index++;
             }
         }
 

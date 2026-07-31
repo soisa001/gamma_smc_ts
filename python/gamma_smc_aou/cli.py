@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -41,6 +42,20 @@ from .selection import (
 from .spatial_scan import analyze_two_epoch_spatial_truth
 from .tree_sequence import tree_sequence_to_vcf
 from .two_epoch import validate_two_epoch_growth
+from .workbench import (
+    AUTOSOMES,
+    build_workbench_callable_mask,
+    build_workbench_sample_list,
+    build_workbench_contract,
+    plot_workbench_population,
+    validate_workbench_completion,
+    write_workbench_completion,
+)
+from .workbench_candidates import (
+    analyze_candidate_regions,
+    build_candidate_regions,
+    write_empty_candidate_analysis,
+)
 
 
 def _histories(path: str | None):
@@ -159,6 +174,8 @@ def command_decode(args):
         bitmatrix_output=args.bitmatrix,
         mask=args.mask,
         masks_per_sample=args.masks_per_sample,
+        samples=args.samples,
+        output_positions_file=args.output_positions_file,
         output_at_stride=args.output_at_stride,
         output_at_hets=not args.no_output_at_hets,
         only_within=(args.n_random_pairs <= 0 and args.pairs_file is None),
@@ -217,6 +234,195 @@ def command_container_study(args):
         keep_vcfs=args.keep_vcfs,
         workers=args.workers,
     )
+
+
+def _workbench_contract_from_args(args) -> dict:
+    return build_workbench_contract(
+        population=args.population,
+        chromosome=args.chromosome,
+        input_uri=args.input_uri,
+        input_fingerprint=args.input_fingerprint,
+        local_input=args.local_input,
+        index_uri=args.index_uri,
+        index_fingerprint=args.index_fingerprint,
+        local_index=args.local_index,
+        output_summary=args.summary,
+        pairs_manifest=args.pairs_manifest,
+        sample_list=args.sample_list,
+        sample_audit=args.sample_audit,
+        ancestry_uri=args.ancestry_uri,
+        ancestry_fingerprint=args.ancestry_fingerprint,
+        local_ancestry=args.local_ancestry,
+        qc_exclusions_uri=args.qc_exclusions_uri,
+        qc_exclusions_fingerprint=args.qc_exclusions_fingerprint,
+        local_qc_exclusions=args.local_qc_exclusions,
+        relatedness_exclusions_uri=args.relatedness_exclusions_uri,
+        relatedness_exclusions_fingerprint=args.relatedness_exclusions_fingerprint,
+        local_relatedness_exclusions=args.local_relatedness_exclusions,
+        mask_uri=args.mask_uri,
+        mask_fingerprint=args.mask_fingerprint,
+        local_mask_source=args.local_mask_source,
+        local_mask=args.local_mask,
+        mask_audit=args.mask_audit,
+        theta=args.theta,
+        rho_over_theta=args.rho_over_theta,
+        mutation_rate=args.mutation_rate,
+        generation_time=args.generation_time,
+        threshold_years=args.threshold_years,
+        recent_call=args.recent_call,
+        stride=args.output_at_stride,
+        cache_size=args.cache_size,
+        threads=args.threads,
+        pair_block=args.pair_block,
+        exp10=args.exp10,
+        backward_alignment=args.backward_alignment,
+        code_commit=args.code_commit,
+        bitmatrix=args.bitmatrix,
+        candidate_regions=args.candidate_regions,
+        candidate_manifest=args.candidate_manifest,
+        n_random_pairs=args.n_random_pairs,
+        pairs_seed=args.pairs_seed,
+        exclude_within=args.exclude_within,
+        signal_fraction=args.signal_fraction,
+        merge_gap=args.merge_gap,
+        profile_half_width=args.profile_half_width,
+        variant_half_width=args.variant_half_width,
+        minimum_genotype_pairs=args.minimum_genotype_pairs,
+    )
+
+
+def command_workbench_samples(args):
+    audit = build_workbench_sample_list(
+        ancestry_path=args.ancestry,
+        qc_exclusions_path=args.qc_exclusions,
+        relatedness_exclusions_path=args.relatedness_exclusions,
+        bcf_samples_path=args.bcf_samples,
+        population=args.population,
+        output_path=args.output,
+        audit_path=args.audit_output,
+    )
+    print(
+        f"selected {audit['counts']['selected_samples']} {audit['population']} samples "
+        f"from {audit['counts']['bcf_samples']} BCF samples"
+    )
+
+
+def command_workbench_mask(args):
+    audit = build_workbench_callable_mask(
+        hardmask_path=args.hardmask,
+        contig=args.contig,
+        sequence_length=args.sequence_length,
+        output_path=args.output,
+        audit_path=args.audit_output,
+    )
+    print(
+        f"prepared {audit['contig']} callable mask: "
+        f"{audit['counts']['callable_bases']} / {audit['sequence_length']} bp callable"
+    )
+
+
+def command_workbench_validate(args):
+    contract = _workbench_contract_from_args(args)
+    try:
+        if args.check_only:
+            completion = validate_workbench_completion(
+                summary_path=args.summary,
+                run_json_path=args.run_json,
+                completion_path=args.completion,
+                contract=contract,
+            )
+        else:
+            completion = write_workbench_completion(
+                summary_path=args.summary,
+                run_json_path=args.run_json,
+                completion_path=args.completion,
+                contract=contract,
+            )
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as error:
+        if args.check_only:
+            print(f"incomplete: {error}", file=sys.stderr)
+            raise SystemExit(1) from error
+        raise
+    print(
+        f"validated {contract['population']} chr{contract['chromosome']}: "
+        f"{completion['summary']['n_output_positions']} output positions"
+    )
+
+
+def command_workbench_plot(args):
+    summary_dir = Path(args.summary_dir)
+    summary_paths = {
+        chromosome: summary_dir / f"chr{chromosome}.gamma_smc.tsv"
+        for chromosome in args.chromosomes
+    }
+    result = plot_workbench_population(
+        summary_paths,
+        population=args.population,
+        output_dir=args.output_dir,
+        threshold_years=args.threshold_years,
+        whole_genome=args.whole_genome,
+        top_n=args.top_n,
+    )
+    scope = "whole genome" if result["whole_genome_complete"] else "requested chromosomes"
+    print(f"plotted {result['population']} {scope} in {Path(args.output_dir).resolve()}")
+
+
+def command_workbench_regions(args):
+    regions = build_candidate_regions(
+        args.summary,
+        population=args.population,
+        chromosome=args.chromosome,
+        sequence_length=args.sequence_length,
+        output_path=args.output,
+        positions_path=args.positions_output,
+        threshold_years=args.threshold_years,
+        minimum_fraction=args.minimum_fraction,
+        merge_gap=args.merge_gap,
+        stride=args.output_at_stride,
+        profile_half_width=args.profile_half_width,
+    )
+    print(
+        f"found {len(regions)} {args.population.upper()} chr{args.chromosome} "
+        f"regions above {args.minimum_fraction:.3g}"
+    )
+
+
+def command_workbench_candidates(args):
+    result = analyze_candidate_regions(
+        summary_path=args.summary,
+        regions_path=args.regions,
+        raw_path=args.raw_posteriors,
+        pairs_manifest_path=args.pairs_manifest,
+        bcf_path=args.input,
+        sample_list_path=args.sample_list,
+        bcftools=args.bcftools,
+        contig=args.contig,
+        population=args.population,
+        chromosome=args.chromosome,
+        output_dir=args.output_dir,
+        mutation_rate=args.mutation_rate,
+        threshold_years=args.threshold_years,
+        profile_half_width=args.profile_half_width,
+        variant_half_width=args.variant_half_width,
+        minimum_genotype_pairs=args.minimum_genotype_pairs,
+        minimum_fraction=args.minimum_fraction,
+        merge_gap=args.merge_gap,
+    )
+    print(
+        f"analyzed {result['n_regions']} candidate regions; "
+        f"{result['n_regions_with_representative_variant']} have a representative variant"
+    )
+
+
+def command_workbench_candidates_empty(args):
+    write_empty_candidate_analysis(
+        regions_path=args.regions,
+        population=args.population,
+        chromosome=args.chromosome,
+        pairs_manifest_path=args.pairs_manifest,
+        output_dir=args.output_dir,
+    )
+    print(f"no {args.population.upper()} chr{args.chromosome} candidate regions")
 
 
 def command_native_study(args):
@@ -451,6 +657,14 @@ def parser() -> argparse.ArgumentParser:
     decode.add_argument("--mask", help="global BED mask; use the same callable-region policy in data and simulations")
     decode.add_argument("--masks-per-sample", help="sample-to-BED TSV")
     decode.add_argument(
+        "--samples",
+        help="one sample ID per line; IDs must be present in the VCF/BCF header",
+    )
+    decode.add_argument(
+        "--output-positions-file",
+        help="one exact 0-based posterior output position per line",
+    )
+    decode.add_argument(
         "--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE,
         help="scaled mutation rate; fixed by default so coalescent-time units, "
              "and therefore P(T<t), are comparable across datasets",
@@ -505,6 +719,204 @@ def parser() -> argparse.ArgumentParser:
         help="legacy reproduces upstream's one-output-position shift of the backward message",
     )
     decode.set_defaults(func=command_decode)
+
+    workbench_samples = commands.add_parser(
+        "workbench-samples",
+        help="build one population's BCF-ordered, QC-filtered Workbench sample list",
+    )
+    workbench_samples.add_argument("--population", type=str.upper, required=True)
+    workbench_samples.add_argument("--ancestry", required=True)
+    workbench_samples.add_argument("--qc-exclusions", required=True)
+    workbench_samples.add_argument("--relatedness-exclusions", required=True)
+    workbench_samples.add_argument("--bcf-samples", required=True)
+    workbench_samples.add_argument("--output", required=True)
+    workbench_samples.add_argument("--audit-output", required=True)
+    workbench_samples.set_defaults(func=command_workbench_samples)
+
+    workbench_mask = commands.add_parser(
+        "workbench-mask",
+        help="complement an exclusion hard mask into Gamma-SMC callable intervals",
+    )
+    workbench_mask.add_argument("--hardmask", required=True)
+    workbench_mask.add_argument("--contig", required=True)
+    workbench_mask.add_argument("--sequence-length", type=int, required=True)
+    workbench_mask.add_argument("--output", required=True)
+    workbench_mask.add_argument("--audit-output", required=True)
+    workbench_mask.set_defaults(func=command_workbench_mask)
+
+    workbench_validate = commands.add_parser(
+        "workbench-validate",
+        help="write or verify a restart-safe Workbench chromosome completion record",
+    )
+    workbench_validate.add_argument("--population", type=str.upper, required=True)
+    workbench_validate.add_argument(
+        "--chromosome", type=int, choices=AUTOSOMES, required=True
+    )
+    workbench_validate.add_argument("--input-uri", required=True)
+    workbench_validate.add_argument("--input-fingerprint", required=True)
+    workbench_validate.add_argument("--local-input", required=True)
+    workbench_validate.add_argument("--index-uri", required=True)
+    workbench_validate.add_argument("--index-fingerprint", required=True)
+    workbench_validate.add_argument("--local-index", required=True)
+    workbench_validate.add_argument("--summary", required=True)
+    workbench_validate.add_argument("--run-json", required=True)
+    workbench_validate.add_argument("--pairs-manifest", required=True)
+    workbench_validate.add_argument("--bitmatrix")
+    workbench_validate.add_argument("--candidate-regions")
+    workbench_validate.add_argument("--candidate-manifest")
+    workbench_validate.add_argument("--sample-list", required=True)
+    workbench_validate.add_argument("--sample-audit", required=True)
+    workbench_validate.add_argument("--ancestry-uri", required=True)
+    workbench_validate.add_argument("--ancestry-fingerprint", required=True)
+    workbench_validate.add_argument("--local-ancestry", required=True)
+    workbench_validate.add_argument("--qc-exclusions-uri", required=True)
+    workbench_validate.add_argument("--qc-exclusions-fingerprint", required=True)
+    workbench_validate.add_argument("--local-qc-exclusions", required=True)
+    workbench_validate.add_argument("--relatedness-exclusions-uri", required=True)
+    workbench_validate.add_argument(
+        "--relatedness-exclusions-fingerprint", required=True
+    )
+    workbench_validate.add_argument("--local-relatedness-exclusions", required=True)
+    workbench_validate.add_argument("--completion", required=True)
+    workbench_validate.add_argument("--mask-uri")
+    workbench_validate.add_argument("--mask-fingerprint")
+    workbench_validate.add_argument("--local-mask-source")
+    workbench_validate.add_argument("--local-mask")
+    workbench_validate.add_argument("--mask-audit")
+    workbench_validate.add_argument(
+        "--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE
+    )
+    workbench_validate.add_argument(
+        "--rho-over-theta",
+        type=float,
+        default=DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+    )
+    workbench_validate.add_argument(
+        "--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE
+    )
+    workbench_validate.add_argument(
+        "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
+    )
+    workbench_validate.add_argument("--threshold-years", type=float, default=4500)
+    workbench_validate.add_argument(
+        "--recent-call", choices=["mean", "median"], default="mean"
+    )
+    workbench_validate.add_argument(
+        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
+    )
+    workbench_validate.add_argument(
+        "--cache-size", type=int, default=DEFAULT_CACHE_SIZE
+    )
+    workbench_validate.add_argument("--threads", type=int, default=12)
+    workbench_validate.add_argument("--pair-block", type=int, default=256)
+    workbench_validate.add_argument("--n-random-pairs", type=int, default=0)
+    workbench_validate.add_argument("--pairs-seed", type=int, default=1729)
+    workbench_validate.add_argument("--exclude-within", action="store_true")
+    workbench_validate.add_argument("--signal-fraction", type=float, default=0.05)
+    workbench_validate.add_argument("--merge-gap", type=int, default=20_000)
+    workbench_validate.add_argument(
+        "--profile-half-width", type=int, default=500_000
+    )
+    workbench_validate.add_argument(
+        "--variant-half-width", type=int, default=100_000
+    )
+    workbench_validate.add_argument(
+        "--minimum-genotype-pairs", type=int, default=20
+    )
+    workbench_validate.add_argument(
+        "--exp10", choices=["accurate", "fast"], default="accurate"
+    )
+    workbench_validate.add_argument(
+        "--backward-alignment", choices=["fixed", "legacy"], default="fixed"
+    )
+    workbench_validate.add_argument("--code-commit", required=True)
+    workbench_validate.add_argument("--check-only", action="store_true")
+    workbench_validate.set_defaults(func=command_workbench_validate)
+
+    workbench_plot = commands.add_parser(
+        "workbench-plot",
+        help="make separate chromosome and whole-genome plots for one population",
+    )
+    workbench_plot.add_argument("--population", type=str.upper, required=True)
+    workbench_plot.add_argument("--summary-dir", required=True)
+    workbench_plot.add_argument(
+        "--chromosomes", type=int, choices=AUTOSOMES, nargs="+", required=True
+    )
+    workbench_plot.add_argument("--output-dir", required=True)
+    workbench_plot.add_argument("--threshold-years", type=float, default=4500)
+    workbench_plot.add_argument("--whole-genome", action="store_true")
+    workbench_plot.add_argument("--top-n", type=int, default=100)
+    workbench_plot.set_defaults(func=command_workbench_plot)
+
+    workbench_regions = commands.add_parser(
+        "workbench-regions",
+        help="merge >5%% recent-coalescence windows and select +/-500 kb positions",
+    )
+    workbench_regions.add_argument("--population", type=str.upper, required=True)
+    workbench_regions.add_argument(
+        "--chromosome", type=int, choices=AUTOSOMES, required=True
+    )
+    workbench_regions.add_argument("--summary", required=True)
+    workbench_regions.add_argument("--sequence-length", type=int, required=True)
+    workbench_regions.add_argument("--output", required=True)
+    workbench_regions.add_argument("--positions-output", required=True)
+    workbench_regions.add_argument("--threshold-years", type=float, default=4500)
+    workbench_regions.add_argument("--minimum-fraction", type=float, default=0.05)
+    workbench_regions.add_argument("--merge-gap", type=int, default=20_000)
+    workbench_regions.add_argument(
+        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
+    )
+    workbench_regions.add_argument(
+        "--profile-half-width", type=int, default=500_000
+    )
+    workbench_regions.set_defaults(func=command_workbench_regions)
+
+    workbench_candidates = commands.add_parser(
+        "workbench-candidates",
+        help="rank nearby variants and plot manifest-ordered ref/ref and alt/alt pairs",
+    )
+    workbench_candidates.add_argument("--population", type=str.upper, required=True)
+    workbench_candidates.add_argument(
+        "--chromosome", type=int, choices=AUTOSOMES, required=True
+    )
+    workbench_candidates.add_argument("--summary", required=True)
+    workbench_candidates.add_argument("--regions", required=True)
+    workbench_candidates.add_argument("--raw-posteriors", required=True)
+    workbench_candidates.add_argument("--pairs-manifest", required=True)
+    workbench_candidates.add_argument("--input", required=True)
+    workbench_candidates.add_argument("--sample-list", required=True)
+    workbench_candidates.add_argument("--bcftools", required=True)
+    workbench_candidates.add_argument("--contig", required=True)
+    workbench_candidates.add_argument("--output-dir", required=True)
+    workbench_candidates.add_argument(
+        "--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE
+    )
+    workbench_candidates.add_argument("--threshold-years", type=float, default=4500)
+    workbench_candidates.add_argument(
+        "--profile-half-width", type=int, default=500_000
+    )
+    workbench_candidates.add_argument(
+        "--variant-half-width", type=int, default=100_000
+    )
+    workbench_candidates.add_argument(
+        "--minimum-genotype-pairs", type=int, default=20
+    )
+    workbench_candidates.add_argument("--minimum-fraction", type=float, default=0.05)
+    workbench_candidates.add_argument("--merge-gap", type=int, default=20_000)
+    workbench_candidates.set_defaults(func=command_workbench_candidates)
+
+    workbench_empty = commands.add_parser(
+        "workbench-candidates-empty",
+        help="write a complete empty candidate-analysis manifest",
+    )
+    workbench_empty.add_argument("--population", type=str.upper, required=True)
+    workbench_empty.add_argument(
+        "--chromosome", type=int, choices=AUTOSOMES, required=True
+    )
+    workbench_empty.add_argument("--regions", required=True)
+    workbench_empty.add_argument("--pairs-manifest", required=True)
+    workbench_empty.add_argument("--output-dir", required=True)
+    workbench_empty.set_defaults(func=command_workbench_candidates_empty)
 
     bits = commands.add_parser(
         "bitmatrix-summary",
