@@ -1,0 +1,4 @@
+statistic	center_selected	center_null_mean	center_null_ci95_lower	center_null_ci95_upper	center_neutral_exceedances	center_monte_carlo_p_upper	n_pointwise_p_lt_0_05_windows	n_bh_q_lt_0_05_windows	global_selected_positive_windows	global_density_monte_carlo_p_upper	local_selected_positive_windows	local_density_monte_carlo_p_upper
+soft_probability	0.01809491969	0.022744610068500003	0.01492505223675	0.03578398659049999	87	0.8712871287128713	52	0	52	0.25742574257425743	2	0.5445544554455446
+posterior_mean_call	0.008	0.007715	0.0045	0.012762499999999996	39	0.39603960396039606	38	0	38	0.3069306930693069	0	1.0
+posterior_median_call	0.012	0.011264999999999999	0.0062375	0.0165	44	0.44554455445544555	57	0	57	0.2376237623762376	0	1.0

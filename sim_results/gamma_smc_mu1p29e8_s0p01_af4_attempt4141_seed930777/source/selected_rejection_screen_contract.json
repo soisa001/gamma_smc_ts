@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "ancestral_population_size": 10000,
+  "present_population_size": 20000,
+  "size_change_generations_ago": 100,
+  "sample_diploids": 2000,
+  "sequence_length": 10000000,
+  "variant_age_generations": 180,
+  "mutation_rate": 1.29e-08,
+  "recombination_rate": 1e-08,
+  "minimum_population_af": 0.04,
+  "selection_coefficient": 0.01,
+  "seed": 930777,
+  "stride": 10000,
+  "null_truth_dir": "..\\..\\gamma_smc_mu1p29e8_vs1p25e8_seed930777\\source_mu1p29e8",
+  "neutral_statistics_source": "..\\..\\two_epoch_growth_s0p05_n2000_mu1p29e9_seed525252\\neutral_statistics.tsv"
+}

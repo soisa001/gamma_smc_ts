@@ -1,0 +1,42 @@
+{
+  "demography": {
+    "ancestral_population_size": 10000,
+    "present_population_size": 20000,
+    "size_change_generations_ago": 100
+  },
+  "sample_diploids": 2000,
+  "sequence_length": 10000000,
+  "variant_age_generations": 180,
+  "generation_time_years": 25.0,
+  "mutation_rate": 1.29e-08,
+  "recombination_rate": 1e-08,
+  "selection_coefficient": 0.01,
+  "minimum_population_allele_frequency": 0.04,
+  "neutral_replicates": 100,
+  "neutral_truth_source": "..\\..\\gamma_smc_mu1p29e8_vs1p25e8_seed930777\\source_mu1p29e8",
+  "neutral_statistics_source": "..\\..\\two_epoch_growth_s0p05_n2000_mu1p29e9_seed525252\\neutral_statistics.tsv",
+  "neutral_theoretical_fraction_recent": 0.006478920696552315,
+  "selected_tree_file": "selected.trees",
+  "selected_vcf_file": "selected.vcf.gz",
+  "selected_rejection": {
+    "search_mode": "explicit_deterministic_attempt",
+    "accepted_attempt_zero_based": 4141,
+    "attempts_to_accept_in_seed_order": 4142,
+    "trajectories_computed_in_parallel_batches": 1,
+    "population_allele_frequency": 0.040225,
+    "sample_allele_frequency": 0.039,
+    "n_hom_ref_pairs": 1847,
+    "n_heterozygous_pairs": 150,
+    "n_hom_alt_pairs": 3,
+    "truth_center_fraction_recent": 0.0075,
+    "truth_center_neutral_exceedances": 35,
+    "truth_center_monte_carlo_p_upper": 0.3564356435643564
+  },
+  "workers_requested": 12,
+  "workers_used": 1,
+  "screen_attempts_per_batch": 1,
+  "shared_neutral_ancestry_seconds": 2.725829300004989,
+  "base_seed": 930777,
+  "stride_bp": 10000,
+  "elapsed_seconds": 17.22475310001755
+}

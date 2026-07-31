@@ -1,0 +1,77 @@
+{
+  "study": "exact s=0.01 AF=0.040225 selected attempt 4141",
+  "contract_validated": true,
+  "soft_outputs_identical_between_call_rules": true,
+  "selected_rows": 1000,
+  "neutral_rows": 100000,
+  "neutral_replicates": 100,
+  "truth_center_fraction_recent": 0.0075,
+  "truth_center_monte_carlo_p_upper": 0.3564356435643564,
+  "density": {
+    "soft_probability": {
+      "global": {
+        "n_windows": 1000,
+        "selected_positive_windows": 52,
+        "null_mean_positive_windows": 40.0,
+        "null_median_positive_windows": 38.5,
+        "null_exceedances": 25,
+        "monte_carlo_p_upper": 0.25742574257425743
+      },
+      "local": {
+        "n_windows": 101,
+        "selected_positive_windows": 2,
+        "null_mean_positive_windows": 4.04,
+        "null_median_positive_windows": 2.0,
+        "null_exceedances": 54,
+        "monte_carlo_p_upper": 0.5445544554455446,
+        "half_width_bp": 500000
+      }
+    },
+    "posterior_mean_call": {
+      "global": {
+        "n_windows": 1000,
+        "selected_positive_windows": 38,
+        "null_mean_positive_windows": 32.82,
+        "null_median_positive_windows": 25.0,
+        "null_exceedances": 30,
+        "monte_carlo_p_upper": 0.3069306930693069
+      },
+      "local": {
+        "n_windows": 101,
+        "selected_positive_windows": 0,
+        "null_mean_positive_windows": 3.5,
+        "null_median_positive_windows": 0.0,
+        "null_exceedances": 100,
+        "monte_carlo_p_upper": 1.0,
+        "half_width_bp": 500000
+      }
+    },
+    "posterior_median_call": {
+      "global": {
+        "n_windows": 1000,
+        "selected_positive_windows": 57,
+        "null_mean_positive_windows": 34.48,
+        "null_median_positive_windows": 25.5,
+        "null_exceedances": 23,
+        "monte_carlo_p_upper": 0.2376237623762376
+      },
+      "local": {
+        "n_windows": 101,
+        "selected_positive_windows": 0,
+        "null_mean_positive_windows": 3.39,
+        "null_median_positive_windows": 0.0,
+        "null_exceedances": 100,
+        "monte_carlo_p_upper": 1.0,
+        "half_width_bp": 500000
+      }
+    }
+  },
+  "hashes": {
+    "source/selected.trees": "975b796f464e2705a24a826d839e1b0c5e553c60f7ae9940ae090fee20c07438",
+    "source/selected.vcf.gz": "f30c0c2d2ddd41e45cb494db495ed79cd6968c958b734866c601e6a28625dfe8",
+    "stride10kb/selected_decoded_mean_call_profile.tsv": "a205e39882e2214f59f21c877f130984e064e82cb9cde906152ea88d8aa076ad",
+    "stride10kb/selected_decoded_median_call_profile.tsv": "b0027c3c39fd560e148cb304ff2e3037da265f7ae32a11212c85238ef2ab9df1",
+    "stride10kb/neutral_decoded_mean_call_profiles.tsv.gz": "79783f90bb7c80e53d6b0ab59c13af97273cedcccd10192e3a280212e5ad2746",
+    "stride10kb/neutral_decoded_median_call_profiles.tsv.gz": "473eec7f8b46d52c6e16054c3a9bb629953270cb9911a647690b84e883578185"
+  }
+}
