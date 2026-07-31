@@ -16,8 +16,8 @@ import tskit
 from gamma_smc_aou.tree_sequence import tree_sequence_to_vcf
 
 
-TREE_NAME = "selected_s0p05_af30.trees"
-VCF_NAME = "selected_s0p05_af30.vcf.gz"
+LEGACY_TREE_NAME = "selected_s0p05_af30.trees"
+LEGACY_VCF_NAME = "selected_s0p05_af30.vcf.gz"
 
 
 def _sha256(path: Path) -> str:
@@ -53,9 +53,25 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     started = perf_counter()
 
+    with (source / "metrics.json").open(encoding="utf-8") as handle:
+        metrics = json.load(handle)
+    tree_name = str(metrics.get("selected_tree_file", LEGACY_TREE_NAME))
+    vcf_name = str(
+        metrics.get(
+            "selected_vcf_file",
+            (
+                LEGACY_VCF_NAME
+                if tree_name == LEGACY_TREE_NAME
+                else Path(tree_name).with_suffix(".vcf.gz").name
+            ),
+        )
+    )
+    if Path(tree_name).name != tree_name or Path(vcf_name).name != vcf_name:
+        parser.error("selected tree/VCF metadata must contain file names")
+
     excluded = {
-        TREE_NAME,
-        VCF_NAME,
+        tree_name,
+        vcf_name,
         "metrics.json",
         "mutation_overlay_metadata.json",
     }
@@ -63,7 +79,7 @@ def main() -> None:
         if path.is_file() and path.name not in excluded:
             shutil.copy2(path, output / path.name)
 
-    template = tskit.load(source / TREE_NAME)
+    template = tskit.load(source / tree_name)
     ancestry = _mutation_free(template)
     selected = msprime.sim_mutations(
         ancestry,
@@ -71,15 +87,15 @@ def main() -> None:
         model=msprime.BinaryMutationModel(),
         random_seed=args.mutation_seed,
     )
-    selected.dump(output / TREE_NAME)
-    tree_sequence_to_vcf(output / TREE_NAME, output / VCF_NAME)
+    selected.dump(output / tree_name)
+    tree_sequence_to_vcf(output / tree_name, output / vcf_name)
 
-    with (source / "metrics.json").open(encoding="utf-8") as handle:
-        metrics = json.load(handle)
     metrics["mutation_rate"] = float(args.mutation_rate)
+    metrics["selected_tree_file"] = tree_name
+    metrics["selected_vcf_file"] = vcf_name
     metrics["mutation_overlay_derivation"] = {
         "genealogy_source": str(
-            Path("..") / source.name / TREE_NAME
+            Path("..") / source.name / tree_name
         ).replace("\\", "/"),
         "sites_and_mutations_cleared": True,
         "mutation_free_tables_equal_ignoring_provenance": bool(
@@ -100,8 +116,8 @@ def main() -> None:
     metadata = {
         **metrics["mutation_overlay_derivation"],
         "mutation_rate": float(args.mutation_rate),
-        "tree_sha256": _sha256(output / TREE_NAME),
-        "vcf_sha256": _sha256(output / VCF_NAME),
+        "tree_sha256": _sha256(output / tree_name),
+        "vcf_sha256": _sha256(output / vcf_name),
     }
     with (output / "mutation_overlay_metadata.json").open(
         "w",

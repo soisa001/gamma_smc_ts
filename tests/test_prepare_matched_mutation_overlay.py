@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import msprime
+import pytest
 import tskit
 
 
@@ -20,7 +21,19 @@ def mutation_free_tables(path: Path) -> tskit.TableCollection:
     return tables
 
 
-def test_matched_overlay_preserves_ancestry_and_records_provenance(tmp_path):
+@pytest.mark.parametrize(
+    ("tree_name", "vcf_name", "record_file_names"),
+    [
+        ("selected_s0p05_af30.trees", "selected_s0p05_af30.vcf.gz", False),
+        ("selected.trees", "selected.vcf.gz", True),
+    ],
+)
+def test_matched_overlay_preserves_ancestry_and_records_provenance(
+    tmp_path,
+    tree_name,
+    vcf_name,
+    record_file_names,
+):
     source = tmp_path / "source"
     output = tmp_path / "output"
     source.mkdir()
@@ -37,9 +50,13 @@ def test_matched_overlay_preserves_ancestry_and_records_provenance(tmp_path):
         model=msprime.BinaryMutationModel(),
         random_seed=23,
     )
-    template.dump(source / "selected_s0p05_af30.trees")
+    template.dump(source / tree_name)
+    metrics = {"mutation_rate": 1.25e-8}
+    if record_file_names:
+        metrics["selected_tree_file"] = tree_name
+        metrics["selected_vcf_file"] = vcf_name
     (source / "metrics.json").write_text(
-        json.dumps({"mutation_rate": 1.25e-8}) + "\n",
+        json.dumps(metrics) + "\n",
         encoding="utf-8",
     )
     (source / "copied_truth.tsv").write_text("position\tvalue\n0\t1\n")
@@ -77,8 +94,8 @@ def test_matched_overlay_preserves_ancestry_and_records_provenance(tmp_path):
     assert metadata["random_seed"] == 29
     assert metadata["sites_and_mutations_cleared"] is True
     assert metadata["mutation_free_tables_equal_ignoring_provenance"] is True
-    assert mutation_free_tables(
-        source / "selected_s0p05_af30.trees"
-    ) == mutation_free_tables(output / "selected_s0p05_af30.trees")
-    assert (output / "selected_s0p05_af30.vcf.gz").is_file()
+    assert mutation_free_tables(source / tree_name) == mutation_free_tables(
+        output / tree_name
+    )
+    assert (output / vcf_name).is_file()
     assert (output / "copied_truth.tsv").read_text() == "position\tvalue\n0\t1\n"

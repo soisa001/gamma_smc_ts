@@ -86,3 +86,4 @@ def test_workbench_defaults_are_shared_by_the_cli():
         ]
     )
     assert high_af.selected_attempt == 2514
+    assert high_af.workers == 12

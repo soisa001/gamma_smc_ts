@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from gamma_smc_aou import high_af_study
 from gamma_smc_aou.container_study import (
     _assert_matched_soft_profiles,
     _plot_decoded_center_calibration,
@@ -10,6 +11,8 @@ from gamma_smc_aou.container_study import (
 )
 from gamma_smc_aou.high_af_study import (
     _check_null_compatibility,
+    _replace_with_retry,
+    _resolve_neutral_statistics,
     focal_carrier_pair_table,
 )
 
@@ -42,6 +45,42 @@ def test_reused_truth_null_must_match_selected_design():
     metrics["mutation_rate"] = 2e-8
     with pytest.raises(ValueError, match="mutation_rate"):
         _check_null_compatibility(metrics, design)
+
+
+def test_neutral_statistics_follow_recorded_provenance(tmp_path):
+    source = tmp_path / "derived" / "source"
+    truth = tmp_path / "truth"
+    source.mkdir(parents=True)
+    truth.mkdir()
+    expected = truth / "neutral_statistics.tsv"
+    expected.write_text("replicate\tvalue\n0\t0.1\n", encoding="utf-8")
+    metrics = {"neutral_truth_source": "../../truth"}
+
+    assert _resolve_neutral_statistics(source, metrics) == expected
+
+
+def test_atomic_replace_retries_brief_windows_lock(tmp_path, monkeypatch):
+    source = tmp_path / "checkpoint.tmp"
+    destination = tmp_path / "checkpoint.tsv"
+    source.write_text("new\n", encoding="utf-8")
+    destination.write_text("old\n", encoding="utf-8")
+    real_replace = high_af_study.os.replace
+    calls = 0
+
+    def briefly_locked(left, right):
+        nonlocal calls
+        calls += 1
+        if calls < 3:
+            raise PermissionError("OneDrive read lock")
+        real_replace(left, right)
+
+    monkeypatch.setattr(high_af_study.os, "replace", briefly_locked)
+    monkeypatch.setattr(high_af_study, "sleep", lambda _: None)
+    _replace_with_retry(source, destination, attempts=3)
+
+    assert calls == 3
+    assert destination.read_text(encoding="utf-8") == "new\n"
+    assert not source.exists()
 
 
 def test_focal_carrier_table_matches_vcf_haplotype_order():

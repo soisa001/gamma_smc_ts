@@ -546,6 +546,11 @@ def _load_design(source_dir: Path) -> dict:
     with (source_dir / "metrics.json").open(encoding="utf-8") as handle:
         metrics = json.load(handle)
     selected = pd.read_csv(source_dir / "selected_observation.tsv", sep="\t").iloc[0]
+    selected_tree_file = str(
+        metrics.get("selected_tree_file", "selected_s0p05_af30.trees")
+    )
+    if Path(selected_tree_file).name != selected_tree_file:
+        raise ValueError("selected_tree_file must be a file name, not a path")
     return {
         "ancestral_size": int(metrics["demography"]["ancestral_population_size"]),
         "present_size": int(metrics["demography"]["present_population_size"]),
@@ -560,6 +565,7 @@ def _load_design(source_dir: Path) -> dict:
         "seed": int(metrics["base_seed"]),
         "selected_attempt": int(selected["attempt"]),
         "selected_population_af": float(selected["population_allele_frequency"]),
+        "selected_tree_file": selected_tree_file,
     }
 
 
@@ -710,7 +716,7 @@ def _run_stride_study(
         )
 
     selected_tree_path = work_dir / "selected.trees"
-    prepared_selected_tree = source_dir / "selected_s0p05_af30.trees"
+    prepared_selected_tree = source_dir / design["selected_tree_file"]
     if prepared_selected_tree.exists():
         shutil.copy2(prepared_selected_tree, selected_tree_path)
         selected_ts = tskit.load(selected_tree_path)

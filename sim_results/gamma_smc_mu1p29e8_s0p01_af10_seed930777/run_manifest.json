@@ -1,0 +1,66 @@
+{
+  "study": "s=0.01 single-copy selected trajectory with present-day population AF >=0.10",
+  "created": "2026-07-31",
+  "status": "no_qualifying_trajectory_in_bounded_screen",
+  "branch": "AOU_run_opt",
+  "base_commit": "bde155d081707bd287ca61554898dfc17478b78d",
+  "simulation": {
+    "selection_coefficient": 0.01,
+    "dominance": 0.5,
+    "minimum_population_allele_frequency": 0.1,
+    "variant_age_generations": 180,
+    "ancestral_population_size": 10000,
+    "present_population_size": 20000,
+    "size_change_generations_ago": 100,
+    "sample_diploids": 2000,
+    "sequence_length": 10000000,
+    "mutation_rate": 1.29e-08,
+    "recombination_rate": 1e-08,
+    "base_seed": 930777,
+    "exact_attempts": 20000,
+    "workers": 12,
+    "queued_attempts_per_batch": 120
+  },
+  "outcome": {
+    "qualifying_attempts": 0,
+    "segregating_attempts": 439,
+    "maximum_population_allele_frequency": 0.040225,
+    "maximum_attempt": 4141,
+    "decoder_run": false,
+    "decoder_reason": "No selected genealogy met the requested AF conditioning."
+  },
+  "commands": {
+    "screen": [
+      "gamma-smc-aou",
+      "prepare-high-af-selected",
+      "--null-truth-dir",
+      "sim_results/gamma_smc_mu1p29e8_vs1p25e8_seed930777/source_mu1p29e8",
+      "--output-dir",
+      "sim_results/gamma_smc_mu1p29e8_s0p01_af10_seed930777/source",
+      "--minimum-population-af",
+      "0.10",
+      "--selection-coefficient",
+      "0.01",
+      "--workers",
+      "12",
+      "--max-attempts",
+      "20000",
+      "--seed",
+      "930777",
+      "--output-at-stride",
+      "10000"
+    ],
+    "analysis": [
+      "python",
+      "scripts/analyze_high_af_rejection_screen.py",
+      "--attempts",
+      "sim_results/gamma_smc_mu1p29e8_s0p01_af10_seed930777/source/selected_rejection_attempts.tsv",
+      "--contract",
+      "sim_results/gamma_smc_mu1p29e8_s0p01_af10_seed930777/source/selected_rejection_screen_contract.json",
+      "--output-dir",
+      "sim_results/gamma_smc_mu1p29e8_s0p01_af10_seed930777/analysis",
+      "--expected-attempts",
+      "20000"
+    ]
+  }
+}

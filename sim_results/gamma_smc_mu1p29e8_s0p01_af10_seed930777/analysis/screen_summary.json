@@ -1,0 +1,30 @@
+{
+  "result": "no_qualifying_trajectory",
+  "exact_slim_attempts": 20000,
+  "selection_coefficient": 0.01,
+  "variant_age_generations": 180,
+  "minimum_population_af": 0.1,
+  "n_at_or_above_target": 0,
+  "n_strictly_above_target": 0,
+  "n_lost": 19561,
+  "n_segregating": 439,
+  "survival_fraction": 0.02195,
+  "maximum_population_af": 0.040225,
+  "maximum_attempt": 4141,
+  "maximum_seed": 972187,
+  "positive_af_median": 0.003825,
+  "positive_af_mean": 0.005602391799544419,
+  "positive_af_q95": 0.016812499999999994,
+  "zero_event_one_sided_95_upper_probability": 0.000149775396222962,
+  "decoder_run": false,
+  "decoder_reason": "No selected genealogy met the requested present-day AF conditioning.",
+  "input_sha256": {
+    "selected_rejection_attempts.tsv": "e150c6cf7b37ad35e039b99d0bbcaba7efcfbe7b306c076d3c00314917eff93c",
+    "selected_rejection_screen_contract.json": "2f8d03b91b8736c7fce486deae81a2da30a9df690107de15f7f90939a660187b"
+  },
+  "output_files": [
+    "af_exceedance_counts.tsv",
+    "top_20_trajectories.tsv",
+    "s0p01_af10_feasibility.png"
+  ]
+}

@@ -120,6 +120,13 @@ scripts/aou.sh prepare-high-af-selected \
   --selected-attempt 2514 --output-at-stride 10000
 ```
 
+Fresh rejection searches default to 12 workers. They save a validated run
+contract and an atomic seed-ordered checkpoint, reuse it when the contract
+matches, and recover a complete temporary checkpoint after an interrupted
+OneDrive replacement. Prepared sources use the parameter-neutral file names
+`selected.trees` and `selected.vcf.gz`; older
+`selected_s0p05_af30.{trees,vcf.gz}` sources remain supported.
+
 Then use that prepared directory as the native study's source.  Pointing the
 study directly at the neutral-truth directory would decode its lower-frequency
 selected replicate instead:

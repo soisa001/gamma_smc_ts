@@ -614,7 +614,7 @@ def parser() -> argparse.ArgumentParser:
     high_af.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
     high_af.add_argument("--minimum-population-af", type=float, default=0.30)
     high_af.add_argument("--selection-coefficient", type=float, default=0.05)
-    high_af.add_argument("--workers", type=int, default=20)
+    high_af.add_argument("--workers", type=int, default=12)
     high_af.add_argument("--max-attempts", type=int, default=2_000)
     high_af.add_argument("--seed", type=int, default=910_241)
     high_af.add_argument(

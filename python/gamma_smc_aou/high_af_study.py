@@ -6,7 +6,7 @@ import shutil
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from time import perf_counter
+from time import perf_counter, sleep
 
 import matplotlib
 matplotlib.use("Agg")
@@ -190,6 +190,49 @@ def _check_null_compatibility(null_metrics: dict, design: dict) -> None:
             )
 
 
+def _resolve_neutral_statistics(
+    null_truth_dir: Path,
+    null_metrics: dict,
+) -> Path:
+    """Find the 100-replicate truth table, following recorded provenance."""
+    local = null_truth_dir / "neutral_statistics.tsv"
+    if local.is_file():
+        return local
+    for key in ("neutral_statistics_source", "neutral_truth_source"):
+        recorded = null_metrics.get(key)
+        if not recorded:
+            continue
+        source = (null_truth_dir / str(recorded)).resolve()
+        candidate = (
+            source
+            if source.name == "neutral_statistics.tsv"
+            else source / "neutral_statistics.tsv"
+        )
+        if candidate.is_file():
+            return candidate
+    raise FileNotFoundError(
+        f"{local} is absent and metrics.json does not resolve to a "
+        "neutral_statistics.tsv provenance source"
+    )
+
+
+def _replace_with_retry(
+    source: Path,
+    destination: Path,
+    *,
+    attempts: int = 20,
+) -> None:
+    """Atomically replace a file despite brief Windows/OneDrive read locks."""
+    for attempt in range(attempts):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt + 1 == attempts:
+                raise
+            sleep(min(0.05 * (attempt + 1), 0.5))
+
+
 def prepare_high_af_selected(
     null_truth_dir: str | Path,
     output_dir: str | Path,
@@ -197,7 +240,7 @@ def prepare_high_af_selected(
     executable: str | Path | None = None,
     minimum_population_af: float = 0.30,
     selection_coefficient: float = 0.05,
-    workers: int = 20,
+    workers: int = 12,
     max_attempts: int = 2_000,
     seed: int = 910_241,
     selected_attempt: int | None = None,
@@ -236,7 +279,11 @@ def prepare_high_af_selected(
         "recombination_rate": float(null_metrics["recombination_rate"]),
     }
     _check_null_compatibility(null_metrics, design)
-    neutral = pd.read_csv(null_truth_dir / "neutral_statistics.tsv", sep="\t")
+    neutral_statistics_path = _resolve_neutral_statistics(
+        null_truth_dir,
+        null_metrics,
+    )
+    neutral = pd.read_csv(neutral_statistics_path, sep="\t")
     if len(neutral) != 100:
         raise ValueError(f"expected the saved 100-replicate null; found {len(neutral)}")
     center = design["sequence_length"] // 2
@@ -249,7 +296,108 @@ def prepare_high_af_selected(
     )
     started = perf_counter()
     accepted = None
+    checkpoint_path = output_dir / "selected_rejection_screen_checkpoint.tsv"
+    checkpoint_temporary = checkpoint_path.with_suffix(".tsv.tmp")
+    contract_path = output_dir / "selected_rejection_screen_contract.json"
+    screen_contract = {
+        "schema_version": 1,
+        "ancestral_population_size": design["ancestral_population_size"],
+        "present_population_size": design["present_population_size"],
+        "size_change_generations_ago": design["size_change_generations_ago"],
+        "sample_diploids": design["sample_diploids"],
+        "sequence_length": design["sequence_length"],
+        "variant_age_generations": design["variant_age_generations"],
+        "mutation_rate": design["mutation_rate"],
+        "recombination_rate": design["recombination_rate"],
+        "minimum_population_af": float(minimum_population_af),
+        "selection_coefficient": float(selection_coefficient),
+        "seed": int(seed),
+        "stride": int(stride),
+        "null_truth_dir": os.path.relpath(null_truth_dir, output_dir),
+        "neutral_statistics_source": os.path.relpath(
+            neutral_statistics_path,
+            output_dir,
+        ),
+    }
     attempt_rows: list[dict] = []
+    next_attempt = 0
+    resume_accepted_attempt: int | None = None
+    checkpoint_required = {
+        "attempt",
+        "seed",
+        "accepted",
+        "focal_allele_outcome",
+        "population_allele_frequency",
+    }
+    checkpoint_candidates: list[pd.DataFrame] = []
+    for candidate_path in (checkpoint_path, checkpoint_temporary):
+        if not candidate_path.exists():
+            continue
+        try:
+            candidate = pd.read_csv(candidate_path, sep="\t")
+            if checkpoint_required.difference(candidate.columns):
+                continue
+            candidate.sort_values("attempt", inplace=True)
+        except (KeyError, OSError, ValueError, pd.errors.ParserError):
+            continue
+        candidate_attempts = candidate["attempt"].to_numpy(dtype=int)
+        if np.array_equal(
+            candidate_attempts,
+            np.arange(len(candidate), dtype=int),
+        ):
+            checkpoint_candidates.append(candidate)
+    if checkpoint_candidates:
+        if not contract_path.exists():
+            raise RuntimeError(
+                f"{checkpoint_path} exists without {contract_path}; refusing "
+                "to mix an unverified rejection screen"
+            )
+        with contract_path.open(encoding="utf-8") as handle:
+            saved_contract = json.load(handle)
+        if saved_contract != screen_contract:
+            raise RuntimeError(
+                "rejection-screen checkpoint contract does not match this run"
+            )
+        checkpoint = max(checkpoint_candidates, key=len)
+        observed_attempts = checkpoint["attempt"].to_numpy(dtype=int)
+        if not np.array_equal(
+            observed_attempts,
+            np.arange(len(checkpoint), dtype=int),
+        ):
+            raise RuntimeError(
+                "rejection-screen checkpoint attempts are not contiguous from zero"
+            )
+        expected_seeds = seed + observed_attempts * 10
+        if not np.array_equal(
+            checkpoint["seed"].to_numpy(dtype=int),
+            expected_seeds,
+        ):
+            raise RuntimeError("rejection-screen checkpoint seeds do not match")
+        expected_accepted = (
+            checkpoint["population_allele_frequency"].to_numpy(dtype=float)
+            >= minimum_population_af
+        ) & checkpoint["focal_allele_outcome"].eq("segregating").to_numpy()
+        observed_accepted = (
+            checkpoint["accepted"]
+            .astype(str)
+            .str.lower()
+            .eq("true")
+            .to_numpy()
+        )
+        if not np.array_equal(observed_accepted, expected_accepted):
+            raise RuntimeError(
+                "rejection-screen checkpoint acceptance decisions do not match"
+            )
+        attempt_rows = checkpoint.to_dict("records")
+        next_attempt = len(checkpoint)
+        if np.any(expected_accepted):
+            resume_accepted_attempt = int(observed_attempts[expected_accepted][0])
+    else:
+        contract_temporary = contract_path.with_suffix(".json.tmp")
+        with contract_temporary.open("w", encoding="utf-8") as handle:
+            json.dump(screen_contract, handle, indent=2)
+            handle.write("\n")
+        _replace_with_retry(contract_temporary, contract_path)
 
     with TemporaryDirectory(prefix="gamma_smc_high_af_") as temporary:
         temporary = Path(temporary)
@@ -295,7 +443,6 @@ def prepare_high_af_selected(
                 "screen_only": screen_only,
             }
 
-        next_attempt = 0
         if selected_attempt is not None:
             accepted = _simulate_high_af_attempt(
                 attempt_task(selected_attempt, screen_only=False)
@@ -307,28 +454,48 @@ def prepare_high_af_selected(
                     f"AF >= {minimum_population_af:g}"
                 )
         else:
-            while accepted is None and next_attempt < max_attempts:
-                batch = list(
-                    range(next_attempt, min(next_attempt + workers, max_attempts))
-                )
-                tasks = [
-                    attempt_task(attempt, screen_only=True) for attempt in batch
-                ]
-                if workers == 1:
-                    results = [_simulate_high_af_attempt(task) for task in tasks]
-                else:
-                    with ProcessPoolExecutor(max_workers=workers) as executor:
-                        results = list(executor.map(_simulate_high_af_attempt, tasks))
-                for result in results:
-                    attempt_rows.append(result["row"])
-                    if accepted is None and result["row"]["accepted"]:
-                        accepted = result
-                pd.DataFrame(attempt_rows).sort_values("attempt").to_csv(
-                    output_dir / "selected_rejection_screen_checkpoint.tsv",
-                    sep="\t",
-                    index=False,
-                )
-                next_attempt += len(batch)
+            if resume_accepted_attempt is not None:
+                accepted = {"row": {"attempt": resume_accepted_attempt}}
+            executor = (
+                None
+                if workers == 1
+                else ProcessPoolExecutor(max_workers=workers)
+            )
+            queued_attempts = workers if executor is None else workers * 10
+            try:
+                while accepted is None and next_attempt < max_attempts:
+                    batch = list(
+                        range(
+                            next_attempt,
+                            min(next_attempt + queued_attempts, max_attempts),
+                        )
+                    )
+                    tasks = [
+                        attempt_task(attempt, screen_only=True)
+                        for attempt in batch
+                    ]
+                    results = (
+                        [_simulate_high_af_attempt(task) for task in tasks]
+                        if executor is None
+                        else list(executor.map(_simulate_high_af_attempt, tasks))
+                    )
+                    for result in results:
+                        attempt_rows.append(result["row"])
+                        if accepted is None and result["row"]["accepted"]:
+                            accepted = result
+                    pd.DataFrame(attempt_rows).sort_values("attempt").to_csv(
+                        checkpoint_temporary,
+                        sep="\t",
+                        index=False,
+                    )
+                    _replace_with_retry(
+                        checkpoint_temporary,
+                        checkpoint_path,
+                    )
+                    next_attempt += len(batch)
+            finally:
+                if executor is not None:
+                    executor.shutdown()
             if accepted is None:
                 failed = pd.DataFrame(attempt_rows).sort_values("attempt")
                 failed["used_for_rejection_decision"] = True
@@ -348,7 +515,7 @@ def prepare_high_af_selected(
                 raise RuntimeError(
                     "accepted trajectory was not reproducible on materialization"
                 )
-        selected_tree = output_dir / "selected_s0p05_af30.trees"
+        selected_tree = output_dir / "selected.trees"
         shutil.copy2(Path(accepted["tree_path"]), selected_tree)
 
     accepted_row = accepted["row"]
@@ -449,7 +616,7 @@ def prepare_high_af_selected(
         selection_coefficient=selection_coefficient,
         output_path=output_dir / "truth_null_and_selected_pvalue.png",
     )
-    selected_vcf = output_dir / "selected_s0p05_af30.vcf.gz"
+    selected_vcf = output_dir / "selected.vcf.gz"
     tree_sequence_to_vcf(selected_tree, selected_vcf)
     metrics = {
         "demography": {
@@ -465,7 +632,13 @@ def prepare_high_af_selected(
         "minimum_population_allele_frequency": float(minimum_population_af),
         "neutral_replicates": int(len(neutral)),
         "neutral_truth_source": os.path.relpath(null_truth_dir, output_dir),
+        "neutral_statistics_source": os.path.relpath(
+            neutral_statistics_path,
+            output_dir,
+        ),
         "neutral_theoretical_fraction_recent": float(theoretical),
+        "selected_tree_file": selected_tree.name,
+        "selected_vcf_file": selected_vcf.name,
         "selected_rejection": {
             "search_mode": (
                 "explicit_deterministic_attempt"
@@ -490,6 +663,13 @@ def prepare_high_af_selected(
         },
         "workers_requested": int(workers),
         "workers_used": int(1 if selected_attempt is not None else workers),
+        "screen_attempts_per_batch": int(
+            1
+            if selected_attempt is not None
+            else workers
+            if workers == 1
+            else workers * 10
+        ),
         "shared_neutral_ancestry_seconds": float(shared_ancestry_seconds),
         "base_seed": int(seed),
         "stride_bp": int(stride),
