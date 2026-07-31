@@ -131,7 +131,7 @@ def test_reference_rates_are_the_defaults_everywhere():
     source = (ROOT / "src" / "gamma_smc.cpp").read_text()
     assert "const float default_scaled_mutation_rate = 0.00075f;" in source
     assert "const float default_scaled_recombination_rate = 0.0006f;" in source
-    assert "const double default_unscaled_mutation_rate = 1.29e-9;" in source
+    assert "const double default_unscaled_mutation_rate = 1.29e-8;" in source
     # rho/theta must stay self-consistent with the ratio the wrappers pass.
     assert abs(0.0006 / 0.00075 - 0.8) < 1e-12
 
@@ -157,7 +157,7 @@ def test_reference_rates_are_the_defaults_everywhere():
     ) in decoder
     assert "mutation_rate: float = DEFAULT_MUTATION_RATE," in decoder
     defaults = (ROOT / "python" / "gamma_smc_aou" / "defaults.py").read_text()
-    assert "DEFAULT_MUTATION_RATE = 1.29e-9" in defaults
+    assert "DEFAULT_MUTATION_RATE = 1.29e-8" in defaults
 
     cli = (ROOT / "python" / "gamma_smc_aou" / "cli.py").read_text()
     assert '"--theta", type=float, required=True' not in cli
@@ -181,7 +181,7 @@ def test_stride_defaults_to_10kb_and_hets_are_off():
     assert "DEFAULT_OUTPUT_STRIDE = 10_000" in defaults
 
     # The requested physical mutation rate fixes the time-axis conversion.
-    assert abs(0.00075 / (2 * 1.29e-9) - 290_697.67441860464) < 1e-6
+    assert abs(0.00075 / (2 * 1.29e-8) - 29_069.767441860465) < 1e-6
 
 
 def test_cache_memory_estimate_scales_with_cache_size():

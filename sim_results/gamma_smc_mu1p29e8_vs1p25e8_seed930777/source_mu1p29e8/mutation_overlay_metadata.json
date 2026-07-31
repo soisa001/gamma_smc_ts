@@ -1,0 +1,11 @@
+{
+  "genealogy_source": "../source_high_mu/selected_s0p05_af30.trees",
+  "sites_and_mutations_cleared": true,
+  "mutation_free_tables_equal_ignoring_provenance": true,
+  "model": "msprime.BinaryMutationModel",
+  "random_seed": 945460,
+  "retained_sites": 55097,
+  "mutation_rate": 1.29e-08,
+  "tree_sha256": "5f4191a8ef3f44d946897cf430b14c058a455461db8f54ac28de9eba046c7c4b",
+  "vcf_sha256": "bb28598650acba9894afae82a8cb51cfc9ff2b1a09fb1934ec2293b029ee1eec"
+}

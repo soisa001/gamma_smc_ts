@@ -1,0 +1,5 @@
+pair_class	n_pairs	center_fraction_recent_truth	center_mean_tmrca_generations_truth
+all_within_individual	2000	0.098	46320.93746630083
+hom_ref	949	0.002107481559536354	51272.66980038194
+heterozygous	857	0.0	51287.14969899556
+hom_alt	194	1.0	159.91752577319588

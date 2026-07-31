@@ -45,7 +45,7 @@ def test_workbench_defaults_are_shared_by_the_cli():
     arguments = parser().parse_args(
         ["decode", "--input", "input.vcf.gz", "--output", "output.tsv"]
     )
-    assert arguments.mutation_rate == 1.29e-9
+    assert arguments.mutation_rate == 1.29e-8
     assert arguments.output_at_stride == 10_000
     assert arguments.cache_size == 1_000
 

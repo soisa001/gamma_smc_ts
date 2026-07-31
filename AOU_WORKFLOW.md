@@ -47,8 +47,8 @@ attempted on a byte stream.
 
 Run one pair for every diploid. `theta` is the Gamma-SMC scaled mutation rate;
 `mu` is needed to convert its coalescent time scale back to generations.
-The requested defaults are `theta=0.00075` and `mu=1.29e-9`, which imply
-`2Ne = theta/(2*mu) = 290,698` generations. Confirm that time scale for the
+The requested defaults are `theta=0.00075` and `mu=1.29e-8`, which imply
+`2Ne = theta/(2*mu) = 29,070` generations. Confirm that time scale for the
 empirical analysis; the matched simulation study instead derives theta as
 `4*Ne*mu`, so its decoder and simulation are internally consistent.
 
@@ -57,7 +57,7 @@ gamma-smc-aou decode \
   --executable bin/gamma_smc \
   --input AFR.phased.bcf --input-format vcf \
   --output AFR.within.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
   --no-output-at-hets --output-at-stride 10000
 ```
 
@@ -85,7 +85,7 @@ at every heterozygous site, and uses `--output_at_stride 10000`:
 ```bash
 scripts/aou.sh decode-container \
   --input AFR.phased.vcf.gz --output AFR.within.stride10000.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
   --generation-time 25 --threshold-years 4500 --output-at-stride 10000
 ```
 
@@ -115,8 +115,8 @@ seed-ordered replicate accepted by the earlier study without recomputing all
 
 ```bash
 scripts/aou.sh prepare-high-af-selected \
-  --null-truth-dir sim_results/two_epoch_growth_s0p05_n2000_mu1p29e9 \
-  --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
+  --null-truth-dir sim_results/two_epoch_growth_s0p05_n2000_mu1p29e8 \
+  --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e8 \
   --selected-attempt 2514 --output-at-stride 10000
 ```
 
@@ -126,8 +126,8 @@ selected replicate instead:
 
 ```bash
 scripts/aou.sh run-native-study \
-  --source-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
-  --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e9 \
+  --source-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e8 \
+  --output-dir sim_results/gamma_smc_native_stride10000_s0p05_af30_mu1p29e8 \
   --executable bin/gamma_smc \
   --neutral-replicates 100 --output-at-stride 10000 \
   --cache-size 1000 --threads 1 --workers 12 \
@@ -158,7 +158,7 @@ for chrom in $(seq 1 22); do
     --input AFR.chr${chrom}.phased.bcf --input-format vcf \
     --output scan/chr${chrom}.tsv \
     --bitmatrix scan/chr${chrom}.bits \
-    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
     --generation-time 25 --threshold-years 4500 10000 \
     --no-output-at-hets --output-at-stride 10000 \
     --n-random-pairs 100000 --pairs-seed 1729 \
@@ -493,7 +493,7 @@ Only three things, since the rates now have reference defaults:
 | `--generation_time` | `25` | 4500 years = 180 generations |
 | `--scaled_mutation_rate` / `-m` | `0.00075` | the paper's value; fixed, not per-file |
 | `--scaled_recombination_rate` / `-r` | `0.0006` | rho/theta = 0.8 |
-| `--unscaled_mutation_rate` | `1.29e-9` | requested project default; with theta 0.00075 gives 2Ne = 290,698 generations |
+| `--unscaled_mutation_rate` | `1.29e-8` | requested project default; with theta 0.00075 gives 2Ne = 29,070 generations |
 | `--estimate_mutation_rate` | off | estimating theta rescales the time axis per file |
 | `--recent_call` | `median` | `median`, `mean`, or `prob` |
 | `--recent_call_probability` | `0.5` | only read by `--recent_call prob` |
@@ -574,7 +574,7 @@ not used. A constant demography is the baseline:
 ```bash
 gamma-smc-aou simulate --output-dir sims/AFR/region_001 \
   --replicates 1000 --diploids 2000 --length 1000000 \
-  --ne 10000 --mutation-rate 1.29e-9 --recombination-rate 1e-8 \
+  --ne 10000 --mutation-rate 1.29e-8 --recombination-rate 1e-8 \
   --save-trees --seed 1729 --workers 20
 ```
 

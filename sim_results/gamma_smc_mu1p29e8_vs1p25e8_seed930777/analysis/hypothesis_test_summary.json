@@ -1,0 +1,119 @@
+{
+  "primary_statistic": "mean across pairs of posterior P(TMRCA < 180 generations)",
+  "posterior_mean_call_is_not_primary_statistic": true,
+  "mutation_rates": {
+    "rate_a": 1.29e-08,
+    "rate_b": 1.25e-08,
+    "relative_difference_rate_a_vs_rate_b": 0.03200000000000003
+  },
+  "stride_validation": {
+    "rate_a_selected_mean_p_tmrca_lt_threshold_max_abs_difference": 0.00028535852000000084,
+    "rate_a_selected_mean_p_tmrca_lt_threshold_pearson_correlation": 0.9999978888503834,
+    "rate_a_selected_mean_p_lt_4500_max_abs_difference": 0.00028535852000000084,
+    "rate_a_selected_mean_p_lt_4500_pearson_correlation": 0.9999978888503834,
+    "rate_a_selected_mean_tmrca_generations_max_abs_difference": 252.28203999999823,
+    "rate_a_selected_mean_tmrca_generations_pearson_correlation": 0.999969950962005,
+    "rate_a_neutral_mean_p_tmrca_lt_threshold_max_abs_difference": 0.0003898865200000004,
+    "rate_a_neutral_mean_p_tmrca_lt_threshold_pearson_correlation": 0.9999912390925677,
+    "rate_a_neutral_mean_p_lt_4500_max_abs_difference": 0.0003898865200000004,
+    "rate_a_neutral_mean_p_lt_4500_pearson_correlation": 0.9999912390925677,
+    "rate_a_neutral_mean_tmrca_generations_max_abs_difference": 355.2017100000012,
+    "rate_a_neutral_mean_tmrca_generations_pearson_correlation": 0.9999694012313385,
+    "rate_a_selected_shared_positions": 1000,
+    "rate_a_neutral_shared_rows": 100000,
+    "rate_b_selected_mean_p_tmrca_lt_threshold_max_abs_difference": 0.00027200024999999434,
+    "rate_b_selected_mean_p_tmrca_lt_threshold_pearson_correlation": 0.999997487978181,
+    "rate_b_selected_mean_p_lt_4500_max_abs_difference": 0.00027200024999999434,
+    "rate_b_selected_mean_p_lt_4500_pearson_correlation": 0.999997487978181,
+    "rate_b_selected_mean_tmrca_generations_max_abs_difference": 277.8804000000018,
+    "rate_b_selected_mean_tmrca_generations_pearson_correlation": 0.9999687245191563,
+    "rate_b_neutral_mean_p_tmrca_lt_threshold_max_abs_difference": 0.00040861285999999747,
+    "rate_b_neutral_mean_p_tmrca_lt_threshold_pearson_correlation": 0.9999901151320676,
+    "rate_b_neutral_mean_p_lt_4500_max_abs_difference": 0.00040861285999999747,
+    "rate_b_neutral_mean_p_lt_4500_pearson_correlation": 0.9999901151320676,
+    "rate_b_neutral_mean_tmrca_generations_max_abs_difference": 386.0290099999984,
+    "rate_b_neutral_mean_tmrca_generations_pearson_correlation": 0.9999671420146987,
+    "rate_b_selected_shared_positions": 1000,
+    "rate_b_neutral_shared_rows": 100000
+  },
+  "fixed_stride_rate_validation": {
+    "stride_1kb": {
+      "selected_mean_p_tmrca_lt_threshold_mean_difference_a_minus_b": 4.9735314345500026e-05,
+      "selected_mean_p_tmrca_lt_threshold_max_abs_difference": 0.017629253430000002,
+      "selected_mean_p_tmrca_lt_threshold_pearson_correlation": 0.9451461964002558,
+      "selected_mean_p_lt_4500_mean_difference_a_minus_b": 4.9735314345500026e-05,
+      "selected_mean_p_lt_4500_max_abs_difference": 0.017629253430000002,
+      "selected_mean_p_lt_4500_pearson_correlation": 0.9451461964002558,
+      "selected_mean_tmrca_generations_mean_difference_a_minus_b": -14.875432652200008,
+      "selected_mean_tmrca_generations_max_abs_difference": 15741.61523,
+      "selected_mean_tmrca_generations_pearson_correlation": 0.7656335901962842,
+      "neutral_mean_p_tmrca_lt_threshold_mean_difference_a_minus_b": 3.6756909066012e-05,
+      "neutral_mean_p_tmrca_lt_threshold_max_abs_difference": 0.03834257091,
+      "neutral_mean_p_tmrca_lt_threshold_pearson_correlation": 0.6944942740931955,
+      "neutral_mean_p_lt_4500_mean_difference_a_minus_b": 3.6756909066012e-05,
+      "neutral_mean_p_lt_4500_max_abs_difference": 0.03834257091,
+      "neutral_mean_p_lt_4500_pearson_correlation": 0.6944942740931955,
+      "neutral_mean_tmrca_generations_mean_difference_a_minus_b": 10.918525075423002,
+      "neutral_mean_tmrca_generations_max_abs_difference": 21661.32392,
+      "neutral_mean_tmrca_generations_pearson_correlation": 0.7220741630097147,
+      "selected_shared_positions": 10000,
+      "neutral_shared_rows": 1000000
+    },
+    "stride_10kb": {
+      "selected_mean_p_tmrca_lt_threshold_mean_difference_a_minus_b": 5.051681794800006e-05,
+      "selected_mean_p_tmrca_lt_threshold_max_abs_difference": 0.016611782730000003,
+      "selected_mean_p_tmrca_lt_threshold_pearson_correlation": 0.944541915684723,
+      "selected_mean_p_lt_4500_mean_difference_a_minus_b": 5.051681794800006e-05,
+      "selected_mean_p_lt_4500_max_abs_difference": 0.016611782730000003,
+      "selected_mean_p_lt_4500_pearson_correlation": 0.944541915684723,
+      "selected_mean_tmrca_generations_mean_difference_a_minus_b": 52.68012820600002,
+      "selected_mean_tmrca_generations_max_abs_difference": 13990.318388000002,
+      "selected_mean_tmrca_generations_pearson_correlation": 0.7691087908823061,
+      "neutral_mean_p_tmrca_lt_threshold_mean_difference_a_minus_b": 3.403771868811e-05,
+      "neutral_mean_p_tmrca_lt_threshold_max_abs_difference": 0.037894339299999996,
+      "neutral_mean_p_tmrca_lt_threshold_pearson_correlation": 0.6941347260823346,
+      "neutral_mean_p_lt_4500_mean_difference_a_minus_b": 3.403771868811e-05,
+      "neutral_mean_p_lt_4500_max_abs_difference": 0.037894339299999996,
+      "neutral_mean_p_lt_4500_pearson_correlation": 0.6941347260823346,
+      "neutral_mean_tmrca_generations_mean_difference_a_minus_b": 11.995791097949999,
+      "neutral_mean_tmrca_generations_max_abs_difference": 20287.842569999997,
+      "neutral_mean_tmrca_generations_pearson_correlation": 0.721648241951579,
+      "selected_shared_positions": 1000,
+      "neutral_shared_rows": 100000
+    }
+  },
+  "center_rate_comparison": {
+    "stride_1kb": {
+      "selected_a_minus_b": -0.0061360554799999995,
+      "selected_relative_difference_a_vs_b": -0.0855116396094665,
+      "null_mean_a_minus_b": 0.0007653184162999954,
+      "rate_a_p_upper": 0.009900990099009901,
+      "rate_b_p_upper": 0.009900990099009901
+    },
+    "stride_10kb": {
+      "selected_a_minus_b": -0.006144324019999994,
+      "selected_relative_difference_a_vs_b": -0.08552237395592666,
+      "null_mean_a_minus_b": 0.0007632481757999972,
+      "rate_a_p_upper": 0.009900990099009901,
+      "rate_b_p_upper": 0.009900990099009901
+    }
+  },
+  "rate_a_10kb_null_exceedance_probability_clopper_pearson_95": [
+    0.0,
+    0.03621669264517641
+  ],
+  "all_four_cells_are_independent_complete_100_null_calibrations": true,
+  "truth_null_summary": {
+    "neutral_replicates": 100,
+    "neutral_mean_fraction_recent": 0.0066500000000000005,
+    "neutral_fraction_recent_ci95": [
+      0.0035,
+      0.011024999999999991
+    ],
+    "neutral_mean_tmrca_generations": 19376.749708589454,
+    "neutral_mean_tmrca_ci95": [
+      8252.87168959961,
+      34834.54799920925
+    ]
+  }
+}

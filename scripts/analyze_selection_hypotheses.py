@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Analyze matched stride, mutation-rate, and carrier-class sweep tests."""
+"""Analyze a matched two-rate, two-stride selected-sweep experiment."""
 
 from __future__ import annotations
 
@@ -128,6 +128,62 @@ def _compare_stride_outputs(stride_1kb: Path, stride_10kb: Path) -> dict:
     return result
 
 
+def _compare_rate_outputs(rate_a: Path, rate_b: Path) -> dict:
+    selected_a = pd.read_csv(
+        rate_a / "selected_decoded_recent_probability_profile.tsv",
+        sep="\t",
+    )
+    selected_b = pd.read_csv(
+        rate_b / "selected_decoded_recent_probability_profile.tsv",
+        sep="\t",
+    )
+    neutral_a = pd.read_csv(
+        rate_a / "neutral_decoded_recent_probability_profiles.tsv.gz",
+        sep="\t",
+    ).sort_values(["replicate", "position_0based"]).reset_index(drop=True)
+    neutral_b = pd.read_csv(
+        rate_b / "neutral_decoded_recent_probability_profiles.tsv.gz",
+        sep="\t",
+    ).sort_values(["replicate", "position_0based"]).reset_index(drop=True)
+    if len(selected_a) != len(selected_b) or len(neutral_a) != len(neutral_b):
+        raise RuntimeError("mutation-rate profiles have different dimensions")
+    if not np.array_equal(
+        selected_a["position_0based"].to_numpy(),
+        selected_b["position_0based"].to_numpy(),
+    ):
+        raise RuntimeError("selected mutation-rate profiles use different grids")
+    for column in ["replicate", "position_0based"]:
+        if not np.array_equal(
+            neutral_a[column].to_numpy(),
+            neutral_b[column].to_numpy(),
+        ):
+            raise RuntimeError(
+                f"neutral mutation-rate profiles differ in {column!r}"
+            )
+
+    result = {}
+    for label, left, right in [
+        ("selected", selected_a, selected_b),
+        ("neutral", neutral_a, neutral_b),
+    ]:
+        for column in SOFT_COLUMNS:
+            left_values = left[column].to_numpy(dtype=float)
+            right_values = right[column].to_numpy(dtype=float)
+            difference = left_values - right_values
+            result[f"{label}_{column}_mean_difference_a_minus_b"] = float(
+                np.mean(difference)
+            )
+            result[f"{label}_{column}_max_abs_difference"] = float(
+                np.max(np.abs(difference), initial=0.0)
+            )
+            result[f"{label}_{column}_pearson_correlation"] = float(
+                np.corrcoef(left_values, right_values)[0, 1]
+            )
+    result["selected_shared_positions"] = int(len(selected_a))
+    result["neutral_shared_rows"] = int(len(neutral_a))
+    return result
+
+
 def _decode_carrier_classes(
     sources: dict[str, Path],
     pair_paths: dict[str, Path],
@@ -135,20 +191,15 @@ def _decode_carrier_classes(
     output_dir: Path,
 ) -> pd.DataFrame:
     rows = []
-    configurations = {
-        "low_mu": {
-            "mutation_rate": 1.29e-9,
-            "theta": 5.16e-5,
-            "rho_over_theta": 1e-8 / 1.29e-9,
-        },
-        "high_mu": {
-            "mutation_rate": 1.25e-8,
-            "theta": 0.0005,
-            "rho_over_theta": 0.8,
-        },
-    }
     for configuration, source in sources.items():
-        rates = configurations[configuration]
+        metrics = json.loads((source / "metrics.json").read_text())
+        mutation_rate = float(metrics["mutation_rate"])
+        ancestral_size = float(
+            metrics["demography"]["ancestral_population_size"]
+        )
+        recombination_rate = float(metrics["recombination_rate"])
+        theta = 4 * ancestral_size * mutation_rate
+        rho_over_theta = recombination_rate / mutation_rate
         for pair_class, pairs_path in pair_paths.items():
             summary_path = output_dir / f"{configuration}_{pair_class}_stride10kb.tsv"
             run_path = summary_path.with_suffix(summary_path.suffix + ".run.json")
@@ -159,9 +210,9 @@ def _decode_carrier_classes(
                     executable,
                     source / "selected_s0p05_af30.vcf.gz",
                     summary_path,
-                    scaled_mutation_rate=rates["theta"],
-                    recombination_to_mutation_ratio=rates["rho_over_theta"],
-                    mutation_rate=rates["mutation_rate"],
+                    scaled_mutation_rate=theta,
+                    recombination_to_mutation_ratio=rho_over_theta,
+                    mutation_rate=mutation_rate,
                     threshold_years=4_500,
                     generation_time=25,
                     input_format="vcf",
@@ -177,7 +228,7 @@ def _decode_carrier_classes(
             center = _center_row(profile, 5_000_000)
             rows.append({
                 "configuration": configuration,
-                "mutation_rate": rates["mutation_rate"],
+                "mutation_rate": mutation_rate,
                 "pair_class": pair_class,
                 "n_pairs": int(center["n_pairs"]),
                 "center_mean_p_recent": float(
@@ -295,14 +346,26 @@ def _plot_summary(
     truth: pd.DataFrame,
     truth_null: dict,
     carrier: pd.DataFrame,
-    low_1kb: Path,
-    low_10kb: Path,
-    high_1kb: Path,
-    high_10kb: Path,
+    rate_a_1kb: Path,
+    rate_a_10kb: Path,
+    rate_b_1kb: Path,
+    rate_b_10kb: Path,
     output_path: Path,
 ) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(17, 12))
-    colors = {"low_mu": "#4976b8", "high_mu": "#d45d48"}
+    colors = {"rate_a": "#4976b8", "rate_b": "#d45d48"}
+    rate_a = float(
+        factor.loc[
+            factor["configuration"].str.startswith("rate_a"),
+            "mutation_rate",
+        ].iloc[0]
+    )
+    rate_b = float(
+        factor.loc[
+            factor["configuration"].str.startswith("rate_b"),
+            "mutation_rate",
+        ].iloc[0]
+    )
 
     axis = axes[0, 0]
     x = np.arange(len(factor))
@@ -311,14 +374,14 @@ def _plot_summary(
     upper = factor["center_null_ci95_upper"].to_numpy()
     axis.vlines(x, lower, upper, color="#777777", linewidth=6, alpha=0.5)
     axis.scatter(x, factor["center_null_mean_p_recent"], color="black", s=55, label="neutral mean")
-    low = factor["mutation_rate"].to_numpy() < 1e-8
+    is_rate_a = factor["configuration"].str.startswith("rate_a").to_numpy()
     axis.scatter(
-        x[low], y[low], color=colors["low_mu"], s=95,
-        label="selected, low μ", zorder=3,
+        x[is_rate_a], y[is_rate_a], color=colors["rate_a"], s=95,
+        label=f"selected, μ={rate_a:.3g}", zorder=3,
     )
     axis.scatter(
-        x[~low], y[~low], color=colors["high_mu"], s=95,
-        label="selected, high μ", zorder=3,
+        x[~is_rate_a], y[~is_rate_a], color=colors["rate_b"], s=95,
+        label=f"selected, μ={rate_b:.3g}", zorder=3,
     )
     for index, row in enumerate(factor.itertuples()):
         offset = 10 if row.center_selected_mean_p_recent < 0.04 else -20
@@ -333,15 +396,15 @@ def _plot_summary(
         )
     axis.set_xticks(x, [f"{row.stride_bp // 1000} kb\n$\\mu$={row.mutation_rate:.2g}" for row in factor.itertuples()])
     axis.set_ylabel("Mean posterior P(TMRCA < 180 generations)")
-    axis.set_title("A. Center statistic: mutation information, not stride")
+    axis.set_title("A. Both corrected mutation rates recover the sweep")
     axis.legend(frameon=False)
 
     axis = axes[0, 1]
     profiles = [
-        ("low μ, 1 kb", low_1kb, colors["low_mu"], "-"),
-        ("low μ, 10 kb", low_10kb, colors["low_mu"], "--"),
-        ("high μ, 1 kb", high_1kb, colors["high_mu"], "-"),
-        ("high μ, 10 kb", high_10kb, colors["high_mu"], "--"),
+        (f"μ={rate_a:.3g}, 1 kb", rate_a_1kb, colors["rate_a"], "-"),
+        (f"μ={rate_a:.3g}, 10 kb", rate_a_10kb, colors["rate_a"], "--"),
+        (f"μ={rate_b:.3g}, 1 kb", rate_b_1kb, colors["rate_b"], "-"),
+        (f"μ={rate_b:.3g}, 10 kb", rate_b_10kb, colors["rate_b"], "--"),
     ]
     for label, path, color, linestyle in profiles:
         frame = pd.read_csv(
@@ -388,7 +451,10 @@ def _plot_summary(
     class_order = ["hom_alt", "heterozygous", "hom_ref"]
     width = 0.34
     cx = np.arange(len(class_order))
-    for offset, configuration in [(-width / 2, "low_mu"), (width / 2, "high_mu")]:
+    for offset, configuration in [
+        (-width / 2, "rate_a"),
+        (width / 2, "rate_b"),
+    ]:
         subset = (
             carrier.loc[carrier["configuration"] == configuration]
             .set_index("pair_class")
@@ -399,22 +465,26 @@ def _plot_summary(
             subset["center_mean_p_recent"],
             width=width,
             color=colors[configuration],
-            label=configuration.replace("_", " "),
+            label=(
+                f"μ={rate_a:.3g}"
+                if configuration == "rate_a"
+                else f"μ={rate_b:.3g}"
+            ),
         )
     axis.axhline(
-        factor.loc[factor["mutation_rate"] < 1e-8, "center_null_mean_p_recent"].iloc[0],
+        factor.iloc[0]["center_null_mean_p_recent"],
         color="black",
         linestyle=":",
-        label="low-μ neutral mean",
+        label=f"μ={rate_a:.3g} neutral mean",
     )
     axis.set_yscale("log")
     axis.set_xticks(cx, ["hom-alt", "heterozygous", "hom-ref"])
     axis.set_ylabel("Decoded mean posterior P(recent), log scale")
-    axis.set_title("D. Low mutation rate erases the hom-alt signal")
+    axis.set_title("D. Both rates recover the hom-alt carrier signal")
     axis.legend(frameon=False)
 
     fig.suptitle(
-        "Why the selected sweep was recovered before: matched hypothesis tests",
+        "Corrected mutation-rate comparison on matched selected and null simulations",
         fontsize=22,
     )
     fig.tight_layout(rect=(0, 0, 1, 0.96))
@@ -425,25 +495,47 @@ def _plot_summary(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--existing-low-10kb", type=Path, required=True)
+    parser.add_argument("--rate-a-source", type=Path, required=True)
+    parser.add_argument("--rate-a-1kb", type=Path, required=True)
+    parser.add_argument("--rate-a-10kb", type=Path, required=True)
+    parser.add_argument("--rate-b-source", type=Path, required=True)
+    parser.add_argument("--rate-b-1kb", type=Path, required=True)
+    parser.add_argument("--rate-b-10kb", type=Path, required=True)
+    parser.add_argument("--expected-rate-a", type=float, default=1.29e-8)
+    parser.add_argument("--expected-rate-b", type=float, default=1.25e-8)
     parser.add_argument("--neutral-truth", type=Path, required=True)
     parser.add_argument("--executable", type=Path, required=True)
     args = parser.parse_args()
 
     root = args.root.resolve()
-    low_source = root / "source_low_mu"
-    high_source = root / "source_high_mu"
-    low_1kb = root / "low_mu_stride1kb"
-    high_1kb = root / "high_mu_stride1kb"
-    high_10kb = root / "high_mu_stride10kb"
-    low_10kb = args.existing_low_10kb.resolve()
+    rate_a_source = args.rate_a_source.resolve()
+    rate_a_1kb = args.rate_a_1kb.resolve()
+    rate_a_10kb = args.rate_a_10kb.resolve()
+    rate_b_source = args.rate_b_source.resolve()
+    rate_b_1kb = args.rate_b_1kb.resolve()
+    rate_b_10kb = args.rate_b_10kb.resolve()
     analysis_dir = root / "analysis"
     analysis_dir.mkdir(parents=True, exist_ok=True)
 
+    def source_rate(path: Path) -> float:
+        metrics = json.loads((path / "metrics.json").read_text())
+        return float(metrics["mutation_rate"])
+
+    rate_a = source_rate(rate_a_source)
+    rate_b = source_rate(rate_b_source)
+    if not np.isclose(rate_a, args.expected_rate_a, rtol=0, atol=1e-20):
+        raise RuntimeError(
+            f"rate A is {rate_a:g}; expected {args.expected_rate_a:g}"
+        )
+    if not np.isclose(rate_b, args.expected_rate_b, rtol=0, atol=1e-20):
+        raise RuntimeError(
+            f"rate B is {rate_b:g}; expected {args.expected_rate_b:g}"
+        )
+
     stride_validation = {}
     for prefix, stride_1kb, stride_10kb in [
-        ("low_mu", low_1kb, low_10kb),
-        ("high_mu", high_1kb, high_10kb),
+        ("rate_a", rate_a_1kb, rate_a_10kb),
+        ("rate_b", rate_b_1kb, rate_b_10kb),
     ]:
         stride_validation.update({
             f"{prefix}_{key}": value
@@ -452,14 +544,18 @@ def main() -> None:
                 stride_10kb,
             ).items()
         })
+    fixed_stride_rate_validation = {
+        "stride_1kb": _compare_rate_outputs(rate_a_1kb, rate_b_1kb),
+        "stride_10kb": _compare_rate_outputs(rate_a_10kb, rate_b_10kb),
+    }
 
     carriers = pd.read_csv(
-        low_source / "selected_focal_carrier_pairs.tsv",
+        rate_a_source / "selected_focal_carrier_pairs.tsv",
         sep="\t",
     )
     pair_paths = _write_pair_files(carriers, analysis_dir / "pairs")
     carrier = _decode_carrier_classes(
-        {"low_mu": low_source, "high_mu": high_source},
+        {"rate_a": rate_a_source, "rate_b": rate_b_source},
         pair_paths,
         args.executable,
         analysis_dir,
@@ -471,7 +567,7 @@ def main() -> None:
     )
 
     truth, truth_null = _truth_carrier_summary(
-        low_source,
+        rate_a_source,
         carriers,
         args.neutral_truth.resolve(),
     )
@@ -485,43 +581,87 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    low_sites = tskit.load(low_source / "selected_s0p05_af30.trees").num_sites
-    high_sites = tskit.load(high_source / "selected_s0p05_af30.trees").num_sites
+    rate_a_sites = tskit.load(
+        rate_a_source / "selected_s0p05_af30.trees"
+    ).num_sites
+    rate_b_sites = tskit.load(
+        rate_b_source / "selected_s0p05_af30.trees"
+    ).num_sites
     factor = _factor_summary([
-        ("low_mu_stride1kb", 1.29e-9, 1_000, low_1kb, low_sites, False),
-        ("low_mu_stride10kb", 1.29e-9, 10_000, low_10kb, low_sites, False),
-        ("high_mu_stride1kb", 1.25e-8, 1_000, high_1kb, high_sites, False),
-        ("high_mu_stride10kb", 1.25e-8, 10_000, high_10kb, high_sites, False),
+        ("rate_a_stride1kb", rate_a, 1_000, rate_a_1kb, rate_a_sites, False),
+        ("rate_a_stride10kb", rate_a, 10_000, rate_a_10kb, rate_a_sites, False),
+        ("rate_b_stride1kb", rate_b, 1_000, rate_b_1kb, rate_b_sites, False),
+        ("rate_b_stride10kb", rate_b, 10_000, rate_b_10kb, rate_b_sites, False),
     ])
     factor.to_csv(
         analysis_dir / "stride_mutation_factorial_center.tsv",
         sep="\t",
         index=False,
     )
+    factor_indexed = factor.set_index("configuration")
+    center_rate_comparison = {}
+    for stride_label in ["1kb", "10kb"]:
+        row_a = factor_indexed.loc[f"rate_a_stride{stride_label}"]
+        row_b = factor_indexed.loc[f"rate_b_stride{stride_label}"]
+        selected_difference = (
+            row_a["center_selected_mean_p_recent"]
+            - row_b["center_selected_mean_p_recent"]
+        )
+        center_rate_comparison[f"stride_{stride_label}"] = {
+            "selected_a_minus_b": float(selected_difference),
+            "selected_relative_difference_a_vs_b": float(
+                row_a["center_selected_mean_p_recent"]
+                / row_b["center_selected_mean_p_recent"]
+                - 1
+            ),
+            "null_mean_a_minus_b": float(
+                row_a["center_null_mean_p_recent"]
+                - row_b["center_null_mean_p_recent"]
+            ),
+            "rate_a_p_upper": float(row_a["center_monte_carlo_p_upper"]),
+            "rate_b_p_upper": float(row_b["center_monte_carlo_p_upper"]),
+        }
 
-    low_exceedances = int(
+    rate_a_exceedances = int(
         factor.loc[
-            factor["configuration"] == "low_mu_stride10kb",
+            factor["configuration"] == "rate_a_stride10kb",
             "center_neutral_exceedances",
         ].iloc[0]
     )
     n_null = 100
     exceedance_ci = [
-        float(beta.ppf(0.025, low_exceedances, n_null - low_exceedances + 1))
-        if low_exceedances
+        float(
+            beta.ppf(
+                0.025,
+                rate_a_exceedances,
+                n_null - rate_a_exceedances + 1,
+            )
+        )
+        if rate_a_exceedances
         else 0.0,
-        float(beta.ppf(0.975, low_exceedances + 1, n_null - low_exceedances))
-        if low_exceedances < n_null
+        float(
+            beta.ppf(
+                0.975,
+                rate_a_exceedances + 1,
+                n_null - rate_a_exceedances,
+            )
+        )
+        if rate_a_exceedances < n_null
         else 1.0,
     ]
     summary = {
         "primary_statistic": "mean across pairs of posterior P(TMRCA < 180 generations)",
         "posterior_mean_call_is_not_primary_statistic": True,
+        "mutation_rates": {
+            "rate_a": rate_a,
+            "rate_b": rate_b,
+            "relative_difference_rate_a_vs_rate_b": rate_a / rate_b - 1,
+        },
         "stride_validation": stride_validation,
-        "low_mu_null_exceedance_probability_clopper_pearson_95": exceedance_ci,
-        "high_mu_10kb_calibration": (
-            "independent complete selected plus 100-null calibration"
-        ),
+        "fixed_stride_rate_validation": fixed_stride_rate_validation,
+        "center_rate_comparison": center_rate_comparison,
+        "rate_a_10kb_null_exceedance_probability_clopper_pearson_95": exceedance_ci,
+        "all_four_cells_are_independent_complete_100_null_calibrations": True,
         "truth_null_summary": truth_null,
     }
     (analysis_dir / "hypothesis_test_summary.json").write_text(
@@ -533,11 +673,11 @@ def main() -> None:
         truth,
         truth_null,
         carrier,
-        low_1kb,
-        low_10kb,
-        high_1kb,
-        high_10kb,
-        analysis_dir / "selection_recovery_hypothesis_tests.png",
+        rate_a_1kb,
+        rate_a_10kb,
+        rate_b_1kb,
+        rate_b_10kb,
+        analysis_dir / "corrected_mutation_rate_comparison.png",
     )
 
 

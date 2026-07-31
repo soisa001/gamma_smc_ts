@@ -1,0 +1,68 @@
+{
+  "audit_date": "2026-07-31",
+  "method": "independent read-back of selected and neutral profile tables; center statistics and finite-null p-values recomputed without using analysis helpers",
+  "cells": {
+    "mu1p29e8_stride1kb": {
+      "stride_bp": 1000,
+      "selected_rows": 10000,
+      "neutral_rows": 1000000,
+      "neutral_replicates": 100,
+      "center_selected": 0.06562090659,
+      "center_null_mean": 0.022702838930200003,
+      "center_exceedances": 0,
+      "monte_carlo_p_upper": 0.009900990099009901,
+      "metrics_recomputed_exactly": true
+    },
+    "mu1p29e8_stride10kb": {
+      "stride_bp": 10000,
+      "selected_rows": 1000,
+      "neutral_rows": 100000,
+      "neutral_replicates": 100,
+      "center_selected": 0.06570031424,
+      "center_null_mean": 0.022744610068500003,
+      "center_exceedances": 0,
+      "monte_carlo_p_upper": 0.009900990099009901,
+      "metrics_recomputed_exactly": true
+    },
+    "mu1p25e8_stride1kb": {
+      "stride_bp": 1000,
+      "selected_rows": 10000,
+      "neutral_rows": 1000000,
+      "neutral_replicates": 100,
+      "center_selected": 0.07175696207,
+      "center_null_mean": 0.021937520513900008,
+      "center_exceedances": 0,
+      "monte_carlo_p_upper": 0.009900990099009901,
+      "metrics_recomputed_exactly": true
+    },
+    "mu1p25e8_stride10kb": {
+      "stride_bp": 10000,
+      "selected_rows": 1000,
+      "neutral_rows": 100000,
+      "neutral_replicates": 100,
+      "center_selected": 0.07184463826,
+      "center_null_mean": 0.021981361892700006,
+      "center_exceedances": 0,
+      "monte_carlo_p_upper": 0.009900990099009901,
+      "metrics_recomputed_exactly": true
+    }
+  },
+  "genealogy": {
+    "same_sequence_length": true,
+    "same_num_trees": true,
+    "same_num_samples": true,
+    "mutation_free_tables_equal_ignoring_provenance": true,
+    "mu1p29e8_sites": 55097,
+    "mu1p25e8_sites": 53528,
+    "mu1p29e8_mutations": 55260,
+    "mu1p25e8_mutations": 53649
+  },
+  "hashes_sha256": {
+    "source_mu1p29e8/selected_s0p05_af30.trees": "5f4191a8ef3f44d946897cf430b14c058a455461db8f54ac28de9eba046c7c4b",
+    "source_mu1p29e8/selected_s0p05_af30.vcf.gz": "bb28598650acba9894afae82a8cb51cfc9ff2b1a09fb1934ec2293b029ee1eec",
+    "analysis/stride_mutation_factorial_center.tsv": "c3ee5af28d37533412cd5d3c139918bd6d98844db7f492a108f4f46d325c72b4",
+    "analysis/hypothesis_test_summary.json": "1d03498cd20c8d73e63782838d37fac776003ce4ed460108d759268449647baa",
+    "analysis/corrected_mutation_rate_comparison.png": "c54d72df18cb88d1aa2710af11e0a0a8df1237c7ca311d83ee01a1c018fdbad2"
+  },
+  "status": "passed"
+}

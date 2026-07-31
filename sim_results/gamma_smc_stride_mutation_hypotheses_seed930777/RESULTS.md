@@ -1,5 +1,12 @@
 # Why the selected sweep was recovered before
 
+> **Correction (2026-07-31):** the intended project default is `1.29e-8`,
+> not `1.29e-9`. This directory remains a valid tenfold sparse-mutation
+> sensitivity experiment, but it is not the intended `1.29e-8` versus
+> `1.25e-8` comparison. See
+> [`../gamma_smc_mu1p29e8_vs1p25e8_seed930777/RESULTS.md`](../gamma_smc_mu1p29e8_vs1p25e8_seed930777/RESULTS.md)
+> for the corrected runs and conclusions.
+
 ## Conclusion
 
 The previous recovery was not caused by the 1 kb output stride, and the failed

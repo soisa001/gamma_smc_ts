@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         ("recent_call_probability", "Probability used by --recent_call prob", cxxopts::value<double>()->default_value("0.5"))
         ("no_recent_probability", "Skip the across-pair mean of P(T<t); counts only")
         ("generation_time", "Generation time in years", cxxopts::value<double>()->default_value("25"))
-        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.29e-9)", cxxopts::value<double>())
+        ("unscaled_mutation_rate", "Per-base per-generation mutation rate used to unscale time (default 1.29e-8)", cxxopts::value<double>())
         ("m,scaled_mutation_rate", "Scaled mutation rate (default 0.00075)", cxxopts::value<float>())
         ("estimate_mutation_rate", "Estimate the scaled mutation rate from data heterozygosity instead of using the fixed default")
         ("r,scaled_recombination_rate", "Scaled recombination rate (default 0.0006)", cxxopts::value<float>())
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     // default_value, otherwise presence checks below cannot tell the two apart.
     const float default_scaled_mutation_rate = 0.00075f;
     const float default_scaled_recombination_rate = 0.0006f;
-    const double default_unscaled_mutation_rate = 1.29e-9;
+    const double default_unscaled_mutation_rate = 1.29e-8;
 
     const bool estimate_mutation_rate = (vm.count("estimate_mutation_rate") > 0);
     if (estimate_mutation_rate && vm.count("scaled_mutation_rate")) {

@@ -15,7 +15,7 @@ bin/gamma_smc \
   --input chr2.phased.bcf \
   --recent_summary chr2.tsv --recent_bitmatrix chr2.bits \
   --scaled_mutation_rate 0.0005 --recombination_to_mutation_ratio 0.8 \
-  --unscaled_mutation_rate 1.29e-9 --generation_time 25 \
+  --unscaled_mutation_rate 1.29e-8 --generation_time 25 \
   --recent_threshold_years 4500,10000 \
   --n_random_pairs 100000 --pairs_seed 1729 \
   --output_at_hets=false --output_at_stride 10000 \
@@ -33,8 +33,8 @@ bin/gamma_smc \
 - `--threads 0` uses every core.
 
 The requested defaults are a 10 kb stride, a 1 kb cache, and
-`--unscaled_mutation_rate 1.29e-9`. With the independent default
-`theta=0.00075`, that mutation rate implies `2Ne=290,698` generations; confirm
+`--unscaled_mutation_rate 1.29e-8`. With the independent default
+`theta=0.00075`, that mutation rate implies `2Ne=29,070` generations; confirm
 that time scale for empirical runs. Matched simulation studies derive theta
 from the simulated `Ne` and mutation rate.
 
@@ -92,7 +92,7 @@ small across-pair probability profile. For the default 10 kb within-individual s
 ```bash
 scripts/aou.sh decode-container \
   --input AFR.phased.vcf.gz --output AFR.within.stride10000.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-9 \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
   --generation-time 25 --threshold-years 4500 --output-at-stride 10000
 ```
 
