@@ -51,6 +51,28 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "hardmask.hg38.v4.over99.bed" in output
 
 
+def test_runner_has_a_workbench_output_bucket_default():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment.pop("WORKSPACE_BUCKET", None)
+    environment.pop("AOU_GAMMA_OUTPUT_PREFIX", None)
+    command, cwd = _runner_command(
+        repo, ["-chr", "1", "-pops", "AFR", "--dry-run"]
+    )
+    completed = subprocess.run(
+        command,
+        check=True,
+        text=True,
+        capture_output=True,
+        env=environment,
+        cwd=cwd,
+    )
+    assert (
+        "gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/AFR/"
+        "{chromosomes,plots}/"
+    ) in completed.stdout
+
+
 def test_runner_requires_explicit_scope():
     repo = Path(__file__).resolve().parents[1]
     environment = os.environ.copy()

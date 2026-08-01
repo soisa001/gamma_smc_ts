@@ -61,7 +61,8 @@ Required selection (case-insensitive; comma lists are also accepted):
 
 Cloud and local paths:
   --input-prefix URI        Optional value for {input_prefix} in custom templates
-  --output-prefix URI       Default: $WORKSPACE_BUCKET/gamma_smc/results
+  --output-prefix URI       Default: gs://rw-migration-aou-rw-fa99430f/
+                            gamma_smc/results (WORKSPACE_BUCKET overrides)
   --local-root PATH         Default: /home/jupyter/gamma_smc_workbench
   --bcf-template TEMPLATE   Default: AoU lrWGS phase-2 bubble-split chr BCF
   --index-template TEMPLATE Default: {bcf}.csi
@@ -175,7 +176,7 @@ done
 [[ -n "$CHR_SPEC" ]] || die "-chr is required (use an autosome or all)"
 [[ -n "$POPS_SPEC" ]] || die "-pops is required (use a population or all)"
 
-WORKSPACE_BUCKET_VALUE="${WORKSPACE_BUCKET:-}"
+WORKSPACE_BUCKET_VALUE="${WORKSPACE_BUCKET:-gs://rw-migration-aou-rw-fa99430f}"
 if [[ -z "$OUTPUT_PREFIX" && -n "$WORKSPACE_BUCKET_VALUE" ]]; then
     OUTPUT_PREFIX="${WORKSPACE_BUCKET_VALUE%/}/gamma_smc/results"
 fi

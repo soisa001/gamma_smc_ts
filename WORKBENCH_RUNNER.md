@@ -89,9 +89,12 @@ The complete default controlled-input and output layout is:
 | Relatedness exclusions | `gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/relatedness/relatedness_flagged_samples.tsv` |
 | Exclusion hard mask | `gs://rw-migration-aou-rw-fa99430f/hardmask.hg38.v4.over99.bed` |
 | Staging/results root | `/home/jupyter/gamma_smc_workbench` |
-| Chromosome outputs | `$WORKSPACE_BUCKET/gamma_smc/results/{POP}/chromosomes/` |
-| Plot outputs | `$WORKSPACE_BUCKET/gamma_smc/results/{POP}/plots/{scope}/` |
-| Callable-mask QC | `$WORKSPACE_BUCKET/gamma_smc/results/shared/masks/` |
+| Chromosome outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/chromosomes/` |
+| Plot outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/plots/{scope}/` |
+| Callable-mask QC | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/shared/masks/` |
+
+`WORKSPACE_BUCKET` overrides this default bucket, and `--output-prefix` or
+`AOU_GAMMA_OUTPUT_PREFIX` overrides the complete results prefix.
 
 The supplied hard mask describes bases to exclude, whereas Gamma-SMC's
 `--mask` accepts bases to include. The runner reads the single-contig name and
