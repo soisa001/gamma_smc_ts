@@ -21,6 +21,17 @@ def test_uv_portability_files_are_present():
     ).is_file()
 
 
+def test_bootstrap_replaces_an_incompatible_path_uv_and_wrappers_prefer_it():
+    root = Path(__file__).resolve().parents[1]
+    bootstrap = (root / "scripts/bootstrap_uv.sh").read_text()
+    wrapper = (root / "scripts/aou.sh").read_text()
+
+    assert '"$("$SYSTEM_UV" --version 2>/dev/null)" == "uv $UV_VERSION"' in bootstrap
+    assert 'LOCAL_UV="$TOOLS/uv-bin/uv"' in bootstrap
+    assert "Installing repository-pinned uv" in bootstrap
+    assert wrapper.index('.tools/uv-bin/uv') < wrapper.index('command -v uv')
+
+
 def test_decode_defaults_to_wrapper_decoder_environment(monkeypatch):
     monkeypatch.setenv("GAMMA_SMC_BIN", "/portable/bin/gamma_smc")
     arguments = parser().parse_args(

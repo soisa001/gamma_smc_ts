@@ -39,16 +39,28 @@ done
 
 mkdir -p "$TOOLS"
 
-if command -v uv >/dev/null 2>&1; then
-    UV="$(command -v uv)"
+UV=""
+SYSTEM_UV="$(command -v uv || true)"
+LOCAL_UV="$TOOLS/uv-bin/uv"
+if [[ -n "$SYSTEM_UV" && "$("$SYSTEM_UV" --version 2>/dev/null)" == "uv $UV_VERSION" ]]; then
+    UV="$SYSTEM_UV"
+elif [[ -x "$LOCAL_UV" && "$($LOCAL_UV --version 2>/dev/null)" == "uv $UV_VERSION" ]]; then
+    UV="$LOCAL_UV"
 else
-    echo "Installing uv $UV_VERSION..."
+    if [[ -n "$SYSTEM_UV" ]]; then
+        echo "Ignoring incompatible $("$SYSTEM_UV" --version 2>/dev/null || echo uv) at $SYSTEM_UV."
+    fi
+    echo "Installing repository-pinned uv $UV_VERSION..."
     curl --proto '=https' --tlsv1.2 -LsSf \
         "https://releases.astral.sh/github/uv/releases/download/$UV_VERSION/uv-installer.sh" \
         -o "$TOOLS/uv-installer.sh"
     UV_INSTALL_DIR="$TOOLS/uv-bin" sh "$TOOLS/uv-installer.sh" --no-modify-path
-    UV="$TOOLS/uv-bin/uv"
+    UV="$LOCAL_UV"
 fi
+[[ "$($UV --version)" == "uv $UV_VERSION" ]] || {
+    echo "Failed to select uv $UV_VERSION: $UV" >&2
+    exit 2
+}
 
 SLIM="${SLIM_BIN:-}"
 if [[ "$INSTALL_NATIVE" -eq 1 ]]; then

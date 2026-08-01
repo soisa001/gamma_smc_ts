@@ -1,7 +1,8 @@
 $ErrorActionPreference = "Stop"
 $Repo = Split-Path -Parent $PSScriptRoot
+$LocalUv = Join-Path $Repo ".tools\uv-bin\uv.exe"
 $UvCommand = Get-Command uv -ErrorAction SilentlyContinue
-$Uv = if ($UvCommand) { $UvCommand.Source } else { Join-Path $Repo ".tools\uv-bin\uv.exe" }
+$Uv = if (Test-Path $LocalUv) { $LocalUv } elseif ($UvCommand) { $UvCommand.Source } else { $LocalUv }
 if (-not (Test-Path $Uv) -and -not $UvCommand) {
     throw "uv is not installed; run scripts\bootstrap_uv.ps1 first."
 }

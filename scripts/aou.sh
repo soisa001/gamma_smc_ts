@@ -2,8 +2,9 @@
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-UV="$(command -v uv || true)"
-[[ -z "$UV" && -x "$REPO/.tools/uv-bin/uv" ]] && UV="$REPO/.tools/uv-bin/uv"
+UV=""
+[[ -x "$REPO/.tools/uv-bin/uv" ]] && UV="$REPO/.tools/uv-bin/uv"
+[[ -z "$UV" ]] && UV="$(command -v uv || true)"
 if [[ -z "$UV" ]]; then
     echo "uv is not installed; run scripts/bootstrap_uv.sh first." >&2
     exit 2

@@ -23,22 +23,30 @@ function Invoke-Checked {
     }
 }
 
+$LocalUv = Join-Path $Tools "uv-bin\uv.exe"
 $UvCommand = Get-Command uv -ErrorAction SilentlyContinue
-if ($UvCommand) {
-    $Uv = $UvCommand.Source
-} else {
-    Write-Host "Installing uv $UvVersion..."
-    $Installer = Join-Path $Tools "uv-installer.ps1"
-    Invoke-WebRequest `
-        "https://releases.astral.sh/github/uv/releases/download/$UvVersion/uv-installer.ps1" `
-        -OutFile $Installer
-    & powershell -ExecutionPolicy Bypass -File $Installer
-    $Uv = Join-Path $HOME ".local\bin\uv.exe"
-    if (-not (Test-Path $Uv)) {
-        $UvCommand = Get-Command uv -ErrorAction SilentlyContinue
-        if (-not $UvCommand) { throw "uv installed but could not be located" }
-        $Uv = $UvCommand.Source
+$Uv = if ($UvCommand) { $UvCommand.Source } else { $null }
+$DetectedUvVersion = if ($Uv) { (& $Uv --version 2>$null) } else { $null }
+if ($DetectedUvVersion -ne "uv $UvVersion") {
+    if ($Uv) {
+        Write-Host "Ignoring incompatible $DetectedUvVersion at $Uv."
     }
+    if ((Test-Path $LocalUv) -and ((& $LocalUv --version 2>$null) -eq "uv $UvVersion")) {
+        $Uv = $LocalUv
+    } else {
+        Write-Host "Installing repository-pinned uv $UvVersion..."
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $LocalUv) | Out-Null
+        $env:UV_INSTALL_DIR = Split-Path -Parent $LocalUv
+        $Installer = Join-Path $Tools "uv-installer.ps1"
+        Invoke-WebRequest `
+            "https://releases.astral.sh/github/uv/releases/download/$UvVersion/uv-installer.ps1" `
+            -OutFile $Installer
+        & powershell -ExecutionPolicy Bypass -File $Installer -NoModifyPath
+        $Uv = $LocalUv
+    }
+}
+if ((& $Uv --version 2>$null) -ne "uv $UvVersion") {
+    throw "Failed to select uv $UvVersion at $Uv"
 }
 
 if ($Full) {
