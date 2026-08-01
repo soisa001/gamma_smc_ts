@@ -1,5 +1,8 @@
 from importlib import resources
+import os
 from pathlib import Path
+import subprocess
+import sys
 
 from gamma_smc_aou.cli import parser
 
@@ -33,6 +36,23 @@ def test_bootstrap_replaces_an_incompatible_path_uv_and_wrappers_prefer_it():
     assert "--no-modify-path" not in bootstrap
     assert "Installing repository-pinned uv" in bootstrap
     assert wrapper.index('.tools/uv-bin/uv') < wrapper.index('command -v uv')
+
+
+def test_package_overrides_inherited_notebook_matplotlib_backend():
+    environment = os.environ.copy()
+    environment["MPLBACKEND"] = "module://matplotlib_inline.backend_inline"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import gamma_smc_aou, matplotlib; print(matplotlib.get_backend())",
+        ],
+        check=True,
+        text=True,
+        capture_output=True,
+        env=environment,
+    )
+    assert completed.stdout.strip().lower() == "agg"
 
 
 def test_decode_defaults_to_wrapper_decoder_environment(monkeypatch):

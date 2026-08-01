@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export MPLBACKEND=Agg
 UV=""
 [[ -x "$REPO/.tools/uv-bin/uv" ]] && UV="$REPO/.tools/uv-bin/uv"
 [[ -z "$UV" ]] && UV="$(command -v uv || true)"

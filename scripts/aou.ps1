@@ -1,4 +1,5 @@
 $ErrorActionPreference = "Stop"
+$env:MPLBACKEND = "Agg"
 $Repo = Split-Path -Parent $PSScriptRoot
 $LocalUv = Join-Path $Repo ".tools\uv-bin\uv.exe"
 $UvCommand = Get-Command uv -ErrorAction SilentlyContinue
