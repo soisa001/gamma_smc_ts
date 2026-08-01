@@ -26,8 +26,11 @@ def test_bootstrap_replaces_an_incompatible_path_uv_and_wrappers_prefer_it():
     bootstrap = (root / "scripts/bootstrap_uv.sh").read_text()
     wrapper = (root / "scripts/aou.sh").read_text()
 
-    assert '"$("$SYSTEM_UV" --version 2>/dev/null)" == "uv $UV_VERSION"' in bootstrap
+    assert "uv_numeric_version()" in bootstrap
+    assert '"$(uv_numeric_version "$SYSTEM_UV")" == "$UV_VERSION"' in bootstrap
     assert 'LOCAL_UV="$TOOLS/uv-bin/uv"' in bootstrap
+    assert "UV_NO_MODIFY_PATH=1" in bootstrap
+    assert "--no-modify-path" not in bootstrap
     assert "Installing repository-pinned uv" in bootstrap
     assert wrapper.index('.tools/uv-bin/uv') < wrapper.index('command -v uv')
 

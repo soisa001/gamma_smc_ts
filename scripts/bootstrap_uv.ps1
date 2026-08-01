@@ -26,26 +26,27 @@ function Invoke-Checked {
 $LocalUv = Join-Path $Tools "uv-bin\uv.exe"
 $UvCommand = Get-Command uv -ErrorAction SilentlyContinue
 $Uv = if ($UvCommand) { $UvCommand.Source } else { $null }
-$DetectedUvVersion = if ($Uv) { (& $Uv --version 2>$null) } else { $null }
-if ($DetectedUvVersion -ne "uv $UvVersion") {
+$DetectedUvVersion = if ($Uv) { ((& $Uv --version 2>$null) -split '\s+')[1] } else { $null }
+if ($DetectedUvVersion -ne $UvVersion) {
     if ($Uv) {
         Write-Host "Ignoring incompatible $DetectedUvVersion at $Uv."
     }
-    if ((Test-Path $LocalUv) -and ((& $LocalUv --version 2>$null) -eq "uv $UvVersion")) {
+    if ((Test-Path $LocalUv) -and (((& $LocalUv --version 2>$null) -split '\s+')[1] -eq $UvVersion)) {
         $Uv = $LocalUv
     } else {
         Write-Host "Installing repository-pinned uv $UvVersion..."
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $LocalUv) | Out-Null
         $env:UV_INSTALL_DIR = Split-Path -Parent $LocalUv
+        $env:UV_NO_MODIFY_PATH = "1"
         $Installer = Join-Path $Tools "uv-installer.ps1"
         Invoke-WebRequest `
             "https://releases.astral.sh/github/uv/releases/download/$UvVersion/uv-installer.ps1" `
             -OutFile $Installer
-        & powershell -ExecutionPolicy Bypass -File $Installer -NoModifyPath
+        & powershell -ExecutionPolicy Bypass -File $Installer
         $Uv = $LocalUv
     }
 }
-if ((& $Uv --version 2>$null) -ne "uv $UvVersion") {
+if (((& $Uv --version 2>$null) -split '\s+')[1] -ne $UvVersion) {
     throw "Failed to select uv $UvVersion at $Uv"
 }
 

@@ -39,12 +39,16 @@ done
 
 mkdir -p "$TOOLS"
 
+uv_numeric_version() {
+    "$1" --version 2>/dev/null | awk '{print $2}'
+}
+
 UV=""
 SYSTEM_UV="$(command -v uv || true)"
 LOCAL_UV="$TOOLS/uv-bin/uv"
-if [[ -n "$SYSTEM_UV" && "$("$SYSTEM_UV" --version 2>/dev/null)" == "uv $UV_VERSION" ]]; then
+if [[ -n "$SYSTEM_UV" && "$(uv_numeric_version "$SYSTEM_UV")" == "$UV_VERSION" ]]; then
     UV="$SYSTEM_UV"
-elif [[ -x "$LOCAL_UV" && "$($LOCAL_UV --version 2>/dev/null)" == "uv $UV_VERSION" ]]; then
+elif [[ -x "$LOCAL_UV" && "$(uv_numeric_version "$LOCAL_UV")" == "$UV_VERSION" ]]; then
     UV="$LOCAL_UV"
 else
     if [[ -n "$SYSTEM_UV" ]]; then
@@ -54,10 +58,11 @@ else
     curl --proto '=https' --tlsv1.2 -LsSf \
         "https://releases.astral.sh/github/uv/releases/download/$UV_VERSION/uv-installer.sh" \
         -o "$TOOLS/uv-installer.sh"
-    UV_INSTALL_DIR="$TOOLS/uv-bin" sh "$TOOLS/uv-installer.sh" --no-modify-path
+    UV_INSTALL_DIR="$TOOLS/uv-bin" UV_NO_MODIFY_PATH=1 \
+        sh "$TOOLS/uv-installer.sh"
     UV="$LOCAL_UV"
 fi
-[[ "$($UV --version)" == "uv $UV_VERSION" ]] || {
+[[ "$(uv_numeric_version "$UV")" == "$UV_VERSION" ]] || {
     echo "Failed to select uv $UV_VERSION: $UV" >&2
     exit 2
 }
