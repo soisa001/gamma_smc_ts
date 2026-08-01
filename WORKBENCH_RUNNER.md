@@ -16,14 +16,15 @@ pilot before launching all 132 population/chromosome jobs.
 %%bash
 set -euo pipefail
 REPO=/home/jupyter/gamma_smc_ts
+REMOTE=git@github.com:soisa001/gamma_smc_ts.git
 
 if [[ -d "$REPO/.git" ]]; then
+  git -C "$REPO" remote set-url origin "$REMOTE"
   git -C "$REPO" fetch origin AOU_run_opt
   git -C "$REPO" switch AOU_run_opt
   git -C "$REPO" pull --ff-only origin AOU_run_opt
 else
-  git clone --branch AOU_run_opt \
-    https://github.com/soisa001/gamma_smc_ts.git "$REPO"
+  git clone --branch AOU_run_opt "$REMOTE" "$REPO"
 fi
 
 bash "$REPO/scripts/bootstrap_uv.sh" --skip-tests

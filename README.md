@@ -65,7 +65,7 @@ Gamma-SMC without root access.
 Linux/HPC, including the decoder:
 
 ```bash
-git clone --branch AOU_run_opt https://github.com/soisa001/gamma_smc_ts.git
+git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
 cd gamma_smc_ts
 bash scripts/bootstrap_uv.sh
 scripts/aou.sh --help
@@ -74,7 +74,7 @@ scripts/aou.sh --help
 Windows, for msprime/SLiM simulation and truth analyses:
 
 ```powershell
-git clone --branch AOU_run_opt https://github.com/soisa001/gamma_smc_ts.git
+git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
 cd gamma_smc_ts
 powershell -ExecutionPolicy Bypass -File scripts/bootstrap_uv.ps1
 scripts/aou.ps1 --help
