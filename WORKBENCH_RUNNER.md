@@ -31,6 +31,11 @@ bash "$REPO/scripts/bootstrap_uv.sh" --skip-tests
 bash "$REPO/scripts/run_aou_workbench.sh" -chr all -pops all
 ```
 
+All GCS reads and writes pass `--billing-project "$GOOGLE_PROJECT"` by
+default so requester-pays controlled buckets work in Researcher Workbench.
+Set `AOU_GAMMA_BILLING_PROJECT` or pass `--billing-project PROJECT_ID` to
+override that project explicitly.
+
 The runner intentionally requires both scope arguments. Values are
 case-insensitive, and comma lists work too:
 

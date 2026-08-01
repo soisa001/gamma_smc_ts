@@ -16,6 +16,7 @@ POPS_SPEC=""
 LOCAL_ROOT="${AOU_GAMMA_LOCAL_ROOT:-/home/jupyter/gamma_smc_workbench}"
 INPUT_PREFIX="${AOU_GAMMA_INPUT_PREFIX:-}"
 OUTPUT_PREFIX="${AOU_GAMMA_OUTPUT_PREFIX:-}"
+BILLING_PROJECT="${AOU_GAMMA_BILLING_PROJECT:-${GOOGLE_PROJECT:-}}"
 BCF_TEMPLATE="${AOU_GAMMA_BCF_TEMPLATE:-}"
 INDEX_TEMPLATE="${AOU_GAMMA_INDEX_TEMPLATE:-}"
 MASK_TEMPLATE="${AOU_GAMMA_MASK_TEMPLATE:-}"
@@ -63,6 +64,8 @@ Cloud and local paths:
   --input-prefix URI        Optional value for {input_prefix} in custom templates
   --output-prefix URI       Default: gs://rw-migration-aou-rw-fa99430f/
                             gamma_smc/results (WORKSPACE_BUCKET overrides)
+  --billing-project ID      Requester-pays billing project. Default:
+                            AOU_GAMMA_BILLING_PROJECT or GOOGLE_PROJECT
   --local-root PATH         Default: /home/jupyter/gamma_smc_workbench
   --bcf-template TEMPLATE   Default: AoU lrWGS phase-2 bubble-split chr BCF
   --index-template TEMPLATE Default: {bcf}.csi
@@ -136,6 +139,7 @@ while [[ $# -gt 0 ]]; do
         -pops|--pops) need_value "$@"; POPS_SPEC="$2"; shift 2 ;;
         --input-prefix) need_value "$@"; INPUT_PREFIX="$2"; shift 2 ;;
         --output-prefix) need_value "$@"; OUTPUT_PREFIX="$2"; shift 2 ;;
+        --billing-project) need_value "$@"; BILLING_PROJECT="$2"; shift 2 ;;
         --local-root) need_value "$@"; LOCAL_ROOT="$2"; shift 2 ;;
         --bcf-template) need_value "$@"; BCF_TEMPLATE="$2"; shift 2 ;;
         --index-template) need_value "$@"; INDEX_TEMPLATE="$2"; shift 2 ;;
@@ -270,6 +274,7 @@ print_plan() {
     echo "  populations: ${POPULATIONS[*]}"
     echo "  chromosomes: ${CHROMOSOMES[*]}"
     echo "  local root: $LOCAL_ROOT"
+    echo "  requester-pays billing project: ${BILLING_PROJECT:-<unset>}"
     echo "  decoder: threads=$THREADS, theta=$THETA, rho/theta=$RHO_OVER_THETA"
     echo "  statistic: recent_call=$RECENT_CALL, threshold=$THRESHOLD_YEARS years"
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
@@ -297,6 +302,8 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
 fi
 
 command -v gcloud >/dev/null 2>&1 || die "gcloud is required to stage workspace objects"
+[[ -n "$BILLING_PROJECT" ]] || die \
+    "set GOOGLE_PROJECT, AOU_GAMMA_BILLING_PROJECT, or --billing-project for requester-pays GCS access"
 [[ -x "$AOU" ]] || die "runner is missing or not executable: $AOU"
 [[ -x "$REPO/bin/gamma_smc" ]] || die \
     "Gamma-SMC is not built; run scripts/bootstrap_uv.sh first"
@@ -321,14 +328,16 @@ mkdir -p "$LOCAL_ROOT"
 LOCAL_ROOT="$(cd "$LOCAL_ROOT" && pwd)"
 
 cloud_exists() {
-    gcloud storage objects describe "$1" >/dev/null 2>&1
+    gcloud storage objects describe "$1" \
+        --billing-project "$BILLING_PROJECT" >/dev/null 2>&1
 }
 
 object_fingerprint() {
     local uri="$1" description
     if ! description="$(
         gcloud storage objects describe "$uri" \
-            --format='value(generation,size,crc32c_hash)'
+            --format='value(generation,size,crc32c_hash)' \
+            --billing-project "$BILLING_PROJECT"
     )"; then
         die "required cloud object is absent or inaccessible: $uri"
     fi
@@ -371,7 +380,8 @@ stage_object() {
     fi
     printf '%s\n%s\n' "$uri" "$fingerprint" > "$partial_record"
     echo "Staging $uri"
-    if ! gcloud storage cp "$uri" "$temporary"; then
+    if ! gcloud storage cp "$uri" "$temporary" \
+        --billing-project "$BILLING_PROJECT"; then
         return 1
     fi
     mv -f -- "$temporary" "$destination"
@@ -386,7 +396,8 @@ restore_if_present() {
     cloud_exists "$uri" || return 1
     mkdir -p "$(dirname "$destination")"
     rm -f -- "$temporary"
-    if ! gcloud storage cp "$uri" "$temporary"; then
+    if ! gcloud storage cp "$uri" "$temporary" \
+        --billing-project "$BILLING_PROJECT"; then
         rm -f -- "$temporary"
         return 1
     fi
@@ -396,14 +407,16 @@ restore_if_present() {
 upload_file() {
     local source="$1" destination="$2"
     echo "Uploading $destination"
-    gcloud storage cp "$source" "$destination"
+    gcloud storage cp "$source" "$destination" \
+        --billing-project "$BILLING_PROJECT"
 }
 
 remote_matches_file() {
     local uri="$1" local_file="$2" temporary="${local_file}.remote.$$"
     [[ -s "$local_file" ]] || return 1
     rm -f -- "$temporary"
-    if ! gcloud storage cp "$uri" "$temporary" >/dev/null 2>&1; then
+    if ! gcloud storage cp "$uri" "$temporary" \
+        --billing-project "$BILLING_PROJECT" >/dev/null 2>&1; then
         rm -f -- "$temporary"
         return 1
     fi

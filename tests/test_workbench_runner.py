@@ -25,6 +25,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     repo = Path(__file__).resolve().parents[1]
     environment = os.environ.copy()
     environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
     command, cwd = _runner_command(
         repo, ["-chr", "1", "-pops", "afr", "--dry-run"]
     )
@@ -38,6 +39,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     )
     output = completed.stdout
     assert "populations: AFR" in output
+    assert "requester-pays billing project: test-billing-project" in output
     assert "chromosomes: 1" in output
     assert "threads=12" in output
     assert "recent_call=mean" in output
@@ -87,3 +89,13 @@ def test_runner_requires_explicit_scope():
     )
     assert completed.returncode == 2
     assert "-chr is required" in completed.stderr
+
+
+def test_all_gcloud_storage_calls_include_requester_pays_billing():
+    repo = Path(__file__).resolve().parents[1]
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+
+    assert 'AOU_GAMMA_BILLING_PROJECT:-${GOOGLE_PROJECT:-}' in runner
+    assert runner.count("gcloud storage ") == runner.count(
+        '--billing-project "$BILLING_PROJECT"'
+    )
