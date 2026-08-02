@@ -695,6 +695,23 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             continue
         fi
 
+        # A decode can finish all outputs and then be interrupted during final
+        # validation or upload. Rebuild the completion marker from those local
+        # artifacts before clearing anything, so a retry does not recompute a
+        # valid chromosome.
+        if [[ "$FORCE" -eq 0 ]] && \
+            "$AOU" "${validation_args[@]}" >/dev/null 2>&1; then
+            echo "Recovered complete local outputs; skipping decode."
+            if [[ "$UPLOAD" -eq 1 ]]; then
+                upload_completed_chromosome "$remote_directory" "$summary" \
+                    "$run_json" "$pairs_manifest" "$sample_list" "$sample_audit" \
+                    "$decode_log" "$bitmatrix" "$candidate_regions" \
+                    "$candidate_positions" "$candidate_directory" \
+                    "$candidate_manifest" "$completion"
+            fi
+            continue
+        fi
+
         if [[ "$input_staged" -eq 0 ]]; then
             check_staging_capacity "$input_uri" "$input_fingerprint" "$local_input" \
                 "$index_uri" "$index_fingerprint" "$local_index"

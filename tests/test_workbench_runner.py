@@ -99,3 +99,13 @@ def test_all_gcloud_storage_calls_include_requester_pays_billing():
     assert runner.count("gcloud storage ") == runner.count(
         '--billing-project "$BILLING_PROJECT"'
     )
+
+
+def test_runner_recovers_local_outputs_before_destructive_restart():
+    repo = Path(__file__).resolve().parents[1]
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+
+    recovery = 'echo "Recovered complete local outputs; skipping decode."'
+    destructive_restart = 'safe_clear_run "$population_summary_dir"'
+    assert recovery in runner
+    assert runner.index(recovery) < runner.index(destructive_restart)
