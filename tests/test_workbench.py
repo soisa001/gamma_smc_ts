@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -200,6 +201,58 @@ def test_completion_contract_detects_changed_output(tmp_path):
             run_json_path=run_json,
             completion_path=completion_path,
             contract=contract,
+        )
+
+
+def test_bitmatrix_contract_accepts_native_float32_theta_rounding(
+    tmp_path, monkeypatch
+):
+    bits = tmp_path / "chr1.recent.bits"
+    bits.write_bytes(b"packed")
+    bits.with_name(bits.name + ".meta").write_text("{}", encoding="utf-8")
+    pairs = tmp_path / "chr1.pairs.tsv"
+    pairs.write_text("0\t1\n", encoding="utf-8")
+    samples = tmp_path / "chr1.samples.txt"
+    samples.write_text("sample1\n", encoding="utf-8")
+    theta = 0.00075
+    mutation_rate = 1.29e-8
+    native_two_ne = float(np.float32(theta)) / (2.0 * mutation_rate)
+    metadata = {
+        "pairs": [[0, 1]],
+        "n_pairs": 1,
+        "recent_call": "mean",
+        "thresholds_years": [4500.0],
+        "two_ne_generations": native_two_ne,
+        "sample_names": {"0": "sample1.0", "1": "sample1.1"},
+    }
+    monkeypatch.setattr(workbench.bitmatrix_reader, "read_meta", lambda _: metadata)
+    monkeypatch.setattr(
+        workbench.bitmatrix_reader,
+        "output_positions",
+        lambda _: np.asarray([0], dtype=np.int64),
+    )
+    contract = {
+        "analysis_outputs": {"bitmatrix": str(bits)},
+        "pairs_manifest": str(pairs),
+        "sample_selection": {"sample_list": str(samples)},
+        "decoder": {
+            "theta": theta,
+            "mutation_rate": mutation_rate,
+            "threshold_years": 4500.0,
+            "recent_call": "mean",
+        },
+    }
+    summary = pd.DataFrame({"position_0based": [0]})
+
+    metrics = workbench.validate_workbench_bitmatrix(
+        contract, summary_frame=summary, required=True
+    )
+    assert metrics["size_bytes"] == len(b"packed")
+
+    metadata["two_ne_generations"] = native_two_ne * 1.001
+    with pytest.raises(ValueError, match="time scale"):
+        workbench.validate_workbench_bitmatrix(
+            contract, summary_frame=summary, required=True
         )
 
 

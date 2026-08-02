@@ -904,10 +904,13 @@ def validate_workbench_bitmatrix(
     ):
         raise ValueError("bit-matrix threshold does not match the contract")
     expected_two_ne = decoder["theta"] / (2.0 * decoder["mutation_rate"])
+    # The native decoder represents scaled_mutation_rate as a C++ float and
+    # derives 2Ne from that actual value. Permit that single-precision input
+    # rounding while continuing to reject a materially different time scale.
     if not np.isclose(
         float(metadata.get("two_ne_generations", -1)),
         expected_two_ne,
-        rtol=1e-9,
+        rtol=np.finfo(np.float32).eps,
         atol=1e-9,
     ):
         raise ValueError("bit-matrix time scale does not match the contract")
