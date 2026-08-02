@@ -109,3 +109,13 @@ def test_runner_recovers_local_outputs_before_destructive_restart():
     destructive_restart = 'safe_clear_run "$population_summary_dir"'
     assert recovery in runner
     assert runner.index(recovery) < runner.index(destructive_restart)
+
+
+def test_resume_helpers_do_not_expand_locals_during_their_declaration():
+    repo = Path(__file__).resolve().parents[1]
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+
+    assert 'destination="$2" temporary="${destination}' not in runner
+    assert 'local_file="$2" temporary="${local_file}' not in runner
+    assert 'local temporary="${destination}.partial.$$"' in runner
+    assert 'local temporary="${local_file}.remote.$$"' in runner

@@ -391,7 +391,8 @@ stage_object() {
 }
 
 restore_if_present() {
-    local uri="$1" destination="$2" temporary="${destination}.partial.$$"
+    local uri="$1" destination="$2"
+    local temporary="${destination}.partial.$$"
     [[ -s "$destination" ]] && return 0
     cloud_exists "$uri" || return 1
     mkdir -p "$(dirname "$destination")"
@@ -412,7 +413,8 @@ upload_file() {
 }
 
 remote_matches_file() {
-    local uri="$1" local_file="$2" temporary="${local_file}.remote.$$"
+    local uri="$1" local_file="$2"
+    local temporary="${local_file}.remote.$$"
     [[ -s "$local_file" ]] || return 1
     rm -f -- "$temporary"
     if ! gcloud storage cp "$uri" "$temporary" \
