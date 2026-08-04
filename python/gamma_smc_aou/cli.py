@@ -431,6 +431,7 @@ def command_workbench_report(args):
         hit_bin_size=args.hit_bin_size,
         gene_context_flank=args.gene_context_flank,
         zoom_ymax=args.zoom_ymax,
+        hit_label_min_fraction=args.hit_label_min_fraction,
     )
     action = "reused" if result.get("reused") else "wrote"
     print(f"{action} Workbench report: {Path(args.output_dir).resolve()}")
@@ -991,7 +992,13 @@ def parser() -> argparse.ArgumentParser:
     )
     workbench_report.add_argument("--hit-bin-size", type=int, default=1_000_000)
     workbench_report.add_argument("--gene-context-flank", type=int, default=500_000)
-    workbench_report.add_argument("--zoom-ymax", type=float, default=0.05)
+    workbench_report.add_argument("--zoom-ymax", type=float, default=0.04)
+    workbench_report.add_argument(
+        "--hit-label-min-fraction",
+        type=float,
+        default=0.02,
+        help="label ranked peaks strictly above this fraction (default 0.02)",
+    )
     workbench_report.set_defaults(func=command_workbench_report)
 
     workbench_regions = commands.add_parser(

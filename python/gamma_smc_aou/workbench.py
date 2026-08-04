@@ -1719,6 +1719,7 @@ def _plot_combined_recent_genome(
     output_stem: Path,
     fixed_ymax: float | None = None,
     hit_labels: pd.DataFrame | None = None,
+    hit_label_min_fraction: float = 0.0,
 ) -> list[Path]:
     finite = np.concatenate(
         [genome[called_column].to_numpy(dtype=float) for genome in genomes.values()]
@@ -1768,20 +1769,23 @@ def _plot_combined_recent_genome(
         if hit_labels is not None and not hit_labels.empty:
             population_hits = hit_labels.loc[
                 hit_labels["population"].astype(str).eq(population)
+                & hit_labels["peak_ranking_value"].astype(float).gt(
+                    hit_label_min_fraction
+                )
             ].sort_values(["chromosome", "peak_genome_position_0based"])
-            for label_index, hit in enumerate(population_hits.itertuples(index=False)):
+            for hit in population_hits.itertuples(index=False):
                 label_y = min(float(hit.peak_ranking_value), ymax * 0.94)
-                high_label = label_y >= ymax * 0.72
                 axis.annotate(
                     str(hit.probable_gene),
                     xy=(float(hit.peak_genome_position_0based) / 1e9, label_y),
-                    xytext=(0, -4 if high_label else 4 + 6 * (label_index % 2)),
+                    xytext=(6, 0),
                     textcoords="offset points",
-                    ha="center",
-                    va="top" if high_label else "bottom",
-                    rotation=45,
-                    fontsize=6.5,
-                    color="#374151",
+                    ha="left",
+                    va="center",
+                    rotation=0,
+                    fontsize=8.5,
+                    fontweight="bold",
+                    color="#1f2937",
                     annotation_clip=True,
                 )
         axis.text(
@@ -1798,7 +1802,8 @@ def _plot_combined_recent_genome(
     if fixed_ymax is not None:
         subtitle = (
             f"0-{fixed_ymax:.0%} detail; triangles mark values at or above the "
-            "axis ceiling; labels are nearest protein-coding genes"
+            f"axis ceiling; horizontal labels mark peaks >{hit_label_min_fraction:.0%} "
+            "and their nearest protein-coding genes"
         )
     figure.suptitle(
         "Gamma-SMC genome-wide recent-coalescence scan by population\n" + subtitle
@@ -2054,7 +2059,8 @@ def summarize_workbench_run(
     gene_annotation: str | Path | None = None,
     hit_bin_size: int = 1_000_000,
     gene_context_flank: int = 500_000,
-    zoom_ymax: float = 0.05,
+    zoom_ymax: float = 0.04,
+    hit_label_min_fraction: float = 0.02,
 ) -> dict:
     results_root = Path(results_root).resolve()
     output_dir = Path(output_dir).resolve()
@@ -2076,6 +2082,8 @@ def summarize_workbench_run(
         raise ValueError("top_n/bin size must be positive and gene flank nonnegative")
     if not 0 < zoom_ymax <= 1:
         raise ValueError("zoom_ymax must be in (0, 1]")
+    if not 0 <= hit_label_min_fraction <= 1:
+        raise ValueError("hit_label_min_fraction must be in [0, 1]")
 
     gene_annotation_record = None
     if gene_annotation is not None:
@@ -2127,6 +2135,7 @@ def summarize_workbench_run(
         "hit_bin_size": int(hit_bin_size),
         "gene_context_flank": int(gene_context_flank),
         "zoom_ymax": float(zoom_ymax),
+        "hit_label_min_fraction": float(hit_label_min_fraction),
         "inputs": input_records,
     }
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -2272,6 +2281,7 @@ def summarize_workbench_run(
         output_stem=zoom_stem,
         fixed_ymax=zoom_ymax,
         hit_labels=gene_list,
+        hit_label_min_fraction=hit_label_min_fraction,
     )
     counts = {row["population"]: int(row["regions_found"]) for row in population_rows}
     result = {
@@ -2283,6 +2293,12 @@ def summarize_workbench_run(
         "population_region_counts": counts,
         "total_regions": int(len(all_regions)),
         "ranked_gene_hits": int(len(gene_list)),
+        "plotted_gene_hits": int(
+            gene_list["peak_ranking_value"].astype(float).gt(
+                hit_label_min_fraction
+            ).sum()
+        ) if not gene_list.empty else 0,
+        "hit_label_min_fraction": float(hit_label_min_fraction),
         "reused": False,
     }
     report_artifacts = [

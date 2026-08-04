@@ -47,7 +47,8 @@ BACKWARD_ALIGNMENT="${AOU_GAMMA_BACKWARD_ALIGNMENT:-fixed}"
 TOP_N="${AOU_GAMMA_TOP_N:-100}"
 HIT_BIN_SIZE="${AOU_GAMMA_HIT_BIN_SIZE:-1000000}"
 GENE_CONTEXT_FLANK="${AOU_GAMMA_GENE_CONTEXT_FLANK:-500000}"
-ZOOM_YMAX="${AOU_GAMMA_ZOOM_YMAX:-0.05}"
+ZOOM_YMAX="${AOU_GAMMA_ZOOM_YMAX:-0.04}"
+HIT_LABEL_MIN_FRACTION="${AOU_GAMMA_HIT_LABEL_MIN_FRACTION:-0.02}"
 MASK_ENABLED=1
 UPLOAD=1
 KEEP_INPUTS=0
@@ -99,7 +100,9 @@ Decoder parameters:
   --top-n N                 Default: 100 whole-genome windows per statistic
   --hit-bin-size N          Merge top-window hits through consecutive 1 Mb bins
   --gene-context-flank N    List protein-coding genes within +/-500000 bp
-  --zoom-ymax X             Separate genome plot y ceiling; default: 0.05
+  --zoom-ymax X             Separate genome plot y ceiling; default: 0.04
+  --hit-label-min-fraction X
+                            Label ranked peaks strictly above X; default: 0.02
 
 Candidate analysis:
   --signal-fraction X       Strict screen threshold; default: 0.05
@@ -179,6 +182,7 @@ while [[ $# -gt 0 ]]; do
         --hit-bin-size) need_value "$@"; HIT_BIN_SIZE="$2"; shift 2 ;;
         --gene-context-flank) need_value "$@"; GENE_CONTEXT_FLANK="$2"; shift 2 ;;
         --zoom-ymax) need_value "$@"; ZOOM_YMAX="$2"; shift 2 ;;
+        --hit-label-min-fraction) need_value "$@"; HIT_LABEL_MIN_FRACTION="$2"; shift 2 ;;
         --no-mask) MASK_ENABLED=0; shift ;;
         --force) FORCE=1; shift ;;
         --keep-inputs) KEEP_INPUTS=1; shift ;;
@@ -298,7 +302,7 @@ print_plan() {
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
     echo "  pair draw: $N_RANDOM_PAIRS random haplotype pairs/pop, seed=$PAIRS_SEED, exclude_within=$EXCLUDE_WITHIN"
     echo "  candidates: fraction>$SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
-    echo "  ranked-hit report: top_n=$TOP_N, bins=$HIT_BIN_SIZE bp, gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=$ZOOM_YMAX"
+    echo "  ranked-hit report: top_n=$TOP_N, bins=$HIT_BIN_SIZE bp, gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=$ZOOM_YMAX, label_min=$HIT_LABEL_MIN_FRACTION"
     echo "  gene annotation: $GENE_ANNOTATION_URI"
     echo "  ancestry: $ANCESTRY_URI (column ancestry_pred_other)"
     echo "  QC exclusions: $QC_EXCLUSIONS_URI"
@@ -1087,6 +1091,7 @@ report_args=(
     --hit-bin-size "$HIT_BIN_SIZE"
     --gene-context-flank "$GENE_CONTEXT_FLANK"
     --zoom-ymax "$ZOOM_YMAX"
+    --hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"
 )
 if [[ "${CHR_SPEC,,}" == "all" ]]; then
     report_args+=(--whole-genome)

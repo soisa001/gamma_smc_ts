@@ -24,6 +24,57 @@ def _write_summary(path: Path, chromosome: int = 1) -> None:
     ).to_csv(path, sep="\t", index=False)
 
 
+def test_zoom_plot_labels_only_peaks_above_two_percent_horizontally(
+    tmp_path: Path, monkeypatch
+) -> None:
+    called_column = "frac_recent_4500"
+    genome = pd.DataFrame(
+        {
+            "population": ["AFR", "AFR", "AFR"],
+            "chromosome": [1, 1, 1],
+            "genome_position_0based": [0, 10_000, 20_000],
+            called_column: [0.005, 0.021, 0.035],
+        }
+    )
+    labels = pd.DataFrame(
+        {
+            "population": ["AFR", "AFR"],
+            "chromosome": [1, 1],
+            "peak_genome_position_0based": [10_000, 20_000],
+            "peak_ranking_value": [0.019, 0.021],
+            "probable_gene": ["BELOW", "ABOVE"],
+        }
+    )
+    captured = []
+    monkeypatch.setattr(workbench, "_atomic_figure", lambda *args, **kwargs: None)
+    monkeypatch.setattr(workbench.plt, "close", captured.append)
+    workbench._plot_combined_recent_genome(
+        {"AFR": genome},
+        chromosomes=[1],
+        called_column=called_column,
+        threshold_years=4500,
+        ticks=[10_000],
+        boundaries=[0, 30_000],
+        signal_fraction=0.05,
+        output_stem=tmp_path / "zoom",
+        fixed_ymax=0.04,
+        hit_labels=labels,
+        hit_label_min_fraction=0.02,
+    )
+    figure = captured[0]
+    axis = figure.axes[0]
+    annotations = {text.get_text(): text for text in axis.texts}
+    assert "ABOVE" in annotations
+    assert "BELOW" not in annotations
+    label = annotations["ABOVE"]
+    assert label.get_rotation() == 0
+    assert label.get_fontweight() == "bold"
+    assert label.get_fontsize() == pytest.approx(8.5)
+    assert label.get_ha() == "left"
+    assert label.get_position() == (6, 0)
+    assert axis.get_ylim() == pytest.approx((0.0, 0.04))
+
+
 def _contract(tmp_path: Path, *, with_mask: bool = False) -> tuple[dict, Path, Path, Path]:
     summary = tmp_path / "chr1.gamma_smc.tsv"
     pairs = tmp_path / "chr1.pairs.tsv"
@@ -548,7 +599,7 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     }
     assert (output_dir / "all_candidate_regions.tsv").is_file()
     assert (output_dir / "combined.whole_genome.gamma_smc.png").is_file()
-    assert (output_dir / "combined.whole_genome.gamma_smc.zoom5pct.png").is_file()
+    assert (output_dir / "combined.whole_genome.gamma_smc.zoom4pct.png").is_file()
     gene_list = pd.read_csv(output_dir / "gene_list.tsv", sep="\t")
     assert set(gene_list["probable_gene"]) == {"GENE1", "GENE2"}
     assert len(gene_list) == 4
