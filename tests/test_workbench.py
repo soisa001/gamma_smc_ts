@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from gamma_smc_aou import workbench
+from gamma_smc_aou import cli, workbench
 
 
 def _write_summary(path: Path, chromosome: int = 1) -> None:
@@ -548,6 +548,73 @@ def test_strict_callable_mask_is_merged_without_complementing(tmp_path):
     assert audit["source_semantics"] == "included_intervals"
     assert audit["counts"]["callable_bases"] == 30
     assert audit["counts"]["excluded_bases"] == 70
+
+
+def test_cli_routes_source_semantics_to_mask_not_sample_selection(
+    tmp_path, monkeypatch
+):
+    sample_call = {}
+
+    def fake_samples(**kwargs):
+        sample_call.update(kwargs)
+        return {
+            "population": "AFR",
+            "counts": {"selected_samples": 1, "bcf_samples": 1},
+        }
+
+    monkeypatch.setattr(cli, "build_workbench_sample_list", fake_samples)
+    sample_args = cli.parser().parse_args(
+        [
+            "workbench-samples",
+            "--population",
+            "AFR",
+            "--ancestry",
+            str(tmp_path / "ancestry.tsv"),
+            "--qc-exclusions",
+            str(tmp_path / "qc.tsv"),
+            "--relatedness-exclusions",
+            str(tmp_path / "relatedness.tsv"),
+            "--bcf-samples",
+            str(tmp_path / "bcf.samples"),
+            "--output",
+            str(tmp_path / "samples.txt"),
+            "--audit-output",
+            str(tmp_path / "samples.audit.json"),
+        ]
+    )
+    sample_args.func(sample_args)
+    assert "source_semantics" not in sample_call
+
+    mask_call = {}
+
+    def fake_mask(**kwargs):
+        mask_call.update(kwargs)
+        return {
+            "contig": "chr1",
+            "sequence_length": 100,
+            "counts": {"callable_bases": 30},
+        }
+
+    monkeypatch.setattr(cli, "build_workbench_callable_mask", fake_mask)
+    mask_args = cli.parser().parse_args(
+        [
+            "workbench-mask",
+            "--hardmask",
+            str(tmp_path / "strict.bed"),
+            "--source-semantics",
+            "included_intervals",
+            "--contig",
+            "chr1",
+            "--sequence-length",
+            "100",
+            "--output",
+            str(tmp_path / "callable.bed"),
+            "--audit-output",
+            str(tmp_path / "callable.audit.json"),
+        ]
+    )
+    mask_args.func(mask_args)
+    assert mask_call["source_semantics"] == "included_intervals"
 
 
 def test_population_plots_are_separate_and_whole_genome_is_complete(tmp_path, monkeypatch):

@@ -345,7 +345,6 @@ def command_workbench_samples(args):
         population=args.population,
         output_path=args.output,
         audit_path=args.audit_output,
-        source_semantics=args.source_semantics,
     )
     print(
         f"selected {audit['counts']['selected_samples']} {audit['population']} samples "
@@ -360,6 +359,7 @@ def command_workbench_mask(args):
         sequence_length=args.sequence_length,
         output_path=args.output,
         audit_path=args.audit_output,
+        source_semantics=args.source_semantics,
     )
     print(
         f"prepared {audit['contig']} callable mask: "
