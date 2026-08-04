@@ -10,7 +10,10 @@ import pytest
 
 def _runner_command(repo: Path, arguments: list[str]) -> tuple[list[str], Path]:
     if os.name == "nt":
-        git_bash = Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Git/usr/bin/bash.exe"
+        git_bash = (
+            Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+            / "Git/usr/bin/bash.exe"
+        )
         if not git_bash.is_file():
             pytest.skip("Git Bash is not available")
         command = "bash scripts/run_aou_workbench.sh " + " ".join(arguments)
@@ -26,9 +29,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     environment = os.environ.copy()
     environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
     environment["GOOGLE_PROJECT"] = "test-billing-project"
-    command, cwd = _runner_command(
-        repo, ["-chr", "1", "-pops", "afr", "--dry-run"]
-    )
+    command, cwd = _runner_command(repo, ["-chr", "1", "-pops", "afr", "--dry-run"])
     completed = subprocess.run(
         command,
         check=True,
@@ -58,9 +59,7 @@ def test_runner_has_a_workbench_output_bucket_default():
     environment = os.environ.copy()
     environment.pop("WORKSPACE_BUCKET", None)
     environment.pop("AOU_GAMMA_OUTPUT_PREFIX", None)
-    command, cwd = _runner_command(
-        repo, ["-chr", "1", "-pops", "AFR", "--dry-run"]
-    )
+    command, cwd = _runner_command(repo, ["-chr", "1", "-pops", "AFR", "--dry-run"])
     completed = subprocess.run(
         command,
         check=True,
@@ -70,8 +69,7 @@ def test_runner_has_a_workbench_output_bucket_default():
         cwd=cwd,
     )
     assert (
-        "gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/AFR/"
-        "{chromosomes,plots}/"
+        "gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/AFR/{chromosomes,plots}/"
     ) in completed.stdout
 
 
@@ -95,7 +93,7 @@ def test_all_gcloud_storage_calls_include_requester_pays_billing():
     repo = Path(__file__).resolve().parents[1]
     runner = (repo / "scripts/run_aou_workbench.sh").read_text()
 
-    assert 'AOU_GAMMA_BILLING_PROJECT:-${GOOGLE_PROJECT:-}' in runner
+    assert "AOU_GAMMA_BILLING_PROJECT:-${GOOGLE_PROJECT:-}" in runner
     assert runner.count("gcloud storage ") == runner.count(
         '--billing-project "$BILLING_PROJECT"'
     )
@@ -121,14 +119,43 @@ def test_resume_helpers_do_not_expand_locals_during_their_declaration():
     assert 'local temporary="${local_file}.remote.$$"' in runner
 
 
-def test_runner_locks_reports_and_reuses_uploaded_plots():
+def test_runner_locks_reports_and_checksum_syncs_outputs():
     repo = Path(__file__).resolve().parents[1]
     runner = (repo / "scripts/run_aou_workbench.sh").read_text()
 
     assert 'flock -n 9 || die "another Workbench runner' in runner
     assert "workbench-report" in runner
-    assert 'upload_if_different "$plot_file"' in runner
-    assert 'upload_if_different "$report_file"' in runner
-    assert "regions_by_population.tsv" in (
-        repo / "python/gamma_smc_aou/workbench.py"
-    ).read_text()
+    assert 'gcloud storage rsync "$source_directory" "$remote_directory"' in runner
+    assert "--recursive --checksums-only" in runner
+    assert "--delete-unmatched-destination-objects" not in runner
+    assert 'rsync_single_file "$population_plot_dir/plot_manifest.json"' in runner
+    assert 'rsync_single_file "$report_dir/run_report_manifest.json"' in runner
+    assert (
+        "regions_by_population.tsv"
+        in (repo / "python/gamma_smc_aou/workbench.py").read_text()
+    )
+
+
+def test_runner_preserves_chromosome_candidate_directory_in_cloud():
+    repo = Path(__file__).resolve().parents[1]
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+
+    expected = (
+        '"$remote_directory/$(basename "$candidate_directory")/'
+        '$(basename "$candidate_manifest")"'
+    )
+    assert runner.count(expected) == 2
+    assert '"$remote_directory/candidates/' not in runner
+    assert 'cp -al -- "$candidate_directory" "$stage/"' in runner
+
+
+def test_runner_syncs_completion_markers_after_payloads():
+    repo = Path(__file__).resolve().parents[1]
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+
+    function = runner.split("upload_completed_chromosome() {", 1)[1].split(
+        "\nsafe_clear_run()", 1
+    )[0]
+    assert function.index(
+        'rsync_directory "$stage" "$remote_directory"'
+    ) < function.index('rsync_single_file "$completion" "$remote_directory"')

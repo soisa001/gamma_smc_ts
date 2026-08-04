@@ -127,6 +127,13 @@ For each chromosome, the output directory receives:
 - `chrN.complete.json`: input fingerprints, code commit, exact settings, and
   SHA-256 hashes for required outputs, sample list/audit, and callable mask.
 
+Completed chromosome trees are uploaded with checksum-based `gcloud storage
+rsync`, so reruns scan but do not recopy unchanged objects. Candidate artifacts
+retain their chromosome-qualified `chrN.candidates/` directory. The runner does
+not delete unmatched remote objects, and it synchronizes `chrN.complete.json`
+only after the chromosome payload succeeds. Plot and combined-report manifests
+use the same commit-marker-last rule.
+
 Each population gets chromosome PNG/PDF scans, a chromosome summary table, and
 a plot manifest. `-chr all` additionally requires all autosomes to validate
 before it writes two whole-genome views: the main Manhattan-style PNG/PDF plots

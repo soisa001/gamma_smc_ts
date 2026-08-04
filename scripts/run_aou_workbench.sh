@@ -410,13 +410,6 @@ restore_if_present() {
     mv -f -- "$temporary" "$destination"
 }
 
-upload_file() {
-    local source="$1" destination="$2"
-    echo "Uploading $destination"
-    gcloud storage cp "$source" "$destination" \
-        --billing-project "$BILLING_PROJECT"
-}
-
 remote_matches_file() {
     local uri="$1" local_file="$2"
     local temporary="${local_file}.remote.$$"
@@ -435,43 +428,93 @@ remote_matches_file() {
     return 1
 }
 
-upload_if_different() {
-    local source="$1" destination="$2"
-    if remote_matches_file "$destination" "$source"; then
-        echo "Reusing uploaded artifact: $destination"
-        return 0
+make_upload_stage() {
+    local stage_root="$LOCAL_ROOT/tmp/upload-staging"
+    mkdir -p "$stage_root"
+    mktemp -d "$stage_root/stage.XXXXXX"
+}
+
+safe_remove_upload_stage() {
+    local stage="$1" stage_root resolved_stage resolved_root
+    stage_root="$LOCAL_ROOT/tmp/upload-staging"
+    resolved_stage="$(realpath -m -- "$stage")"
+    resolved_root="$(realpath -m -- "$stage_root")"
+    case "${resolved_stage}/" in
+        "${resolved_root}/"stage.*/) rm -rf -- "$resolved_stage" ;;
+        *) die "refusing to remove upload staging path outside $resolved_root: $stage" ;;
+    esac
+}
+
+rsync_directory() {
+    local source_directory="$1" remote_directory="$2"
+    shift 2
+    echo "Synchronizing $source_directory -> $remote_directory"
+    # Checksums, rather than local/cloud mtimes, make an unchanged rerun a
+    # metadata comparison instead of another upload. Extra remote objects are
+    # deliberately retained; a scoped run must never delete another scope.
+    gcloud storage rsync "$source_directory" "$remote_directory" \
+        --recursive --checksums-only "$@" \
+        --billing-project "$BILLING_PROJECT"
+}
+
+rsync_files() {
+    local remote_directory="$1" stage source
+    shift
+    [[ "$#" -gt 0 ]] || die "rsync_files requires at least one source"
+    stage="$(make_upload_stage)"
+    for source in "$@"; do
+        if ! ln -- "$source" "$stage/$(basename "$source")"; then
+            safe_remove_upload_stage "$stage"
+            return 1
+        fi
+    done
+    if ! rsync_directory "$stage" "$remote_directory"; then
+        safe_remove_upload_stage "$stage"
+        return 1
     fi
-    upload_file "$source" "$destination"
+    safe_remove_upload_stage "$stage"
+}
+
+rsync_single_file() {
+    local source="$1" remote_directory="$2"
+    rsync_files "$remote_directory" "$source"
 }
 
 upload_completed_chromosome() {
     local remote_directory="$1" summary="$2" run_json="$3" pairs_manifest="$4"
     local sample_list="$5" sample_audit="$6" decode_log="$7" bitmatrix="$8"
     local regions="$9" positions="${10}" candidate_directory="${11}"
-    local candidate_manifest="${12}" completion="${13}" candidate_file relative_path
-    upload_file "$summary" "$remote_directory/$(basename "$summary")"
-    upload_file "$run_json" "$remote_directory/$(basename "$run_json")"
-    upload_file "$pairs_manifest" "$remote_directory/$(basename "$pairs_manifest")"
-    upload_file "$sample_list" "$remote_directory/$(basename "$sample_list")"
-    upload_file "$sample_audit" "$remote_directory/$(basename "$sample_audit")"
-    if [[ -s "$decode_log" ]]; then
-        upload_file "$decode_log" "$remote_directory/$(basename "$decode_log")"
+    local completion="${12}" stage source
+    local -a outputs=(
+        "$summary" "$run_json" "$pairs_manifest" "$sample_list" "$sample_audit"
+        "$bitmatrix" "${bitmatrix}.meta" "$regions" "$positions"
+    )
+    stage="$(make_upload_stage)"
+    for source in "${outputs[@]}"; do
+        if ! ln -- "$source" "$stage/$(basename "$source")"; then
+            safe_remove_upload_stage "$stage"
+            return 1
+        fi
+    done
+    if [[ -s "$decode_log" ]] && \
+        ! ln -- "$decode_log" "$stage/$(basename "$decode_log")"; then
+        safe_remove_upload_stage "$stage"
+        return 1
     fi
-    upload_file "$bitmatrix" "$remote_directory/$(basename "$bitmatrix")"
-    upload_file "${bitmatrix}.meta" "$remote_directory/$(basename "${bitmatrix}.meta")"
-    upload_file "$regions" "$remote_directory/$(basename "$regions")"
-    upload_file "$positions" "$remote_directory/$(basename "$positions")"
-    while IFS= read -r -d '' candidate_file; do
-        [[ "$candidate_file" == "$candidate_manifest" ]] && continue
-        relative_path="${candidate_file#"$candidate_directory/"}"
-        upload_file "$candidate_file" \
-            "$remote_directory/candidates/$relative_path"
-    done < <(find "$candidate_directory" -type f -print0)
-    # Candidate manifest commits the variable set of region artifacts.
-    upload_file "$candidate_manifest" \
-        "$remote_directory/candidates/$(basename "$candidate_manifest")"
-    # Completion is the commit marker and is deliberately uploaded last.
-    upload_file "$completion" "$remote_directory/$(basename "$completion")"
+    # Hard links stage metadata only: no result data are duplicated locally.
+    # Keeping the basename preserves chrN.candidates/ in Cloud Storage and
+    # prevents different chromosomes from overwriting one shared directory.
+    if ! cp -al -- "$candidate_directory" "$stage/"; then
+        safe_remove_upload_stage "$stage"
+        return 1
+    fi
+    if ! rsync_directory "$stage" "$remote_directory"; then
+        safe_remove_upload_stage "$stage"
+        return 1
+    fi
+    safe_remove_upload_stage "$stage"
+    # Completion is the commit marker and is deliberately synchronized last.
+    rsync_single_file "$completion" "$remote_directory"
 }
 
 safe_clear_run() {
@@ -682,7 +725,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 restore_if_present "$remote_directory/$(basename "$candidate_regions")" \
                     "$candidate_regions" || true
                 restore_if_present \
-                    "$remote_directory/candidates/$(basename "$candidate_manifest")" \
+                    "$remote_directory/$(basename "$candidate_directory")/$(basename "$candidate_manifest")" \
                     "$candidate_manifest" || true
             fi
         fi
@@ -699,7 +742,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 "$remote_directory/$(basename "${bitmatrix}.meta")"
                 "$remote_directory/$(basename "$candidate_regions")"
                 "$remote_directory/$(basename "$candidate_positions")"
-                "$remote_directory/candidates/$(basename "$candidate_manifest")"
+                "$remote_directory/$(basename "$candidate_directory")/$(basename "$candidate_manifest")"
             )
             for remote_artifact in "${remote_required[@]}"; do
                 if ! cloud_exists "$remote_artifact"; then
@@ -713,9 +756,11 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             echo "Validated completion; skipping decode."
             if [[ "$UPLOAD" -eq 1 ]] && ! remote_matches_file \
                 "$remote_directory/$(basename "$completion")" "$completion"; then
-                echo "Cloud outputs are complete; repairing only the completion marker."
-                upload_file "$completion" \
-                    "$remote_directory/$(basename "$completion")"
+                echo "Completion marker differs; checksum-syncing the chromosome outputs."
+                upload_completed_chromosome "$remote_directory" "$summary" \
+                    "$run_json" "$pairs_manifest" "$sample_list" "$sample_audit" \
+                    "$decode_log" "$bitmatrix" "$candidate_regions" \
+                    "$candidate_positions" "$candidate_directory" "$completion"
             fi
             continue
         fi
@@ -732,7 +777,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                     "$run_json" "$pairs_manifest" "$sample_list" "$sample_audit" \
                     "$decode_log" "$bitmatrix" "$candidate_regions" \
                     "$candidate_positions" "$candidate_directory" \
-                    "$candidate_manifest" "$completion"
+                    "$completion"
             fi
             continue
         fi
@@ -771,10 +816,8 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                     --output "$local_mask" \
                     --audit-output "$mask_audit"
                 if [[ "$UPLOAD" -eq 1 ]]; then
-                    upload_file "$local_mask" \
-                        "$OUTPUT_PREFIX/shared/masks/$(basename "$local_mask")"
-                    upload_file "$mask_audit" \
-                        "$OUTPUT_PREFIX/shared/masks/$(basename "$mask_audit")"
+                    rsync_files "$OUTPUT_PREFIX/shared/masks" \
+                        "$local_mask" "$mask_audit"
                 fi
             fi
             input_staged=1
@@ -924,7 +967,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 "$run_json" "$pairs_manifest" "$sample_list" "$sample_audit" \
                 "$decode_log" "$bitmatrix" "$candidate_regions" \
                 "$candidate_positions" "$candidate_directory" \
-                "$candidate_manifest" "$completion"
+                "$completion"
         fi
     done
 
@@ -961,14 +1004,12 @@ for population in "${POPULATIONS[@]}"; do
     "$AOU" "${plot_args[@]}"
 
     if [[ "$UPLOAD" -eq 1 ]]; then
-        while IFS= read -r -d '' plot_file; do
-            [[ "$(basename "$plot_file")" == "plot_manifest.json" ]] && continue
-            relative_path="${plot_file#"$population_plot_dir/"}"
-            upload_if_different "$plot_file" \
-                "$OUTPUT_PREFIX/$population/plots/$plot_scope/$relative_path"
-        done < <(find "$population_plot_dir" -type f -print0)
-        upload_if_different "$population_plot_dir/plot_manifest.json" \
-            "$OUTPUT_PREFIX/$population/plots/$plot_scope/plot_manifest.json"
+        remote_plot_dir="$OUTPUT_PREFIX/$population/plots/$plot_scope"
+        rsync_directory "$population_plot_dir" "$remote_plot_dir" \
+            --exclude='^plot_manifest\.json$'
+        # The manifest commits the complete plot artifact set.
+        rsync_single_file "$population_plot_dir/plot_manifest.json" \
+            "$remote_plot_dir"
     fi
 done
 
@@ -988,14 +1029,12 @@ fi
 "$AOU" "${report_args[@]}"
 
 if [[ "$UPLOAD" -eq 1 ]]; then
-    while IFS= read -r -d '' report_file; do
-        [[ "$(basename "$report_file")" == "run_report_manifest.json" ]] && continue
-        relative_path="${report_file#"$report_dir/"}"
-        upload_if_different "$report_file" \
-            "$OUTPUT_PREFIX/summary/$plot_scope/$relative_path"
-    done < <(find "$report_dir" -type f -print0)
-    upload_if_different "$report_dir/run_report_manifest.json" \
-        "$OUTPUT_PREFIX/summary/$plot_scope/run_report_manifest.json"
+    remote_report_dir="$OUTPUT_PREFIX/summary/$plot_scope"
+    rsync_directory "$report_dir" "$remote_report_dir" \
+        --exclude='^run_report_manifest\.json$'
+    # The report manifest is synchronized only after all report artifacts.
+    rsync_single_file "$report_dir/run_report_manifest.json" \
+        "$remote_report_dir"
 fi
 
 echo
