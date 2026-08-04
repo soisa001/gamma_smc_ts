@@ -33,7 +33,11 @@ RELATEDNESS_ID_COLUMNS = (
     "person_id",
 )
 PLOT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-population-plots/v2"
-REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v3"
+REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v4"
+FIGURE_TITLE_SIZE = 22
+FIGURE_LABEL_SIZE = 18
+FIGURE_TICK_SIZE = 15
+FIGURE_ANNOTATION_SIZE = 14
 
 CANDIDATE_REGION_COLUMNS = [
     "population",
@@ -56,8 +60,9 @@ RANKED_GENE_LIST_COLUMNS = [
     "merged_end_0based_exclusive",
     "merged_start_1based",
     "merged_end_1based_inclusive",
-    "n_consecutive_1mb_bins",
     "n_top_windows",
+    "plot_merge_max_gap_bp",
+    "maximum_joined_gap_bp",
     "ranking_statistic",
     "peak_ranking_value",
     "peak_position_0based",
@@ -109,7 +114,12 @@ def _atomic_frame(path: str | Path, frame: pd.DataFrame) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(destination.name + f".tmp.{os.getpid()}")
     try:
-        frame.to_csv(temporary, sep="\t", index=False)
+        compression = (
+            {"method": "gzip", "compresslevel": 6, "mtime": 0}
+            if destination.suffix == ".gz"
+            else None
+        )
+        frame.to_csv(temporary, sep="\t", index=False, compression=compression)
         os.replace(temporary, destination)
     finally:
         temporary.unlink(missing_ok=True)
@@ -1508,12 +1518,14 @@ def _draw_recent_genome_axis(
     axis.yaxis.set_major_formatter(PercentFormatter(xmax=1.0))
     axis.grid(axis="y", alpha=0.18, linewidth=0.55)
     axis.margins(x=0)
+    axis.set_xlim(0, float(boundaries[-1]) / 1e9)
+    axis.tick_params(axis="both", labelsize=FIGURE_TICK_SIZE)
     if show_chromosomes:
         axis.set_xticks(
             np.asarray(ticks) / 1e9,
             [str(chromosome) for chromosome in chromosomes],
         )
-        axis.set_xlabel("Chromosome")
+        axis.set_xlabel("Chromosome", fontsize=FIGURE_LABEL_SIZE)
     else:
         axis.tick_params(axis="x", labelbottom=False)
 
@@ -1545,10 +1557,14 @@ def _plot_population_recent_genome(
         ymax=ymax,
         show_chromosomes=True,
     )
-    axis.set_ylabel(f"% pairs called coalesced < {threshold_years:g}y")
+    axis.set_ylabel(
+        f"% pairs called coalesced < {threshold_years:g}y",
+        fontsize=FIGURE_LABEL_SIZE,
+    )
     axis.set_title(
         f"{population} genome-wide Gamma-SMC scan: posterior mean TMRCA < "
-        f"{threshold_years:g} years"
+        f"{threshold_years:g} years",
+        fontsize=FIGURE_TITLE_SIZE,
     )
     outputs = [
         output_dir / f"{population}.whole_genome.gamma_smc.png",
@@ -1595,17 +1611,19 @@ def _plot_population_diagnostics(
         for boundary in boundaries[:-1]:
             axis.axvline(boundary / 1e9, color="0.8", linewidth=0.45)
         axis.set_ylabel(ylabel)
+        axis.tick_params(axis="both", labelsize=FIGURE_TICK_SIZE)
+        axis.yaxis.label.set_size(FIGURE_LABEL_SIZE)
         axis.grid(axis="y", alpha=0.16, linewidth=0.6)
     finite_tmrca = genome[TMRCA_COLUMN].to_numpy(dtype=float)
     finite_tmrca = finite_tmrca[np.isfinite(finite_tmrca)]
     if len(finite_tmrca) and np.all(finite_tmrca > 0):
         axes[2].set_yscale("log")
     axes[2].set_xticks(np.asarray(ticks) / 1e9, [str(value) for value in chromosomes])
-    axes[2].set_xlabel("Chromosome")
+    axes[2].set_xlabel("Chromosome", fontsize=FIGURE_LABEL_SIZE)
     figure.suptitle(
         f"{population} whole-genome Gamma-SMC diagnostics\n"
         "Descriptive posterior summaries; significance requires matched null calibration",
-        fontsize=18,
+        fontsize=FIGURE_TITLE_SIZE,
     )
     outputs = [
         output_dir / f"{population}.whole_genome.diagnostics.png",
@@ -1861,15 +1879,21 @@ def _plot_combined_recent_genome(
             ].sort_values(["chromosome", "peak_genome_position_0based"])
             for hit in population_hits.itertuples(index=False):
                 label_y = min(float(hit.peak_ranking_value), ymax * 0.94)
+                peak_x = float(hit.peak_genome_position_0based) / 1e9
+                right_edge = float(boundaries[-1]) / 1e9
+                left_edge = 0.0
+                near_right_edge = peak_x >= right_edge - 0.06 * (
+                    right_edge - left_edge
+                )
                 axis.annotate(
                     str(hit.probable_gene),
-                    xy=(float(hit.peak_genome_position_0based) / 1e9, label_y),
-                    xytext=(6, 0),
+                    xy=(peak_x, label_y),
+                    xytext=((-8, 0) if near_right_edge else (8, 0)),
                     textcoords="offset points",
-                    ha="left",
+                    ha=("right" if near_right_edge else "left"),
                     va="center",
                     rotation=0,
-                    fontsize=8.5,
+                    fontsize=FIGURE_ANNOTATION_SIZE,
                     fontweight="bold",
                     color="#1f2937",
                     annotation_clip=True,
@@ -1882,8 +1906,12 @@ def _plot_combined_recent_genome(
             ha="left",
             va="top",
             fontweight="bold",
+            fontsize=FIGURE_ANNOTATION_SIZE,
         )
-    figure.supylabel(f"% pairs called coalesced < {threshold_years:g}y")
+    figure.supylabel(
+        f"% pairs called coalesced < {threshold_years:g}y",
+        fontsize=FIGURE_LABEL_SIZE,
+    )
     subtitle = "Posterior-mean TMRCA call; dashed line is the candidate-region screen"
     if fixed_ymax is not None:
         subtitle = (
@@ -1892,7 +1920,8 @@ def _plot_combined_recent_genome(
             "and their nearest protein-coding genes"
         )
     figure.suptitle(
-        "Gamma-SMC genome-wide recent-coalescence scan by population\n" + subtitle
+        "Gamma-SMC genome-wide recent-coalescence scan by population\n" + subtitle,
+        fontsize=FIGURE_TITLE_SIZE,
     )
     outputs = [
         Path(f"{output_stem}.png"),
@@ -2050,10 +2079,10 @@ def _build_ranked_gene_list(
     called_column: str,
     genes: pd.DataFrame,
     top_n: int,
-    hit_bin_size: int,
+    plot_merge_gap: int,
     context_flank: int,
 ) -> pd.DataFrame:
-    """Group each population's top scan windows through consecutive 1-Mb bins."""
+    """Merge top scan windows for plot labels using a presentation-only gap."""
     rows: list[dict] = []
     for population, genome in genomes.items():
         ranked = genome.loc[genome[called_column].astype(float).gt(0)].sort_values(
@@ -2062,31 +2091,28 @@ def _build_ranked_gene_list(
         ).head(top_n).copy()
         if ranked.empty:
             continue
-        ranked["hit_bin_start_0based"] = (
-            ranked["position_0based"].astype(int) // hit_bin_size
-        ) * hit_bin_size
         hit_number = 0
         for chromosome, chromosome_ranked in ranked.groupby("chromosome", sort=True):
             chromosome = int(chromosome)
             scan_chromosome = genome.loc[genome["chromosome"].eq(chromosome)]
             chromosome_end = int(np.ceil(_sequence_span(scan_chromosome)))
-            bins = sorted(chromosome_ranked["hit_bin_start_0based"].unique())
+            stride = _summary_stride(scan_chromosome)
+            positions = sorted(chromosome_ranked["position_0based"].astype(int).unique())
             groups: list[list[int]] = []
             current: list[int] = []
-            for bin_start in bins:
-                bin_start = int(bin_start)
-                if current and bin_start > current[-1] + hit_bin_size:
+            for position in positions:
+                if current and position - current[-1] > plot_merge_gap:
                     groups.append(current)
                     current = []
-                current.append(bin_start)
+                current.append(position)
             if current:
                 groups.append(current)
             for group in groups:
                 hit_number += 1
                 region_start = int(group[0])
-                region_end = min(chromosome_end, int(group[-1]) + hit_bin_size)
+                region_end = min(chromosome_end, int(group[-1]) + stride)
                 hit_windows = chromosome_ranked.loc[
-                    chromosome_ranked["hit_bin_start_0based"].isin(group)
+                    chromosome_ranked["position_0based"].astype(int).isin(group)
                 ].sort_values(
                     [called_column, TMRCA_COLUMN, "position_0based"],
                     ascending=[False, True, True],
@@ -2102,8 +2128,11 @@ def _build_ranked_gene_list(
                         "merged_end_0based_exclusive": region_end,
                         "merged_start_1based": region_start + 1,
                         "merged_end_1based_inclusive": region_end,
-                        "n_consecutive_1mb_bins": len(group),
                         "n_top_windows": len(hit_windows),
+                        "plot_merge_max_gap_bp": int(plot_merge_gap),
+                        "maximum_joined_gap_bp": int(
+                            max(np.diff(group)) if len(group) > 1 else 0
+                        ),
                         "ranking_statistic": called_column,
                         "peak_ranking_value": float(peak[called_column]),
                         "peak_position_0based": peak_position,
@@ -2144,7 +2173,7 @@ def summarize_workbench_run(
     whole_genome: bool = False,
     top_n: int = 100,
     gene_annotation: str | Path | None = None,
-    hit_bin_size: int = 1_000_000,
+    plot_merge_gap: int = 1_000_000,
     gene_context_flank: int = 500_000,
     zoom_ymax: float = 0.04,
     hit_label_min_fraction: float = 0.02,
@@ -2165,8 +2194,10 @@ def summarize_workbench_run(
         raise ValueError("whole-genome report requires all autosomes 1-22")
     if not 0 <= signal_fraction <= 1:
         raise ValueError("signal_fraction must be in [0, 1]")
-    if top_n < 1 or hit_bin_size < 1 or gene_context_flank < 0 or merge_gap < 0:
-        raise ValueError("top_n/bin size must be positive and gene flank nonnegative")
+    if top_n < 1 or plot_merge_gap < 0 or gene_context_flank < 0 or merge_gap < 0:
+        raise ValueError(
+            "top_n must be positive and merge gaps/gene flank nonnegative"
+        )
     if not 0 < zoom_ymax <= 1:
         raise ValueError("zoom_ymax must be in (0, 1]")
     if not 0 <= hit_label_min_fraction <= 1:
@@ -2215,7 +2246,7 @@ def summarize_workbench_run(
         "whole_genome": bool(whole_genome),
         "top_n": int(top_n),
         "gene_annotation": gene_annotation_record,
-        "hit_bin_size": int(hit_bin_size),
+        "plot_merge_gap": int(plot_merge_gap),
         "gene_context_flank": int(gene_context_flank),
         "zoom_ymax": float(zoom_ymax),
         "hit_label_min_fraction": float(hit_label_min_fraction),
@@ -2286,10 +2317,17 @@ def summarize_workbench_run(
 
     population_summary = pd.DataFrame(population_rows)
     all_regions = pd.concat(region_frames, ignore_index=True)
+    candidate_loci = all_regions.copy()
+    candidate_loci.insert(
+        3, "signal_fraction_strictly_greater_than", float(signal_fraction)
+    )
+    candidate_loci.insert(4, "candidate_merge_max_gap_bp", int(merge_gap))
     population_summary_path = output_dir / "regions_by_population.tsv"
     all_regions_path = output_dir / "all_candidate_regions.tsv"
+    candidate_loci_path = output_dir / "candidate_loci.tsv"
     _atomic_frame(population_summary_path, population_summary)
-    _atomic_frame(all_regions_path, all_regions)
+    _atomic_frame(all_regions_path, candidate_loci)
+    _atomic_frame(candidate_loci_path, candidate_loci)
 
     chromosome_spans = {
         chromosome: max(
@@ -2309,6 +2347,11 @@ def summarize_workbench_run(
         genomes[population] = genome
         ticks = population_ticks
         boundaries = population_boundaries
+    raw_scan = pd.concat(genomes.values(), ignore_index=True).sort_values(
+        ["population", "chromosome", "position_0based"]
+    )
+    raw_scan_path = output_dir / "raw_scan_windows.tsv.gz"
+    _atomic_frame(raw_scan_path, raw_scan)
     scope = "whole_genome" if whole_genome else "requested_chromosomes"
     figure_paths = _plot_combined_recent_genome(
         genomes,
@@ -2321,7 +2364,8 @@ def summarize_workbench_run(
         output_stem=output_dir / f"combined.{scope}.gamma_smc",
     )
     gene_list_path = None
-    gene_list = pd.DataFrame()
+    plot_loci_path = output_dir / "plot_loci.tsv"
+    gene_list = pd.DataFrame(columns=RANKED_GENE_LIST_COLUMNS)
     if gene_annotation is not None:
         genes = _load_protein_coding_genes(gene_annotation)
         gene_list = _build_ranked_gene_list(
@@ -2329,10 +2373,18 @@ def summarize_workbench_run(
             called_column=called_column,
             genes=genes,
             top_n=top_n,
-            hit_bin_size=hit_bin_size,
+            plot_merge_gap=plot_merge_gap,
             context_flank=gene_context_flank,
         )
         gene_list_path = output_dir / "gene_list.tsv"
+    gene_list.insert(3, "top_windows_limit_per_population", int(top_n))
+    gene_list.insert(
+        4,
+        "label_fraction_strictly_greater_than",
+        float(hit_label_min_fraction),
+    )
+    _atomic_frame(plot_loci_path, gene_list)
+    if gene_list_path is not None:
         _atomic_frame(gene_list_path, gene_list)
     zoom_percent = f"{zoom_ymax * 100:g}".replace(".", "p")
     zoom_stem = output_dir / f"combined.{scope}.gamma_smc.zoom{zoom_percent}pct"
@@ -2350,6 +2402,39 @@ def summarize_workbench_run(
         hit_label_min_fraction=hit_label_min_fraction,
     )
     counts = {row["population"]: int(row["regions_found"]) for row in population_rows}
+    layers = pd.DataFrame(
+        [
+            {
+                "layer": "raw_scan_windows",
+                "file": raw_scan_path.name,
+                "selection_rule": "none; every decoded output position",
+                "merge_rule": "none",
+                "maximum_gap_bp": np.nan,
+                "purpose": "raw plotting and downstream analysis data",
+            },
+            {
+                "layer": "candidate_loci",
+                "file": candidate_loci_path.name,
+                "selection_rule": f"{called_column} > {signal_fraction:g}",
+                "merge_rule": "merge adjacent signal-window intervals",
+                "maximum_gap_bp": int(merge_gap),
+                "purpose": "candidate-locus definition and region counts",
+            },
+            {
+                "layer": "plot_loci",
+                "file": "plot_loci.tsv",
+                "selection_rule": (
+                    f"top {top_n} {called_column} windows per population; labels > "
+                    f"{hit_label_min_fraction:g}"
+                ),
+                "merge_rule": "connect adjacent selected windows for display only",
+                "maximum_gap_bp": int(plot_merge_gap),
+                "purpose": "gene labels on the zoomed whole-genome figure only",
+            },
+        ]
+    )
+    layers_path = output_dir / "report_data_layers.tsv"
+    _atomic_frame(layers_path, layers)
     result = {
         "populations": populations,
         "chromosomes": chromosomes,
@@ -2357,6 +2442,7 @@ def summarize_workbench_run(
         "threshold_years": float(threshold_years),
         "signal_fraction": float(signal_fraction),
         "merge_gap": int(merge_gap),
+        "plot_merge_gap": int(plot_merge_gap),
         "population_region_counts": counts,
         "total_regions": int(len(all_regions)),
         "ranked_gene_hits": int(len(gene_list)),
@@ -2371,6 +2457,10 @@ def summarize_workbench_run(
     report_artifacts = [
         population_summary_path,
         all_regions_path,
+        candidate_loci_path,
+        raw_scan_path,
+        layers_path,
+        plot_loci_path,
         *figure_paths,
         *zoom_paths,
     ]

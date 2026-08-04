@@ -45,7 +45,7 @@ MIN_GENOTYPE_PAIRS="${AOU_GAMMA_MIN_GENOTYPE_PAIRS:-20}"
 EXP10="${AOU_GAMMA_EXP10:-accurate}"
 BACKWARD_ALIGNMENT="${AOU_GAMMA_BACKWARD_ALIGNMENT:-fixed}"
 TOP_N="${AOU_GAMMA_TOP_N:-100}"
-HIT_BIN_SIZE="${AOU_GAMMA_HIT_BIN_SIZE:-1000000}"
+PLOT_MERGE_GAP="${AOU_GAMMA_PLOT_MERGE_GAP:-${AOU_GAMMA_HIT_BIN_SIZE:-1000000}}"
 GENE_CONTEXT_FLANK="${AOU_GAMMA_GENE_CONTEXT_FLANK:-500000}"
 ZOOM_YMAX="${AOU_GAMMA_ZOOM_YMAX:-0.04}"
 HIT_LABEL_MIN_FRACTION="${AOU_GAMMA_HIT_LABEL_MIN_FRACTION:-0.02}"
@@ -98,7 +98,8 @@ Decoder parameters:
   --pairs-seed N            Default: 1729
   --exclude-within          Exclude the same person's two haplotypes from draw
   --top-n N                 Default: 100 whole-genome windows per statistic
-  --hit-bin-size N          Merge top-window hits through consecutive 1 Mb bins
+  --plot-merge-gap N        Plot-label-only max gap; default: 1000000 bp
+  --hit-bin-size N          Deprecated alias for --plot-merge-gap
   --gene-context-flank N    List protein-coding genes within +/-500000 bp
   --zoom-ymax X             Separate genome plot y ceiling; default: 0.04
   --hit-label-min-fraction X
@@ -179,7 +180,7 @@ while [[ $# -gt 0 ]]; do
         --variant-half-width) need_value "$@"; VARIANT_HALF_WIDTH="$2"; shift 2 ;;
         --min-genotype-pairs) need_value "$@"; MIN_GENOTYPE_PAIRS="$2"; shift 2 ;;
         --top-n) need_value "$@"; TOP_N="$2"; shift 2 ;;
-        --hit-bin-size) need_value "$@"; HIT_BIN_SIZE="$2"; shift 2 ;;
+        --plot-merge-gap|--hit-bin-size) need_value "$@"; PLOT_MERGE_GAP="$2"; shift 2 ;;
         --gene-context-flank) need_value "$@"; GENE_CONTEXT_FLANK="$2"; shift 2 ;;
         --zoom-ymax) need_value "$@"; ZOOM_YMAX="$2"; shift 2 ;;
         --hit-label-min-fraction) need_value "$@"; HIT_LABEL_MIN_FRACTION="$2"; shift 2 ;;
@@ -222,13 +223,14 @@ for source_uri in "$ANCESTRY_URI" "$QC_EXCLUSIONS_URI" \
 done
 
 for integer_setting in THREADS OUTPUT_STRIDE CACHE_SIZE PAIR_BLOCK TOP_N \
-    N_RANDOM_PAIRS PROFILE_HALF_WIDTH VARIANT_HALF_WIDTH MIN_GENOTYPE_PAIRS \
-    HIT_BIN_SIZE; do
+    N_RANDOM_PAIRS PROFILE_HALF_WIDTH VARIANT_HALF_WIDTH MIN_GENOTYPE_PAIRS; do
     value="${!integer_setting}"
     [[ "$value" =~ ^[1-9][0-9]*$ ]] || die "$integer_setting must be a positive integer"
 done
 [[ "$PAIRS_SEED" =~ ^[0-9]+$ ]] || die "PAIRS_SEED must be a nonnegative integer"
 [[ "$MERGE_GAP" =~ ^[0-9]+$ ]] || die "MERGE_GAP must be a nonnegative integer"
+[[ "$PLOT_MERGE_GAP" =~ ^[0-9]+$ ]] || die \
+    "PLOT_MERGE_GAP must be a nonnegative integer"
 [[ "$GENE_CONTEXT_FLANK" =~ ^[0-9]+$ ]] || die \
     "GENE_CONTEXT_FLANK must be a nonnegative integer"
 awk -v value="$SIGNAL_FRACTION" 'BEGIN { exit !(value >= 0 && value <= 1) }' || \
@@ -302,7 +304,7 @@ print_plan() {
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
     echo "  pair draw: $N_RANDOM_PAIRS random haplotype pairs/pop, seed=$PAIRS_SEED, exclude_within=$EXCLUDE_WITHIN"
     echo "  candidates: fraction>$SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
-    echo "  ranked-hit report: top_n=$TOP_N, bins=$HIT_BIN_SIZE bp, gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=$ZOOM_YMAX, label_min=$HIT_LABEL_MIN_FRACTION"
+    echo "  plot labels: top_n=$TOP_N, merge_gap=$PLOT_MERGE_GAP bp (display only), gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=$ZOOM_YMAX, label_min=$HIT_LABEL_MIN_FRACTION"
     echo "  gene annotation: $GENE_ANNOTATION_URI"
     echo "  ancestry: $ANCESTRY_URI (column ancestry_pred_other)"
     echo "  QC exclusions: $QC_EXCLUSIONS_URI"
@@ -1089,7 +1091,7 @@ report_args=(
     --merge-gap "$MERGE_GAP"
     --top-n "$TOP_N"
     --gene-annotation "$local_gene_annotation"
-    --hit-bin-size "$HIT_BIN_SIZE"
+    --plot-merge-gap "$PLOT_MERGE_GAP"
     --gene-context-flank "$GENE_CONTEXT_FLANK"
     --zoom-ymax "$ZOOM_YMAX"
     --hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"

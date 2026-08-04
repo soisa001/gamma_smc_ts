@@ -158,13 +158,31 @@ shared chromosome axis. Partial chromosome scopes receive the corresponding
 downward triangles mark values clipped at that ceiling. It labels every merged
 ranked hit with its nearest protein-coding gene.
 
+The report keeps the analytical and presentation layers separate:
+
+- `raw_scan_windows.tsv.gz` contains every decoded output position for every
+  requested population and chromosome, including its chromosome and cumulative
+  genome coordinates. No locus merging is applied.
+- `candidate_loci.tsv` contains windows strictly above `--signal-fraction`,
+  merged as scan intervals only when the intervening gap is at most
+  `--merge-gap` (20 kb by default). This is the candidate-locus definition.
+- `plot_loci.tsv` starts from the top `--top-n` hard-call windows per population
+  and connects adjacent selected windows whose positions are separated by at
+  most `--plot-merge-gap` (1 Mb by default). This coarser merging is used only
+  to reduce duplicate gene labels in the detailed whole-genome figure; it does
+  not redefine candidate loci.
+- `report_data_layers.tsv` records the source file, selection rule, merge rule,
+  maximum gap, and purpose of all three layers. `all_candidate_regions.tsv` and
+  `gene_list.tsv` remain compatibility aliases for the candidate and labeled
+  plot-locus outputs, respectively.
+
 For this descriptive follow-up list, each population's top 100 hard-call scan
-windows are assigned to non-overlapping 1 Mb bins and consecutive hit bins are
-merged. `gene_list.tsv` has one row per merged hit, its peak and merged GRCh38
+windows are connected when adjacent selected positions are no more than 1 Mb
+apart. `gene_list.tsv` has one row per merged plot locus, its peak and GRCh38
 coordinates, the nearest protein-coding gene, and every protein-coding gene
 overlapping the hit or lying within 500 kb. These are positional candidates,
 not causal assignments or calibrated selection calls. `--top-n`,
-`--hit-bin-size`, `--gene-context-flank`, and `--gene-annotation-uri` override
+`--plot-merge-gap`, `--gene-context-flank`, and `--gene-annotation-uri` override
 those report settings. The command also prints the region count for every
 population and the total.
 
@@ -205,7 +223,7 @@ drawn for candidate regions.
 | candidate profile | peak +/-500,000 bp |
 | variant search | peak +/-100,000 bp |
 | minimum class size | 20 ref/ref and 20 matching-alt/matching-alt pairs |
-| ranked hit list | top 100 hard-call windows/population; consecutive 1 Mb bins merged |
+| plot-label loci | top 100 hard-call windows/population; adjacent positions with <=1 Mb gap connected |
 | ranked-hit gene context | protein-coding genes in merged hit +/-500,000 bp |
 | detail plot y ceiling | 5% |
 

@@ -429,7 +429,7 @@ def command_workbench_report(args):
         whole_genome=args.whole_genome,
         top_n=args.top_n,
         gene_annotation=args.gene_annotation,
-        hit_bin_size=args.hit_bin_size,
+        plot_merge_gap=args.plot_merge_gap,
         gene_context_flank=args.gene_context_flank,
         zoom_ymax=args.zoom_ymax,
         hit_label_min_fraction=args.hit_label_min_fraction,
@@ -992,7 +992,14 @@ def parser() -> argparse.ArgumentParser:
         "--gene-annotation",
         help="GRCh38 GENCODE GTF[.gz] used for ranked-hit gene labels",
     )
-    workbench_report.add_argument("--hit-bin-size", type=int, default=1_000_000)
+    workbench_report.add_argument(
+        "--plot-merge-gap",
+        "--hit-bin-size",
+        dest="plot_merge_gap",
+        type=int,
+        default=1_000_000,
+        help="maximum adjacent-window gap for plot labels only (default 1000000)",
+    )
     workbench_report.add_argument("--gene-context-flank", type=int, default=500_000)
     workbench_report.add_argument("--zoom-ymax", type=float, default=0.04)
     workbench_report.add_argument(

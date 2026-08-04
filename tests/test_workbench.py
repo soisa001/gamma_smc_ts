@@ -38,11 +38,11 @@ def test_zoom_plot_labels_only_peaks_above_two_percent_horizontally(
     )
     labels = pd.DataFrame(
         {
-            "population": ["AFR", "AFR"],
-            "chromosome": [1, 1],
-            "peak_genome_position_0based": [10_000, 20_000],
-            "peak_ranking_value": [0.019, 0.021],
-            "probable_gene": ["BELOW", "ABOVE"],
+            "population": ["AFR", "AFR", "AFR"],
+            "chromosome": [1, 1, 1],
+            "peak_genome_position_0based": [10_000, 20_000, 29_900],
+            "peak_ranking_value": [0.019, 0.021, 0.03],
+            "probable_gene": ["BELOW", "ABOVE", "RIGHT"],
         }
     )
     captured = []
@@ -69,9 +69,12 @@ def test_zoom_plot_labels_only_peaks_above_two_percent_horizontally(
     label = annotations["ABOVE"]
     assert label.get_rotation() == 0
     assert label.get_fontweight() == "bold"
-    assert label.get_fontsize() == pytest.approx(8.5)
+    assert label.get_fontsize() == pytest.approx(workbench.FIGURE_ANNOTATION_SIZE)
     assert label.get_ha() == "left"
-    assert label.get_position() == (6, 0)
+    assert label.get_position() == (8, 0)
+    right_label = annotations["RIGHT"]
+    assert right_label.get_ha() == "right"
+    assert right_label.get_position() == (-8, 0)
     assert axis.get_ylim() == pytest.approx((0.0, 0.04))
 
 
@@ -564,12 +567,26 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         "EUR": 22,
     }
     assert (output_dir / "all_candidate_regions.tsv").is_file()
+    candidate_loci = pd.read_csv(output_dir / "candidate_loci.tsv", sep="\t")
+    assert candidate_loci["candidate_merge_max_gap_bp"].eq(20_000).all()
+    assert candidate_loci["signal_fraction_strictly_greater_than"].eq(0.02).all()
+    raw_scan = pd.read_csv(output_dir / "raw_scan_windows.tsv.gz", sep="\t")
+    assert len(raw_scan) == 2 * 22 * 3
+    layers = pd.read_csv(output_dir / "report_data_layers.tsv", sep="\t")
+    assert layers.set_index("layer")["maximum_gap_bp"].to_dict()[
+        "candidate_loci"
+    ] == 20_000
+    assert layers.set_index("layer")["maximum_gap_bp"].to_dict()[
+        "plot_loci"
+    ] == 1_000_000
     assert (output_dir / "combined.whole_genome.gamma_smc.png").is_file()
     assert (output_dir / "combined.whole_genome.gamma_smc.zoom4pct.png").is_file()
     gene_list = pd.read_csv(output_dir / "gene_list.tsv", sep="\t")
+    plot_loci = pd.read_csv(output_dir / "plot_loci.tsv", sep="\t")
+    pd.testing.assert_frame_equal(gene_list, plot_loci)
     assert set(gene_list["probable_gene"]) == {"GENE1", "GENE2"}
     assert len(gene_list) == 4
-    assert gene_list["n_consecutive_1mb_bins"].eq(1).all()
+    assert gene_list["plot_merge_max_gap_bp"].eq(1_000_000).all()
     assert len(combined_calls) == 2
 
     reused = workbench.summarize_workbench_run(
@@ -602,7 +619,7 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     assert len(combined_calls) == 4
 
 
-def test_ranked_gene_list_merges_consecutive_one_megabase_bins(tmp_path):
+def test_ranked_gene_list_merges_top_windows_with_at_most_one_megabase_gap(tmp_path):
     annotation = tmp_path / "genes.gtf"
     annotation.write_text(
         "chr1\ttest\tgene\t1500001\t1600000\t.\t+\t.\t"
@@ -634,13 +651,14 @@ def test_ranked_gene_list_merges_consecutive_one_megabase_bins(tmp_path):
         called_column="frac_recent_4500",
         genes=genes,
         top_n=3,
-        hit_bin_size=1_000_000,
+        plot_merge_gap=1_000_000,
         context_flank=500_000,
     )
     assert len(hits) == 2
     first = hits.iloc[0]
-    assert first["merged_start_0based"] == 1_000_000
-    assert first["merged_end_0based_exclusive"] == 3_000_000
-    assert first["n_consecutive_1mb_bins"] == 2
+    assert first["merged_start_0based"] == 1_500_000
+    assert first["n_top_windows"] == 2
+    assert first["plot_merge_max_gap_bp"] == 1_000_000
+    assert first["maximum_joined_gap_bp"] == 600_000
     assert first["probable_gene"] == "GENE_A"
     assert hits.iloc[1]["probable_gene"] == "GENE_B"

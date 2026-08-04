@@ -54,7 +54,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "hardmask.hg38.v4.over99.bed" in output
     assert "gencode.v50.basic.annotation.gtf.gz" in output
     assert (
-        "bins=1000000 bp, gene_flank=+/-500000 bp, zoom_ymax=0.04, "
+        "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, zoom_ymax=0.04, "
         "label_min=0.02"
     ) in output
 
@@ -131,9 +131,12 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
     assert 'flock -n 9 || die "another Workbench runner' in runner
     assert "workbench-report" in runner
     assert '--gene-annotation "$local_gene_annotation"' in runner
-    assert '--hit-bin-size "$HIT_BIN_SIZE"' in runner
+    assert '--plot-merge-gap "$PLOT_MERGE_GAP"' in runner
     assert '--hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"' in runner
     assert 'gene_list.tsv' in (
+        repo / "python/gamma_smc_aou/workbench.py"
+    ).read_text()
+    assert 'raw_scan_windows.tsv.gz' in (
         repo / "python/gamma_smc_aou/workbench.py"
     ).read_text()
     assert 'gcloud storage rsync "$source_directory" "$remote_directory"' in runner
