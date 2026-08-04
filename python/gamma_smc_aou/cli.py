@@ -425,6 +425,7 @@ def command_workbench_report(args):
         output_dir=args.output_dir,
         threshold_years=args.threshold_years,
         signal_fraction=args.signal_fraction,
+        merge_gap=args.merge_gap,
         whole_genome=args.whole_genome,
         top_n=args.top_n,
         gene_annotation=args.gene_annotation,
@@ -939,7 +940,7 @@ def parser() -> argparse.ArgumentParser:
     workbench_validate.add_argument("--n-random-pairs", type=int, default=0)
     workbench_validate.add_argument("--pairs-seed", type=int, default=1729)
     workbench_validate.add_argument("--exclude-within", action="store_true")
-    workbench_validate.add_argument("--signal-fraction", type=float, default=0.05)
+    workbench_validate.add_argument("--signal-fraction", type=float, default=0.02)
     workbench_validate.add_argument("--merge-gap", type=int, default=20_000)
     workbench_validate.add_argument("--profile-half-width", type=int, default=500_000)
     workbench_validate.add_argument("--variant-half-width", type=int, default=100_000)
@@ -967,7 +968,7 @@ def parser() -> argparse.ArgumentParser:
     workbench_plot.add_argument("--threshold-years", type=float, default=4500)
     workbench_plot.add_argument("--whole-genome", action="store_true")
     workbench_plot.add_argument("--top-n", type=int, default=100)
-    workbench_plot.add_argument("--signal-fraction", type=float, default=0.05)
+    workbench_plot.add_argument("--signal-fraction", type=float, default=0.02)
     workbench_plot.set_defaults(func=command_workbench_plot)
 
     workbench_report = commands.add_parser(
@@ -983,7 +984,8 @@ def parser() -> argparse.ArgumentParser:
     )
     workbench_report.add_argument("--output-dir", required=True)
     workbench_report.add_argument("--threshold-years", type=float, default=4500)
-    workbench_report.add_argument("--signal-fraction", type=float, default=0.05)
+    workbench_report.add_argument("--signal-fraction", type=float, default=0.02)
+    workbench_report.add_argument("--merge-gap", type=int, default=20_000)
     workbench_report.add_argument("--whole-genome", action="store_true")
     workbench_report.add_argument("--top-n", type=int, default=100)
     workbench_report.add_argument(
@@ -1003,7 +1005,7 @@ def parser() -> argparse.ArgumentParser:
 
     workbench_regions = commands.add_parser(
         "workbench-regions",
-        help="merge >5%% recent-coalescence windows and select +/-500 kb positions",
+        help="merge strict-threshold recent-coalescence windows and select positions",
     )
     workbench_regions.add_argument("--population", type=str.upper, required=True)
     workbench_regions.add_argument(
@@ -1014,7 +1016,7 @@ def parser() -> argparse.ArgumentParser:
     workbench_regions.add_argument("--output", required=True)
     workbench_regions.add_argument("--positions-output", required=True)
     workbench_regions.add_argument("--threshold-years", type=float, default=4500)
-    workbench_regions.add_argument("--minimum-fraction", type=float, default=0.05)
+    workbench_regions.add_argument("--minimum-fraction", type=float, default=0.02)
     workbench_regions.add_argument("--merge-gap", type=int, default=20_000)
     workbench_regions.add_argument(
         "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
@@ -1046,7 +1048,7 @@ def parser() -> argparse.ArgumentParser:
     workbench_candidates.add_argument("--profile-half-width", type=int, default=500_000)
     workbench_candidates.add_argument("--variant-half-width", type=int, default=100_000)
     workbench_candidates.add_argument("--minimum-genotype-pairs", type=int, default=20)
-    workbench_candidates.add_argument("--minimum-fraction", type=float, default=0.05)
+    workbench_candidates.add_argument("--minimum-fraction", type=float, default=0.02)
     workbench_candidates.add_argument("--merge-gap", type=int, default=20_000)
     workbench_candidates.set_defaults(func=command_workbench_candidates)
 

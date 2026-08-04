@@ -33,7 +33,21 @@ RELATEDNESS_ID_COLUMNS = (
     "person_id",
 )
 PLOT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-population-plots/v2"
-REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v2"
+REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v3"
+
+CANDIDATE_REGION_COLUMNS = [
+    "population",
+    "chromosome",
+    "region_id",
+    "start_0based",
+    "end_0based_exclusive",
+    "n_signal_windows",
+    "peak_position_0based",
+    "peak_position_1based",
+    "peak_fraction_recent",
+    "peak_mean_tmrca_generations",
+    "peak_mean_p_tmrca_lt_threshold",
+]
 RANKED_GENE_LIST_COLUMNS = [
     "population",
     "hit_id",
@@ -516,7 +530,7 @@ def build_workbench_contract(
     n_random_pairs: int = 0,
     pairs_seed: int = 1729,
     exclude_within: bool = False,
-    signal_fraction: float = 0.05,
+    signal_fraction: float = 0.02,
     merge_gap: int = 20_000,
     profile_half_width: int = 500_000,
     variant_half_width: int = 100_000,
@@ -1356,12 +1370,84 @@ def _plot_chromosome(
     plt.close(figure)
 
 
-def _sequence_span(frame: pd.DataFrame) -> float:
+def _summary_stride(frame: pd.DataFrame) -> int:
     positions = frame["position_0based"].to_numpy(dtype=float)
     differences = np.diff(positions)
     positive = differences[differences > 0]
-    step = float(np.median(positive)) if len(positive) else 1.0
-    return float(positions.max()) + max(1.0, step)
+    return max(1, int(round(float(np.median(positive))))) if len(positive) else 1
+
+
+def _sequence_span(frame: pd.DataFrame) -> float:
+    positions = frame["position_0based"].to_numpy(dtype=float)
+    return float(positions.max()) + _summary_stride(frame)
+
+
+def candidate_regions_from_summary(
+    frame: pd.DataFrame,
+    *,
+    population: str,
+    chromosome: int,
+    sequence_length: int,
+    threshold_years: float = 4500,
+    minimum_fraction: float = 0.02,
+    merge_gap: int = 20_000,
+    stride: int | None = None,
+) -> pd.DataFrame:
+    """Derive merged strict-threshold regions from a validated scan summary."""
+    if not 0 <= minimum_fraction <= 1:
+        raise ValueError("minimum fraction must be in [0, 1]")
+    if sequence_length < 1 or merge_gap < 0:
+        raise ValueError("sequence length must be positive and merge gap nonnegative")
+    stride = _summary_stride(frame) if stride is None else int(stride)
+    if stride < 1:
+        raise ValueError("stride must be positive")
+
+    called_column = called_fraction_column(threshold_years)
+    signal = frame.loc[frame[called_column].astype(float).gt(minimum_fraction)].copy()
+    groups: list[list[int]] = []
+    current: list[int] = []
+    current_end = -1
+    for index, row in signal.sort_values("position_0based").iterrows():
+        start = int(row["position_0based"])
+        end = min(sequence_length, start + stride)
+        if current and start > current_end + merge_gap:
+            groups.append(current)
+            current = []
+        current.append(int(index))
+        current_end = max(current_end, end)
+    if current:
+        groups.append(current)
+
+    rows = []
+    for region_number, indices in enumerate(groups, 1):
+        subset = frame.loc[indices].copy().sort_values(
+            [called_column, "mean_tmrca_generations", "position_0based"],
+            ascending=[False, True, True],
+        )
+        peak = subset.iloc[0]
+        positions = frame.loc[indices, "position_0based"].astype(int)
+        rows.append(
+            {
+                "population": population.upper(),
+                "chromosome": int(chromosome),
+                "region_id": f"chr{chromosome}_{region_number:04d}",
+                "start_0based": int(positions.min()),
+                "end_0based_exclusive": int(
+                    min(sequence_length, positions.max() + stride)
+                ),
+                "n_signal_windows": int(len(indices)),
+                "peak_position_0based": int(peak["position_0based"]),
+                "peak_position_1based": int(peak["position_1based"]),
+                "peak_fraction_recent": float(peak[called_column]),
+                "peak_mean_tmrca_generations": float(
+                    peak["mean_tmrca_generations"]
+                ),
+                "peak_mean_p_tmrca_lt_threshold": float(
+                    peak["mean_p_tmrca_lt_threshold"]
+                ),
+            }
+        )
+    return pd.DataFrame(rows, columns=CANDIDATE_REGION_COLUMNS)
 
 
 def _assemble_genome(
@@ -1539,7 +1625,7 @@ def plot_workbench_population(
     threshold_years: float = 4500,
     whole_genome: bool = False,
     top_n: int = 100,
-    signal_fraction: float = 0.05,
+    signal_fraction: float = 0.02,
 ) -> dict:
     population = population.upper()
     if population not in POPULATIONS:
@@ -2053,7 +2139,8 @@ def summarize_workbench_run(
     chromosomes: list[int] | tuple[int, ...],
     output_dir: str | Path,
     threshold_years: float = 4500,
-    signal_fraction: float = 0.05,
+    signal_fraction: float = 0.02,
+    merge_gap: int = 20_000,
     whole_genome: bool = False,
     top_n: int = 100,
     gene_annotation: str | Path | None = None,
@@ -2078,7 +2165,7 @@ def summarize_workbench_run(
         raise ValueError("whole-genome report requires all autosomes 1-22")
     if not 0 <= signal_fraction <= 1:
         raise ValueError("signal_fraction must be in [0, 1]")
-    if top_n < 1 or hit_bin_size < 1 or gene_context_flank < 0:
+    if top_n < 1 or hit_bin_size < 1 or gene_context_flank < 0 or merge_gap < 0:
         raise ValueError("top_n/bin size must be positive and gene flank nonnegative")
     if not 0 < zoom_ymax <= 1:
         raise ValueError("zoom_ymax must be in (0, 1]")
@@ -2098,29 +2185,24 @@ def summarize_workbench_run(
 
     input_records = []
     summary_paths: dict[str, dict[int, Path]] = {}
-    region_paths: dict[str, dict[int, Path]] = {}
     for population in populations:
         summary_paths[population] = {}
-        region_paths[population] = {}
         for chromosome in chromosomes:
             root = results_root / population / "chromosomes"
             summary = root / f"chr{chromosome}.gamma_smc.tsv"
-            regions = root / f"chr{chromosome}.candidate_regions.tsv"
-            for kind, path in (("summary", summary), ("regions", regions)):
-                if not path.is_file():
-                    raise ValueError(f"{kind} input is absent: {path}")
-                input_records.append(
-                    {
-                        "population": population,
-                        "chromosome": chromosome,
-                        "kind": kind,
-                        "path": str(path.resolve()),
-                        "size_bytes": path.stat().st_size,
-                        "sha256": sha256_file(path),
-                    }
-                )
+            if not summary.is_file():
+                raise ValueError(f"summary input is absent: {summary}")
+            input_records.append(
+                {
+                    "population": population,
+                    "chromosome": chromosome,
+                    "kind": "summary",
+                    "path": str(summary.resolve()),
+                    "size_bytes": summary.stat().st_size,
+                    "sha256": sha256_file(summary),
+                }
+            )
             summary_paths[population][chromosome] = summary
-            region_paths[population][chromosome] = regions
 
     called_column = called_fraction_column(threshold_years)
     contract = {
@@ -2129,6 +2211,7 @@ def summarize_workbench_run(
         "threshold_years": float(threshold_years),
         "called_fraction_column": called_column,
         "signal_fraction": float(signal_fraction),
+        "merge_gap": int(merge_gap),
         "whole_genome": bool(whole_genome),
         "top_n": int(top_n),
         "gene_annotation": gene_annotation_record,
@@ -2146,16 +2229,6 @@ def summarize_workbench_run(
     if reused is not None:
         return reused
 
-    required_region_columns = {
-        "population",
-        "chromosome",
-        "region_id",
-        "start_0based",
-        "end_0based_exclusive",
-        "n_signal_windows",
-        "peak_position_1based",
-        "peak_fraction_recent",
-    }
     frames_by_population: dict[str, dict[int, pd.DataFrame]] = {}
     region_frames = []
     population_rows = []
@@ -2168,22 +2241,15 @@ def summarize_workbench_run(
                 threshold_years=threshold_years,
             )
             frames_by_population[population][chromosome] = summary
-            regions = pd.read_csv(region_paths[population][chromosome], sep="\t")
-            missing = required_region_columns.difference(regions.columns)
-            if missing:
-                raise ValueError(
-                    f"candidate-region table is missing columns {sorted(missing)}: "
-                    f"{region_paths[population][chromosome]}"
-                )
-            if not regions.empty:
-                if set(regions["population"].astype(str).str.upper()) != {population}:
-                    raise ValueError(
-                        "candidate-region population does not match its directory"
-                    )
-                if set(regions["chromosome"].astype(int)) != {chromosome}:
-                    raise ValueError(
-                        "candidate-region chromosome does not match its filename"
-                    )
+            regions = candidate_regions_from_summary(
+                summary,
+                population=population,
+                chromosome=chromosome,
+                sequence_length=int(_sequence_span(summary)),
+                threshold_years=threshold_years,
+                minimum_fraction=signal_fraction,
+                merge_gap=merge_gap,
+            )
             population_regions.append(regions)
             region_frames.append(regions)
         combined_regions = pd.concat(population_regions, ignore_index=True)
@@ -2290,6 +2356,7 @@ def summarize_workbench_run(
         "whole_genome_complete": bool(whole_genome),
         "threshold_years": float(threshold_years),
         "signal_fraction": float(signal_fraction),
+        "merge_gap": int(merge_gap),
         "population_region_counts": counts,
         "total_regions": int(len(all_regions)),
         "ranked_gene_hits": int(len(gene_list)),

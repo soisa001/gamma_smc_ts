@@ -119,7 +119,8 @@ For each chromosome, the output directory receives:
   position and manifest pair;
 - `chrN.samples.txt`: BCF-ordered, ancestry/QC/relatedness-filtered sample IDs;
 - `chrN.samples.audit.json`: columns, source hashes, and all filter counts;
-- `chrN.candidate_regions.tsv`: windows with `frac_recent_4500 > 0.05`, merged
+- `chrN.candidate_regions.tsv`: windows with `frac_recent_4500 > 0.02` by
+  default (configurable with `--signal-fraction`), merged
   when the intervening gap is no more than 20 kb;
 - `chrN.candidates/`: candidate TMRCA profiles, all-variant score tables,
   representative variants, PNG/PDF plots, and a deterministic artifact
@@ -148,7 +149,8 @@ After the population plots, the runner writes a scope-level report under
 `results/summary/{scope}` locally and in GCS. `regions_by_population.tsv` gives
 the number of merged candidate regions, chromosomes with regions, signal
 windows, covered bases, and strongest peak for each requested population.
-`all_candidate_regions.tsv` concatenates the literal region tables, and
+`all_candidate_regions.tsv` is recomputed directly from the chromosome scan
+summaries at the requested `--signal-fraction`, and
 `combined.whole_genome.gamma_smc.{png,pdf}` stacks the population scans on one
 shared chromosome axis. Partial chromosome scopes receive the corresponding
 `combined.requested_chromosomes` figure. A second
@@ -198,7 +200,7 @@ drawn for candidate regions.
 | generation time | 25 years |
 | pair mode | 100,000 distinct unordered haplotype pairs per population |
 | pair seed | `1729` |
-| signal screen | `frac_recent_4500 > 0.05` |
+| signal screen | `frac_recent_4500 > 0.02` (configurable) |
 | signal merge gap | 20,000 bp |
 | candidate profile | peak +/-500,000 bp |
 | variant search | peak +/-100,000 bp |

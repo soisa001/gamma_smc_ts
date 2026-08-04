@@ -16,26 +16,16 @@ import zstandard
 from scipy.stats import t
 
 from .workbench import (
+    CANDIDATE_REGION_COLUMNS,
     POPULATIONS,
+    candidate_regions_from_summary,
     called_fraction_column,
     sha256_file,
     validate_summary,
 )
 
 
-REGION_COLUMNS = [
-    "population",
-    "chromosome",
-    "region_id",
-    "start_0based",
-    "end_0based_exclusive",
-    "n_signal_windows",
-    "peak_position_0based",
-    "peak_position_1based",
-    "peak_fraction_recent",
-    "peak_mean_tmrca_generations",
-    "peak_mean_p_tmrca_lt_threshold",
-]
+REGION_COLUMNS = CANDIDATE_REGION_COLUMNS
 
 VARIANT_COLUMNS = [
     "population",
@@ -121,7 +111,7 @@ def build_candidate_regions(
     output_path: str | Path,
     positions_path: str | Path,
     threshold_years: float = 4500,
-    minimum_fraction: float = 0.05,
+    minimum_fraction: float = 0.02,
     merge_gap: int = 20_000,
     stride: int = 10_000,
     profile_half_width: int = 500_000,
@@ -138,53 +128,16 @@ def build_candidate_regions(
         raise ValueError("gap/profile widths must be nonnegative and stride positive")
 
     frame, _ = validate_summary(summary_path, threshold_years=threshold_years)
-    called_column = called_fraction_column(threshold_years)
-    signal = frame.loc[frame[called_column].astype(float).gt(minimum_fraction)].copy()
-    rows: list[dict] = []
-    if not signal.empty:
-        groups: list[list[int]] = []
-        current: list[int] = []
-        current_end = -1
-        for index, row in signal.sort_values("position_0based").iterrows():
-            start = int(row["position_0based"])
-            end = min(sequence_length, start + stride)
-            if current and start > current_end + merge_gap:
-                groups.append(current)
-                current = []
-            current.append(int(index))
-            current_end = max(current_end, end)
-        if current:
-            groups.append(current)
-
-        for region_number, indices in enumerate(groups, 1):
-            subset = frame.loc[indices].copy()
-            subset = subset.sort_values(
-                [called_column, "mean_tmrca_generations", "position_0based"],
-                ascending=[False, True, True],
-            )
-            peak = subset.iloc[0]
-            region_positions = frame.loc[indices, "position_0based"].astype(int)
-            rows.append({
-                "population": population,
-                "chromosome": int(chromosome),
-                "region_id": f"chr{chromosome}_{region_number:04d}",
-                "start_0based": int(region_positions.min()),
-                "end_0based_exclusive": int(
-                    min(sequence_length, region_positions.max() + stride)
-                ),
-                "n_signal_windows": int(len(indices)),
-                "peak_position_0based": int(peak["position_0based"]),
-                "peak_position_1based": int(peak["position_1based"]),
-                "peak_fraction_recent": float(peak[called_column]),
-                "peak_mean_tmrca_generations": float(
-                    peak["mean_tmrca_generations"]
-                ),
-                "peak_mean_p_tmrca_lt_threshold": float(
-                    peak["mean_p_tmrca_lt_threshold"]
-                ),
-            })
-
-    regions = pd.DataFrame(rows, columns=REGION_COLUMNS)
+    regions = candidate_regions_from_summary(
+        frame,
+        population=population,
+        chromosome=chromosome,
+        sequence_length=sequence_length,
+        threshold_years=threshold_years,
+        minimum_fraction=minimum_fraction,
+        merge_gap=merge_gap,
+        stride=stride,
+    )
     _atomic_frame(output_path, regions)
     requested: set[int] = set()
     for row in regions.itertuples(index=False):
@@ -739,7 +692,7 @@ def analyze_candidate_regions(
     profile_half_width: int = 500_000,
     variant_half_width: int = 100_000,
     minimum_genotype_pairs: int = 20,
-    minimum_fraction: float = 0.05,
+    minimum_fraction: float = 0.02,
     merge_gap: int = 20_000,
 ) -> dict:
     population = population.upper()

@@ -513,47 +513,12 @@ def test_whole_genome_plot_refuses_partial_autosomes(tmp_path):
 
 def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeypatch):
     results_root = tmp_path / "results"
-    region_columns = [
-        "population",
-        "chromosome",
-        "region_id",
-        "start_0based",
-        "end_0based_exclusive",
-        "n_signal_windows",
-        "peak_position_0based",
-        "peak_position_1based",
-        "peak_fraction_recent",
-        "peak_mean_tmrca_generations",
-        "peak_mean_p_tmrca_lt_threshold",
-    ]
     for population in ("AFR", "EUR"):
         chromosome_root = results_root / population / "chromosomes"
         chromosome_root.mkdir(parents=True)
         for chromosome in workbench.AUTOSOMES:
             _write_summary(
                 chromosome_root / f"chr{chromosome}.gamma_smc.tsv", chromosome
-            )
-            rows = []
-            if (population, chromosome) in {("AFR", 1), ("EUR", 2)}:
-                rows.append(
-                    {
-                        "population": population,
-                        "chromosome": chromosome,
-                        "region_id": f"chr{chromosome}_0001",
-                        "start_0based": 10_000,
-                        "end_0based_exclusive": 30_000,
-                        "n_signal_windows": 2,
-                        "peak_position_0based": 20_000,
-                        "peak_position_1based": 20_001,
-                        "peak_fraction_recent": 0.08,
-                        "peak_mean_tmrca_generations": 100.0,
-                        "peak_mean_p_tmrca_lt_threshold": 0.06,
-                    }
-                )
-            pd.DataFrame(rows, columns=region_columns).to_csv(
-                chromosome_root / f"chr{chromosome}.candidate_regions.tsv",
-                sep="\t",
-                index=False,
             )
 
     gene_annotation = tmp_path / "gencode.test.gtf"
@@ -590,12 +555,13 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         top_n=2,
         gene_annotation=gene_annotation,
     )
-    assert result["population_region_counts"] == {"AFR": 1, "EUR": 1}
-    assert result["total_regions"] == 2
+    assert result["signal_fraction"] == pytest.approx(0.02)
+    assert result["population_region_counts"] == {"AFR": 22, "EUR": 22}
+    assert result["total_regions"] == 44
     summary = pd.read_csv(output_dir / "regions_by_population.tsv", sep="\t")
     assert summary.set_index("population")["regions_found"].to_dict() == {
-        "AFR": 1,
-        "EUR": 1,
+        "AFR": 22,
+        "EUR": 22,
     }
     assert (output_dir / "all_candidate_regions.tsv").is_file()
     assert (output_dir / "combined.whole_genome.gamma_smc.png").is_file()
@@ -617,6 +583,23 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     )
     assert reused["reused"] is True
     assert len(combined_calls) == 2
+
+    changed_threshold = workbench.summarize_workbench_run(
+        results_root,
+        populations=["AFR", "EUR"],
+        chromosomes=list(workbench.AUTOSOMES),
+        output_dir=output_dir,
+        whole_genome=True,
+        top_n=2,
+        gene_annotation=gene_annotation,
+        signal_fraction=0.3,
+    )
+    assert changed_threshold["reused"] is False
+    assert changed_threshold["signal_fraction"] == pytest.approx(0.3)
+    recomputed = pd.read_csv(output_dir / "all_candidate_regions.tsv", sep="\t")
+    assert len(recomputed) == 44
+    assert recomputed["n_signal_windows"].eq(1).all()
+    assert len(combined_calls) == 4
 
 
 def test_ranked_gene_list_merges_consecutive_one_megabase_bins(tmp_path):

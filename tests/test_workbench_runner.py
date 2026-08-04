@@ -46,7 +46,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "recent_call=mean" in output
     assert "stride=10000 bp, cache=1000 bp" in output
     assert "100000 random haplotype pairs/pop, seed=1729, exclude_within=0" in output
-    assert "candidates: fraction>0.05, merge_gap=20000 bp" in output
+    assert "candidates: fraction>0.02, merge_gap=20000 bp" in output
     assert "aou_lr_phase2_v1.chr1.bubble.split.bcf" in output
     assert "ancestry_preds.tsv (column ancestry_pred_other)" in output
     assert "flagged_samples.tsv" in output

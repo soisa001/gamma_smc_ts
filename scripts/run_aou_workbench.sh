@@ -37,7 +37,7 @@ PAIR_BLOCK="${AOU_GAMMA_PAIR_BLOCK:-256}"
 N_RANDOM_PAIRS="${AOU_GAMMA_N_RANDOM_PAIRS:-100000}"
 PAIRS_SEED="${AOU_GAMMA_PAIRS_SEED:-1729}"
 EXCLUDE_WITHIN=0
-SIGNAL_FRACTION="${AOU_GAMMA_SIGNAL_FRACTION:-0.05}"
+SIGNAL_FRACTION="${AOU_GAMMA_SIGNAL_FRACTION:-0.02}"
 MERGE_GAP="${AOU_GAMMA_MERGE_GAP:-20000}"
 PROFILE_HALF_WIDTH="${AOU_GAMMA_PROFILE_HALF_WIDTH:-500000}"
 VARIANT_HALF_WIDTH="${AOU_GAMMA_VARIANT_HALF_WIDTH:-100000}"
@@ -105,7 +105,7 @@ Decoder parameters:
                             Label ranked peaks strictly above X; default: 0.02
 
 Candidate analysis:
-  --signal-fraction X       Strict screen threshold; default: 0.05
+  --signal-fraction X       Strict screen threshold; default: 0.02
   --merge-gap N             Merge signal-window gaps up to 20000 bp
   --profile-half-width N    Pair-TMRCA profile +/-500000 bp around each peak
   --variant-half-width N    Rank variants +/-100000 bp around each peak
@@ -1086,6 +1086,7 @@ report_args=(
     --output-dir "$report_dir"
     --threshold-years "$THRESHOLD_YEARS"
     --signal-fraction "$SIGNAL_FRACTION"
+    --merge-gap "$MERGE_GAP"
     --top-n "$TOP_N"
     --gene-annotation "$local_gene_annotation"
     --hit-bin-size "$HIT_BIN_SIZE"
