@@ -93,6 +93,7 @@ The complete default controlled-input and output layout is:
 | QC exclusions | `gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/qc/flagged_samples.tsv` |
 | Relatedness exclusions | `gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/relatedness/relatedness_flagged_samples.tsv` |
 | Exclusion hard mask | `gs://rw-migration-aou-rw-fa99430f/hardmask.hg38.v4.over99.bed` |
+| HMMIX strict callable mask | `<WORKSPACE_BUCKET>/hmmix-static/hg38_strick_callability_mask.bed` |
 | Staging/results root | `/home/jupyter/gamma_smc_workbench` |
 | Chromosome outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/chromosomes/` |
 | Plot outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/plots/{scope}/` |
@@ -110,6 +111,21 @@ intervals, writes their exact complement using the BCF contig name, and audits
 excluded and callable bases. Passing the raw hard mask directly would invert
 the intended filter.
 
+The default remains this complemented `hardmask.hg38` analysis under
+`/home/jupyter/gamma_smc_workbench` and `gamma_smc/results`. Two mask-mode flags
+provide isolated sensitivity analyses:
+
+- `--strict-hardmask` uses the positive HMMIX hg38 strict callable BED without
+  complementing it. Local work goes under
+  `/home/jupyter/gamma_smc_workbench_strict_hardmask`, and cloud results go
+  under `gamma_smc/results_strict_hardmask`.
+- `--both-hardmask` runs the default analysis first and the strict analysis
+  second, each in the corresponding namespace. It means two separate runs,
+  not an intersection of the masks.
+
+If `--local-root` or `--output-prefix` is overridden, strict mode appends
+`_strict_hardmask` to that supplied base so the caches cannot collide.
+
 For each chromosome, the output directory receives:
 
 - `chrN.gamma_smc.tsv`: aggregate Gamma-SMC scan;
@@ -126,8 +142,9 @@ For each chromosome, the output directory receives:
   representative variants, PNG/PDF plots, and a deterministic artifact
   manifest;
 - `chrN.decode.log`: wall-time and peak-memory log;
-- `chrN.complete.json`: input fingerprints, code commit, exact settings, and
-  SHA-256 hashes for required outputs, sample list/audit, and callable mask.
+- `chrN.complete.json`: input fingerprints, provenance commit, exact settings,
+  and SHA-256 hashes for required outputs, sample list/audit, pair manifest, and
+  callable mask.
 
 Completed chromosome trees are uploaded with checksum-based `gcloud storage
 rsync`, so reruns scan but do not recopy unchanged objects. Candidate artifacts
@@ -135,6 +152,14 @@ retain their chromosome-qualified `chrN.candidates/` directory. The runner does
 not delete unmatched remote objects, and it synchronizes `chrN.complete.json`
 only after the chromosome payload succeeds. Plot and combined-report manifests
 use the same commit-marker-last rule.
+
+Decode cache compatibility deliberately excludes the raw Git commit. It is
+based on the semantic input/settings contract and is then verified against the
+exact SHA-256 hashes of the BCF-ordered sample list and pair manifest plus every
+required output. Consequently, a plot-only commit reuses legacy chromosome
+completions, while a changed cohort, pair draw, input, mask, or decoder setting
+does not. The runner also performs one locked uv synchronization up front and
+uses `uv run --no-sync` for its per-chromosome subcommands.
 
 Each population gets chromosome PNG/PDF scans, a chromosome summary table, and
 a plot manifest. `-chr all` additionally requires all autosomes to validate
@@ -154,9 +179,9 @@ summaries at the requested `--signal-fraction`, and
 `combined.whole_genome.gamma_smc.{png,pdf}` stacks the population scans on one
 shared chromosome axis. Partial chromosome scopes receive the corresponding
 `combined.requested_chromosomes` figure. A second
-`combined.{scope}.gamma_smc.zoom5pct.{png,pdf}` view fixes the y axis at 5%;
-downward triangles mark values clipped at that ceiling. It labels every merged
-ranked hit with its nearest protein-coding gene.
+`combined.{scope}.gamma_smc.zoom4pct.{png,pdf}` view fixes the y axis at 4%;
+downward triangles mark values clipped at that ceiling. It labels merged ranked
+hits strictly above 2% with their nearest protein-coding gene.
 
 The report keeps the analytical and presentation layers separate:
 
@@ -225,7 +250,8 @@ drawn for candidate regions.
 | minimum class size | 20 ref/ref and 20 matching-alt/matching-alt pairs |
 | plot-label loci | top 100 hard-call windows/population; adjacent positions with <=1 Mb gap connected |
 | ranked-hit gene context | protein-coding genes in merged hit +/-500,000 bp |
-| detail plot y ceiling | 5% |
+| detail plot y ceiling | 4% |
+| gene-label threshold | strictly above 2% |
 
 The 1 kb cache is retained because increasing it has linear cache-memory cost
 without a demonstrated 10 kb-stride speed benefit. Its steady shared cache is
@@ -247,6 +273,19 @@ bash scripts/run_aou_workbench.sh -chr 1 -pops AFR \
   --ancestry-uri gs://my-bucket/ancestry_preds.tsv \
   --qc-exclusions-uri gs://my-bucket/flagged_samples.tsv \
   --relatedness-exclusions-uri gs://my-bucket/relatedness_flagged_samples.tsv
+```
+
+Mask sensitivity examples:
+
+```bash
+# Existing/default hardmask only
+bash scripts/run_aou_workbench.sh -chr all -pops all
+
+# HMMIX strict callable mask only, in *_strict_hardmask roots
+bash scripts/run_aou_workbench.sh -chr all -pops all --strict-hardmask
+
+# Default followed by strict; the completed default run is reused
+bash scripts/run_aou_workbench.sh -chr all -pops all --both-hardmask
 ```
 
 Equivalent `AOU_GAMMA_*` environment variables are documented by

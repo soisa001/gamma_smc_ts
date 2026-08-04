@@ -308,6 +308,7 @@ def _workbench_contract_from_args(args) -> dict:
         local_mask_source=args.local_mask_source,
         local_mask=args.local_mask,
         mask_audit=args.mask_audit,
+        mask_source_semantics=args.mask_source_semantics,
         theta=args.theta,
         rho_over_theta=args.rho_over_theta,
         mutation_rate=args.mutation_rate,
@@ -344,6 +345,7 @@ def command_workbench_samples(args):
         population=args.population,
         output_path=args.output,
         audit_path=args.audit_output,
+        source_semantics=args.source_semantics,
     )
     print(
         f"selected {audit['counts']['selected_samples']} {audit['population']} samples "
@@ -863,13 +865,18 @@ def parser() -> argparse.ArgumentParser:
 
     workbench_mask = commands.add_parser(
         "workbench-mask",
-        help="complement an exclusion hard mask into Gamma-SMC callable intervals",
+        help="normalize an exclusion or callable BED into Gamma-SMC callable intervals",
     )
     workbench_mask.add_argument("--hardmask", required=True)
     workbench_mask.add_argument("--contig", required=True)
     workbench_mask.add_argument("--sequence-length", type=int, required=True)
     workbench_mask.add_argument("--output", required=True)
     workbench_mask.add_argument("--audit-output", required=True)
+    workbench_mask.add_argument(
+        "--source-semantics",
+        choices=["excluded_intervals", "included_intervals"],
+        default="excluded_intervals",
+    )
     workbench_mask.set_defaults(func=command_workbench_mask)
 
     workbench_validate = commands.add_parser(
@@ -911,6 +918,10 @@ def parser() -> argparse.ArgumentParser:
     workbench_validate.add_argument("--local-mask-source")
     workbench_validate.add_argument("--local-mask")
     workbench_validate.add_argument("--mask-audit")
+    workbench_validate.add_argument(
+        "--mask-source-semantics",
+        choices=["excluded_intervals", "included_intervals"],
+    )
     workbench_validate.add_argument(
         "--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE
     )

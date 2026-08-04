@@ -7,6 +7,7 @@ set -Eeuo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AOU="$REPO/scripts/aou.sh"
+ORIGINAL_ARGS=("$@")
 
 ALL_POPS=(AFR AMR EAS EUR MID SAS)
 ALL_CHROMOSOMES=({1..22})
@@ -55,6 +56,8 @@ KEEP_INPUTS=0
 FORCE=0
 DRY_RUN=0
 ALLOW_DIRTY=0
+MASK_MODE="default"
+MASK_SOURCE_SEMANTICS="excluded_intervals"
 
 usage() {
     cat <<'EOF'
@@ -76,6 +79,10 @@ Cloud and local paths:
   --index-template TEMPLATE Default: {bcf}.csi
   --mask-template TEMPLATE  Default: gs://rw-migration-aou-rw-fa99430f/
                             hardmask.hg38.v4.over99.bed
+  --strict-hardmask         Use the positive HMMIX hg38 strict callable BED and
+                            the separate *_strict_hardmask local/cloud roots.
+  --both-hardmask           Run the default hardmask analysis, then the strict
+                            callable-mask analysis in its separate roots.
   --ancestry-uri URI        Default: v9 ancestry_preds.tsv
   --qc-exclusions-uri URI   Default: v9 QC flagged_samples.tsv
   --relatedness-exclusions-uri URI
@@ -184,6 +191,16 @@ while [[ $# -gt 0 ]]; do
         --gene-context-flank) need_value "$@"; GENE_CONTEXT_FLANK="$2"; shift 2 ;;
         --zoom-ymax) need_value "$@"; ZOOM_YMAX="$2"; shift 2 ;;
         --hit-label-min-fraction) need_value "$@"; HIT_LABEL_MIN_FRACTION="$2"; shift 2 ;;
+        --strict-hardmask)
+            [[ "$MASK_MODE" == "default" ]] || die "choose only one hardmask mode"
+            MASK_MODE="strict"
+            shift
+            ;;
+        --both-hardmask)
+            [[ "$MASK_MODE" == "default" ]] || die "choose only one hardmask mode"
+            MASK_MODE="both"
+            shift
+            ;;
         --no-mask) MASK_ENABLED=0; shift ;;
         --force) FORCE=1; shift ;;
         --keep-inputs) KEEP_INPUTS=1; shift ;;
@@ -197,6 +214,22 @@ done
 
 [[ -n "$CHR_SPEC" ]] || die "-chr is required (use an autosome or all)"
 [[ -n "$POPS_SPEC" ]] || die "-pops is required (use a population or all)"
+if [[ "$MASK_MODE" != "default" && "$MASK_ENABLED" -eq 0 ]]; then
+    die "hardmask mode flags cannot be combined with --no-mask"
+fi
+
+if [[ "$MASK_MODE" == "both" ]]; then
+    child_args=()
+    for argument in "${ORIGINAL_ARGS[@]}"; do
+        [[ "$argument" == "--both-hardmask" ]] || child_args+=("$argument")
+    done
+    echo ">> default hardmask analysis"
+    "$0" "${child_args[@]}"
+    echo
+    echo ">> strict HMMIX callable-mask analysis"
+    "$0" "${child_args[@]}" --strict-hardmask
+    exit 0
+fi
 
 WORKSPACE_BUCKET_VALUE="${WORKSPACE_BUCKET:-gs://rw-migration-aou-rw-fa99430f}"
 if [[ -z "$OUTPUT_PREFIX" && -n "$WORKSPACE_BUCKET_VALUE" ]]; then
@@ -215,8 +248,18 @@ OUTPUT_PREFIX="${OUTPUT_PREFIX%/}"
 [[ -n "$BCF_TEMPLATE" ]] || \
     BCF_TEMPLATE='gs://rw-long-reads-transfer-2026-06-17/v9/lrWGS/panel/panel/panel_bubble_split_vcf/aou_lr_phase2_v1.chr{chr}.bubble.split.bcf'
 [[ -n "$INDEX_TEMPLATE" ]] || INDEX_TEMPLATE='{bcf}.csi'
-[[ -n "$MASK_TEMPLATE" ]] || \
-    MASK_TEMPLATE='gs://rw-migration-aou-rw-fa99430f/hardmask.hg38.v4.over99.bed'
+if [[ "$MASK_MODE" == "strict" ]]; then
+    MASK_SOURCE_SEMANTICS="included_intervals"
+    [[ -n "$MASK_TEMPLATE" ]] || \
+        MASK_TEMPLATE="${WORKSPACE_BUCKET_VALUE%/}/hmmix-static/hg38_strick_callability_mask.bed"
+    [[ "$LOCAL_ROOT" == *_strict_hardmask ]] || \
+        LOCAL_ROOT="${LOCAL_ROOT%/}_strict_hardmask"
+    [[ "$OUTPUT_PREFIX" == *_strict_hardmask ]] || \
+        OUTPUT_PREFIX="${OUTPUT_PREFIX%/}_strict_hardmask"
+else
+    [[ -n "$MASK_TEMPLATE" ]] || \
+        MASK_TEMPLATE='gs://rw-migration-aou-rw-fa99430f/hardmask.hg38.v4.over99.bed'
+fi
 for source_uri in "$ANCESTRY_URI" "$QC_EXCLUSIONS_URI" \
     "$RELATEDNESS_EXCLUSIONS_URI"; do
     [[ "$source_uri" == gs://* ]] || die "controlled input must be a gs:// URI: $source_uri"
@@ -297,6 +340,7 @@ print_plan() {
     echo "Gamma-SMC Workbench plan"
     echo "  populations: ${POPULATIONS[*]}"
     echo "  chromosomes: ${CHROMOSOMES[*]}"
+    echo "  mask mode: $MASK_MODE ($MASK_SOURCE_SEMANTICS)"
     echo "  local root: $LOCAL_ROOT"
     echo "  requester-pays billing project: ${BILLING_PROJECT:-<unset>}"
     echo "  decoder: threads=$THREADS, theta=$THETA, rho/theta=$RHO_OVER_THETA"
@@ -356,6 +400,11 @@ LOCAL_ROOT="$(cd "$LOCAL_ROOT" && pwd)"
 command -v flock >/dev/null 2>&1 || die "flock is required for restart-safe local locking"
 exec 9>"$LOCAL_ROOT/.run_aou_workbench.lock"
 flock -n 9 || die "another Workbench runner is already using $LOCAL_ROOT"
+
+# Resolve and install the locked environment once. Every chromosome/population
+# subcommand then bypasses uv's redundant environment scan.
+"$AOU" --sync-only
+export AOU_UV_NO_SYNC=1
 
 cloud_exists() {
     gcloud storage objects describe "$1" \
@@ -770,6 +819,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 --local-mask-source "$local_mask_source"
                 --local-mask "$local_mask"
                 --mask-audit "$mask_audit"
+                --mask-source-semantics "$MASK_SOURCE_SEMANTICS"
             )
         fi
 
@@ -877,6 +927,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             if [[ "$MASK_ENABLED" -eq 1 ]]; then
                 "$AOU" workbench-mask \
                     --hardmask "$local_mask_source" \
+                    --source-semantics "$MASK_SOURCE_SEMANTICS" \
                     --contig "$input_contig" \
                     --sequence-length "$sequence_length" \
                     --output "$local_mask" \

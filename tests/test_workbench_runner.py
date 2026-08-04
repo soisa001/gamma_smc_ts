@@ -52,6 +52,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "flagged_samples.tsv" in output
     assert "relatedness_flagged_samples.tsv" in output
     assert "hardmask.hg38.v4.over99.bed" in output
+    assert "mask mode: default (excluded_intervals)" in output
     assert "gencode.v50.basic.annotation.gtf.gz" in output
     assert (
         "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, zoom_ymax=0.04, "
@@ -76,6 +77,58 @@ def test_runner_has_a_workbench_output_bucket_default():
     assert (
         "gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/AFR/{chromosomes,plots}/"
     ) in completed.stdout
+
+
+def test_strict_hardmask_uses_callable_semantics_and_separate_roots():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+    command, cwd = _runner_command(
+        repo,
+        ["-chr", "1", "-pops", "AFR", "--strict-hardmask", "--dry-run"],
+    )
+    completed = subprocess.run(
+        command,
+        check=True,
+        text=True,
+        capture_output=True,
+        env=environment,
+        cwd=cwd,
+    )
+    output = completed.stdout
+    assert "mask mode: strict (included_intervals)" in output
+    assert "/home/jupyter/gamma_smc_workbench_strict_hardmask" in output
+    assert "gs://test-workspace/gamma_smc/results_strict_hardmask/AFR/" in output
+    assert (
+        "gs://test-workspace/hmmix-static/hg38_strick_callability_mask.bed"
+        in output
+    )
+
+
+def test_both_hardmask_runs_resolve_default_and_strict_namespaces():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+    command, cwd = _runner_command(
+        repo,
+        ["-chr", "1", "-pops", "AFR", "--both-hardmask", "--dry-run"],
+    )
+    completed = subprocess.run(
+        command,
+        check=True,
+        text=True,
+        capture_output=True,
+        env=environment,
+        cwd=cwd,
+    )
+    output = completed.stdout
+    assert output.count("Gamma-SMC Workbench plan") == 2
+    assert "mask mode: default (excluded_intervals)" in output
+    assert "mask mode: strict (included_intervals)" in output
+    assert "/home/jupyter/gamma_smc_workbench\n" in output
+    assert "/home/jupyter/gamma_smc_workbench_strict_hardmask" in output
 
 
 def test_runner_requires_explicit_scope():
@@ -144,6 +197,10 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
     assert "--delete-unmatched-destination-objects" not in runner
     assert 'rsync_single_file "$population_plot_dir/plot_manifest.json"' in runner
     assert 'rsync_single_file "$report_dir/run_report_manifest.json"' in runner
+    assert '"$AOU" --sync-only' in runner
+    assert "export AOU_UV_NO_SYNC=1" in runner
+    aou = (repo / "scripts/aou.sh").read_text()
+    assert 'run_args+=(--no-sync)' in aou
     assert (
         "regions_by_population.tsv"
         in (repo / "python/gamma_smc_aou/workbench.py").read_text()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
@@ -78,7 +79,12 @@ def test_zoom_plot_labels_only_peaks_above_two_percent_horizontally(
     assert axis.get_ylim() == pytest.approx((0.0, 0.04))
 
 
-def _contract(tmp_path: Path, *, with_mask: bool = False) -> tuple[dict, Path, Path, Path]:
+def _contract(
+    tmp_path: Path,
+    *,
+    with_mask: bool = False,
+    mask_source_semantics: str = "excluded_intervals",
+) -> tuple[dict, Path, Path, Path]:
     summary = tmp_path / "chr1.gamma_smc.tsv"
     pairs = tmp_path / "chr1.pairs.tsv"
     input_path = tmp_path / "AFR.chr1.phased.bcf"
@@ -131,6 +137,7 @@ def _contract(tmp_path: Path, *, with_mask: bool = False) -> tuple[dict, Path, P
             sequence_length=1_000_000,
             output_path=mask_path,
             audit_path=mask_audit,
+            source_semantics=mask_source_semantics,
         )
     contract = workbench.build_workbench_contract(
         population="afr",
@@ -159,6 +166,7 @@ def _contract(tmp_path: Path, *, with_mask: bool = False) -> tuple[dict, Path, P
         local_mask_source=(hardmask_path if with_mask else None),
         local_mask=(mask_path if with_mask else None),
         mask_audit=(mask_audit if with_mask else None),
+        mask_source_semantics=(mask_source_semantics if with_mask else None),
         theta=0.00075,
         rho_over_theta=0.8,
         mutation_rate=1.29e-8,
@@ -255,6 +263,70 @@ def test_completion_contract_detects_changed_output(tmp_path):
             run_json_path=run_json,
             completion_path=completion_path,
             contract=contract,
+        )
+
+
+def test_completion_cache_ignores_git_commit_but_keeps_manifest_hashes(tmp_path):
+    contract, summary, run_json, pairs = _contract(tmp_path, with_mask=True)
+    completion_path = tmp_path / "chr1.complete.json"
+    workbench.write_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=contract,
+    )
+    legacy = json.loads(completion_path.read_text(encoding="utf-8"))
+    legacy.pop("cache_contract_sha256")
+    completion_path.write_text(json.dumps(legacy), encoding="utf-8")
+
+    requested = copy.deepcopy(contract)
+    requested["code_commit"] = "plot-only-change"
+    workbench.validate_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=requested,
+    )
+
+    pairs.write_text(pairs.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="pair-manifest hash"):
+        workbench.validate_workbench_completion(
+            summary_path=summary,
+            run_json_path=run_json,
+            completion_path=completion_path,
+            contract=requested,
+        )
+
+
+def test_strict_mask_semantics_are_part_of_completion_contract(tmp_path):
+    contract, summary, run_json, _ = _contract(
+        tmp_path,
+        with_mask=True,
+        mask_source_semantics="included_intervals",
+    )
+    completion_path = tmp_path / "chr1.complete.json"
+    written = workbench.write_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=contract,
+    )
+    assert written["contract"]["mask"]["source_semantics"] == "included_intervals"
+    workbench.validate_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=contract,
+    )
+
+    incompatible = copy.deepcopy(contract)
+    incompatible["mask"]["source_semantics"] = "excluded_intervals_complemented"
+    with pytest.raises(ValueError, match="completion contract"):
+        workbench.validate_workbench_completion(
+            summary_path=summary,
+            run_json_path=run_json,
+            completion_path=completion_path,
+            contract=incompatible,
         )
 
 
@@ -451,6 +523,31 @@ def test_hardmask_is_complemented_into_positive_callable_intervals(tmp_path):
     assert audit["decoder_mask_semantics"] == "included_intervals"
     assert audit["counts"]["excluded_bases"] == 30
     assert audit["counts"]["callable_bases"] == 70
+
+
+def test_strict_callable_mask_is_merged_without_complementing(tmp_path):
+    strict = tmp_path / "strict.bed"
+    callable_mask = tmp_path / "chr1.callable.bed"
+    audit_path = tmp_path / "chr1.callable.audit.json"
+    strict.write_text(
+        "1\t10\t20\nchr1\t15\t30\nchr1\t90\t120\nchr2\t0\t100\n",
+        encoding="utf-8",
+    )
+    audit = workbench.build_workbench_callable_mask(
+        hardmask_path=strict,
+        contig="chr1",
+        sequence_length=100,
+        output_path=callable_mask,
+        audit_path=audit_path,
+        source_semantics="included_intervals",
+    )
+    assert callable_mask.read_text(encoding="utf-8").splitlines() == [
+        "chr1\t10\t30",
+        "chr1\t90\t100",
+    ]
+    assert audit["source_semantics"] == "included_intervals"
+    assert audit["counts"]["callable_bases"] == 30
+    assert audit["counts"]["excluded_bases"] == 70
 
 
 def test_population_plots_are_separate_and_whole_genome_is_complete(tmp_path, monkeypatch):

@@ -5,6 +5,7 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export MPLBACKEND=Agg
 UV=""
 [[ -x "$REPO/.tools/uv-bin/uv" ]] && UV="$REPO/.tools/uv-bin/uv"
+[[ -z "$UV" && -x "$HOME/.local/bin/uv" ]] && UV="$HOME/.local/bin/uv"
 [[ -z "$UV" ]] && UV="$(command -v uv || true)"
 if [[ -z "$UV" ]]; then
     echo "uv is not installed; run scripts/bootstrap_uv.sh first." >&2
@@ -19,4 +20,12 @@ if [[ -d "$REPO/.native/lib" ]]; then
     export LD_LIBRARY_PATH="$REPO/.native/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi
 
-exec "$UV" run --project "$REPO" --frozen --all-extras gamma-smc-aou "$@"
+if [[ "${1:-}" == "--sync-only" ]]; then
+    exec "$UV" sync --project "$REPO" --frozen --all-extras
+fi
+
+run_args=(run --project "$REPO" --frozen --all-extras)
+if [[ "${AOU_UV_NO_SYNC:-0}" == "1" ]]; then
+    run_args+=(--no-sync)
+fi
+exec "$UV" "${run_args[@]}" gamma-smc-aou "$@"

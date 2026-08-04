@@ -205,6 +205,14 @@ def contract_sha256(contract: dict) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def cache_contract_sha256(contract: dict) -> str:
+    """Hash decode-relevant inputs/settings without tying reuse to Git HEAD."""
+    cache_contract = {
+        key: value for key, value in contract.items() if key != "code_commit"
+    }
+    return contract_sha256(cache_contract)
+
+
 def _read_controlled_tsv(path: str | Path) -> pd.DataFrame:
     frame = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
     frame.columns = [str(column).lstrip("\ufeff").strip() for column in frame.columns]
@@ -380,9 +388,14 @@ def build_workbench_callable_mask(
     sequence_length: int,
     output_path: str | Path,
     audit_path: str | Path,
+    source_semantics: str = "excluded_intervals",
 ) -> dict:
     if not contig or sequence_length < 1:
         raise ValueError("contig and positive sequence length are required")
+    if source_semantics not in {"excluded_intervals", "included_intervals"}:
+        raise ValueError(
+            "mask source semantics must be excluded_intervals or included_intervals"
+        )
     hardmask = Path(hardmask_path)
     if not hardmask.is_file() or hardmask.stat().st_size == 0:
         raise ValueError(f"hard-mask BED is absent or empty: {hardmask}")
@@ -435,14 +448,17 @@ def build_workbench_callable_mask(
             merged.append([start, end])
         else:
             merged[-1][1] = max(merged[-1][1], end)
-    callable_intervals = []
-    cursor = 0
-    for start, end in merged:
-        if cursor < start:
-            callable_intervals.append((cursor, start))
-        cursor = max(cursor, end)
-    if cursor < sequence_length:
-        callable_intervals.append((cursor, sequence_length))
+    if source_semantics == "included_intervals":
+        callable_intervals = [tuple(interval) for interval in merged]
+    else:
+        callable_intervals = []
+        cursor = 0
+        for start, end in merged:
+            if cursor < start:
+                callable_intervals.append((cursor, start))
+            cursor = max(cursor, end)
+        if cursor < sequence_length:
+            callable_intervals.append((cursor, sequence_length))
     if not callable_intervals:
         raise ValueError(f"hard mask excludes the entire {contig} sequence")
 
@@ -454,11 +470,11 @@ def build_workbench_callable_mask(
         encoding="utf-8",
     )
     os.replace(temporary, output)
-    excluded_bases = int(sum(end - start for start, end in merged))
-    callable_bases = int(sequence_length - excluded_bases)
+    callable_bases = int(sum(end - start for start, end in callable_intervals))
+    excluded_bases = int(sequence_length - callable_bases)
     audit = {
         "schema_version": 1,
-        "source_semantics": "excluded_intervals",
+        "source_semantics": source_semantics,
         "decoder_mask_semantics": "included_intervals",
         "contig": contig,
         "accepted_contig_aliases": sorted(aliases),
@@ -471,7 +487,10 @@ def build_workbench_callable_mask(
         "counts": {
             "matching_source_records": int(matching_records),
             "clipped_source_records": int(clipped_records),
-            "merged_excluded_intervals": int(len(merged)),
+            "merged_source_intervals": int(len(merged)),
+            "merged_excluded_intervals": (
+                int(len(merged)) if source_semantics == "excluded_intervals" else None
+            ),
             "callable_intervals": int(len(callable_intervals)),
             "excluded_bases": excluded_bases,
             "callable_bases": callable_bases,
@@ -534,6 +553,7 @@ def build_workbench_contract(
     exp10: str,
     backward_alignment: str,
     code_commit: str,
+    mask_source_semantics: str | None = None,
     bitmatrix: str | Path | None = None,
     candidate_regions: str | Path | None = None,
     candidate_manifest: str | Path | None = None,
@@ -583,6 +603,13 @@ def build_workbench_contract(
         raise ValueError(
             "mask URI, fingerprint, and local path must be supplied together"
         )
+    if mask_uri is None and mask_source_semantics is not None:
+        raise ValueError("mask source semantics require a mask")
+    normalized_mask_semantics = mask_source_semantics or "excluded_intervals"
+    if normalized_mask_semantics not in {"excluded_intervals", "included_intervals"}:
+        raise ValueError(
+            "mask source semantics must be excluded_intervals or included_intervals"
+        )
     return {
         "schema_version": 1,
         "population": population,
@@ -604,7 +631,11 @@ def build_workbench_contract(
                 "source_local_path": str(Path(local_mask_source).resolve()),
                 "local_path": str(Path(local_mask).resolve()),
                 "audit": str(Path(mask_audit).resolve()),
-                "source_semantics": "excluded_intervals_complemented",
+                "source_semantics": (
+                    "excluded_intervals_complemented"
+                    if normalized_mask_semantics == "excluded_intervals"
+                    else "included_intervals"
+                ),
             }
             if mask_uri is not None
             else None
@@ -997,8 +1028,13 @@ def validate_callable_mask(contract: dict, *, required: bool) -> dict | None:
         if not path.is_file() or path.stat().st_size == 0:
             raise ValueError(f"{label} is absent or empty: {path}")
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
-    if audit.get("source_semantics") != "excluded_intervals":
-        raise ValueError("mask audit did not treat the hard mask as exclusions")
+    expected_source_semantics = mask.get(
+        "source_semantics", "excluded_intervals_complemented"
+    )
+    if expected_source_semantics == "excluded_intervals_complemented":
+        expected_source_semantics = "excluded_intervals"
+    if audit.get("source_semantics") != expected_source_semantics:
+        raise ValueError("mask audit source semantics do not match the contract")
     if audit.get("decoder_mask_semantics") != "included_intervals":
         raise ValueError("mask audit did not create a positive decoder mask")
     audit_contig = str(audit.get("contig", ""))
@@ -1225,6 +1261,7 @@ def write_workbench_completion(
         "schema_version": 1,
         "completed_at_utc": datetime.now(timezone.utc).isoformat(),
         "contract_sha256": contract_sha256(contract),
+        "cache_contract_sha256": cache_contract_sha256(contract),
         "contract": contract,
         "summary": {
             **summary_metrics,
@@ -1270,13 +1307,16 @@ def validate_workbench_completion(
     if not destination.is_file():
         raise ValueError(f"completion record is absent: {destination}")
     completion = json.loads(destination.read_text(encoding="utf-8"))
-    expected_digest = contract_sha256(contract)
-    if completion.get("contract_sha256") != expected_digest:
+    stored_contract = completion.get("contract")
+    if not isinstance(stored_contract, dict):
+        raise ValueError("completion contract payload is absent or malformed")
+    if completion.get("contract_sha256") != contract_sha256(stored_contract):
+        raise ValueError("completion contract payload hash is corrupt")
+    stored_cache_digest = completion.get("cache_contract_sha256")
+    if stored_cache_digest is None:
+        stored_cache_digest = cache_contract_sha256(stored_contract)
+    if stored_cache_digest != cache_contract_sha256(contract):
         raise ValueError("completion contract does not match requested inputs/settings")
-    if completion.get("contract") != contract:
-        raise ValueError(
-            "completion contract payload does not match requested contract"
-        )
     summary_frame, _ = validate_summary(
         summary_path,
         threshold_years=contract["decoder"]["threshold_years"],
