@@ -23,6 +23,7 @@ MASK_TEMPLATE="${AOU_GAMMA_MASK_TEMPLATE:-}"
 ANCESTRY_URI="${AOU_GAMMA_ANCESTRY_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/ancestry/ancestry_preds.tsv}"
 QC_EXCLUSIONS_URI="${AOU_GAMMA_QC_EXCLUSIONS_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/qc/flagged_samples.tsv}"
 RELATEDNESS_EXCLUSIONS_URI="${AOU_GAMMA_RELATEDNESS_EXCLUSIONS_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/relatedness/relatedness_flagged_samples.tsv}"
+GENE_ANNOTATION_URI="${AOU_GAMMA_GENE_ANNOTATION_URI:-https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_50/gencode.v50.basic.annotation.gtf.gz}"
 THREADS="${AOU_GAMMA_THREADS:-12}"
 THETA="${AOU_GAMMA_THETA:-0.00075}"
 RHO_OVER_THETA="${AOU_GAMMA_RHO_OVER_THETA:-0.8}"
@@ -44,6 +45,9 @@ MIN_GENOTYPE_PAIRS="${AOU_GAMMA_MIN_GENOTYPE_PAIRS:-20}"
 EXP10="${AOU_GAMMA_EXP10:-accurate}"
 BACKWARD_ALIGNMENT="${AOU_GAMMA_BACKWARD_ALIGNMENT:-fixed}"
 TOP_N="${AOU_GAMMA_TOP_N:-100}"
+HIT_BIN_SIZE="${AOU_GAMMA_HIT_BIN_SIZE:-1000000}"
+GENE_CONTEXT_FLANK="${AOU_GAMMA_GENE_CONTEXT_FLANK:-500000}"
+ZOOM_YMAX="${AOU_GAMMA_ZOOM_YMAX:-0.05}"
 MASK_ENABLED=1
 UPLOAD=1
 KEEP_INPUTS=0
@@ -75,6 +79,7 @@ Cloud and local paths:
   --qc-exclusions-uri URI   Default: v9 QC flagged_samples.tsv
   --relatedness-exclusions-uri URI
                             Default: v9 relatedness_flagged_samples.tsv
+  --gene-annotation-uri URI Default: GENCODE v50 basic GRCh38 GTF
   --no-mask                 Decode without a callable-region BED.
 
 Decoder parameters:
@@ -92,6 +97,9 @@ Decoder parameters:
   --pairs-seed N            Default: 1729
   --exclude-within          Exclude the same person's two haplotypes from draw
   --top-n N                 Default: 100 whole-genome windows per statistic
+  --hit-bin-size N          Merge top-window hits through consecutive 1 Mb bins
+  --gene-context-flank N    List protein-coding genes within +/-500000 bp
+  --zoom-ymax X             Separate genome plot y ceiling; default: 0.05
 
 Candidate analysis:
   --signal-fraction X       Strict screen threshold; default: 0.05
@@ -148,6 +156,7 @@ while [[ $# -gt 0 ]]; do
         --ancestry-uri) need_value "$@"; ANCESTRY_URI="$2"; shift 2 ;;
         --qc-exclusions-uri) need_value "$@"; QC_EXCLUSIONS_URI="$2"; shift 2 ;;
         --relatedness-exclusions-uri) need_value "$@"; RELATEDNESS_EXCLUSIONS_URI="$2"; shift 2 ;;
+        --gene-annotation-uri) need_value "$@"; GENE_ANNOTATION_URI="$2"; shift 2 ;;
         --threads) need_value "$@"; THREADS="$2"; shift 2 ;;
         --theta) need_value "$@"; THETA="$2"; shift 2 ;;
         --rho-over-theta) need_value "$@"; RHO_OVER_THETA="$2"; shift 2 ;;
@@ -167,6 +176,9 @@ while [[ $# -gt 0 ]]; do
         --variant-half-width) need_value "$@"; VARIANT_HALF_WIDTH="$2"; shift 2 ;;
         --min-genotype-pairs) need_value "$@"; MIN_GENOTYPE_PAIRS="$2"; shift 2 ;;
         --top-n) need_value "$@"; TOP_N="$2"; shift 2 ;;
+        --hit-bin-size) need_value "$@"; HIT_BIN_SIZE="$2"; shift 2 ;;
+        --gene-context-flank) need_value "$@"; GENE_CONTEXT_FLANK="$2"; shift 2 ;;
+        --zoom-ymax) need_value "$@"; ZOOM_YMAX="$2"; shift 2 ;;
         --no-mask) MASK_ENABLED=0; shift ;;
         --force) FORCE=1; shift ;;
         --keep-inputs) KEEP_INPUTS=1; shift ;;
@@ -206,14 +218,19 @@ for source_uri in "$ANCESTRY_URI" "$QC_EXCLUSIONS_URI" \
 done
 
 for integer_setting in THREADS OUTPUT_STRIDE CACHE_SIZE PAIR_BLOCK TOP_N \
-    N_RANDOM_PAIRS PROFILE_HALF_WIDTH VARIANT_HALF_WIDTH MIN_GENOTYPE_PAIRS; do
+    N_RANDOM_PAIRS PROFILE_HALF_WIDTH VARIANT_HALF_WIDTH MIN_GENOTYPE_PAIRS \
+    HIT_BIN_SIZE; do
     value="${!integer_setting}"
     [[ "$value" =~ ^[1-9][0-9]*$ ]] || die "$integer_setting must be a positive integer"
 done
 [[ "$PAIRS_SEED" =~ ^[0-9]+$ ]] || die "PAIRS_SEED must be a nonnegative integer"
 [[ "$MERGE_GAP" =~ ^[0-9]+$ ]] || die "MERGE_GAP must be a nonnegative integer"
+[[ "$GENE_CONTEXT_FLANK" =~ ^[0-9]+$ ]] || die \
+    "GENE_CONTEXT_FLANK must be a nonnegative integer"
 awk -v value="$SIGNAL_FRACTION" 'BEGIN { exit !(value >= 0 && value <= 1) }' || \
     die "SIGNAL_FRACTION must be in [0,1]"
+awk -v value="$ZOOM_YMAX" 'BEGIN { exit !(value > 0 && value <= 1) }' || \
+    die "ZOOM_YMAX must be in (0,1]"
 [[ "$RECENT_CALL" =~ ^(mean|median)$ ]] || die \
     "--recent-call must be mean or median"
 
@@ -281,6 +298,8 @@ print_plan() {
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
     echo "  pair draw: $N_RANDOM_PAIRS random haplotype pairs/pop, seed=$PAIRS_SEED, exclude_within=$EXCLUDE_WITHIN"
     echo "  candidates: fraction>$SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
+    echo "  ranked-hit report: top_n=$TOP_N, bins=$HIT_BIN_SIZE bp, gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=$ZOOM_YMAX"
+    echo "  gene annotation: $GENE_ANNOTATION_URI"
     echo "  ancestry: $ANCESTRY_URI (column ancestry_pred_other)"
     echo "  QC exclusions: $QC_EXCLUSIONS_URI"
     echo "  relatedness exclusions: $RELATEDNESS_EXCLUSIONS_URI"
@@ -393,6 +412,39 @@ stage_object() {
     printf '%s\n%s\n' "$uri" "$fingerprint" > "${source_record}.partial.$$"
     mv -f -- "${source_record}.partial.$$" "$source_record"
     rm -f -- "$partial_record"
+}
+
+stage_gene_annotation() {
+    local uri="$1" destination="$2"
+    local source_record="${destination}.source-uri"
+    local temporary="${destination}.partial.$$"
+    if [[ "$uri" == gs://* ]]; then
+        local fingerprint
+        fingerprint="$(object_fingerprint "$uri")"
+        stage_object "$uri" "$destination" "$fingerprint"
+        return 0
+    fi
+    if [[ "$uri" == https://* ]]; then
+        if [[ -s "$destination" && -f "$source_record" ]] && \
+            [[ "$(<"$source_record")" == "$uri" ]]; then
+            echo "Reusing staged gene annotation: $destination"
+            return 0
+        fi
+        command -v curl >/dev/null 2>&1 || die \
+            "curl is required to stage the GENCODE gene annotation"
+        mkdir -p "$(dirname "$destination")"
+        rm -f -- "$temporary"
+        echo "Staging $uri"
+        if ! curl --fail --location --retry 3 --output "$temporary" "$uri"; then
+            rm -f -- "$temporary"
+            return 1
+        fi
+        mv -f -- "$temporary" "$destination"
+        printf '%s\n' "$uri" > "${source_record}.partial.$$"
+        mv -f -- "${source_record}.partial.$$" "$source_record"
+        return 0
+    fi
+    [[ -s "$uri" ]] || die "gene annotation is absent or empty: $uri"
 }
 
 restore_if_present() {
@@ -594,6 +646,14 @@ stage_object "$QC_EXCLUSIONS_URI" "$local_qc_exclusions" \
     "$qc_exclusions_fingerprint"
 stage_object "$RELATEDNESS_EXCLUSIONS_URI" "$local_relatedness_exclusions" \
     "$relatedness_exclusions_fingerprint"
+if [[ "$GENE_ANNOTATION_URI" == gs://* || "$GENE_ANNOTATION_URI" == https://* ]]; then
+    gene_annotation_name="$(basename "${GENE_ANNOTATION_URI%%\?*}")"
+    local_gene_annotation="$LOCAL_ROOT/inputs/annotations/$gene_annotation_name"
+    stage_gene_annotation "$GENE_ANNOTATION_URI" "$local_gene_annotation"
+else
+    local_gene_annotation="$(realpath -- "$GENE_ANNOTATION_URI")"
+    stage_gene_annotation "$local_gene_annotation" "$local_gene_annotation"
+fi
 
 for chromosome in "${CHROMOSOMES[@]}"; do
     echo
@@ -1022,6 +1082,11 @@ report_args=(
     --output-dir "$report_dir"
     --threshold-years "$THRESHOLD_YEARS"
     --signal-fraction "$SIGNAL_FRACTION"
+    --top-n "$TOP_N"
+    --gene-annotation "$local_gene_annotation"
+    --hit-bin-size "$HIT_BIN_SIZE"
+    --gene-context-flank "$GENE_CONTEXT_FLANK"
+    --zoom-ymax "$ZOOM_YMAX"
 )
 if [[ "${CHR_SPEC,,}" == "all" ]]; then
     report_args+=(--whole-genome)

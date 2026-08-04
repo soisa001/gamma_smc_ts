@@ -505,6 +505,18 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
                 index=False,
             )
 
+    gene_annotation = tmp_path / "gencode.test.gtf"
+    gene_annotation.write_text(
+        "##description: test GRCh38 annotation\n"
+        + "".join(
+            f'chr{chromosome}\ttest\tgene\t1\t50000\t.\t+\t.\t'
+            f'gene_id "ENSG{chromosome:011d}.1"; gene_type "protein_coding"; '
+            f'gene_name "GENE{chromosome}";\n'
+            for chromosome in workbench.AUTOSOMES
+        ),
+        encoding="utf-8",
+    )
+
     combined_calls = []
 
     def lightweight_combined_plot(*args, output_stem, **kwargs):
@@ -524,6 +536,8 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         chromosomes=list(workbench.AUTOSOMES),
         output_dir=output_dir,
         whole_genome=True,
+        top_n=2,
+        gene_annotation=gene_annotation,
     )
     assert result["population_region_counts"] == {"AFR": 1, "EUR": 1}
     assert result["total_regions"] == 2
@@ -534,7 +548,12 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     }
     assert (output_dir / "all_candidate_regions.tsv").is_file()
     assert (output_dir / "combined.whole_genome.gamma_smc.png").is_file()
-    assert len(combined_calls) == 1
+    assert (output_dir / "combined.whole_genome.gamma_smc.zoom5pct.png").is_file()
+    gene_list = pd.read_csv(output_dir / "gene_list.tsv", sep="\t")
+    assert set(gene_list["probable_gene"]) == {"GENE1", "GENE2"}
+    assert len(gene_list) == 4
+    assert gene_list["n_consecutive_1mb_bins"].eq(1).all()
+    assert len(combined_calls) == 2
 
     reused = workbench.summarize_workbench_run(
         results_root,
@@ -542,6 +561,52 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         chromosomes=list(workbench.AUTOSOMES),
         output_dir=output_dir,
         whole_genome=True,
+        top_n=2,
+        gene_annotation=gene_annotation,
     )
     assert reused["reused"] is True
-    assert len(combined_calls) == 1
+    assert len(combined_calls) == 2
+
+
+def test_ranked_gene_list_merges_consecutive_one_megabase_bins(tmp_path):
+    annotation = tmp_path / "genes.gtf"
+    annotation.write_text(
+        "chr1\ttest\tgene\t1500001\t1600000\t.\t+\t.\t"
+        'gene_id "ENSG1.1"; gene_type "protein_coding"; gene_name "GENE_A";\n'
+        "chr1\ttest\tgene\t5400001\t5500000\t.\t+\t.\t"
+        'gene_id "ENSG2.1"; gene_type "protein_coding"; gene_name "GENE_B";\n',
+        encoding="utf-8",
+    )
+    genes = workbench._load_protein_coding_genes(annotation)
+    genome = pd.DataFrame(
+        {
+            "population": ["AFR"] * 4,
+            "chromosome": [1] * 4,
+            "position_0based": [1_500_000, 2_100_000, 5_450_000, 8_000_000],
+            "position_1based": [1_500_001, 2_100_001, 5_450_001, 8_000_001],
+            "frac_recent_4500": [0.04, 0.03, 0.02, 0.001],
+            "mean_p_tmrca_lt_threshold": [0.1, 0.08, 0.06, 0.01],
+            "mean_tmrca_generations": [100.0, 200.0, 300.0, 20_000.0],
+            "genome_position_0based": [
+                1_500_000,
+                2_100_000,
+                5_450_000,
+                8_000_000,
+            ],
+        }
+    )
+    hits = workbench._build_ranked_gene_list(
+        {"AFR": genome},
+        called_column="frac_recent_4500",
+        genes=genes,
+        top_n=3,
+        hit_bin_size=1_000_000,
+        context_flank=500_000,
+    )
+    assert len(hits) == 2
+    first = hits.iloc[0]
+    assert first["merged_start_0based"] == 1_000_000
+    assert first["merged_end_0based_exclusive"] == 3_000_000
+    assert first["n_consecutive_1mb_bins"] == 2
+    assert first["probable_gene"] == "GENE_A"
+    assert hits.iloc[1]["probable_gene"] == "GENE_B"

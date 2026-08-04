@@ -52,6 +52,8 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "flagged_samples.tsv" in output
     assert "relatedness_flagged_samples.tsv" in output
     assert "hardmask.hg38.v4.over99.bed" in output
+    assert "gencode.v50.basic.annotation.gtf.gz" in output
+    assert "bins=1000000 bp, gene_flank=+/-500000 bp, zoom_ymax=0.05" in output
 
 
 def test_runner_has_a_workbench_output_bucket_default():
@@ -125,6 +127,11 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
 
     assert 'flock -n 9 || die "another Workbench runner' in runner
     assert "workbench-report" in runner
+    assert '--gene-annotation "$local_gene_annotation"' in runner
+    assert '--hit-bin-size "$HIT_BIN_SIZE"' in runner
+    assert 'gene_list.tsv' in (
+        repo / "python/gamma_smc_aou/workbench.py"
+    ).read_text()
     assert 'gcloud storage rsync "$source_directory" "$remote_directory"' in runner
     assert "--recursive --checksums-only" in runner
     assert "--delete-unmatched-destination-objects" not in runner

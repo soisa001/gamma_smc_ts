@@ -426,6 +426,11 @@ def command_workbench_report(args):
         threshold_years=args.threshold_years,
         signal_fraction=args.signal_fraction,
         whole_genome=args.whole_genome,
+        top_n=args.top_n,
+        gene_annotation=args.gene_annotation,
+        hit_bin_size=args.hit_bin_size,
+        gene_context_flank=args.gene_context_flank,
+        zoom_ymax=args.zoom_ymax,
     )
     action = "reused" if result.get("reused") else "wrote"
     print(f"{action} Workbench report: {Path(args.output_dir).resolve()}")
@@ -979,6 +984,14 @@ def parser() -> argparse.ArgumentParser:
     workbench_report.add_argument("--threshold-years", type=float, default=4500)
     workbench_report.add_argument("--signal-fraction", type=float, default=0.05)
     workbench_report.add_argument("--whole-genome", action="store_true")
+    workbench_report.add_argument("--top-n", type=int, default=100)
+    workbench_report.add_argument(
+        "--gene-annotation",
+        help="GRCh38 GENCODE GTF[.gz] used for ranked-hit gene labels",
+    )
+    workbench_report.add_argument("--hit-bin-size", type=int, default=1_000_000)
+    workbench_report.add_argument("--gene-context-flank", type=int, default=500_000)
+    workbench_report.add_argument("--zoom-ymax", type=float, default=0.05)
     workbench_report.set_defaults(func=command_workbench_report)
 
     workbench_regions = commands.add_parser(

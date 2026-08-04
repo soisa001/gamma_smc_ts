@@ -98,6 +98,7 @@ The complete default controlled-input and output layout is:
 | Plot outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/plots/{scope}/` |
 | Combined report | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/summary/{scope}/` |
 | Callable-mask QC | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/shared/masks/` |
+| Gene labels | GENCODE v50 basic GRCh38 GTF from `ftp.ebi.ac.uk` (staged once locally) |
 
 `WORKSPACE_BUCKET` overrides this default bucket, and `--output-prefix` or
 `AOU_GAMMA_OUTPUT_PREFIX` overrides the complete results prefix.
@@ -150,8 +151,20 @@ windows, covered bases, and strongest peak for each requested population.
 `all_candidate_regions.tsv` concatenates the literal region tables, and
 `combined.whole_genome.gamma_smc.{png,pdf}` stacks the population scans on one
 shared chromosome axis. Partial chromosome scopes receive the corresponding
-`combined.requested_chromosomes` figure. The command also prints the region
-count for every population and the total.
+`combined.requested_chromosomes` figure. A second
+`combined.{scope}.gamma_smc.zoom5pct.{png,pdf}` view fixes the y axis at 5%;
+downward triangles mark values clipped at that ceiling. It labels every merged
+ranked hit with its nearest protein-coding gene.
+
+For this descriptive follow-up list, each population's top 100 hard-call scan
+windows are assigned to non-overlapping 1 Mb bins and consecutive hit bins are
+merged. `gene_list.tsv` has one row per merged hit, its peak and merged GRCh38
+coordinates, the nearest protein-coding gene, and every protein-coding gene
+overlapping the hit or lying within 500 kb. These are positional candidates,
+not causal assignments or calibrated selection calls. `--top-n`,
+`--hit-bin-size`, `--gene-context-flank`, and `--gene-annotation-uri` override
+those report settings. The command also prints the region count for every
+population and the total.
 
 The candidate pass is population-specific. It plots all decoded-pair TMRCA
 quantiles within 500 kb of each peak, queries every BCF record within 100 kb,
@@ -190,6 +203,9 @@ drawn for candidate regions.
 | candidate profile | peak +/-500,000 bp |
 | variant search | peak +/-100,000 bp |
 | minimum class size | 20 ref/ref and 20 matching-alt/matching-alt pairs |
+| ranked hit list | top 100 hard-call windows/population; consecutive 1 Mb bins merged |
+| ranked-hit gene context | protein-coding genes in merged hit +/-500,000 bp |
+| detail plot y ceiling | 5% |
 
 The 1 kb cache is retained because increasing it has linear cache-memory cost
 without a demonstrated 10 kb-stride speed benefit. Its steady shared cache is

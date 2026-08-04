@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
@@ -32,7 +33,34 @@ RELATEDNESS_ID_COLUMNS = (
     "person_id",
 )
 PLOT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-population-plots/v2"
-REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v1"
+REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v2"
+RANKED_GENE_LIST_COLUMNS = [
+    "population",
+    "hit_id",
+    "chromosome",
+    "merged_start_0based",
+    "merged_end_0based_exclusive",
+    "merged_start_1based",
+    "merged_end_1based_inclusive",
+    "n_consecutive_1mb_bins",
+    "n_top_windows",
+    "ranking_statistic",
+    "peak_ranking_value",
+    "peak_position_0based",
+    "peak_position_1based",
+    "peak_genome_position_0based",
+    "peak_mean_tmrca_generations",
+    "peak_mean_p_tmrca_lt_threshold",
+    "probable_gene",
+    "probable_gene_id",
+    "probable_gene_relation",
+    "probable_gene_distance_bp",
+    "probable_gene_start_0based",
+    "probable_gene_end_0based_exclusive",
+    "candidate_genes",
+    "candidate_gene_coordinates_grch38",
+    "candidate_gene_distances_to_peak_bp",
+]
 
 
 def threshold_suffix(years: float) -> str:
@@ -1689,12 +1717,18 @@ def _plot_combined_recent_genome(
     boundaries: list[float],
     signal_fraction: float,
     output_stem: Path,
+    fixed_ymax: float | None = None,
+    hit_labels: pd.DataFrame | None = None,
 ) -> list[Path]:
     finite = np.concatenate(
         [genome[called_column].to_numpy(dtype=float) for genome in genomes.values()]
     )
     finite = finite[np.isfinite(finite)]
-    ymax = min(1.0, max(signal_fraction, float(finite.max())) * 1.08)
+    ymax = (
+        float(fixed_ymax)
+        if fixed_ymax is not None
+        else min(1.0, max(signal_fraction, float(finite.max())) * 1.08)
+    )
     figure, raw_axes = plt.subplots(
         len(genomes),
         1,
@@ -1718,6 +1752,38 @@ def _plot_combined_recent_genome(
             ymax=ymax,
             show_chromosomes=index == len(axes) - 1,
         )
+        if fixed_ymax is not None:
+            clipped = genome.loc[genome[called_column].astype(float).ge(ymax)]
+            if not clipped.empty:
+                axis.scatter(
+                    clipped["genome_position_0based"] / 1e9,
+                    np.full(len(clipped), ymax),
+                    marker="v",
+                    s=9,
+                    color="#9f1239",
+                    linewidths=0,
+                    rasterized=True,
+                    zorder=4,
+                )
+        if hit_labels is not None and not hit_labels.empty:
+            population_hits = hit_labels.loc[
+                hit_labels["population"].astype(str).eq(population)
+            ].sort_values(["chromosome", "peak_genome_position_0based"])
+            for label_index, hit in enumerate(population_hits.itertuples(index=False)):
+                label_y = min(float(hit.peak_ranking_value), ymax * 0.94)
+                high_label = label_y >= ymax * 0.72
+                axis.annotate(
+                    str(hit.probable_gene),
+                    xy=(float(hit.peak_genome_position_0based) / 1e9, label_y),
+                    xytext=(0, -4 if high_label else 4 + 6 * (label_index % 2)),
+                    textcoords="offset points",
+                    ha="center",
+                    va="top" if high_label else "bottom",
+                    rotation=45,
+                    fontsize=6.5,
+                    color="#374151",
+                    annotation_clip=True,
+                )
         axis.text(
             0.003,
             0.92,
@@ -1728,9 +1794,14 @@ def _plot_combined_recent_genome(
             fontweight="bold",
         )
     figure.supylabel(f"% pairs called coalesced < {threshold_years:g}y")
+    subtitle = "Posterior-mean TMRCA call; dashed line is the candidate-region screen"
+    if fixed_ymax is not None:
+        subtitle = (
+            f"0-{fixed_ymax:.0%} detail; triangles mark values at or above the "
+            "axis ceiling; labels are nearest protein-coding genes"
+        )
     figure.suptitle(
-        "Gamma-SMC genome-wide recent-coalescence scan by population\n"
-        "Posterior-mean TMRCA call; dashed line is the candidate-region screen"
+        "Gamma-SMC genome-wide recent-coalescence scan by population\n" + subtitle
     )
     outputs = [
         Path(f"{output_stem}.png"),
@@ -1742,6 +1813,234 @@ def _plot_combined_recent_genome(
     return outputs
 
 
+def _gtf_attributes(value: str) -> dict[str, str]:
+    attributes: dict[str, str] = {}
+    for item in value.strip().rstrip(";").split(";"):
+        item = item.strip()
+        if not item or " " not in item:
+            continue
+        key, raw_value = item.split(None, 1)
+        attributes[key] = raw_value.strip().strip('"')
+    return attributes
+
+
+def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
+    """Read GRCh38 GENCODE GTF genes into 0-based half-open coordinates."""
+    path = Path(path)
+    if not path.is_file() or path.stat().st_size == 0:
+        raise ValueError(f"gene annotation is absent or empty: {path}")
+    rows: list[dict] = []
+    handle = (
+        gzip.open(path, "rt", encoding="utf-8")
+        if path.suffix == ".gz"
+        else path.open("rt", encoding="utf-8")
+    )
+    with handle:
+        for line in handle:
+            if not line or line.startswith("#"):
+                continue
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) != 9 or fields[2] != "gene":
+                continue
+            chromosome_label = fields[0].removeprefix("chr")
+            if not chromosome_label.isdigit():
+                continue
+            chromosome = int(chromosome_label)
+            if chromosome not in AUTOSOMES:
+                continue
+            attributes = _gtf_attributes(fields[8])
+            gene_type = attributes.get("gene_type", attributes.get("gene_biotype", ""))
+            if gene_type != "protein_coding":
+                continue
+            gene_name = attributes.get("gene_name")
+            gene_id = attributes.get("gene_id")
+            if not gene_name or not gene_id:
+                continue
+            rows.append(
+                {
+                    "chromosome": chromosome,
+                    "gene_start_0based": int(fields[3]) - 1,
+                    "gene_end_0based_exclusive": int(fields[4]),
+                    "gene_name": gene_name,
+                    "gene_id": gene_id,
+                    "gene_type": gene_type,
+                }
+            )
+    genes = pd.DataFrame(rows)
+    if genes.empty:
+        raise ValueError("gene annotation contains no autosomal protein-coding genes")
+    if genes.duplicated(["gene_id", "chromosome"]).any():
+        raise ValueError("gene annotation contains duplicate autosomal gene records")
+    return genes.sort_values(
+        ["chromosome", "gene_start_0based", "gene_end_0based_exclusive", "gene_name"]
+    ).reset_index(drop=True)
+
+
+def _point_gene_distance(position: int, start: pd.Series, end: pd.Series) -> pd.Series:
+    return pd.Series(
+        np.where(
+            position < start,
+            start - position,
+            np.where(position >= end, position - end + 1, 0),
+        ),
+        index=start.index,
+        dtype=int,
+    )
+
+
+def _annotate_ranked_hit(
+    *,
+    chromosome: int,
+    region_start: int,
+    region_end: int,
+    peak_position: int,
+    genes: pd.DataFrame,
+    context_flank: int,
+) -> dict:
+    chromosome_genes = genes.loc[genes["chromosome"].eq(chromosome)].copy()
+    if chromosome_genes.empty:
+        raise ValueError(f"gene annotation contains no protein-coding chr{chromosome} genes")
+    chromosome_genes["distance_to_peak_bp"] = _point_gene_distance(
+        peak_position,
+        chromosome_genes["gene_start_0based"],
+        chromosome_genes["gene_end_0based_exclusive"],
+    )
+    chromosome_genes["overlaps_hit"] = (
+        chromosome_genes["gene_start_0based"].lt(region_end)
+        & chromosome_genes["gene_end_0based_exclusive"].gt(region_start)
+    )
+    context_start = max(0, region_start - context_flank)
+    context_end = region_end + context_flank
+    candidates = chromosome_genes.loc[
+        chromosome_genes["gene_start_0based"].lt(context_end)
+        & chromosome_genes["gene_end_0based_exclusive"].gt(context_start)
+    ].copy()
+    if candidates.empty:
+        candidates = chromosome_genes.nsmallest(5, "distance_to_peak_bp").copy()
+    candidates.sort_values(
+        ["distance_to_peak_bp", "gene_start_0based", "gene_name"], inplace=True
+    )
+    probable = candidates.iloc[0]
+    if int(probable["distance_to_peak_bp"]) == 0:
+        relation = "peak_overlap"
+    elif bool(probable["overlaps_hit"]):
+        relation = "merged_hit_overlap"
+    elif int(probable["gene_start_0based"]) < context_end and int(
+        probable["gene_end_0based_exclusive"]
+    ) > context_start:
+        relation = "within_context_flank"
+    else:
+        relation = "nearest_outside_context"
+    return {
+        "probable_gene": str(probable["gene_name"]),
+        "probable_gene_id": str(probable["gene_id"]),
+        "probable_gene_relation": relation,
+        "probable_gene_distance_bp": int(probable["distance_to_peak_bp"]),
+        "probable_gene_start_0based": int(probable["gene_start_0based"]),
+        "probable_gene_end_0based_exclusive": int(
+            probable["gene_end_0based_exclusive"]
+        ),
+        "candidate_genes": ";".join(candidates["gene_name"].astype(str)),
+        "candidate_gene_coordinates_grch38": ";".join(
+            f"{row.gene_name}=chr{chromosome}:{int(row.gene_start_0based) + 1}-"
+            f"{int(row.gene_end_0based_exclusive)}"
+            for row in candidates.itertuples(index=False)
+        ),
+        "candidate_gene_distances_to_peak_bp": ";".join(
+            f"{row.gene_name}={int(row.distance_to_peak_bp)}"
+            for row in candidates.itertuples(index=False)
+        ),
+    }
+
+
+def _build_ranked_gene_list(
+    genomes: dict[str, pd.DataFrame],
+    *,
+    called_column: str,
+    genes: pd.DataFrame,
+    top_n: int,
+    hit_bin_size: int,
+    context_flank: int,
+) -> pd.DataFrame:
+    """Group each population's top scan windows through consecutive 1-Mb bins."""
+    rows: list[dict] = []
+    for population, genome in genomes.items():
+        ranked = genome.loc[genome[called_column].astype(float).gt(0)].sort_values(
+            [called_column, TMRCA_COLUMN, "position_0based"],
+            ascending=[False, True, True],
+        ).head(top_n).copy()
+        if ranked.empty:
+            continue
+        ranked["hit_bin_start_0based"] = (
+            ranked["position_0based"].astype(int) // hit_bin_size
+        ) * hit_bin_size
+        hit_number = 0
+        for chromosome, chromosome_ranked in ranked.groupby("chromosome", sort=True):
+            chromosome = int(chromosome)
+            scan_chromosome = genome.loc[genome["chromosome"].eq(chromosome)]
+            chromosome_end = int(np.ceil(_sequence_span(scan_chromosome)))
+            bins = sorted(chromosome_ranked["hit_bin_start_0based"].unique())
+            groups: list[list[int]] = []
+            current: list[int] = []
+            for bin_start in bins:
+                bin_start = int(bin_start)
+                if current and bin_start > current[-1] + hit_bin_size:
+                    groups.append(current)
+                    current = []
+                current.append(bin_start)
+            if current:
+                groups.append(current)
+            for group in groups:
+                hit_number += 1
+                region_start = int(group[0])
+                region_end = min(chromosome_end, int(group[-1]) + hit_bin_size)
+                hit_windows = chromosome_ranked.loc[
+                    chromosome_ranked["hit_bin_start_0based"].isin(group)
+                ].sort_values(
+                    [called_column, TMRCA_COLUMN, "position_0based"],
+                    ascending=[False, True, True],
+                )
+                peak = hit_windows.iloc[0]
+                peak_position = int(peak["position_0based"])
+                rows.append(
+                    {
+                        "population": population,
+                        "hit_id": f"{population}_hit_{hit_number:03d}",
+                        "chromosome": chromosome,
+                        "merged_start_0based": region_start,
+                        "merged_end_0based_exclusive": region_end,
+                        "merged_start_1based": region_start + 1,
+                        "merged_end_1based_inclusive": region_end,
+                        "n_consecutive_1mb_bins": len(group),
+                        "n_top_windows": len(hit_windows),
+                        "ranking_statistic": called_column,
+                        "peak_ranking_value": float(peak[called_column]),
+                        "peak_position_0based": peak_position,
+                        "peak_position_1based": int(peak["position_1based"]),
+                        "peak_genome_position_0based": float(
+                            peak["genome_position_0based"]
+                        ),
+                        "peak_mean_tmrca_generations": float(peak[TMRCA_COLUMN]),
+                        "peak_mean_p_tmrca_lt_threshold": float(peak[SOFT_COLUMN]),
+                        **_annotate_ranked_hit(
+                            chromosome=chromosome,
+                            region_start=region_start,
+                            region_end=region_end,
+                            peak_position=peak_position,
+                            genes=genes,
+                            context_flank=context_flank,
+                        ),
+                    }
+                )
+    if not rows:
+        return pd.DataFrame(columns=RANKED_GENE_LIST_COLUMNS)
+    return (
+        pd.DataFrame(rows, columns=RANKED_GENE_LIST_COLUMNS)
+        .sort_values(["population", "chromosome", "merged_start_0based"])
+        .reset_index(drop=True)
+    )
+
+
 def summarize_workbench_run(
     results_root: str | Path,
     *,
@@ -1751,6 +2050,11 @@ def summarize_workbench_run(
     threshold_years: float = 4500,
     signal_fraction: float = 0.05,
     whole_genome: bool = False,
+    top_n: int = 100,
+    gene_annotation: str | Path | None = None,
+    hit_bin_size: int = 1_000_000,
+    gene_context_flank: int = 500_000,
+    zoom_ymax: float = 0.05,
 ) -> dict:
     results_root = Path(results_root).resolve()
     output_dir = Path(output_dir).resolve()
@@ -1768,6 +2072,21 @@ def summarize_workbench_run(
         raise ValueError("whole-genome report requires all autosomes 1-22")
     if not 0 <= signal_fraction <= 1:
         raise ValueError("signal_fraction must be in [0, 1]")
+    if top_n < 1 or hit_bin_size < 1 or gene_context_flank < 0:
+        raise ValueError("top_n/bin size must be positive and gene flank nonnegative")
+    if not 0 < zoom_ymax <= 1:
+        raise ValueError("zoom_ymax must be in (0, 1]")
+
+    gene_annotation_record = None
+    if gene_annotation is not None:
+        gene_annotation = Path(gene_annotation).resolve()
+        if not gene_annotation.is_file() or gene_annotation.stat().st_size == 0:
+            raise ValueError(f"gene annotation is absent or empty: {gene_annotation}")
+        gene_annotation_record = {
+            "path": str(gene_annotation),
+            "size_bytes": gene_annotation.stat().st_size,
+            "sha256": sha256_file(gene_annotation),
+        }
 
     input_records = []
     summary_paths: dict[str, dict[int, Path]] = {}
@@ -1803,6 +2122,11 @@ def summarize_workbench_run(
         "called_fraction_column": called_column,
         "signal_fraction": float(signal_fraction),
         "whole_genome": bool(whole_genome),
+        "top_n": int(top_n),
+        "gene_annotation": gene_annotation_record,
+        "hit_bin_size": int(hit_bin_size),
+        "gene_context_flank": int(gene_context_flank),
+        "zoom_ymax": float(zoom_ymax),
         "inputs": input_records,
     }
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1921,6 +2245,34 @@ def summarize_workbench_run(
         signal_fraction=signal_fraction,
         output_stem=output_dir / f"combined.{scope}.gamma_smc",
     )
+    gene_list_path = None
+    gene_list = pd.DataFrame()
+    if gene_annotation is not None:
+        genes = _load_protein_coding_genes(gene_annotation)
+        gene_list = _build_ranked_gene_list(
+            genomes,
+            called_column=called_column,
+            genes=genes,
+            top_n=top_n,
+            hit_bin_size=hit_bin_size,
+            context_flank=gene_context_flank,
+        )
+        gene_list_path = output_dir / "gene_list.tsv"
+        _atomic_frame(gene_list_path, gene_list)
+    zoom_percent = f"{zoom_ymax * 100:g}".replace(".", "p")
+    zoom_stem = output_dir / f"combined.{scope}.gamma_smc.zoom{zoom_percent}pct"
+    zoom_paths = _plot_combined_recent_genome(
+        genomes,
+        chromosomes=chromosomes,
+        called_column=called_column,
+        threshold_years=threshold_years,
+        ticks=ticks or [],
+        boundaries=boundaries or [],
+        signal_fraction=signal_fraction,
+        output_stem=zoom_stem,
+        fixed_ymax=zoom_ymax,
+        hit_labels=gene_list,
+    )
     counts = {row["population"]: int(row["regions_found"]) for row in population_rows}
     result = {
         "populations": populations,
@@ -1930,13 +2282,22 @@ def summarize_workbench_run(
         "signal_fraction": float(signal_fraction),
         "population_region_counts": counts,
         "total_regions": int(len(all_regions)),
+        "ranked_gene_hits": int(len(gene_list)),
         "reused": False,
     }
+    report_artifacts = [
+        population_summary_path,
+        all_regions_path,
+        *figure_paths,
+        *zoom_paths,
+    ]
+    if gene_list_path is not None:
+        report_artifacts.append(gene_list_path)
     _write_artifact_manifest(
         manifest_path,
         schema=REPORT_MANIFEST_SCHEMA,
         contract=contract,
         result=result,
-        artifacts=[population_summary_path, all_regions_path, *figure_paths],
+        artifacts=report_artifacts,
     )
     return result
