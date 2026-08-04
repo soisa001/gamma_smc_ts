@@ -50,6 +50,7 @@ including GCS staging, a deterministic 100,000-pair within-population scan,
 restart validation, candidate-variant analysis, upload, and separate
 per-population chromosome/whole-genome plots, use
 [`WORKBENCH_RUNNER.md`](WORKBENCH_RUNNER.md). The Workbench runner defaults to
+restart-safe per-population reports plus a combined population figure, and to
 12 decoder threads, the posterior-mean call rule, a 10 kb output stride, a 1 kb
 transition cache, and mutation rate `1.29e-8`.
 

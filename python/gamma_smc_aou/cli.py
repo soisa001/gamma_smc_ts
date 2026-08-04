@@ -7,13 +7,19 @@ import sys
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 from .bitmatrix import to_frame as bitmatrix_to_frame
-from .calibration import calibrate_sites, calibration_metrics, monte_carlo_pvalue, randomized_rank_pvalue
+from .calibration import (
+    calibrate_sites,
+    calibration_metrics,
+    monte_carlo_pvalue,
+    randomized_rank_pvalue,
+)
 from .carrier_profiles import plot_retained_carrier_tmrca_profiles
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
 from .container_study import (
@@ -44,10 +50,12 @@ from .tree_sequence import tree_sequence_to_vcf
 from .two_epoch import validate_two_epoch_growth
 from .workbench import (
     AUTOSOMES,
+    POPULATIONS,
     build_workbench_callable_mask,
     build_workbench_sample_list,
     build_workbench_contract,
     plot_workbench_population,
+    summarize_workbench_run,
     validate_workbench_completion,
     write_workbench_completion,
 )
@@ -67,7 +75,9 @@ def _histories(path: str | None):
         raise ValueError(f"history TSV needs columns: {sorted(required)}")
     return [
         (group["time_generations"].tolist(), group["ne"].tolist())
-        for _, group in table.sort_values(["draw", "time_generations"]).groupby("draw", sort=True)
+        for _, group in table.sort_values(["draw", "time_generations"]).groupby(
+            "draw", sort=True
+        )
     ]
 
 
@@ -85,14 +95,21 @@ def command_simulate(args):
         save_trees=args.save_trees,
     )
     simulate_replicates(
-        config, args.output_dir, histories=_histories(args.histories),
-        mutation_map=args.mutation_map, recombination_map=args.recombination_map,
+        config,
+        args.output_dir,
+        histories=_histories(args.histories),
+        mutation_map=args.mutation_map,
+        recombination_map=args.recombination_map,
         workers=args.workers,
     )
 
 
 def _read_summaries(pattern: str) -> list[pd.DataFrame]:
-    files = sorted(Path().glob(pattern)) if not Path(pattern).is_absolute() else sorted(Path(pattern).parent.glob(Path(pattern).name))
+    files = (
+        sorted(Path().glob(pattern))
+        if not Path(pattern).is_absolute()
+        else sorted(Path(pattern).parent.glob(Path(pattern).name))
+    )
     if not files:
         raise FileNotFoundError(f"no summary TSVs matched {pattern}")
     return [pd.read_csv(path, sep="\t") for path in files]
@@ -102,8 +119,11 @@ def command_calibrate(args):
     observed = pd.read_csv(args.observed, sep="\t")
     simulations = _read_summaries(args.sim_glob)
     result, null = calibrate_sites(
-        observed, simulations, observed_length=args.observed_length,
-        simulation_lengths=[args.simulation_length] * len(simulations), match=args.match,
+        observed,
+        simulations,
+        observed_length=args.observed_length,
+        simulation_lengths=[args.simulation_length] * len(simulations),
+        match=args.match,
     )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -119,16 +139,30 @@ def command_validate_null(args):
         if frame.empty:
             values.append(np.nan)
             continue
-        positions = frame["position_0based"].to_numpy(dtype=float) / args.sequence_length
-        values.append(float(frame.iloc[np.argmin(np.abs(positions - args.relative_position))]["mean_p_tmrca_lt_threshold"]))
+        positions = (
+            frame["position_0based"].to_numpy(dtype=float) / args.sequence_length
+        )
+        values.append(
+            float(
+                frame.iloc[np.argmin(np.abs(positions - args.relative_position))][
+                    "mean_p_tmrca_lt_threshold"
+                ]
+            )
+        )
     values = np.asarray(values)
-    pvalues = np.asarray([
-        monte_carlo_pvalue(values[i], np.delete(values, i)) for i in range(len(values))
-    ])
+    pvalues = np.asarray(
+        [
+            monte_carlo_pvalue(values[i], np.delete(values, i))
+            for i in range(len(values))
+        ]
+    )
     rng = np.random.default_rng(args.tie_seed)
-    randomized = np.asarray([
-        randomized_rank_pvalue(values[i], np.delete(values, i), rng.random()) for i in range(len(values))
-    ])
+    randomized = np.asarray(
+        [
+            randomized_rank_pvalue(values[i], np.delete(values, i), rng.random())
+            for i in range(len(values))
+        ]
+    )
     metrics = {
         "conservative_upper_tail": calibration_metrics(pvalues),
         "randomized_tie_diagnostic": calibration_metrics(randomized),
@@ -136,12 +170,14 @@ def command_validate_null(args):
     }
     destination = Path(args.output_dir)
     destination.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame({
-        "replicate": np.arange(len(values)), "statistic": values,
-        "leave_one_out_p": pvalues, "randomized_tie_p": randomized,
-    }).to_csv(
-        destination / "null_rank_calibration.tsv", sep="\t", index=False
-    )
+    pd.DataFrame(
+        {
+            "replicate": np.arange(len(values)),
+            "statistic": values,
+            "leave_one_out_p": pvalues,
+            "randomized_tie_p": randomized,
+        }
+    ).to_csv(destination / "null_rank_calibration.tsv", sep="\t", index=False)
     with (destination / "null_rank_metrics.json").open("w", encoding="utf-8") as handle:
         json.dump(metrics, handle, indent=2)
     fig, ax = plt.subplots(figsize=(5, 5), constrained_layout=True)
@@ -149,9 +185,15 @@ def command_validate_null(args):
     ordered_random = np.sort(randomized[np.isfinite(randomized)])
     expected = (np.arange(len(ordered)) + 0.5) / len(ordered)
     ax.scatter(expected, ordered, s=12)
-    ax.scatter(expected, ordered_random, s=12, alpha=0.7, label="randomized tie diagnostic")
+    ax.scatter(
+        expected, ordered_random, s=12, alpha=0.7, label="randomized tie diagnostic"
+    )
     ax.plot([0, 1], [0, 1], color="grey")
-    ax.set(xlabel="Expected uniform quantile", ylabel="Leave-one-out p", title="Neutral rank calibration")
+    ax.set(
+        xlabel="Expected uniform quantile",
+        ylabel="Leave-one-out p",
+        title="Neutral rank calibration",
+    )
     ax.legend()
     fig.savefig(destination / "null_rank_qq.png", dpi=160)
     plt.close(fig)
@@ -163,7 +205,9 @@ def command_convert(args):
 
 def command_decode(args):
     run_within_decoder(
-        args.executable, args.input, args.output,
+        args.executable,
+        args.input,
+        args.output,
         scaled_mutation_rate=args.theta,
         recombination_to_mutation_ratio=args.rho_over_theta,
         mutation_rate=args.mutation_rate,
@@ -362,9 +406,35 @@ def command_workbench_plot(args):
         threshold_years=args.threshold_years,
         whole_genome=args.whole_genome,
         top_n=args.top_n,
+        signal_fraction=args.signal_fraction,
     )
-    scope = "whole genome" if result["whole_genome_complete"] else "requested chromosomes"
-    print(f"plotted {result['population']} {scope} in {Path(args.output_dir).resolve()}")
+    scope = (
+        "whole genome" if result["whole_genome_complete"] else "requested chromosomes"
+    )
+    action = "reused" if result.get("reused") else "plotted"
+    print(
+        f"{action} {result['population']} {scope} in {Path(args.output_dir).resolve()}"
+    )
+
+
+def command_workbench_report(args):
+    result = summarize_workbench_run(
+        args.results_root,
+        populations=args.populations,
+        chromosomes=args.chromosomes,
+        output_dir=args.output_dir,
+        threshold_years=args.threshold_years,
+        signal_fraction=args.signal_fraction,
+        whole_genome=args.whole_genome,
+    )
+    action = "reused" if result.get("reused") else "wrote"
+    print(f"{action} Workbench report: {Path(args.output_dir).resolve()}")
+    for population in result["populations"]:
+        print(
+            f"  {population}: {result['population_region_counts'][population]} "
+            "candidate region(s)"
+        )
+    print(f"  total: {result['total_regions']} candidate region(s)")
 
 
 def command_workbench_regions(args):
@@ -483,7 +553,10 @@ def command_evaluate(args):
     names = sorted(truth_by_name.keys() & decoded_by_name.keys())
     if not names:
         raise FileNotFoundError("no identically named truth and decoded TSVs")
-    evaluate_pairs([(truth_by_name[name], decoded_by_name[name]) for name in names], args.output_dir)
+    evaluate_pairs(
+        [(truth_by_name[name], decoded_by_name[name]) for name in names],
+        args.output_dir,
+    )
 
 
 def command_plot_truth(args):
@@ -600,7 +673,9 @@ def command_two_epoch_spatial_truth(args):
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="gamma-smc-aou")
     commands = root.add_subparsers(required=True)
-    sim = commands.add_parser("simulate", help="simulate neutral regions with StandardCoalescent")
+    sim = commands.add_parser(
+        "simulate", help="simulate neutral regions with StandardCoalescent"
+    )
     sim.add_argument("--output-dir", required=True)
     sim.add_argument("--replicates", type=int, default=1000)
     sim.add_argument("--diploids", type=int, default=2000)
@@ -610,15 +685,21 @@ def parser() -> argparse.ArgumentParser:
     sim.add_argument("--recombination-rate", type=float, default=1e-8)
     sim.add_argument("--mutation-map")
     sim.add_argument("--recombination-map")
-    sim.add_argument("--histories", help="TSV with draw,time_generations,ne (e.g. PHLASH MVN draws)")
+    sim.add_argument(
+        "--histories", help="TSV with draw,time_generations,ne (e.g. PHLASH MVN draws)"
+    )
     sim.add_argument("--threshold-years", type=float, default=4500)
     sim.add_argument("--generation-time", type=float, default=DEFAULT_GENERATION_TIME)
     sim.add_argument("--seed", type=int, default=1729)
     sim.add_argument("--save-trees", action="store_true")
-    sim.add_argument("--workers", type=int, default=1, help="independent simulation processes")
+    sim.add_argument(
+        "--workers", type=int, default=1, help="independent simulation processes"
+    )
     sim.set_defaults(func=command_simulate)
 
-    cal = commands.add_parser("calibrate", help="calculate site-level simulation p-values")
+    cal = commands.add_parser(
+        "calibrate", help="calculate site-level simulation p-values"
+    )
     cal.add_argument("--observed", required=True)
     cal.add_argument("--sim-glob", required=True)
     cal.add_argument("--observed-length", type=float, required=True)
@@ -627,7 +708,9 @@ def parser() -> argparse.ArgumentParser:
     cal.add_argument("--output", required=True)
     cal.set_defaults(func=command_calibrate)
 
-    validate = commands.add_parser("validate-null", help="leave-one-replicate-out p-value calibration")
+    validate = commands.add_parser(
+        "validate-null", help="leave-one-replicate-out p-value calibration"
+    )
     validate.add_argument("--sim-glob", required=True)
     validate.add_argument("--sequence-length", type=float, required=True)
     validate.add_argument("--relative-position", type=float, default=0.5)
@@ -635,26 +718,37 @@ def parser() -> argparse.ArgumentParser:
     validate.add_argument("--output-dir", required=True)
     validate.set_defaults(func=command_validate_null)
 
-    convert = commands.add_parser("convert-ts", help="convert .trees/.tsz to diploid VCF")
+    convert = commands.add_parser(
+        "convert-ts", help="convert .trees/.tsz to diploid VCF"
+    )
     convert.add_argument("--input", required=True)
     convert.add_argument("--output", required=True)
     convert.set_defaults(func=command_convert)
 
-    decode = commands.add_parser("decode", help="run a streaming Gamma-SMC recent-coalescence summary")
+    decode = commands.add_parser(
+        "decode", help="run a streaming Gamma-SMC recent-coalescence summary"
+    )
     decode.add_argument(
         "--executable",
         default=os.environ.get("GAMMA_SMC_BIN", "gamma_smc"),
         help="Gamma-SMC binary (default: GAMMA_SMC_BIN or gamma_smc on PATH)",
     )
     decode.add_argument("--input", required=True)
-    decode.add_argument("--input-format", choices=["auto", "vcf", "trees", "tsz"], default="auto")
+    decode.add_argument(
+        "--input-format", choices=["auto", "vcf", "trees", "tsz"], default="auto"
+    )
     decode.add_argument("--output", required=True)
-    decode.add_argument("--raw-output", help="raw alpha/beta posteriors; 8 bytes per pair per position")
+    decode.add_argument(
+        "--raw-output", help="raw alpha/beta posteriors; 8 bytes per pair per position"
+    )
     decode.add_argument(
         "--bitmatrix",
         help="packed per-pair recent-coalescence calls, one bit per pair/position/threshold",
     )
-    decode.add_argument("--mask", help="global BED mask; use the same callable-region policy in data and simulations")
+    decode.add_argument(
+        "--mask",
+        help="global BED mask; use the same callable-region policy in data and simulations",
+    )
     decode.add_argument("--masks-per-sample", help="sample-to-BED TSV")
     decode.add_argument(
         "--samples",
@@ -665,57 +759,84 @@ def parser() -> argparse.ArgumentParser:
         help="one exact 0-based posterior output position per line",
     )
     decode.add_argument(
-        "--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE,
+        "--theta",
+        type=float,
+        default=DEFAULT_SCALED_MUTATION_RATE,
         help="scaled mutation rate; fixed by default so coalescent-time units, "
-             "and therefore P(T<t), are comparable across datasets",
+        "and therefore P(T<t), are comparable across datasets",
     )
     decode.add_argument(
-        "--rho-over-theta", type=float, default=DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
+        "--rho-over-theta",
+        type=float,
+        default=DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
         help="0.8 with the default theta gives the reference rho = 0.0006",
     )
     decode.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
     decode.add_argument(
-        "--threshold-years", type=float, nargs="+", default=[4500],
+        "--threshold-years",
+        type=float,
+        nargs="+",
+        default=[4500],
         help="one or more thresholds, e.g. --threshold-years 4500 10000",
     )
-    decode.add_argument("--generation-time", type=float, default=DEFAULT_GENERATION_TIME)
     decode.add_argument(
-        "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE,
+        "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
+    )
+    decode.add_argument(
+        "--output-at-stride",
+        type=int,
+        default=DEFAULT_OUTPUT_STRIDE,
         help="10 kb balances scan resolution, output size, and Workbench runtime",
     )
     decode.add_argument("--no-output-at-hets", action="store_true")
     decode.add_argument(
-        "--n-random-pairs", type=int, default=0,
+        "--n-random-pairs",
+        type=int,
+        default=0,
         help="sample this many haplotype pairs uniformly instead of one per diploid",
     )
     decode.add_argument("--pairs-seed", type=int, default=1729)
-    decode.add_argument("--pairs-file", help="explicit pair list: two 0-based haplotype indices per line")
     decode.add_argument(
-        "--exclude-within", action="store_true",
+        "--pairs-file",
+        help="explicit pair list: two 0-based haplotype indices per line",
+    )
+    decode.add_argument(
+        "--exclude-within",
+        action="store_true",
         help="drop within-individual pairs when sampling at random",
     )
     decode.add_argument(
-        "--recent-call", choices=["median", "mean", "prob"], default="median",
+        "--recent-call",
+        choices=["median", "mean", "prob"],
+        default="median",
         help="per-pair call rule: posterior median below the threshold (default), posterior mean, or P>=p",
     )
     decode.add_argument("--recent-call-probability", type=float, default=0.5)
-    decode.add_argument("--threads", type=int, default=0, help="0 uses every available core")
     decode.add_argument(
-        "--cache-size", type=int, default=DEFAULT_CACHE_SIZE,
+        "--threads", type=int, default=0, help="0 uses every available core"
+    )
+    decode.add_argument(
+        "--cache-size",
+        type=int,
+        default=DEFAULT_CACHE_SIZE,
         help="maximum transition-cache segment in bp; 1 kb is the validated default",
     )
     decode.add_argument("--pair-block", type=int, default=256)
     decode.add_argument(
         "--pairs-manifest",
         help="write the decoded pair list here (reusable as --pairs-file); "
-             "derived next to the output automatically when sampling at random",
+        "derived next to the output automatically when sampling at random",
     )
     decode.add_argument(
-        "--exp10", choices=["accurate", "fast"], default="accurate",
+        "--exp10",
+        choices=["accurate", "fast"],
+        default="accurate",
         help="fast reproduces upstream's 10^x approximation, which carries -3.9%%..+2.0%% relative error",
     )
     decode.add_argument(
-        "--backward-alignment", choices=["fixed", "legacy"], default="fixed",
+        "--backward-alignment",
+        choices=["fixed", "legacy"],
+        default="fixed",
         help="legacy reproduces upstream's one-output-position shift of the backward message",
     )
     decode.set_defaults(func=command_decode)
@@ -814,15 +935,9 @@ def parser() -> argparse.ArgumentParser:
     workbench_validate.add_argument("--exclude-within", action="store_true")
     workbench_validate.add_argument("--signal-fraction", type=float, default=0.05)
     workbench_validate.add_argument("--merge-gap", type=int, default=20_000)
-    workbench_validate.add_argument(
-        "--profile-half-width", type=int, default=500_000
-    )
-    workbench_validate.add_argument(
-        "--variant-half-width", type=int, default=100_000
-    )
-    workbench_validate.add_argument(
-        "--minimum-genotype-pairs", type=int, default=20
-    )
+    workbench_validate.add_argument("--profile-half-width", type=int, default=500_000)
+    workbench_validate.add_argument("--variant-half-width", type=int, default=100_000)
+    workbench_validate.add_argument("--minimum-genotype-pairs", type=int, default=20)
     workbench_validate.add_argument(
         "--exp10", choices=["accurate", "fast"], default="accurate"
     )
@@ -846,7 +961,25 @@ def parser() -> argparse.ArgumentParser:
     workbench_plot.add_argument("--threshold-years", type=float, default=4500)
     workbench_plot.add_argument("--whole-genome", action="store_true")
     workbench_plot.add_argument("--top-n", type=int, default=100)
+    workbench_plot.add_argument("--signal-fraction", type=float, default=0.05)
     workbench_plot.set_defaults(func=command_workbench_plot)
+
+    workbench_report = commands.add_parser(
+        "workbench-report",
+        help="summarize population regions and make a combined genome-wide plot",
+    )
+    workbench_report.add_argument("--results-root", required=True)
+    workbench_report.add_argument(
+        "--populations", type=str.upper, choices=POPULATIONS, nargs="+", required=True
+    )
+    workbench_report.add_argument(
+        "--chromosomes", type=int, choices=AUTOSOMES, nargs="+", required=True
+    )
+    workbench_report.add_argument("--output-dir", required=True)
+    workbench_report.add_argument("--threshold-years", type=float, default=4500)
+    workbench_report.add_argument("--signal-fraction", type=float, default=0.05)
+    workbench_report.add_argument("--whole-genome", action="store_true")
+    workbench_report.set_defaults(func=command_workbench_report)
 
     workbench_regions = commands.add_parser(
         "workbench-regions",
@@ -866,9 +999,7 @@ def parser() -> argparse.ArgumentParser:
     workbench_regions.add_argument(
         "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
     )
-    workbench_regions.add_argument(
-        "--profile-half-width", type=int, default=500_000
-    )
+    workbench_regions.add_argument("--profile-half-width", type=int, default=500_000)
     workbench_regions.set_defaults(func=command_workbench_regions)
 
     workbench_candidates = commands.add_parser(
@@ -892,15 +1023,9 @@ def parser() -> argparse.ArgumentParser:
         "--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE
     )
     workbench_candidates.add_argument("--threshold-years", type=float, default=4500)
-    workbench_candidates.add_argument(
-        "--profile-half-width", type=int, default=500_000
-    )
-    workbench_candidates.add_argument(
-        "--variant-half-width", type=int, default=100_000
-    )
-    workbench_candidates.add_argument(
-        "--minimum-genotype-pairs", type=int, default=20
-    )
+    workbench_candidates.add_argument("--profile-half-width", type=int, default=500_000)
+    workbench_candidates.add_argument("--variant-half-width", type=int, default=100_000)
+    workbench_candidates.add_argument("--minimum-genotype-pairs", type=int, default=20)
     workbench_candidates.add_argument("--minimum-fraction", type=float, default=0.05)
     workbench_candidates.add_argument("--merge-gap", type=int, default=20_000)
     workbench_candidates.set_defaults(func=command_workbench_candidates)
@@ -922,9 +1047,16 @@ def parser() -> argparse.ArgumentParser:
         "bitmatrix-summary",
         help="per-position recent-coalescence counts from a packed bit matrix",
     )
-    bits.add_argument("--input", required=True, help="path to the .bits file (its .meta must sit alongside)")
+    bits.add_argument(
+        "--input",
+        required=True,
+        help="path to the .bits file (its .meta must sit alongside)",
+    )
     bits.add_argument("--output", required=True)
-    bits.add_argument("--pairs", help="optional file of 0-based pair indices to restrict the counts to")
+    bits.add_argument(
+        "--pairs",
+        help="optional file of 0-based pair indices to restrict the counts to",
+    )
     bits.set_defaults(func=command_bitmatrix_summary)
 
     container = commands.add_parser(
@@ -935,7 +1067,8 @@ def parser() -> argparse.ArgumentParser:
     container.add_argument("--output", required=True)
     container.add_argument("--theta", type=float, default=DEFAULT_SCALED_MUTATION_RATE)
     container.add_argument(
-        "--rho-over-theta", type=float,
+        "--rho-over-theta",
+        type=float,
         default=DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
     )
     container.add_argument("--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE)
@@ -947,7 +1080,9 @@ def parser() -> argparse.ArgumentParser:
         "--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE
     )
     container.add_argument(
-        "--runtime", choices=["auto", "apptainer", "singularity", "docker"], default="auto"
+        "--runtime",
+        choices=["auto", "apptainer", "singularity", "docker"],
+        default="auto",
     )
     container.add_argument("--image", default=DEFAULT_IMAGE)
     container.add_argument("--keep-raw", action="store_true")
@@ -962,7 +1097,9 @@ def parser() -> argparse.ArgumentParser:
     study.add_argument("--neutral-replicates", type=int, default=100)
     study.add_argument("--output-at-stride", type=int, default=DEFAULT_OUTPUT_STRIDE)
     study.add_argument(
-        "--runtime", choices=["auto", "apptainer", "singularity", "docker"], default="auto"
+        "--runtime",
+        choices=["auto", "apptainer", "singularity", "docker"],
+        default="auto",
     )
     study.add_argument("--image", default=DEFAULT_IMAGE)
     study.add_argument("--keep-vcfs", action="store_true")
@@ -1048,13 +1185,17 @@ def parser() -> argparse.ArgumentParser:
     )
     finish_high_af.set_defaults(func=command_finalize_high_af_selected)
 
-    evaluate = commands.add_parser("evaluate-decoder", help="compare decoded simulations with tree-sequence truth")
+    evaluate = commands.add_parser(
+        "evaluate-decoder", help="compare decoded simulations with tree-sequence truth"
+    )
     evaluate.add_argument("--truth-dir", required=True)
     evaluate.add_argument("--decoded-dir", required=True)
     evaluate.add_argument("--output-dir", required=True)
     evaluate.set_defaults(func=command_evaluate)
 
-    truth_plot = commands.add_parser("plot-truth", help="plot true recent fraction against simulated mean TMRCA")
+    truth_plot = commands.add_parser(
+        "plot-truth", help="plot true recent fraction against simulated mean TMRCA"
+    )
     truth_plot.add_argument("--summary-dir", required=True)
     truth_plot.add_argument("--sequence-length", type=float, required=True)
     truth_plot.add_argument("--ne", type=float, required=True)
@@ -1066,7 +1207,10 @@ def parser() -> argparse.ArgumentParser:
     truth_plot.add_argument("--output-dir", required=True)
     truth_plot.set_defaults(func=command_plot_truth)
 
-    sweep = commands.add_parser("validate-sweep", help="validate recent-coalescence power with a SLiM hard sweep")
+    sweep = commands.add_parser(
+        "validate-sweep",
+        help="validate recent-coalescence power with a SLiM hard sweep",
+    )
     sweep.add_argument("--output-dir", required=True)
     sweep.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
     sweep.add_argument("--population-size", type=int, default=200)
@@ -1074,9 +1218,7 @@ def parser() -> argparse.ArgumentParser:
     sweep.add_argument("--selection-coefficient", type=float, default=0.5)
     sweep.add_argument("--recombination-rate", type=float, default=1e-7)
     sweep.add_argument("--threshold-years", type=float, default=4500)
-    sweep.add_argument(
-        "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
-    )
+    sweep.add_argument("--generation-time", type=float, default=DEFAULT_GENERATION_TIME)
     sweep.add_argument("--neutral-replicates", type=int, default=39)
     sweep.add_argument("--seed", type=int, default=24681357)
     sweep.set_defaults(func=command_validate_sweep)
@@ -1098,7 +1240,9 @@ def parser() -> argparse.ArgumentParser:
     recent.add_argument("--recombination-rate", type=float, default=1e-8)
     recent.add_argument("--neutral-replicates", type=int, default=100)
     recent.add_argument("--selected-replicates", type=int, default=1)
-    recent.add_argument("--workers", type=int, default=1, help="parallel selected SLiM trajectories")
+    recent.add_argument(
+        "--workers", type=int, default=1, help="parallel selected SLiM trajectories"
+    )
     recent.add_argument(
         "--reuse-null-from",
         help="reuse compatible s=0 replicate statistics/profiles from this result directory",
@@ -1179,9 +1323,7 @@ def parser() -> argparse.ArgumentParser:
     )
     spatial.add_argument("--source-dir", required=True)
     spatial.add_argument("--output-dir")
-    spatial.add_argument(
-        "--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH"
-    )
+    spatial.add_argument("--slim", help="SLiM executable; otherwise use SLIM_BIN/PATH")
     spatial.add_argument("--workers", type=int, default=20)
     spatial.add_argument("--window-size", type=int, default=20_000)
     spatial.add_argument("--zoom-half-width", type=int, default=500_000)

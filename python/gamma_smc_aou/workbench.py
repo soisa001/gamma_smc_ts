@@ -12,6 +12,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.ticker import PercentFormatter
 
 from . import bitmatrix as bitmatrix_reader
 
@@ -30,6 +31,8 @@ RELATEDNESS_ID_COLUMNS = (
     "research_id",
     "person_id",
 )
+PLOT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-population-plots/v2"
+REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v1"
 
 
 def threshold_suffix(years: float) -> str:
@@ -46,6 +49,101 @@ def sha256_file(path: str | Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _atomic_text(path: str | Path, text: str) -> None:
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(destination.name + f".tmp.{os.getpid()}")
+    try:
+        temporary.write_text(text, encoding="utf-8")
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _atomic_frame(path: str | Path, frame: pd.DataFrame) -> None:
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(destination.name + f".tmp.{os.getpid()}")
+    try:
+        frame.to_csv(temporary, sep="\t", index=False)
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _atomic_figure(figure, path: str | Path, **savefig_kwargs) -> None:
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(
+        f".{destination.stem}.tmp.{os.getpid()}{destination.suffix}"
+    )
+    try:
+        figure.savefig(temporary, **savefig_kwargs)
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _artifact_record(path: Path, root: Path) -> dict:
+    return {
+        "path": path.resolve().relative_to(root.resolve()).as_posix(),
+        "size_bytes": path.stat().st_size,
+        "sha256": sha256_file(path),
+    }
+
+
+def _reuse_artifact_manifest(
+    manifest_path: Path,
+    *,
+    schema: str,
+    contract: dict,
+) -> dict | None:
+    if not manifest_path.is_file():
+        return None
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("schema") != schema or manifest.get("contract") != contract:
+            return None
+        root = manifest_path.parent.resolve()
+        artifacts = manifest.get("artifacts")
+        if not isinstance(artifacts, list) or not artifacts:
+            return None
+        for record in artifacts:
+            relative = Path(str(record["path"]))
+            artifact = (root / relative).resolve()
+            artifact.relative_to(root)
+            if not artifact.is_file():
+                return None
+            if artifact.stat().st_size != int(record["size_bytes"]):
+                return None
+            if sha256_file(artifact) != record["sha256"]:
+                return None
+        result = dict(manifest["result"])
+        result["reused"] = True
+        return result
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def _write_artifact_manifest(
+    manifest_path: Path,
+    *,
+    schema: str,
+    contract: dict,
+    result: dict,
+    artifacts: list[Path],
+) -> None:
+    manifest = {
+        "schema": schema,
+        "contract": contract,
+        "result": result,
+        "artifacts": [
+            _artifact_record(path, manifest_path.parent) for path in artifacts
+        ],
+    }
+    _atomic_text(manifest_path, json.dumps(manifest, indent=2) + "\n")
 
 
 def contract_sha256(contract: dict) -> str:
@@ -141,8 +239,7 @@ def build_workbench_sample_list(
     selected = [
         sample_id
         for sample_id in bcf_samples
-        if ancestry_by_id.get(sample_id) == population
-        and sample_id not in excluded_ids
+        if ancestry_by_id.get(sample_id) == population and sample_id not in excluded_ids
     ]
     if not selected:
         raise ValueError(
@@ -264,7 +361,9 @@ def build_workbench_callable_mask(
                     f"hard-mask BED line {line_number} has non-integer coordinates"
                 ) from error
             if start < 0 or end <= start:
-                raise ValueError(f"hard-mask BED line {line_number} has invalid interval")
+                raise ValueError(
+                    f"hard-mask BED line {line_number} has invalid interval"
+                )
             clipped_start = max(0, start)
             clipped_end = min(sequence_length, end)
             if clipped_start != start or clipped_end != end:
@@ -429,7 +528,9 @@ def build_workbench_contract(
     if any(value is not None for value in mask_fields) and not all(
         value is not None for value in mask_fields
     ):
-        raise ValueError("mask URI, fingerprint, and local path must be supplied together")
+        raise ValueError(
+            "mask URI, fingerprint, and local path must be supplied together"
+        )
     return {
         "schema_version": 1,
         "population": population,
@@ -590,7 +691,9 @@ def _command_value(command: list[str], flag: str) -> str:
 
 def _assert_float(command: list[str], flag: str, expected: float) -> None:
     observed = float(_command_value(command, flag))
-    if not np.isclose(observed, expected, rtol=0, atol=max(1e-15, abs(expected) * 1e-12)):
+    if not np.isclose(
+        observed, expected, rtol=0, atol=max(1e-15, abs(expected) * 1e-12)
+    ):
         raise ValueError(f"run command {flag}={observed}; expected {expected}")
 
 
@@ -600,17 +703,25 @@ def validate_run_json(run_json_path: str | Path, contract: dict) -> dict:
         raise ValueError(f"run metadata is absent or empty: {path}")
     run = json.loads(path.read_text(encoding="utf-8"))
     command = run.get("command")
-    if not isinstance(command, list) or not all(isinstance(item, str) for item in command):
+    if not isinstance(command, list) or not all(
+        isinstance(item, str) for item in command
+    ):
         raise ValueError("run metadata command must be a string list")
     decoder = contract["decoder"]
     expected_input = contract["input"]["local_path"]
     if str(Path(_command_value(command, "--input")).resolve()) != expected_input:
         raise ValueError("run command input does not match the contract")
     expected_output = contract["output_summary"]
-    if str(Path(_command_value(command, "--recent_summary")).resolve()) != expected_output:
+    if (
+        str(Path(_command_value(command, "--recent_summary")).resolve())
+        != expected_output
+    ):
         raise ValueError("run command output does not match the contract")
     expected_manifest = contract["pairs_manifest"]
-    if str(Path(_command_value(command, "--pairs_manifest")).resolve()) != expected_manifest:
+    if (
+        str(Path(_command_value(command, "--pairs_manifest")).resolve())
+        != expected_manifest
+    ):
         raise ValueError("run command pair manifest does not match the contract")
     expected_samples = contract["sample_selection"]["sample_list"]
     if str(Path(_command_value(command, "--samples")).resolve()) != expected_samples:
@@ -665,16 +776,21 @@ def validate_run_json(run_json_path: str | Path, contract: dict) -> dict:
         if _command_value(command, "--n_random_pairs") != str(
             decoder["n_random_pairs"]
         ):
-            raise ValueError("run command random-pair count does not match the contract")
+            raise ValueError(
+                "run command random-pair count does not match the contract"
+            )
         if _command_value(command, "--pairs_seed") != str(decoder["pairs_seed"]):
             raise ValueError("run command pair seed does not match the contract")
         if decoder["exclude_within"] != ("--exclude_within" in command):
-            raise ValueError("run command within-pair exclusion does not match the contract")
+            raise ValueError(
+                "run command within-pair exclusion does not match the contract"
+            )
     outputs = contract.get("analysis_outputs")
     if outputs is not None:
-        if str(Path(_command_value(command, "--recent_bitmatrix")).resolve()) != outputs[
-            "bitmatrix"
-        ]:
+        if (
+            str(Path(_command_value(command, "--recent_bitmatrix")).resolve())
+            != outputs["bitmatrix"]
+        ):
             raise ValueError("run command bit matrix does not match the contract")
     if int(run.get("stride_bp", -1)) != decoder["stride_bp"]:
         raise ValueError("run metadata stride does not match the contract")
@@ -698,13 +814,17 @@ def validate_pairs_manifest(
         raise ValueError(f"pair manifest is absent or empty: {path}")
     pairs = set()
     pair_index = 0
-    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), 1
+    ):
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
         fields = stripped.split("\t")
         if len(fields) < 2:
-            raise ValueError(f"pair manifest line {line_number} has fewer than two fields")
+            raise ValueError(
+                f"pair manifest line {line_number} has fewer than two fields"
+            )
         try:
             haplotype_i, haplotype_j = int(fields[0]), int(fields[1])
         except ValueError as error:
@@ -727,7 +847,9 @@ def validate_pairs_manifest(
                 raise ValueError("pair manifest references outside the sample list")
             if pair_mode == "within_individual":
                 if pair_index >= len(expected_samples):
-                    raise ValueError("pair manifest has more pairs than the sample list")
+                    raise ValueError(
+                        "pair manifest has more pairs than the sample list"
+                    )
                 expected_pair = (2 * pair_index, 2 * pair_index + 1)
                 if pair != expected_pair:
                     raise ValueError(
@@ -735,12 +857,8 @@ def validate_pairs_manifest(
                     )
             if len(fields) < 4:
                 raise ValueError("pair manifest is missing haplotype labels")
-            expected_i = (
-                f"{expected_samples[haplotype_i // 2]}.{haplotype_i % 2}"
-            )
-            expected_j = (
-                f"{expected_samples[haplotype_j // 2]}.{haplotype_j % 2}"
-            )
+            expected_i = f"{expected_samples[haplotype_i // 2]}.{haplotype_i % 2}"
+            expected_j = f"{expected_samples[haplotype_j // 2]}.{haplotype_j % 2}"
             if fields[2] != expected_i or fields[3] != expected_j:
                 raise ValueError(
                     "pair manifest haplotype labels do not match the sample list"
@@ -783,7 +901,9 @@ def validate_sample_selection(contract: dict, *, verify_sources: bool) -> dict:
         raise ValueError(f"sample-selection audit is absent or empty: {audit_path}")
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
     if audit.get("population") != contract["population"]:
-        raise ValueError("sample-selection audit population does not match the contract")
+        raise ValueError(
+            "sample-selection audit population does not match the contract"
+        )
     if audit.get("ancestry_label_column") != ANCESTRY_LABEL_COLUMN:
         raise ValueError("sample-selection audit used the wrong ancestry label column")
     audit_sample = audit.get("sample_list", {})
@@ -885,7 +1005,10 @@ def validate_workbench_bitmatrix(
     metadata_path = bitmatrix_reader.meta_path(path)
     if not path.exists() and not required:
         return None
-    for label, candidate in (("bit matrix", path), ("bit-matrix metadata", metadata_path)):
+    for label, candidate in (
+        ("bit matrix", path),
+        ("bit-matrix metadata", metadata_path),
+    ):
         if not candidate.is_file() or candidate.stat().st_size == 0:
             raise ValueError(f"{label} is absent or empty: {candidate}")
     metadata = bitmatrix_reader.read_meta(path)
@@ -921,13 +1044,11 @@ def validate_workbench_bitmatrix(
     sample_names = read_sample_list(contract["sample_selection"]["sample_list"])
     labels = metadata.get("sample_names", {})
     expected_labels = {
-        str(2 * index): f"{sample}.0"
-        for index, sample in enumerate(sample_names)
+        str(2 * index): f"{sample}.0" for index, sample in enumerate(sample_names)
     }
-    expected_labels.update({
-        str(2 * index + 1): f"{sample}.1"
-        for index, sample in enumerate(sample_names)
-    })
+    expected_labels.update(
+        {str(2 * index + 1): f"{sample}.1" for index, sample in enumerate(sample_names)}
+    )
     if labels != expected_labels:
         raise ValueError("bit-matrix sample order does not match the sample list")
     return {
@@ -948,7 +1069,10 @@ def validate_candidate_analysis(contract: dict, *, required: bool) -> dict | Non
     manifest_path = Path(outputs["candidate_manifest"])
     if not regions_path.exists() and not manifest_path.exists() and not required:
         return None
-    for label, path in (("candidate regions", regions_path), ("candidate manifest", manifest_path)):
+    for label, path in (
+        ("candidate regions", regions_path),
+        ("candidate manifest", manifest_path),
+    ):
         if not path.is_file() or path.stat().st_size == 0:
             raise ValueError(f"{label} is absent or empty: {path}")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -972,7 +1096,9 @@ def validate_candidate_analysis(contract: dict, *, required: bool) -> dict | Non
         try:
             artifact.relative_to(root)
         except ValueError as error:
-            raise ValueError("candidate artifact escapes its output directory") from error
+            raise ValueError(
+                "candidate artifact escapes its output directory"
+            ) from error
         if not artifact.exists() and not required:
             continue
         if not artifact.is_file():
@@ -1027,7 +1153,9 @@ def write_workbench_completion(
         ),
     )
     if int(run.get("n_output_positions", -1)) != summary_metrics["n_output_positions"]:
-        raise ValueError("run metadata output-position count does not match the summary")
+        raise ValueError(
+            "run metadata output-position count does not match the summary"
+        )
     if int(run.get("n_pairs_recorded", -1)) != pair_metrics["n_pairs"]:
         raise ValueError("run metadata pair count does not match the pair manifest")
     if (
@@ -1063,9 +1191,9 @@ def write_workbench_completion(
         },
         "sample_selection": {
             **sample_selection,
-            "sample_list_size_bytes": Path(
-                contract["sample_selection"]["sample_list"]
-            ).stat().st_size,
+            "sample_list_size_bytes": Path(contract["sample_selection"]["sample_list"])
+            .stat()
+            .st_size,
         },
         "mask": mask_metrics,
         "bitmatrix": bitmatrix_metrics,
@@ -1094,7 +1222,9 @@ def validate_workbench_completion(
     if completion.get("contract_sha256") != expected_digest:
         raise ValueError("completion contract does not match requested inputs/settings")
     if completion.get("contract") != contract:
-        raise ValueError("completion contract payload does not match requested contract")
+        raise ValueError(
+            "completion contract payload does not match requested contract"
+        )
     summary_frame, _ = validate_summary(
         summary_path,
         threshold_years=contract["decoder"]["threshold_years"],
@@ -1129,14 +1259,17 @@ def validate_workbench_completion(
         sample_selection["audit_sha256"]
         != completion["sample_selection"]["audit_sha256"]
     ):
-        raise ValueError("sample-selection audit hash no longer matches its completion record")
+        raise ValueError(
+            "sample-selection audit hash no longer matches its completion record"
+        )
     if mask_metrics is not None and mask_metrics != completion.get("mask"):
         raise ValueError("callable mask no longer matches its completion record")
-    if bitmatrix_metrics is not None and bitmatrix_metrics != completion.get("bitmatrix"):
+    if bitmatrix_metrics is not None and bitmatrix_metrics != completion.get(
+        "bitmatrix"
+    ):
         raise ValueError("bit matrix no longer matches its completion record")
-    if (
-        candidate_metrics is not None
-        and candidate_metrics != completion.get("candidate_analysis")
+    if candidate_metrics is not None and candidate_metrics != completion.get(
+        "candidate_analysis"
     ):
         raise ValueError("candidate analysis no longer matches its completion record")
     if sha256_file(summary_path) != completion["summary"]["sha256"]:
@@ -1158,14 +1291,26 @@ def _plot_chromosome(
 ) -> None:
     called_column = called_fraction_column(threshold_years)
     position_mb = frame["position_0based"].to_numpy(dtype=float) / 1e6
-    figure, axes = plt.subplots(3, 1, figsize=(16, 11), sharex=True, constrained_layout=True)
+    figure, axes = plt.subplots(
+        3, 1, figsize=(16, 11), sharex=True, constrained_layout=True
+    )
     panels = (
-        (called_column, f"Fraction: posterior mean TMRCA < {threshold_years:g} years", "#5b21b6"),
-        (SOFT_COLUMN, f"Mean posterior P(TMRCA < {threshold_years:g} years)", "#0369a1"),
+        (
+            called_column,
+            f"Fraction: posterior mean TMRCA < {threshold_years:g} years",
+            "#5b21b6",
+        ),
+        (
+            SOFT_COLUMN,
+            f"Mean posterior P(TMRCA < {threshold_years:g} years)",
+            "#0369a1",
+        ),
         (TMRCA_COLUMN, "Mean posterior TMRCA (generations)", "#374151"),
     )
     for axis, (column, ylabel, color) in zip(axes, panels):
-        axis.plot(position_mb, frame[column], color=color, linewidth=0.8, rasterized=True)
+        axis.plot(
+            position_mb, frame[column], color=color, linewidth=0.8, rasterized=True
+        )
         axis.set_ylabel(ylabel)
         axis.grid(alpha=0.16, linewidth=0.6)
     finite_tmrca = frame[TMRCA_COLUMN].to_numpy(dtype=float)
@@ -1178,9 +1323,184 @@ def _plot_chromosome(
         fontsize=17,
     )
     output_stem.parent.mkdir(parents=True, exist_ok=True)
-    figure.savefig(Path(f"{output_stem}.png"), dpi=180, bbox_inches="tight")
-    figure.savefig(Path(f"{output_stem}.pdf"), bbox_inches="tight")
+    _atomic_figure(figure, Path(f"{output_stem}.png"), dpi=180, bbox_inches="tight")
+    _atomic_figure(figure, Path(f"{output_stem}.pdf"), bbox_inches="tight")
     plt.close(figure)
+
+
+def _sequence_span(frame: pd.DataFrame) -> float:
+    positions = frame["position_0based"].to_numpy(dtype=float)
+    differences = np.diff(positions)
+    positive = differences[differences > 0]
+    step = float(np.median(positive)) if len(positive) else 1.0
+    return float(positions.max()) + max(1.0, step)
+
+
+def _assemble_genome(
+    frames: dict[int, pd.DataFrame],
+    *,
+    population: str,
+    chromosome_spans: dict[int, float] | None = None,
+) -> tuple[pd.DataFrame, list[float], list[float], float]:
+    genome_parts = []
+    offset = 0.0
+    ticks = []
+    boundaries = []
+    for chromosome in sorted(frames):
+        frame = frames[chromosome].copy()
+        sequence_length = (
+            float(chromosome_spans[chromosome])
+            if chromosome_spans is not None
+            else _sequence_span(frame)
+        )
+        frame.insert(0, "population", population)
+        frame.insert(1, "chromosome", chromosome)
+        frame["genome_position_0based"] = frame["position_0based"] + offset
+        genome_parts.append(frame)
+        ticks.append(offset + sequence_length / 2)
+        offset += sequence_length
+        boundaries.append(offset)
+    return pd.concat(genome_parts, ignore_index=True), ticks, boundaries, offset
+
+
+def _draw_recent_genome_axis(
+    axis,
+    genome: pd.DataFrame,
+    *,
+    chromosomes: list[int],
+    called_column: str,
+    ticks: list[float],
+    boundaries: list[float],
+    signal_fraction: float,
+    ymax: float,
+    show_chromosomes: bool,
+) -> None:
+    colors = ("#111827", "#2563eb")
+    for index, chromosome in enumerate(chromosomes):
+        subset = genome.loc[genome["chromosome"].eq(chromosome)]
+        axis.scatter(
+            subset["genome_position_0based"] / 1e9,
+            subset[called_column],
+            s=1.2,
+            alpha=0.8,
+            color=colors[index % 2],
+            linewidths=0,
+            rasterized=True,
+        )
+    for boundary in boundaries[:-1]:
+        axis.axvline(boundary / 1e9, color="0.78", linewidth=0.45, linestyle=":")
+    axis.axhline(signal_fraction, color="#059669", linewidth=0.8, linestyle="--")
+    axis.set_ylim(0, ymax)
+    axis.yaxis.set_major_formatter(PercentFormatter(xmax=1.0))
+    axis.grid(axis="y", alpha=0.18, linewidth=0.55)
+    axis.margins(x=0)
+    if show_chromosomes:
+        axis.set_xticks(
+            np.asarray(ticks) / 1e9,
+            [str(chromosome) for chromosome in chromosomes],
+        )
+        axis.set_xlabel("Chromosome")
+    else:
+        axis.tick_params(axis="x", labelbottom=False)
+
+
+def _plot_population_recent_genome(
+    genome: pd.DataFrame,
+    *,
+    population: str,
+    chromosomes: list[int],
+    called_column: str,
+    threshold_years: float,
+    ticks: list[float],
+    boundaries: list[float],
+    signal_fraction: float,
+    output_dir: Path,
+) -> list[Path]:
+    finite = genome[called_column].to_numpy(dtype=float)
+    finite = finite[np.isfinite(finite)]
+    ymax = min(1.0, max(signal_fraction, float(finite.max())) * 1.08)
+    figure, axis = plt.subplots(figsize=(22, 5.2), constrained_layout=True)
+    _draw_recent_genome_axis(
+        axis,
+        genome,
+        chromosomes=chromosomes,
+        called_column=called_column,
+        ticks=ticks,
+        boundaries=boundaries,
+        signal_fraction=signal_fraction,
+        ymax=ymax,
+        show_chromosomes=True,
+    )
+    axis.set_ylabel(f"% pairs called coalesced < {threshold_years:g}y")
+    axis.set_title(
+        f"{population} genome-wide Gamma-SMC scan: posterior mean TMRCA < "
+        f"{threshold_years:g} years"
+    )
+    outputs = [
+        output_dir / f"{population}.whole_genome.gamma_smc.png",
+        output_dir / f"{population}.whole_genome.gamma_smc.pdf",
+    ]
+    _atomic_figure(figure, outputs[0], dpi=180, bbox_inches="tight")
+    _atomic_figure(figure, outputs[1], bbox_inches="tight")
+    plt.close(figure)
+    return outputs
+
+
+def _plot_population_diagnostics(
+    genome: pd.DataFrame,
+    *,
+    population: str,
+    chromosomes: list[int],
+    called_column: str,
+    threshold_years: float,
+    ticks: list[float],
+    boundaries: list[float],
+    output_dir: Path,
+) -> list[Path]:
+    figure, axes = plt.subplots(
+        3, 1, figsize=(22, 12), sharex=True, constrained_layout=True
+    )
+    panels = (
+        (called_column, f"Fraction: posterior mean TMRCA < {threshold_years:g} years"),
+        (SOFT_COLUMN, f"Mean posterior P(TMRCA < {threshold_years:g} years)"),
+        (TMRCA_COLUMN, "Mean posterior TMRCA (generations)"),
+    )
+    colors = ("#2563eb", "#7c3aed")
+    for axis, (column, ylabel) in zip(axes, panels):
+        for index, chromosome in enumerate(chromosomes):
+            subset = genome.loc[genome["chromosome"].eq(chromosome)]
+            axis.scatter(
+                subset["genome_position_0based"] / 1e9,
+                subset[column],
+                s=1.2,
+                alpha=0.75,
+                color=colors[index % 2],
+                linewidths=0,
+                rasterized=True,
+            )
+        for boundary in boundaries[:-1]:
+            axis.axvline(boundary / 1e9, color="0.8", linewidth=0.45)
+        axis.set_ylabel(ylabel)
+        axis.grid(axis="y", alpha=0.16, linewidth=0.6)
+    finite_tmrca = genome[TMRCA_COLUMN].to_numpy(dtype=float)
+    finite_tmrca = finite_tmrca[np.isfinite(finite_tmrca)]
+    if len(finite_tmrca) and np.all(finite_tmrca > 0):
+        axes[2].set_yscale("log")
+    axes[2].set_xticks(np.asarray(ticks) / 1e9, [str(value) for value in chromosomes])
+    axes[2].set_xlabel("Chromosome")
+    figure.suptitle(
+        f"{population} whole-genome Gamma-SMC diagnostics\n"
+        "Descriptive posterior summaries; significance requires matched null calibration",
+        fontsize=18,
+    )
+    outputs = [
+        output_dir / f"{population}.whole_genome.diagnostics.png",
+        output_dir / f"{population}.whole_genome.diagnostics.pdf",
+    ]
+    _atomic_figure(figure, outputs[0], dpi=180, bbox_inches="tight")
+    _atomic_figure(figure, outputs[1], bbox_inches="tight")
+    plt.close(figure)
+    return outputs
 
 
 def plot_workbench_population(
@@ -1191,6 +1511,7 @@ def plot_workbench_population(
     threshold_years: float = 4500,
     whole_genome: bool = False,
     top_n: int = 100,
+    signal_fraction: float = 0.05,
 ) -> dict:
     population = population.upper()
     if population not in POPULATIONS:
@@ -1202,14 +1523,48 @@ def plot_workbench_population(
         raise ValueError("chromosome summaries must be autosomes 1-22")
     if whole_genome and chromosomes != list(AUTOSOMES):
         raise ValueError("whole-genome plotting requires all autosomes 1-22")
+    if top_n < 1:
+        raise ValueError("top_n must be positive")
+    if not 0 <= signal_fraction <= 1:
+        raise ValueError("signal_fraction must be in [0, 1]")
 
     output_dir = Path(output_dir)
     chromosome_plot_dir = output_dir / "chromosomes"
     chromosome_plot_dir.mkdir(parents=True, exist_ok=True)
     called_column = called_fraction_column(threshold_years)
+    input_records = []
+    for chromosome in chromosomes:
+        path = Path(summary_paths[chromosome]).resolve()
+        if not path.is_file():
+            raise ValueError(f"summary is absent: {path}")
+        input_records.append(
+            {
+                "chromosome": chromosome,
+                "path": str(path),
+                "sha256": sha256_file(path),
+                "size_bytes": path.stat().st_size,
+            }
+        )
+    contract = {
+        "population": population,
+        "chromosomes": chromosomes,
+        "threshold_years": float(threshold_years),
+        "called_fraction_column": called_column,
+        "whole_genome": bool(whole_genome),
+        "top_n": int(top_n),
+        "signal_fraction": float(signal_fraction),
+        "inputs": input_records,
+    }
+    manifest_path = output_dir / "plot_manifest.json"
+    reused = _reuse_artifact_manifest(
+        manifest_path, schema=PLOT_MANIFEST_SCHEMA, contract=contract
+    )
+    if reused is not None:
+        return reused
+
     frames: dict[int, pd.DataFrame] = {}
     chromosome_rows = []
-    input_records = []
+    artifacts: list[Path] = []
     for chromosome in chromosomes:
         path = Path(summary_paths[chromosome]).resolve()
         frame, validation = validate_summary(path, threshold_years=threshold_years)
@@ -1221,31 +1576,41 @@ def plot_workbench_population(
             threshold_years=threshold_years,
             output_stem=chromosome_plot_dir / f"chr{chromosome}.gamma_smc",
         )
+        artifacts.extend(
+            [
+                chromosome_plot_dir / f"chr{chromosome}.gamma_smc.png",
+                chromosome_plot_dir / f"chr{chromosome}.gamma_smc.pdf",
+            ]
+        )
         hard_index = int(frame[called_column].astype(float).idxmax())
         soft_index = int(frame[SOFT_COLUMN].astype(float).idxmax())
         tmrca_index = int(frame[TMRCA_COLUMN].astype(float).idxmin())
-        chromosome_rows.append({
-            "population": population,
-            "chromosome": chromosome,
-            **validation,
-            "maximum_called_fraction": float(frame.loc[hard_index, called_column]),
-            "maximum_called_fraction_position_1based": int(frame.loc[hard_index, "position_1based"]),
-            "maximum_soft_probability": float(frame.loc[soft_index, SOFT_COLUMN]),
-            "maximum_soft_probability_position_1based": int(frame.loc[soft_index, "position_1based"]),
-            "minimum_mean_tmrca_generations": float(frame.loc[tmrca_index, TMRCA_COLUMN]),
-            "minimum_mean_tmrca_position_1based": int(frame.loc[tmrca_index, "position_1based"]),
-        })
-        input_records.append({
-            "chromosome": chromosome,
-            "path": str(path),
-            "sha256": sha256_file(path),
-            "rows": int(len(frame)),
-        })
+        chromosome_rows.append(
+            {
+                "population": population,
+                "chromosome": chromosome,
+                **validation,
+                "maximum_called_fraction": float(frame.loc[hard_index, called_column]),
+                "maximum_called_fraction_position_1based": int(
+                    frame.loc[hard_index, "position_1based"]
+                ),
+                "maximum_soft_probability": float(frame.loc[soft_index, SOFT_COLUMN]),
+                "maximum_soft_probability_position_1based": int(
+                    frame.loc[soft_index, "position_1based"]
+                ),
+                "minimum_mean_tmrca_generations": float(
+                    frame.loc[tmrca_index, TMRCA_COLUMN]
+                ),
+                "minimum_mean_tmrca_position_1based": int(
+                    frame.loc[tmrca_index, "position_1based"]
+                ),
+            }
+        )
 
     chromosome_summary = pd.DataFrame(chromosome_rows)
-    chromosome_summary.to_csv(
-        output_dir / "chromosome_scan_summary.tsv", sep="\t", index=False
-    )
+    chromosome_summary_path = output_dir / "chromosome_scan_summary.tsv"
+    _atomic_frame(chromosome_summary_path, chromosome_summary)
+    artifacts.append(chromosome_summary_path)
     result = {
         "population": population,
         "chromosomes": chromosomes,
@@ -1253,68 +1618,38 @@ def plot_workbench_population(
         "called_fraction_column": called_column,
         "whole_genome_complete": bool(whole_genome),
         "inputs": input_records,
+        "reused": False,
     }
 
     if whole_genome:
-        genome_parts = []
-        offset = 0.0
-        ticks = []
-        boundaries = []
-        for chromosome in chromosomes:
-            frame = frames[chromosome].copy()
-            sequence_length = float(frame["position_0based"].max()) + 1.0
-            frame.insert(0, "population", population)
-            frame.insert(1, "chromosome", chromosome)
-            frame["genome_position_0based"] = frame["position_0based"] + offset
-            genome_parts.append(frame)
-            ticks.append(offset + sequence_length / 2)
-            offset += sequence_length
-            boundaries.append(offset)
-        genome = pd.concat(genome_parts, ignore_index=True)
-        figure, axes = plt.subplots(
-            3, 1, figsize=(22, 12), sharex=True, constrained_layout=True
+        genome, ticks, boundaries, offset = _assemble_genome(
+            frames, population=population
         )
-        panels = (
-            (called_column, f"Fraction: posterior mean TMRCA < {threshold_years:g} years"),
-            (SOFT_COLUMN, f"Mean posterior P(TMRCA < {threshold_years:g} years)"),
-            (TMRCA_COLUMN, "Mean posterior TMRCA (generations)"),
+        artifacts.extend(
+            _plot_population_recent_genome(
+                genome,
+                population=population,
+                chromosomes=chromosomes,
+                called_column=called_column,
+                threshold_years=threshold_years,
+                ticks=ticks,
+                boundaries=boundaries,
+                signal_fraction=signal_fraction,
+                output_dir=output_dir,
+            )
         )
-        colors = ("#2563eb", "#7c3aed")
-        for axis, (column, ylabel) in zip(axes, panels):
-            for index, chromosome in enumerate(chromosomes):
-                subset = genome.loc[genome["chromosome"].eq(chromosome)]
-                axis.scatter(
-                    subset["genome_position_0based"] / 1e9,
-                    subset[column],
-                    s=1.2,
-                    alpha=0.75,
-                    color=colors[index % 2],
-                    rasterized=True,
-                )
-            for boundary in boundaries[:-1]:
-                axis.axvline(boundary / 1e9, color="0.8", linewidth=0.45)
-            axis.set_ylabel(ylabel)
-            axis.grid(axis="y", alpha=0.16, linewidth=0.6)
-        finite_tmrca = genome[TMRCA_COLUMN].to_numpy(dtype=float)
-        if np.all(finite_tmrca[np.isfinite(finite_tmrca)] > 0):
-            axes[2].set_yscale("log")
-        axes[2].set_xticks(np.asarray(ticks) / 1e9, [str(value) for value in chromosomes])
-        axes[2].set_xlabel("Chromosome")
-        figure.suptitle(
-            f"{population} whole-genome Gamma-SMC scan\n"
-            "Descriptive posterior summaries; significance requires matched null calibration",
-            fontsize=18,
+        artifacts.extend(
+            _plot_population_diagnostics(
+                genome,
+                population=population,
+                chromosomes=chromosomes,
+                called_column=called_column,
+                threshold_years=threshold_years,
+                ticks=ticks,
+                boundaries=boundaries,
+                output_dir=output_dir,
+            )
         )
-        figure.savefig(
-            output_dir / f"{population}.whole_genome.gamma_smc.png",
-            dpi=180,
-            bbox_inches="tight",
-        )
-        figure.savefig(
-            output_dir / f"{population}.whole_genome.gamma_smc.pdf",
-            bbox_inches="tight",
-        )
-        plt.close(figure)
 
         hard_top = genome.nlargest(top_n, called_column).copy()
         hard_top.insert(3, "ranking_statistic", called_column)
@@ -1323,14 +1658,285 @@ def plot_workbench_population(
         soft_top.insert(3, "ranking_statistic", SOFT_COLUMN)
         soft_top.insert(4, "ranking_value", soft_top[SOFT_COLUMN])
         top = pd.concat([hard_top, soft_top], ignore_index=True)
-        top.to_csv(output_dir / "whole_genome_top_windows.tsv", sep="\t", index=False)
-        result.update({
-            "whole_genome_rows": int(len(genome)),
-            "whole_genome_span_bp": int(offset),
-            "top_windows_per_statistic": int(top_n),
-        })
+        top_path = output_dir / "whole_genome_top_windows.tsv"
+        _atomic_frame(top_path, top)
+        artifacts.append(top_path)
+        result.update(
+            {
+                "whole_genome_rows": int(len(genome)),
+                "whole_genome_span_bp": int(offset),
+                "top_windows_per_statistic": int(top_n),
+            }
+        )
 
-    (output_dir / "plot_manifest.json").write_text(
-        json.dumps(result, indent=2) + "\n", encoding="utf-8"
+    _write_artifact_manifest(
+        manifest_path,
+        schema=PLOT_MANIFEST_SCHEMA,
+        contract=contract,
+        result=result,
+        artifacts=artifacts,
+    )
+    return result
+
+
+def _plot_combined_recent_genome(
+    genomes: dict[str, pd.DataFrame],
+    *,
+    chromosomes: list[int],
+    called_column: str,
+    threshold_years: float,
+    ticks: list[float],
+    boundaries: list[float],
+    signal_fraction: float,
+    output_stem: Path,
+) -> list[Path]:
+    finite = np.concatenate(
+        [genome[called_column].to_numpy(dtype=float) for genome in genomes.values()]
+    )
+    finite = finite[np.isfinite(finite)]
+    ymax = min(1.0, max(signal_fraction, float(finite.max())) * 1.08)
+    figure, raw_axes = plt.subplots(
+        len(genomes),
+        1,
+        figsize=(22, max(4.5, 2.4 * len(genomes))),
+        sharex=True,
+        sharey=True,
+        constrained_layout=True,
+        squeeze=False,
+    )
+    axes = raw_axes[:, 0]
+    for index, (population, genome) in enumerate(genomes.items()):
+        axis = axes[index]
+        _draw_recent_genome_axis(
+            axis,
+            genome,
+            chromosomes=chromosomes,
+            called_column=called_column,
+            ticks=ticks,
+            boundaries=boundaries,
+            signal_fraction=signal_fraction,
+            ymax=ymax,
+            show_chromosomes=index == len(axes) - 1,
+        )
+        axis.text(
+            0.003,
+            0.92,
+            population,
+            transform=axis.transAxes,
+            ha="left",
+            va="top",
+            fontweight="bold",
+        )
+    figure.supylabel(f"% pairs called coalesced < {threshold_years:g}y")
+    figure.suptitle(
+        "Gamma-SMC genome-wide recent-coalescence scan by population\n"
+        "Posterior-mean TMRCA call; dashed line is the candidate-region screen"
+    )
+    outputs = [
+        Path(f"{output_stem}.png"),
+        Path(f"{output_stem}.pdf"),
+    ]
+    _atomic_figure(figure, outputs[0], dpi=180, bbox_inches="tight")
+    _atomic_figure(figure, outputs[1], bbox_inches="tight")
+    plt.close(figure)
+    return outputs
+
+
+def summarize_workbench_run(
+    results_root: str | Path,
+    *,
+    populations: list[str] | tuple[str, ...],
+    chromosomes: list[int] | tuple[int, ...],
+    output_dir: str | Path,
+    threshold_years: float = 4500,
+    signal_fraction: float = 0.05,
+    whole_genome: bool = False,
+) -> dict:
+    results_root = Path(results_root).resolve()
+    output_dir = Path(output_dir).resolve()
+    populations = [population.upper() for population in populations]
+    chromosomes = sorted(int(chromosome) for chromosome in chromosomes)
+    if not populations or len(populations) != len(set(populations)):
+        raise ValueError("populations must be nonempty and unique")
+    if any(population not in POPULATIONS for population in populations):
+        raise ValueError("unsupported population in run report")
+    if not chromosomes or len(chromosomes) != len(set(chromosomes)):
+        raise ValueError("chromosomes must be nonempty and unique")
+    if any(chromosome not in AUTOSOMES for chromosome in chromosomes):
+        raise ValueError("run report chromosomes must be autosomes 1-22")
+    if whole_genome and chromosomes != list(AUTOSOMES):
+        raise ValueError("whole-genome report requires all autosomes 1-22")
+    if not 0 <= signal_fraction <= 1:
+        raise ValueError("signal_fraction must be in [0, 1]")
+
+    input_records = []
+    summary_paths: dict[str, dict[int, Path]] = {}
+    region_paths: dict[str, dict[int, Path]] = {}
+    for population in populations:
+        summary_paths[population] = {}
+        region_paths[population] = {}
+        for chromosome in chromosomes:
+            root = results_root / population / "chromosomes"
+            summary = root / f"chr{chromosome}.gamma_smc.tsv"
+            regions = root / f"chr{chromosome}.candidate_regions.tsv"
+            for kind, path in (("summary", summary), ("regions", regions)):
+                if not path.is_file():
+                    raise ValueError(f"{kind} input is absent: {path}")
+                input_records.append(
+                    {
+                        "population": population,
+                        "chromosome": chromosome,
+                        "kind": kind,
+                        "path": str(path.resolve()),
+                        "size_bytes": path.stat().st_size,
+                        "sha256": sha256_file(path),
+                    }
+                )
+            summary_paths[population][chromosome] = summary
+            region_paths[population][chromosome] = regions
+
+    called_column = called_fraction_column(threshold_years)
+    contract = {
+        "populations": populations,
+        "chromosomes": chromosomes,
+        "threshold_years": float(threshold_years),
+        "called_fraction_column": called_column,
+        "signal_fraction": float(signal_fraction),
+        "whole_genome": bool(whole_genome),
+        "inputs": input_records,
+    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = output_dir / "run_report_manifest.json"
+    reused = _reuse_artifact_manifest(
+        manifest_path, schema=REPORT_MANIFEST_SCHEMA, contract=contract
+    )
+    if reused is not None:
+        return reused
+
+    required_region_columns = {
+        "population",
+        "chromosome",
+        "region_id",
+        "start_0based",
+        "end_0based_exclusive",
+        "n_signal_windows",
+        "peak_position_1based",
+        "peak_fraction_recent",
+    }
+    frames_by_population: dict[str, dict[int, pd.DataFrame]] = {}
+    region_frames = []
+    population_rows = []
+    for population in populations:
+        frames_by_population[population] = {}
+        population_regions = []
+        for chromosome in chromosomes:
+            summary, _ = validate_summary(
+                summary_paths[population][chromosome],
+                threshold_years=threshold_years,
+            )
+            frames_by_population[population][chromosome] = summary
+            regions = pd.read_csv(region_paths[population][chromosome], sep="\t")
+            missing = required_region_columns.difference(regions.columns)
+            if missing:
+                raise ValueError(
+                    f"candidate-region table is missing columns {sorted(missing)}: "
+                    f"{region_paths[population][chromosome]}"
+                )
+            if not regions.empty:
+                if set(regions["population"].astype(str).str.upper()) != {population}:
+                    raise ValueError(
+                        "candidate-region population does not match its directory"
+                    )
+                if set(regions["chromosome"].astype(int)) != {chromosome}:
+                    raise ValueError(
+                        "candidate-region chromosome does not match its filename"
+                    )
+            population_regions.append(regions)
+            region_frames.append(regions)
+        combined_regions = pd.concat(population_regions, ignore_index=True)
+        if combined_regions.empty:
+            peak_chromosome = peak_position = np.nan
+            peak_fraction = np.nan
+        else:
+            peak = combined_regions.loc[
+                combined_regions["peak_fraction_recent"].astype(float).idxmax()
+            ]
+            peak_chromosome = int(peak["chromosome"])
+            peak_position = int(peak["peak_position_1based"])
+            peak_fraction = float(peak["peak_fraction_recent"])
+        population_rows.append(
+            {
+                "population": population,
+                "chromosomes_complete": len(chromosomes),
+                "regions_found": int(len(combined_regions)),
+                "chromosomes_with_regions": int(
+                    combined_regions["chromosome"].nunique()
+                ),
+                "signal_windows": int(combined_regions["n_signal_windows"].sum()),
+                "region_span_bp": int(
+                    (
+                        combined_regions["end_0based_exclusive"]
+                        - combined_regions["start_0based"]
+                    ).sum()
+                ),
+                "maximum_peak_fraction_recent": peak_fraction,
+                "maximum_peak_chromosome": peak_chromosome,
+                "maximum_peak_position_1based": peak_position,
+            }
+        )
+
+    population_summary = pd.DataFrame(population_rows)
+    all_regions = pd.concat(region_frames, ignore_index=True)
+    population_summary_path = output_dir / "regions_by_population.tsv"
+    all_regions_path = output_dir / "all_candidate_regions.tsv"
+    _atomic_frame(population_summary_path, population_summary)
+    _atomic_frame(all_regions_path, all_regions)
+
+    chromosome_spans = {
+        chromosome: max(
+            _sequence_span(frames_by_population[population][chromosome])
+            for population in populations
+        )
+        for chromosome in chromosomes
+    }
+    genomes: dict[str, pd.DataFrame] = {}
+    ticks = boundaries = None
+    for population in populations:
+        genome, population_ticks, population_boundaries, _ = _assemble_genome(
+            frames_by_population[population],
+            population=population,
+            chromosome_spans=chromosome_spans,
+        )
+        genomes[population] = genome
+        ticks = population_ticks
+        boundaries = population_boundaries
+    scope = "whole_genome" if whole_genome else "requested_chromosomes"
+    figure_paths = _plot_combined_recent_genome(
+        genomes,
+        chromosomes=chromosomes,
+        called_column=called_column,
+        threshold_years=threshold_years,
+        ticks=ticks or [],
+        boundaries=boundaries or [],
+        signal_fraction=signal_fraction,
+        output_stem=output_dir / f"combined.{scope}.gamma_smc",
+    )
+    counts = {row["population"]: int(row["regions_found"]) for row in population_rows}
+    result = {
+        "populations": populations,
+        "chromosomes": chromosomes,
+        "whole_genome_complete": bool(whole_genome),
+        "threshold_years": float(threshold_years),
+        "signal_fraction": float(signal_fraction),
+        "population_region_counts": counts,
+        "total_regions": int(len(all_regions)),
+        "reused": False,
+    }
+    _write_artifact_manifest(
+        manifest_path,
+        schema=REPORT_MANIFEST_SCHEMA,
+        contract=contract,
+        result=result,
+        artifacts=[population_summary_path, all_regions_path, *figure_paths],
     )
     return result

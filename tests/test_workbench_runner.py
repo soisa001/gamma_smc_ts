@@ -119,3 +119,16 @@ def test_resume_helpers_do_not_expand_locals_during_their_declaration():
     assert 'local_file="$2" temporary="${local_file}' not in runner
     assert 'local temporary="${destination}.partial.$$"' in runner
     assert 'local temporary="${local_file}.remote.$$"' in runner
+
+
+def test_runner_locks_reports_and_reuses_uploaded_plots():
+    repo = Path(__file__).resolve().parents[1]
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+
+    assert 'flock -n 9 || die "another Workbench runner' in runner
+    assert "workbench-report" in runner
+    assert 'upload_if_different "$plot_file"' in runner
+    assert 'upload_if_different "$report_file"' in runner
+    assert "regions_by_population.tsv" in (
+        repo / "python/gamma_smc_aou/workbench.py"
+    ).read_text()

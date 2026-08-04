@@ -418,7 +418,11 @@ def test_population_plots_are_separate_and_whole_genome_is_complete(tmp_path, mo
         path = tmp_path / f"chr{chromosome}.tsv"
         _write_summary(path, chromosome)
         summaries[chromosome] = path
-    monkeypatch.setattr(workbench, "_plot_chromosome", lambda *args, **kwargs: None)
+    def lightweight_chromosome_plot(*args, output_stem, **kwargs):
+        Path(f"{output_stem}.png").write_bytes(b"png")
+        Path(f"{output_stem}.pdf").write_bytes(b"pdf")
+
+    monkeypatch.setattr(workbench, "_plot_chromosome", lightweight_chromosome_plot)
     genome_output = tmp_path / "whole_genome"
     result = workbench.plot_workbench_population(
         summaries,
@@ -431,8 +435,17 @@ def test_population_plots_are_separate_and_whole_genome_is_complete(tmp_path, mo
     assert result["whole_genome_rows"] == 66
     assert (genome_output / "AFR.whole_genome.gamma_smc.png").is_file()
     assert (genome_output / "AFR.whole_genome.gamma_smc.pdf").is_file()
+    assert (genome_output / "AFR.whole_genome.diagnostics.png").is_file()
     top = pd.read_csv(genome_output / "whole_genome_top_windows.tsv", sep="\t")
     assert len(top) == 4
+    reused = workbench.plot_workbench_population(
+        summaries,
+        population="AFR",
+        output_dir=genome_output,
+        whole_genome=True,
+        top_n=2,
+    )
+    assert reused["reused"] is True
 
 
 def test_whole_genome_plot_refuses_partial_autosomes(tmp_path):
@@ -445,3 +458,90 @@ def test_whole_genome_plot_refuses_partial_autosomes(tmp_path):
             output_dir=tmp_path / "plots",
             whole_genome=True,
         )
+
+
+def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeypatch):
+    results_root = tmp_path / "results"
+    region_columns = [
+        "population",
+        "chromosome",
+        "region_id",
+        "start_0based",
+        "end_0based_exclusive",
+        "n_signal_windows",
+        "peak_position_0based",
+        "peak_position_1based",
+        "peak_fraction_recent",
+        "peak_mean_tmrca_generations",
+        "peak_mean_p_tmrca_lt_threshold",
+    ]
+    for population in ("AFR", "EUR"):
+        chromosome_root = results_root / population / "chromosomes"
+        chromosome_root.mkdir(parents=True)
+        for chromosome in workbench.AUTOSOMES:
+            _write_summary(
+                chromosome_root / f"chr{chromosome}.gamma_smc.tsv", chromosome
+            )
+            rows = []
+            if (population, chromosome) in {("AFR", 1), ("EUR", 2)}:
+                rows.append(
+                    {
+                        "population": population,
+                        "chromosome": chromosome,
+                        "region_id": f"chr{chromosome}_0001",
+                        "start_0based": 10_000,
+                        "end_0based_exclusive": 30_000,
+                        "n_signal_windows": 2,
+                        "peak_position_0based": 20_000,
+                        "peak_position_1based": 20_001,
+                        "peak_fraction_recent": 0.08,
+                        "peak_mean_tmrca_generations": 100.0,
+                        "peak_mean_p_tmrca_lt_threshold": 0.06,
+                    }
+                )
+            pd.DataFrame(rows, columns=region_columns).to_csv(
+                chromosome_root / f"chr{chromosome}.candidate_regions.tsv",
+                sep="\t",
+                index=False,
+            )
+
+    combined_calls = []
+
+    def lightweight_combined_plot(*args, output_stem, **kwargs):
+        combined_calls.append(output_stem)
+        outputs = [Path(f"{output_stem}.png"), Path(f"{output_stem}.pdf")]
+        outputs[0].write_bytes(b"png")
+        outputs[1].write_bytes(b"pdf")
+        return outputs
+
+    monkeypatch.setattr(
+        workbench, "_plot_combined_recent_genome", lightweight_combined_plot
+    )
+    output_dir = tmp_path / "report"
+    result = workbench.summarize_workbench_run(
+        results_root,
+        populations=["AFR", "EUR"],
+        chromosomes=list(workbench.AUTOSOMES),
+        output_dir=output_dir,
+        whole_genome=True,
+    )
+    assert result["population_region_counts"] == {"AFR": 1, "EUR": 1}
+    assert result["total_regions"] == 2
+    summary = pd.read_csv(output_dir / "regions_by_population.tsv", sep="\t")
+    assert summary.set_index("population")["regions_found"].to_dict() == {
+        "AFR": 1,
+        "EUR": 1,
+    }
+    assert (output_dir / "all_candidate_regions.tsv").is_file()
+    assert (output_dir / "combined.whole_genome.gamma_smc.png").is_file()
+    assert len(combined_calls) == 1
+
+    reused = workbench.summarize_workbench_run(
+        results_root,
+        populations=["AFR", "EUR"],
+        chromosomes=list(workbench.AUTOSOMES),
+        output_dir=output_dir,
+        whole_genome=True,
+    )
+    assert reused["reused"] is True
+    assert len(combined_calls) == 1

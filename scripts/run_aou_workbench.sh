@@ -117,6 +117,7 @@ Default controlled inputs:
 Default workspace outputs:
   gamma_smc/results/AFR/chromosomes/...
   gamma_smc/results/AFR/plots/...
+  gamma_smc/results/summary/{scope}/...
 
 Templates recognize {input_prefix}, {chr}, and (for the index) {bcf}. The
 full-panel BCF is phased and may contain SNVs, indels, and SVs;
@@ -293,6 +294,7 @@ print_plan() {
         for population in "${POPULATIONS[@]}"; do
             echo "  $population output: $OUTPUT_PREFIX/$population/{chromosomes,plots}/"
         done
+        echo "  combined report: $OUTPUT_PREFIX/summary/{scope}/"
     fi
 }
 
@@ -326,6 +328,9 @@ fi
 
 mkdir -p "$LOCAL_ROOT"
 LOCAL_ROOT="$(cd "$LOCAL_ROOT" && pwd)"
+command -v flock >/dev/null 2>&1 || die "flock is required for restart-safe local locking"
+exec 9>"$LOCAL_ROOT/.run_aou_workbench.lock"
+flock -n 9 || die "another Workbench runner is already using $LOCAL_ROOT"
 
 cloud_exists() {
     gcloud storage objects describe "$1" \
@@ -428,6 +433,15 @@ remote_matches_file() {
     fi
     rm -f -- "$temporary"
     return 1
+}
+
+upload_if_different() {
+    local source="$1" destination="$2"
+    if remote_matches_file "$destination" "$source"; then
+        echo "Reusing uploaded artifact: $destination"
+        return 0
+    fi
+    upload_file "$source" "$destination"
 }
 
 upload_completed_chromosome() {
@@ -673,26 +687,35 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             fi
         fi
 
-        remote_large_outputs_ok=1
-        if [[ "$UPLOAD" -eq 1 ]] && {
-            ! cloud_exists "$remote_directory/$(basename "$bitmatrix")" ||
-            ! cloud_exists "$remote_directory/$(basename "${bitmatrix}.meta")" ||
-            ! cloud_exists \
+        remote_outputs_ok=1
+        if [[ "$UPLOAD" -eq 1 ]]; then
+            remote_required=(
+                "$remote_directory/$(basename "$summary")"
+                "$remote_directory/$(basename "$run_json")"
+                "$remote_directory/$(basename "$pairs_manifest")"
+                "$remote_directory/$(basename "$sample_list")"
+                "$remote_directory/$(basename "$sample_audit")"
+                "$remote_directory/$(basename "$bitmatrix")"
+                "$remote_directory/$(basename "${bitmatrix}.meta")"
+                "$remote_directory/$(basename "$candidate_regions")"
+                "$remote_directory/$(basename "$candidate_positions")"
                 "$remote_directory/candidates/$(basename "$candidate_manifest")"
-        }; then
-            remote_large_outputs_ok=0
+            )
+            for remote_artifact in "${remote_required[@]}"; do
+                if ! cloud_exists "$remote_artifact"; then
+                    remote_outputs_ok=0
+                    break
+                fi
+            done
         fi
-        if [[ "$FORCE" -eq 0 && "$remote_large_outputs_ok" -eq 1 ]] && \
+        if [[ "$FORCE" -eq 0 && "$remote_outputs_ok" -eq 1 ]] && \
             "$AOU" "${validation_args[@]}" --check-only >/dev/null 2>&1; then
             echo "Validated completion; skipping decode."
             if [[ "$UPLOAD" -eq 1 ]] && ! remote_matches_file \
                 "$remote_directory/$(basename "$completion")" "$completion"; then
-                echo "Cloud completion marker is absent or different; repairing upload."
-                upload_completed_chromosome "$remote_directory" "$summary" \
-                    "$run_json" "$pairs_manifest" "$sample_list" "$sample_audit" \
-                    "$decode_log" "$bitmatrix" "$candidate_regions" \
-                    "$candidate_positions" "$candidate_directory" \
-                    "$candidate_manifest" "$completion"
+                echo "Cloud outputs are complete; repairing only the completion marker."
+                upload_file "$completion" \
+                    "$remote_directory/$(basename "$completion")"
             fi
             continue
         fi
@@ -930,6 +953,7 @@ for population in "${POPULATIONS[@]}"; do
         --output-dir "$population_plot_dir"
         --threshold-years "$THRESHOLD_YEARS"
         --top-n "$TOP_N"
+        --signal-fraction "$SIGNAL_FRACTION"
     )
     if [[ "${CHR_SPEC,,}" == "all" ]]; then
         plot_args+=(--whole-genome)
@@ -940,13 +964,39 @@ for population in "${POPULATIONS[@]}"; do
         while IFS= read -r -d '' plot_file; do
             [[ "$(basename "$plot_file")" == "plot_manifest.json" ]] && continue
             relative_path="${plot_file#"$population_plot_dir/"}"
-            upload_file "$plot_file" \
+            upload_if_different "$plot_file" \
                 "$OUTPUT_PREFIX/$population/plots/$plot_scope/$relative_path"
         done < <(find "$population_plot_dir" -type f -print0)
-        upload_file "$population_plot_dir/plot_manifest.json" \
+        upload_if_different "$population_plot_dir/plot_manifest.json" \
             "$OUTPUT_PREFIX/$population/plots/$plot_scope/plot_manifest.json"
     fi
 done
 
+report_dir="$LOCAL_ROOT/results/summary/$plot_scope"
+report_args=(
+    workbench-report
+    --results-root "$LOCAL_ROOT/results"
+    --populations "${POPULATIONS[@]}"
+    --chromosomes "${CHROMOSOMES[@]}"
+    --output-dir "$report_dir"
+    --threshold-years "$THRESHOLD_YEARS"
+    --signal-fraction "$SIGNAL_FRACTION"
+)
+if [[ "${CHR_SPEC,,}" == "all" ]]; then
+    report_args+=(--whole-genome)
+fi
+"$AOU" "${report_args[@]}"
+
+if [[ "$UPLOAD" -eq 1 ]]; then
+    while IFS= read -r -d '' report_file; do
+        [[ "$(basename "$report_file")" == "run_report_manifest.json" ]] && continue
+        relative_path="${report_file#"$report_dir/"}"
+        upload_if_different "$report_file" \
+            "$OUTPUT_PREFIX/summary/$plot_scope/$relative_path"
+    done < <(find "$report_dir" -type f -print0)
+    upload_if_different "$report_dir/run_report_manifest.json" \
+        "$OUTPUT_PREFIX/summary/$plot_scope/run_report_manifest.json"
+fi
+
 echo
-echo "All requested Gamma-SMC Workbench scans and population-specific plots are complete."
+echo "All requested Gamma-SMC scans, population plots, and the combined report are complete."

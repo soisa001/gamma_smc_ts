@@ -96,6 +96,7 @@ The complete default controlled-input and output layout is:
 | Staging/results root | `/home/jupyter/gamma_smc_workbench` |
 | Chromosome outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/chromosomes/` |
 | Plot outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/plots/{scope}/` |
+| Combined report | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/summary/{scope}/` |
 | Callable-mask QC | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/shared/masks/` |
 
 `WORKSPACE_BUCKET` overrides this default bucket, and `--output-prefix` or
@@ -128,10 +129,22 @@ For each chromosome, the output directory receives:
 
 Each population gets chromosome PNG/PDF scans, a chromosome summary table, and
 a plot manifest. `-chr all` additionally requires all autosomes to validate
-before it writes the population's whole-genome PNG/PDF and top-window table.
-Plots show the posterior-mean hard-call fraction, the mean posterior
-probability, and mean posterior TMRCA; they are descriptive scans, not
+before it writes two whole-genome views: the main Manhattan-style PNG/PDF plots
+the percentage of pairs whose posterior mean TMRCA is below 4,500 years, with
+alternating chromosome colors and the candidate screen marked; a separate
+diagnostic PNG/PDF retains the hard-call fraction, mean posterior probability,
+and mean posterior TMRCA panels. These are descriptive scans, not
 simulation-calibrated p-values.
+
+After the population plots, the runner writes a scope-level report under
+`results/summary/{scope}` locally and in GCS. `regions_by_population.tsv` gives
+the number of merged candidate regions, chromosomes with regions, signal
+windows, covered bases, and strongest peak for each requested population.
+`all_candidate_regions.tsv` concatenates the literal region tables, and
+`combined.whole_genome.gamma_smc.{png,pdf}` stacks the population scans on one
+shared chromosome axis. Partial chromosome scopes receive the corresponding
+`combined.requested_chromosomes` figure. The command also prints the region
+count for every population and the total.
 
 The candidate pass is population-specific. It plots all decoded-pair TMRCA
 quantiles within 500 kb of each peak, queries every BCF record within 100 kb,
@@ -213,3 +226,10 @@ interrupted decode, candidate analysis, or upload. Staged chromosome BCFs are
 removed only after every requested population for that chromosome succeeds;
 `--keep-inputs` retains them, `--force` recomputes, and `--no-upload` keeps the
 run local.
+
+Plotting and run-level reporting are independently idempotent. Their manifests
+record every input hash, plotting setting, output size, and output hash and are
+written atomically after all artifacts. An unchanged rerun reuses the local
+plots/report, compares completed files before GCS upload, and uploads the
+population/report manifest last. A nonblocking lock on the local root prevents
+two notebook cells from writing the same cache and result tree concurrently.
