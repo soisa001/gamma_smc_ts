@@ -116,9 +116,7 @@ def _contract(
         }
     ).to_csv(ancestry_path, sep="\t", index=False)
     pd.DataFrame({"s": []}).to_csv(qc_path, sep="\t", index=False)
-    pd.DataFrame({"sample_id.s": []}).to_csv(
-        relatedness_path, sep="\t", index=False
-    )
+    pd.DataFrame({"sample_id.s": []}).to_csv(relatedness_path, sep="\t", index=False)
     bcf_samples_path.write_text("\n".join(sample_ids) + "\n", encoding="utf-8")
     workbench.build_workbench_sample_list(
         ancestry_path=ancestry_path,
@@ -161,7 +159,11 @@ def _contract(
         relatedness_exclusions_uri="gs://bucket/relatedness_flagged_samples.tsv",
         relatedness_exclusions_fingerprint="202\t302\trelated-crc",
         local_relatedness_exclusions=relatedness_path,
-        mask_uri=("gs://bucket/gamma_smc/inputs/masks/chr1.callable.bed" if with_mask else None),
+        mask_uri=(
+            "gs://bucket/gamma_smc/inputs/masks/chr1.callable.bed"
+            if with_mask
+            else None
+        ),
         mask_fingerprint=("321\t654\tmask-crc" if with_mask else None),
         local_mask_source=(hardmask_path if with_mask else None),
         local_mask=(mask_path if with_mask else None),
@@ -441,9 +443,7 @@ def test_sample_builder_uses_other_label_exclusions_and_bcf_order(tmp_path):
         }
     ).to_csv(ancestry, sep="\t", index=False)
     pd.DataFrame({"s": ["2"]}).to_csv(qc, sep="\t", index=False)
-    pd.DataFrame({"sample_id.s": ["5"]}).to_csv(
-        relatedness, sep="\t", index=False
-    )
+    pd.DataFrame({"sample_id.s": ["5"]}).to_csv(relatedness, sep="\t", index=False)
     bcf_samples.write_text("6\n5\n4\n3\n2\n1\n7\n", encoding="utf-8")
 
     audit = workbench.build_workbench_sample_list(
@@ -480,9 +480,7 @@ def test_sample_builder_rejects_conflicting_ancestry_labels(tmp_path):
         }
     ).to_csv(ancestry, sep="\t", index=False)
     pd.DataFrame({"s": []}).to_csv(qc, sep="\t", index=False)
-    pd.DataFrame({"sample_id.s": []}).to_csv(
-        relatedness, sep="\t", index=False
-    )
+    pd.DataFrame({"sample_id.s": []}).to_csv(relatedness, sep="\t", index=False)
     bcf_samples.write_text("1\n", encoding="utf-8")
     with pytest.raises(ValueError, match="conflicting labels"):
         workbench.build_workbench_sample_list(
@@ -501,11 +499,7 @@ def test_hardmask_is_complemented_into_positive_callable_intervals(tmp_path):
     callable_mask = tmp_path / "chr1.callable.bed"
     audit_path = tmp_path / "chr1.callable.audit.json"
     hardmask.write_text(
-        "# excluded intervals\n"
-        "1\t10\t20\n"
-        "chr1\t15\t30\n"
-        "chr1\t90\t120\n"
-        "chr2\t0\t100\n",
+        "# excluded intervals\n1\t10\t20\nchr1\t15\t30\nchr1\t90\t120\nchr2\t0\t100\n",
         encoding="utf-8",
     )
     audit = workbench.build_workbench_callable_mask(
@@ -617,7 +611,9 @@ def test_cli_routes_source_semantics_to_mask_not_sample_selection(
     assert mask_call["source_semantics"] == "included_intervals"
 
 
-def test_population_plots_are_separate_and_whole_genome_is_complete(tmp_path, monkeypatch):
+def test_population_plots_are_separate_and_whole_genome_is_complete(
+    tmp_path, monkeypatch
+):
     one_summary = tmp_path / "one.tsv"
     _write_summary(one_summary)
     one_output = tmp_path / "one_plot"
@@ -636,6 +632,7 @@ def test_population_plots_are_separate_and_whole_genome_is_complete(tmp_path, mo
         path = tmp_path / f"chr{chromosome}.tsv"
         _write_summary(path, chromosome)
         summaries[chromosome] = path
+
     def lightweight_chromosome_plot(*args, output_stem, **kwargs):
         Path(f"{output_stem}.png").write_bytes(b"png")
         Path(f"{output_stem}.pdf").write_bytes(b"pdf")
@@ -692,18 +689,33 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     gene_annotation.write_text(
         "##description: test GRCh38 annotation\n"
         + "".join(
-            f'chr{chromosome}\ttest\tgene\t1\t50000\t.\t+\t.\t'
+            f"chr{chromosome}\ttest\tgene\t1\t50000\t.\t+\t.\t"
             f'gene_id "ENSG{chromosome:011d}.1"; gene_type "protein_coding"; '
             f'gene_name "GENE{chromosome}";\n'
             for chromosome in workbench.AUTOSOMES
         ),
         encoding="utf-8",
     )
+    gene_label_overrides = tmp_path / "gene_label_overrides.tsv"
+    pd.DataFrame(
+        [
+            {
+                "population": "AFR",
+                "chromosome": 1,
+                "start_0based": 0,
+                "end_0based_exclusive": 50_000,
+                "highlight_label": "CURATED_GENE1",
+                "evidence_level": "high",
+                "rationale": "synthetic curated label",
+                "reference_url": "https://example.org/primary-paper",
+            }
+        ]
+    ).to_csv(gene_label_overrides, sep="\t", index=False)
 
     combined_calls = []
 
     def lightweight_combined_plot(*args, output_stem, **kwargs):
-        combined_calls.append(output_stem)
+        combined_calls.append((output_stem, kwargs))
         outputs = [Path(f"{output_stem}.png"), Path(f"{output_stem}.pdf")]
         outputs[0].write_bytes(b"png")
         outputs[1].write_bytes(b"pdf")
@@ -721,6 +733,7 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         whole_genome=True,
         top_n=2,
         gene_annotation=gene_annotation,
+        gene_label_overrides=gene_label_overrides,
     )
     assert result["signal_fraction"] == pytest.approx(0.02)
     assert result["population_region_counts"] == {"AFR": 22, "EUR": 22}
@@ -737,21 +750,41 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     raw_scan = pd.read_csv(output_dir / "raw_scan_windows.tsv.gz", sep="\t")
     assert len(raw_scan) == 2 * 22 * 3
     layers = pd.read_csv(output_dir / "report_data_layers.tsv", sep="\t")
-    assert layers.set_index("layer")["maximum_gap_bp"].to_dict()[
-        "candidate_loci"
-    ] == 20_000
-    assert layers.set_index("layer")["maximum_gap_bp"].to_dict()[
-        "plot_loci"
-    ] == 1_000_000
+    assert (
+        layers.set_index("layer")["maximum_gap_bp"].to_dict()["candidate_loci"]
+        == 20_000
+    )
+    assert (
+        layers.set_index("layer")["maximum_gap_bp"].to_dict()["plot_loci"] == 1_000_000
+    )
+    assert "ranked_top_windows" in set(layers["layer"])
     assert (output_dir / "combined.whole_genome.gamma_smc.png").is_file()
     assert (output_dir / "combined.whole_genome.gamma_smc.zoom4pct.png").is_file()
     gene_list = pd.read_csv(output_dir / "gene_list.tsv", sep="\t")
     plot_loci = pd.read_csv(output_dir / "plot_loci.tsv", sep="\t")
     pd.testing.assert_frame_equal(gene_list, plot_loci)
-    assert set(gene_list["probable_gene"]) == {"GENE1", "GENE2"}
-    assert len(gene_list) == 4
-    assert gene_list["plot_merge_max_gap_bp"].eq(1_000_000).all()
+    assert len(plot_loci) == 44
+    assert plot_loci["n_candidate_regions"].eq(1).all()
+    assert set(plot_loci["probable_gene"]) == {
+        f"GENE{chromosome}" for chromosome in workbench.AUTOSOMES
+    }
+    curated = plot_loci.loc[
+        plot_loci["population"].eq("AFR") & plot_loci["chromosome"].eq(1)
+    ].iloc[0]
+    assert curated["highlight_label"] == "CURATED_GENE1"
+    assert curated["highlight_label_source"] == "curated_override"
+    fallback = plot_loci.drop(curated.name)
+    assert fallback["highlight_label"].eq(fallback["probable_gene"]).all()
+    assert plot_loci["plot_merge_max_gap_bp"].eq(1_000_000).all()
+    ranked = pd.read_csv(output_dir / "ranked_top_windows.tsv", sep="\t")
+    assert set(ranked["probable_gene"]) == {"GENE1", "GENE2"}
+    assert len(ranked) == 4
+    assert result["candidate_gene_hits"] == 44
+    assert result["ranked_gene_hits"] == 4
+    assert result["plotted_gene_hits"] == 44
     assert len(combined_calls) == 2
+    assert "hit_labels" not in combined_calls[0][1]
+    assert len(combined_calls[1][1]["hit_labels"]) == 44
 
     reused = workbench.summarize_workbench_run(
         results_root,
@@ -761,6 +794,7 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         whole_genome=True,
         top_n=2,
         gene_annotation=gene_annotation,
+        gene_label_overrides=gene_label_overrides,
     )
     assert reused["reused"] is True
     assert len(combined_calls) == 2
@@ -773,6 +807,7 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
         whole_genome=True,
         top_n=2,
         gene_annotation=gene_annotation,
+        gene_label_overrides=gene_label_overrides,
         signal_fraction=0.3,
     )
     assert changed_threshold["reused"] is False
@@ -781,6 +816,83 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
     assert len(recomputed) == 44
     assert recomputed["n_signal_windows"].eq(1).all()
     assert len(combined_calls) == 4
+
+
+def test_candidate_plot_loci_keep_every_region_before_readability_merge(tmp_path):
+    annotation = tmp_path / "genes.gtf"
+    annotation.write_text(
+        "chr5\ttest\tgene\t1\t2000\t.\t+\t.\t"
+        'gene_id "ENSG5.1"; gene_type "protein_coding"; gene_name "GENE5";\n',
+        encoding="utf-8",
+    )
+    genes = workbench._load_protein_coding_genes(annotation)
+    candidates = pd.DataFrame(
+        {
+            "population": ["EUR"] * 3,
+            "chromosome": [5] * 3,
+            "region_id": ["chr5_0001", "chr5_0002", "chr5_0003"],
+            "signal_fraction_strictly_greater_than": [0.02] * 3,
+            "candidate_merge_max_gap_bp": [20] * 3,
+            "start_0based": [100, 300, 1300],
+            "end_0based_exclusive": [200, 400, 1400],
+            "n_signal_windows": [2, 3, 4],
+            "peak_position_0based": [150, 350, 1350],
+            "peak_position_1based": [151, 351, 1351],
+            "peak_fraction_recent": [0.021, 0.031, 0.025],
+            "peak_mean_tmrca_generations": [300.0, 100.0, 200.0],
+            "peak_mean_p_tmrca_lt_threshold": [0.1, 0.2, 0.15],
+        }
+    )
+    genome = pd.DataFrame(
+        {
+            "chromosome": [5] * 3,
+            "position_0based": [150, 350, 1350],
+            "genome_position_0based": [10_150, 10_350, 11_350],
+            "frac_recent_4500": [0.021, 0.031, 0.025],
+        }
+    )
+
+    loci = workbench._build_candidate_plot_loci(
+        candidates,
+        {"EUR": genome},
+        called_column="frac_recent_4500",
+        genes=genes,
+        plot_merge_gap=900,
+        context_flank=500,
+        hit_label_min_fraction=0.02,
+    )
+
+    assert len(loci) == 1
+    locus = loci.iloc[0]
+    assert locus["source_region_ids"] == "chr5_0001;chr5_0002;chr5_0003"
+    assert locus["n_candidate_regions"] == 3
+    assert locus["n_signal_windows"] == 9
+    assert locus["maximum_joined_gap_bp"] == 900
+    assert locus["peak_source_region_id"] == "chr5_0002"
+    assert locus["peak_position_0based"] == 350
+
+
+def test_bundled_gene_label_overrides_are_valid_and_complete():
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "resources"
+        / "gamma_smc_2pct_gene_label_overrides.tsv"
+    )
+    overrides = workbench._load_gene_label_overrides(path)
+    assert len(overrides) == 17
+    assert set(overrides["evidence_level"]).issubset(
+        workbench.GENE_LABEL_EVIDENCE_LEVELS
+    )
+    labels = set(overrides["highlight_label"])
+    assert {"ADH1B", "APOL1", "LCT", "SLC24A5", "TBC1D32"}.issubset(labels)
+    assert overrides["population"].eq("EUR").any()
+    assert (
+        overrides.loc[
+            overrides["population"].eq("EUR") & overrides["chromosome"].eq(5),
+            "highlight_label",
+        ].item()
+        == "RAPGEF6 locus"
+    )
 
 
 def test_ranked_gene_list_merges_top_windows_with_at_most_one_megabase_gap(tmp_path):

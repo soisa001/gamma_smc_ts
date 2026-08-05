@@ -25,6 +25,7 @@ ANCESTRY_URI="${AOU_GAMMA_ANCESTRY_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/
 QC_EXCLUSIONS_URI="${AOU_GAMMA_QC_EXCLUSIONS_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/qc/flagged_samples.tsv}"
 RELATEDNESS_EXCLUSIONS_URI="${AOU_GAMMA_RELATEDNESS_EXCLUSIONS_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/relatedness/relatedness_flagged_samples.tsv}"
 GENE_ANNOTATION_URI="${AOU_GAMMA_GENE_ANNOTATION_URI:-https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_50/gencode.v50.basic.annotation.gtf.gz}"
+GENE_LABEL_OVERRIDES="${AOU_GAMMA_GENE_LABEL_OVERRIDES:-$REPO/resources/gamma_smc_2pct_gene_label_overrides.tsv}"
 THREADS="${AOU_GAMMA_THREADS:-12}"
 THETA="${AOU_GAMMA_THETA:-0.00075}"
 RHO_OVER_THETA="${AOU_GAMMA_RHO_OVER_THETA:-0.8}"
@@ -88,6 +89,9 @@ Cloud and local paths:
   --relatedness-exclusions-uri URI
                             Default: v9 relatedness_flagged_samples.tsv
   --gene-annotation-uri URI Default: GENCODE v50 basic GRCh38 GTF
+  --gene-label-overrides PATH
+                            Curated population/GRCh38 plot-label overrides;
+                            default: resources/gamma_smc_2pct_gene_label_overrides.tsv
   --no-mask                 Decode without a callable-region BED.
 
 Decoder parameters:
@@ -104,13 +108,14 @@ Decoder parameters:
   --n-random-pairs N        Default: 100000 haplotype pairs within each pop
   --pairs-seed N            Default: 1729
   --exclude-within          Exclude the same person's two haplotypes from draw
-  --top-n N                 Default: 100 whole-genome windows per statistic
-  --plot-merge-gap N        Plot-label-only max gap; default: 1000000 bp
+  --top-n N                 Default: 100 windows for ranking diagnostics only
+  --plot-merge-gap N        Max gap joining candidate intervals for one label;
+                            default: 1000000 bp
   --hit-bin-size N          Deprecated alias for --plot-merge-gap
   --gene-context-flank N    List protein-coding genes within +/-500000 bp
   --zoom-ymax X             Separate genome plot y ceiling; default: 0.04
   --hit-label-min-fraction X
-                            Label ranked peaks strictly above X; default: 0.02
+                            Label candidate peaks strictly above X; default: 0.02
 
 Candidate analysis:
   --signal-fraction X       Strict screen threshold; default: 0.02
@@ -168,6 +173,7 @@ while [[ $# -gt 0 ]]; do
         --qc-exclusions-uri) need_value "$@"; QC_EXCLUSIONS_URI="$2"; shift 2 ;;
         --relatedness-exclusions-uri) need_value "$@"; RELATEDNESS_EXCLUSIONS_URI="$2"; shift 2 ;;
         --gene-annotation-uri) need_value "$@"; GENE_ANNOTATION_URI="$2"; shift 2 ;;
+        --gene-label-overrides) need_value "$@"; GENE_LABEL_OVERRIDES="$2"; shift 2 ;;
         --threads) need_value "$@"; THREADS="$2"; shift 2 ;;
         --theta) need_value "$@"; THETA="$2"; shift 2 ;;
         --rho-over-theta) need_value "$@"; RHO_OVER_THETA="$2"; shift 2 ;;
@@ -709,6 +715,9 @@ else
     local_gene_annotation="$(realpath -- "$GENE_ANNOTATION_URI")"
     stage_gene_annotation "$local_gene_annotation" "$local_gene_annotation"
 fi
+[[ -s "$GENE_LABEL_OVERRIDES" ]] || \
+    die "gene-label override table is absent or empty: $GENE_LABEL_OVERRIDES"
+GENE_LABEL_OVERRIDES="$(realpath -- "$GENE_LABEL_OVERRIDES")"
 
 for chromosome in "${CHROMOSOMES[@]}"; do
     echo
@@ -1142,6 +1151,7 @@ report_args=(
     --merge-gap "$MERGE_GAP"
     --top-n "$TOP_N"
     --gene-annotation "$local_gene_annotation"
+    --gene-label-overrides "$GENE_LABEL_OVERRIDES"
     --plot-merge-gap "$PLOT_MERGE_GAP"
     --gene-context-flank "$GENE_CONTEXT_FLANK"
     --zoom-ymax "$ZOOM_YMAX"

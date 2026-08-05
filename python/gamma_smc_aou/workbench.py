@@ -33,7 +33,7 @@ RELATEDNESS_ID_COLUMNS = (
     "person_id",
 )
 PLOT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-population-plots/v2"
-REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v4"
+REPORT_MANIFEST_SCHEMA = "gamma_smc_aou.workbench-run-report/v5"
 FIGURE_TITLE_SIZE = 22
 FIGURE_LABEL_SIZE = 18
 FIGURE_TICK_SIZE = 15
@@ -80,6 +80,61 @@ RANKED_GENE_LIST_COLUMNS = [
     "candidate_gene_coordinates_grch38",
     "candidate_gene_distances_to_peak_bp",
 ]
+PLOT_LOCUS_COLUMNS = [
+    "population",
+    "hit_id",
+    "chromosome",
+    "source_region_ids",
+    "peak_source_region_id",
+    "signal_fraction_strictly_greater_than",
+    "label_fraction_strictly_greater_than",
+    "candidate_merge_max_gap_bp",
+    "plot_merge_max_gap_bp",
+    "merged_start_0based",
+    "merged_end_0based_exclusive",
+    "merged_start_1based",
+    "merged_end_1based_inclusive",
+    "n_candidate_regions",
+    "n_signal_windows",
+    "maximum_joined_gap_bp",
+    "ranking_statistic",
+    "peak_ranking_value",
+    "peak_position_0based",
+    "peak_position_1based",
+    "peak_genome_position_0based",
+    "peak_mean_tmrca_generations",
+    "peak_mean_p_tmrca_lt_threshold",
+    "highlight_label",
+    "highlight_label_source",
+    "highlight_evidence_level",
+    "highlight_rationale",
+    "highlight_reference_url",
+    "probable_gene",
+    "probable_gene_id",
+    "probable_gene_relation",
+    "probable_gene_distance_bp",
+    "probable_gene_start_0based",
+    "probable_gene_end_0based_exclusive",
+    "candidate_genes",
+    "candidate_gene_coordinates_grch38",
+    "candidate_gene_distances_to_peak_bp",
+]
+GENE_LABEL_OVERRIDE_COLUMNS = [
+    "population",
+    "chromosome",
+    "start_0based",
+    "end_0based_exclusive",
+    "highlight_label",
+    "evidence_level",
+    "rationale",
+    "reference_url",
+]
+GENE_LABEL_EVIDENCE_LEVELS = {
+    "high",
+    "moderate",
+    "provisional",
+    "positional_only",
+}
 
 
 def threshold_suffix(years: float) -> str:
@@ -1470,9 +1525,13 @@ def candidate_regions_from_summary(
 
     rows = []
     for region_number, indices in enumerate(groups, 1):
-        subset = frame.loc[indices].copy().sort_values(
-            [called_column, "mean_tmrca_generations", "position_0based"],
-            ascending=[False, True, True],
+        subset = (
+            frame.loc[indices]
+            .copy()
+            .sort_values(
+                [called_column, "mean_tmrca_generations", "position_0based"],
+                ascending=[False, True, True],
+            )
         )
         peak = subset.iloc[0]
         positions = frame.loc[indices, "position_0based"].astype(int)
@@ -1489,9 +1548,7 @@ def candidate_regions_from_summary(
                 "peak_position_0based": int(peak["position_0based"]),
                 "peak_position_1based": int(peak["position_1based"]),
                 "peak_fraction_recent": float(peak[called_column]),
-                "peak_mean_tmrca_generations": float(
-                    peak["mean_tmrca_generations"]
-                ),
+                "peak_mean_tmrca_generations": float(peak["mean_tmrca_generations"]),
                 "peak_mean_p_tmrca_lt_threshold": float(
                     peak["mean_p_tmrca_lt_threshold"]
                 ),
@@ -1913,20 +1970,18 @@ def _plot_combined_recent_genome(
         if hit_labels is not None and not hit_labels.empty:
             population_hits = hit_labels.loc[
                 hit_labels["population"].astype(str).eq(population)
-                & hit_labels["peak_ranking_value"].astype(float).gt(
-                    hit_label_min_fraction
-                )
+                & hit_labels["peak_ranking_value"]
+                .astype(float)
+                .gt(hit_label_min_fraction)
             ].sort_values(["chromosome", "peak_genome_position_0based"])
             for hit in population_hits.itertuples(index=False):
                 label_y = min(float(hit.peak_ranking_value), ymax * 0.94)
                 peak_x = float(hit.peak_genome_position_0based) / 1e9
                 right_edge = float(boundaries[-1]) / 1e9
                 left_edge = 0.0
-                near_right_edge = peak_x >= right_edge - 0.06 * (
-                    right_edge - left_edge
-                )
+                near_right_edge = peak_x >= right_edge - 0.06 * (right_edge - left_edge)
                 axis.annotate(
-                    str(hit.probable_gene),
+                    str(getattr(hit, "highlight_label", hit.probable_gene)),
                     xy=(peak_x, label_y),
                     xytext=((-8, 0) if near_right_edge else (8, 0)),
                     textcoords="offset points",
@@ -1957,7 +2012,7 @@ def _plot_combined_recent_genome(
         subtitle = (
             f"0-{fixed_ymax:.0%} detail; triangles mark values at or above the "
             f"axis ceiling; horizontal labels mark peaks >{hit_label_min_fraction:.0%} "
-            "and their nearest protein-coding genes"
+            "(curated genes where supplied; otherwise nearest protein-coding genes)"
         )
     figure.suptitle(
         "Gamma-SMC genome-wide recent-coalescence scan by population\n" + subtitle,
@@ -2059,16 +2114,17 @@ def _annotate_ranked_hit(
 ) -> dict:
     chromosome_genes = genes.loc[genes["chromosome"].eq(chromosome)].copy()
     if chromosome_genes.empty:
-        raise ValueError(f"gene annotation contains no protein-coding chr{chromosome} genes")
+        raise ValueError(
+            f"gene annotation contains no protein-coding chr{chromosome} genes"
+        )
     chromosome_genes["distance_to_peak_bp"] = _point_gene_distance(
         peak_position,
         chromosome_genes["gene_start_0based"],
         chromosome_genes["gene_end_0based_exclusive"],
     )
-    chromosome_genes["overlaps_hit"] = (
-        chromosome_genes["gene_start_0based"].lt(region_end)
-        & chromosome_genes["gene_end_0based_exclusive"].gt(region_start)
-    )
+    chromosome_genes["overlaps_hit"] = chromosome_genes["gene_start_0based"].lt(
+        region_end
+    ) & chromosome_genes["gene_end_0based_exclusive"].gt(region_start)
     context_start = max(0, region_start - context_flank)
     context_end = region_end + context_flank
     candidates = chromosome_genes.loc[
@@ -2085,9 +2141,10 @@ def _annotate_ranked_hit(
         relation = "peak_overlap"
     elif bool(probable["overlaps_hit"]):
         relation = "merged_hit_overlap"
-    elif int(probable["gene_start_0based"]) < context_end and int(
-        probable["gene_end_0based_exclusive"]
-    ) > context_start:
+    elif (
+        int(probable["gene_start_0based"]) < context_end
+        and int(probable["gene_end_0based_exclusive"]) > context_start
+    ):
         relation = "within_context_flank"
     else:
         relation = "nearest_outside_context"
@@ -2122,13 +2179,18 @@ def _build_ranked_gene_list(
     plot_merge_gap: int,
     context_flank: int,
 ) -> pd.DataFrame:
-    """Merge top scan windows for plot labels using a presentation-only gap."""
+    """Merge top scan windows for the legacy ranking diagnostic."""
     rows: list[dict] = []
     for population, genome in genomes.items():
-        ranked = genome.loc[genome[called_column].astype(float).gt(0)].sort_values(
-            [called_column, TMRCA_COLUMN, "position_0based"],
-            ascending=[False, True, True],
-        ).head(top_n).copy()
+        ranked = (
+            genome.loc[genome[called_column].astype(float).gt(0)]
+            .sort_values(
+                [called_column, TMRCA_COLUMN, "position_0based"],
+                ascending=[False, True, True],
+            )
+            .head(top_n)
+            .copy()
+        )
         if ranked.empty:
             continue
         hit_number = 0
@@ -2137,7 +2199,9 @@ def _build_ranked_gene_list(
             scan_chromosome = genome.loc[genome["chromosome"].eq(chromosome)]
             chromosome_end = int(np.ceil(_sequence_span(scan_chromosome)))
             stride = _summary_stride(scan_chromosome)
-            positions = sorted(chromosome_ranked["position_0based"].astype(int).unique())
+            positions = sorted(
+                chromosome_ranked["position_0based"].astype(int).unique()
+            )
             groups: list[list[int]] = []
             current: list[int] = []
             for position in positions:
@@ -2201,6 +2265,239 @@ def _build_ranked_gene_list(
     )
 
 
+def _build_candidate_plot_loci(
+    candidate_loci: pd.DataFrame,
+    genomes: dict[str, pd.DataFrame],
+    *,
+    called_column: str,
+    genes: pd.DataFrame,
+    plot_merge_gap: int,
+    context_flank: int,
+    hit_label_min_fraction: float,
+) -> pd.DataFrame:
+    """Annotate every candidate locus, merging nearby candidates for legible labels."""
+    if candidate_loci.empty:
+        return pd.DataFrame(columns=PLOT_LOCUS_COLUMNS)
+
+    rows: list[dict] = []
+    for population, genome in genomes.items():
+        population_loci = candidate_loci.loc[
+            candidate_loci["population"].astype(str).eq(population)
+        ]
+        hit_number = 0
+        for chromosome, chromosome_loci in population_loci.groupby(
+            "chromosome", sort=True
+        ):
+            chromosome = int(chromosome)
+            ordered = chromosome_loci.sort_values(
+                ["start_0based", "end_0based_exclusive", "region_id"]
+            )
+            groups: list[list[int]] = []
+            current: list[int] = []
+            current_end = -1
+            for index, locus in ordered.iterrows():
+                start = int(locus["start_0based"])
+                end = int(locus["end_0based_exclusive"])
+                if current and start > current_end + plot_merge_gap:
+                    groups.append(current)
+                    current = []
+                    current_end = -1
+                current.append(int(index))
+                current_end = max(current_end, end)
+            if current:
+                groups.append(current)
+
+            chromosome_genome = genome.loc[genome["chromosome"].eq(chromosome)]
+            for indices in groups:
+                hit_number += 1
+                group = candidate_loci.loc[indices].sort_values(
+                    ["start_0based", "end_0based_exclusive", "region_id"]
+                )
+                peak = group.sort_values(
+                    [
+                        "peak_fraction_recent",
+                        "peak_mean_tmrca_generations",
+                        "peak_position_0based",
+                    ],
+                    ascending=[False, True, True],
+                ).iloc[0]
+                peak_position = int(peak["peak_position_0based"])
+                peak_window = chromosome_genome.loc[
+                    chromosome_genome["position_0based"].astype(int).eq(peak_position)
+                ]
+                if len(peak_window) != 1:
+                    raise ValueError(
+                        f"candidate peak maps to {len(peak_window)} scan windows: "
+                        f"{population} chr{chromosome}:{peak_position}"
+                    )
+
+                signal_thresholds = (
+                    group["signal_fraction_strictly_greater_than"]
+                    .astype(float)
+                    .unique()
+                )
+                candidate_gaps = (
+                    group["candidate_merge_max_gap_bp"].astype(int).unique()
+                )
+                if len(signal_thresholds) != 1 or len(candidate_gaps) != 1:
+                    raise ValueError(
+                        "candidate loci grouped for plotting have inconsistent thresholds"
+                    )
+
+                region_start = int(group["start_0based"].astype(int).min())
+                region_end = int(group["end_0based_exclusive"].astype(int).max())
+                running_end = -1
+                joined_gaps = []
+                for locus in group.itertuples(index=False):
+                    locus_start = int(locus.start_0based)
+                    locus_end = int(locus.end_0based_exclusive)
+                    if running_end >= 0:
+                        joined_gaps.append(max(0, locus_start - running_end))
+                    running_end = max(running_end, locus_end)
+
+                annotation = _annotate_ranked_hit(
+                    chromosome=chromosome,
+                    region_start=region_start,
+                    region_end=region_end,
+                    peak_position=peak_position,
+                    genes=genes,
+                    context_flank=context_flank,
+                )
+                rows.append(
+                    {
+                        "population": population,
+                        "hit_id": f"{population}_hit_{hit_number:03d}",
+                        "chromosome": chromosome,
+                        "source_region_ids": ";".join(group["region_id"].astype(str)),
+                        "peak_source_region_id": str(peak["region_id"]),
+                        "signal_fraction_strictly_greater_than": float(
+                            signal_thresholds[0]
+                        ),
+                        "label_fraction_strictly_greater_than": float(
+                            hit_label_min_fraction
+                        ),
+                        "candidate_merge_max_gap_bp": int(candidate_gaps[0]),
+                        "plot_merge_max_gap_bp": int(plot_merge_gap),
+                        "merged_start_0based": region_start,
+                        "merged_end_0based_exclusive": region_end,
+                        "merged_start_1based": region_start + 1,
+                        "merged_end_1based_inclusive": region_end,
+                        "n_candidate_regions": int(len(group)),
+                        "n_signal_windows": int(
+                            group["n_signal_windows"].astype(int).sum()
+                        ),
+                        "maximum_joined_gap_bp": int(max(joined_gaps, default=0)),
+                        "ranking_statistic": called_column,
+                        "peak_ranking_value": float(peak["peak_fraction_recent"]),
+                        "peak_position_0based": peak_position,
+                        "peak_position_1based": int(peak["peak_position_1based"]),
+                        "peak_genome_position_0based": float(
+                            peak_window.iloc[0]["genome_position_0based"]
+                        ),
+                        "peak_mean_tmrca_generations": float(
+                            peak["peak_mean_tmrca_generations"]
+                        ),
+                        "peak_mean_p_tmrca_lt_threshold": float(
+                            peak["peak_mean_p_tmrca_lt_threshold"]
+                        ),
+                        "highlight_label": annotation["probable_gene"],
+                        "highlight_label_source": "nearest_protein_coding_gene",
+                        "highlight_evidence_level": "positional_only",
+                        "highlight_rationale": "",
+                        "highlight_reference_url": "",
+                        **annotation,
+                    }
+                )
+    return (
+        pd.DataFrame(rows, columns=PLOT_LOCUS_COLUMNS)
+        .sort_values(["population", "chromosome", "merged_start_0based"])
+        .reset_index(drop=True)
+    )
+
+
+def _load_gene_label_overrides(path: str | Path) -> pd.DataFrame:
+    """Read coordinate-scoped curated labels for candidate plot loci."""
+    path = Path(path)
+    if not path.is_file() or path.stat().st_size == 0:
+        raise ValueError(f"gene label overrides are absent or empty: {path}")
+    overrides = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
+    missing = set(GENE_LABEL_OVERRIDE_COLUMNS).difference(overrides.columns)
+    if missing:
+        raise ValueError(
+            "gene label overrides are missing required columns: "
+            + ", ".join(sorted(missing))
+        )
+    overrides = overrides.loc[:, GENE_LABEL_OVERRIDE_COLUMNS].copy()
+    overrides["population"] = overrides["population"].str.strip().str.upper()
+    for column in ("highlight_label", "evidence_level", "rationale", "reference_url"):
+        overrides[column] = overrides[column].str.strip()
+    for column in ("chromosome", "start_0based", "end_0based_exclusive"):
+        overrides[column] = pd.to_numeric(overrides[column], errors="raise").astype(int)
+    if (~overrides["population"].isin(POPULATIONS)).any():
+        raise ValueError("gene label overrides contain an unsupported population")
+    if (~overrides["chromosome"].isin(AUTOSOMES)).any():
+        raise ValueError("gene label overrides contain a non-autosomal chromosome")
+    if (
+        overrides["start_0based"].lt(0)
+        | overrides["end_0based_exclusive"].le(overrides["start_0based"])
+    ).any():
+        raise ValueError("gene label overrides contain an invalid interval")
+    if overrides["highlight_label"].eq("").any():
+        raise ValueError("gene label overrides contain an empty highlight_label")
+    if (~overrides["evidence_level"].isin(GENE_LABEL_EVIDENCE_LEVELS)).any():
+        raise ValueError(
+            "gene label overrides contain an unsupported evidence_level; expected one "
+            f"of {sorted(GENE_LABEL_EVIDENCE_LEVELS)}"
+        )
+    if overrides.duplicated(
+        ["population", "chromosome", "start_0based", "end_0based_exclusive"]
+    ).any():
+        raise ValueError("gene label overrides contain duplicate intervals")
+    return overrides.sort_values(
+        ["population", "chromosome", "start_0based", "end_0based_exclusive"]
+    ).reset_index(drop=True)
+
+
+def _apply_gene_label_overrides(
+    plot_loci: pd.DataFrame, overrides: pd.DataFrame
+) -> pd.DataFrame:
+    """Apply unambiguous population-and-coordinate label overrides."""
+    if plot_loci.empty or overrides.empty:
+        return plot_loci
+    result = plot_loci.copy()
+    assigned: dict[int, int] = {}
+    for override_index, override in overrides.iterrows():
+        matches = result.index[
+            result["population"].astype(str).eq(str(override["population"]))
+            & result["chromosome"].astype(int).eq(int(override["chromosome"]))
+            & result["peak_position_0based"]
+            .astype(int)
+            .ge(int(override["start_0based"]))
+            & result["peak_position_0based"]
+            .astype(int)
+            .lt(int(override["end_0based_exclusive"]))
+        ]
+        for plot_index in matches:
+            if int(plot_index) in assigned:
+                previous = assigned[int(plot_index)]
+                raise ValueError(
+                    "multiple gene label overrides match plot locus "
+                    f"{result.loc[plot_index, 'hit_id']}: rows {previous + 2} and "
+                    f"{int(override_index) + 2}"
+                )
+            assigned[int(plot_index)] = int(override_index)
+            result.loc[plot_index, "highlight_label"] = override["highlight_label"]
+            result.loc[plot_index, "highlight_label_source"] = "curated_override"
+            result.loc[plot_index, "highlight_evidence_level"] = override[
+                "evidence_level"
+            ]
+            result.loc[plot_index, "highlight_rationale"] = override["rationale"]
+            result.loc[plot_index, "highlight_reference_url"] = override[
+                "reference_url"
+            ]
+    return result
+
+
 def summarize_workbench_run(
     results_root: str | Path,
     *,
@@ -2213,6 +2510,7 @@ def summarize_workbench_run(
     whole_genome: bool = False,
     top_n: int = 100,
     gene_annotation: str | Path | None = None,
+    gene_label_overrides: str | Path | None = None,
     plot_merge_gap: int = 1_000_000,
     gene_context_flank: int = 500_000,
     zoom_ymax: float = 0.04,
@@ -2235,9 +2533,7 @@ def summarize_workbench_run(
     if not 0 <= signal_fraction <= 1:
         raise ValueError("signal_fraction must be in [0, 1]")
     if top_n < 1 or plot_merge_gap < 0 or gene_context_flank < 0 or merge_gap < 0:
-        raise ValueError(
-            "top_n must be positive and merge gaps/gene flank nonnegative"
-        )
+        raise ValueError("top_n must be positive and merge gaps/gene flank nonnegative")
     if not 0 < zoom_ymax <= 1:
         raise ValueError("zoom_ymax must be in (0, 1]")
     if not 0 <= hit_label_min_fraction <= 1:
@@ -2252,6 +2548,19 @@ def summarize_workbench_run(
             "path": str(gene_annotation),
             "size_bytes": gene_annotation.stat().st_size,
             "sha256": sha256_file(gene_annotation),
+        }
+
+    gene_label_overrides_record = None
+    label_overrides = pd.DataFrame(columns=GENE_LABEL_OVERRIDE_COLUMNS)
+    if gene_label_overrides is not None:
+        if gene_annotation is None:
+            raise ValueError("gene label overrides require a gene annotation")
+        gene_label_overrides = Path(gene_label_overrides).resolve()
+        label_overrides = _load_gene_label_overrides(gene_label_overrides)
+        gene_label_overrides_record = {
+            "path": str(gene_label_overrides),
+            "size_bytes": gene_label_overrides.stat().st_size,
+            "sha256": sha256_file(gene_label_overrides),
         }
 
     input_records = []
@@ -2286,6 +2595,7 @@ def summarize_workbench_run(
         "whole_genome": bool(whole_genome),
         "top_n": int(top_n),
         "gene_annotation": gene_annotation_record,
+        "gene_label_overrides": gene_label_overrides_record,
         "plot_merge_gap": int(plot_merge_gap),
         "gene_context_flank": int(gene_context_flank),
         "zoom_ymax": float(zoom_ymax),
@@ -2405,10 +2715,12 @@ def summarize_workbench_run(
     )
     gene_list_path = None
     plot_loci_path = output_dir / "plot_loci.tsv"
-    gene_list = pd.DataFrame(columns=RANKED_GENE_LIST_COLUMNS)
+    ranked_top_windows_path = output_dir / "ranked_top_windows.tsv"
+    plot_loci = pd.DataFrame(columns=PLOT_LOCUS_COLUMNS)
+    ranked_top_windows = pd.DataFrame(columns=RANKED_GENE_LIST_COLUMNS)
     if gene_annotation is not None:
         genes = _load_protein_coding_genes(gene_annotation)
-        gene_list = _build_ranked_gene_list(
+        ranked_top_windows = _build_ranked_gene_list(
             genomes,
             called_column=called_column,
             genes=genes,
@@ -2416,16 +2728,22 @@ def summarize_workbench_run(
             plot_merge_gap=plot_merge_gap,
             context_flank=gene_context_flank,
         )
+        plot_loci = _build_candidate_plot_loci(
+            candidate_loci,
+            genomes,
+            called_column=called_column,
+            genes=genes,
+            plot_merge_gap=plot_merge_gap,
+            context_flank=gene_context_flank,
+            hit_label_min_fraction=hit_label_min_fraction,
+        )
+        plot_loci = _apply_gene_label_overrides(plot_loci, label_overrides)
         gene_list_path = output_dir / "gene_list.tsv"
-    gene_list.insert(3, "top_windows_limit_per_population", int(top_n))
-    gene_list.insert(
-        4,
-        "label_fraction_strictly_greater_than",
-        float(hit_label_min_fraction),
-    )
-    _atomic_frame(plot_loci_path, gene_list)
+    ranked_top_windows.insert(3, "top_windows_limit_per_population", int(top_n))
+    _atomic_frame(plot_loci_path, plot_loci)
+    _atomic_frame(ranked_top_windows_path, ranked_top_windows)
     if gene_list_path is not None:
-        _atomic_frame(gene_list_path, gene_list)
+        _atomic_frame(gene_list_path, plot_loci)
     zoom_percent = f"{zoom_ymax * 100:g}".replace(".", "p")
     zoom_stem = output_dir / f"combined.{scope}.gamma_smc.zoom{zoom_percent}pct"
     zoom_paths = _plot_combined_recent_genome(
@@ -2438,7 +2756,7 @@ def summarize_workbench_run(
         signal_fraction=signal_fraction,
         output_stem=zoom_stem,
         fixed_ymax=zoom_ymax,
-        hit_labels=gene_list,
+        hit_labels=plot_loci,
         hit_label_min_fraction=hit_label_min_fraction,
     )
     counts = {row["population"]: int(row["regions_found"]) for row in population_rows}
@@ -2464,12 +2782,22 @@ def summarize_workbench_run(
                 "layer": "plot_loci",
                 "file": "plot_loci.tsv",
                 "selection_rule": (
-                    f"top {top_n} {called_column} windows per population; labels > "
+                    f"all candidate_loci; labels where peak {called_column} > "
                     f"{hit_label_min_fraction:g}"
                 ),
-                "merge_rule": "connect adjacent selected windows for display only",
+                "merge_rule": (
+                    "connect adjacent candidate intervals for readable labels only"
+                ),
                 "maximum_gap_bp": int(plot_merge_gap),
-                "purpose": "gene labels on the zoomed whole-genome figure only",
+                "purpose": "complete gene-label source for the zoomed genome figure",
+            },
+            {
+                "layer": "ranked_top_windows",
+                "file": "ranked_top_windows.tsv",
+                "selection_rule": f"top {top_n} {called_column} windows per population",
+                "merge_rule": "connect adjacent selected windows for diagnostics only",
+                "maximum_gap_bp": int(plot_merge_gap),
+                "purpose": "legacy top-window ranking diagnostic; not a label filter",
             },
         ]
     )
@@ -2485,12 +2813,16 @@ def summarize_workbench_run(
         "plot_merge_gap": int(plot_merge_gap),
         "population_region_counts": counts,
         "total_regions": int(len(all_regions)),
-        "ranked_gene_hits": int(len(gene_list)),
+        "candidate_gene_hits": int(len(plot_loci)),
+        "ranked_gene_hits": int(len(ranked_top_windows)),
         "plotted_gene_hits": int(
-            gene_list["peak_ranking_value"].astype(float).gt(
-                hit_label_min_fraction
-            ).sum()
-        ) if not gene_list.empty else 0,
+            plot_loci["peak_ranking_value"]
+            .astype(float)
+            .gt(hit_label_min_fraction)
+            .sum()
+        )
+        if not plot_loci.empty
+        else 0,
         "hit_label_min_fraction": float(hit_label_min_fraction),
         "reused": False,
     }
@@ -2501,6 +2833,7 @@ def summarize_workbench_run(
         raw_scan_path,
         layers_path,
         plot_loci_path,
+        ranked_top_windows_path,
         *figure_paths,
         *zoom_paths,
     ]

@@ -431,6 +431,7 @@ def command_workbench_report(args):
         whole_genome=args.whole_genome,
         top_n=args.top_n,
         gene_annotation=args.gene_annotation,
+        gene_label_overrides=args.gene_label_overrides,
         plot_merge_gap=args.plot_merge_gap,
         gene_context_flank=args.gene_context_flank,
         zoom_ymax=args.zoom_ymax,
@@ -998,10 +999,21 @@ def parser() -> argparse.ArgumentParser:
     workbench_report.add_argument("--signal-fraction", type=float, default=0.02)
     workbench_report.add_argument("--merge-gap", type=int, default=20_000)
     workbench_report.add_argument("--whole-genome", action="store_true")
-    workbench_report.add_argument("--top-n", type=int, default=100)
+    workbench_report.add_argument(
+        "--top-n",
+        type=int,
+        default=100,
+        help="windows per population retained in ranked_top_windows.tsv",
+    )
     workbench_report.add_argument(
         "--gene-annotation",
-        help="GRCh38 GENCODE GTF[.gz] used for ranked-hit gene labels",
+        help="GRCh38 GENCODE GTF[.gz] used for candidate-locus gene labels",
+    )
+    workbench_report.add_argument(
+        "--gene-label-overrides",
+        help=(
+            "optional TSV of population/GRCh38 intervals and curated highlight labels"
+        ),
     )
     workbench_report.add_argument(
         "--plot-merge-gap",
@@ -1009,7 +1021,7 @@ def parser() -> argparse.ArgumentParser:
         dest="plot_merge_gap",
         type=int,
         default=1_000_000,
-        help="maximum adjacent-window gap for plot labels only (default 1000000)",
+        help="maximum gap joining candidate intervals for one label (default 1000000)",
     )
     workbench_report.add_argument("--gene-context-flank", type=int, default=500_000)
     workbench_report.add_argument("--zoom-ymax", type=float, default=0.04)
@@ -1017,7 +1029,7 @@ def parser() -> argparse.ArgumentParser:
         "--hit-label-min-fraction",
         type=float,
         default=0.02,
-        help="label ranked peaks strictly above this fraction (default 0.02)",
+        help="label candidate peaks strictly above this fraction (default 0.02)",
     )
     workbench_report.set_defaults(func=command_workbench_report)
 

@@ -100,10 +100,7 @@ def test_strict_hardmask_uses_callable_semantics_and_separate_roots():
     assert "mask mode: strict (included_intervals)" in output
     assert "/home/jupyter/gamma_smc_workbench_strict_hardmask" in output
     assert "gs://test-workspace/gamma_smc/results_strict_hardmask/AFR/" in output
-    assert (
-        "gs://test-workspace/hmmix-static/hg38_strick_callability_mask.bed"
-        in output
-    )
+    assert "gs://test-workspace/hmmix-static/hg38_strick_callability_mask.bed" in output
 
 
 def test_both_hardmask_runs_resolve_default_and_strict_namespaces():
@@ -184,14 +181,14 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
     assert 'flock -n 9 || die "another Workbench runner' in runner
     assert "workbench-report" in runner
     assert '--gene-annotation "$local_gene_annotation"' in runner
+    assert '--gene-label-overrides "$GENE_LABEL_OVERRIDES"' in runner
     assert '--plot-merge-gap "$PLOT_MERGE_GAP"' in runner
     assert '--hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"' in runner
-    assert 'gene_list.tsv' in (
-        repo / "python/gamma_smc_aou/workbench.py"
-    ).read_text()
-    assert 'raw_scan_windows.tsv.gz' in (
-        repo / "python/gamma_smc_aou/workbench.py"
-    ).read_text()
+    assert "gene_list.tsv" in (repo / "python/gamma_smc_aou/workbench.py").read_text()
+    assert (
+        "raw_scan_windows.tsv.gz"
+        in (repo / "python/gamma_smc_aou/workbench.py").read_text()
+    )
     assert 'gcloud storage rsync "$source_directory" "$remote_directory"' in runner
     assert "--recursive --checksums-only" in runner
     assert "--delete-unmatched-destination-objects" not in runner
@@ -200,7 +197,7 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
     assert '"$AOU" --sync-only' in runner
     assert "export AOU_UV_NO_SYNC=1" in runner
     aou = (repo / "scripts/aou.sh").read_text()
-    assert 'run_args+=(--no-sync)' in aou
+    assert "run_args+=(--no-sync)" in aou
     assert (
         "regions_by_population.tsv"
         in (repo / "python/gamma_smc_aou/workbench.py").read_text()

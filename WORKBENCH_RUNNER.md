@@ -180,8 +180,10 @@ summaries at the requested `--signal-fraction`, and
 shared chromosome axis. Partial chromosome scopes receive the corresponding
 `combined.requested_chromosomes` figure. A second
 `combined.{scope}.gamma_smc.zoom4pct.{png,pdf}` view fixes the y axis at 4%;
-downward triangles mark values clipped at that ceiling. It labels merged ranked
-hits strictly above 2% with their nearest protein-coding gene.
+downward triangles mark values clipped at that ceiling. It labels every
+candidate-region cluster strictly above 2%. Curated labels are used when a
+coordinate-matched override is available; otherwise the nearest protein-coding
+gene is shown.
 
 The report keeps the analytical and presentation layers separate:
 
@@ -191,25 +193,32 @@ The report keeps the analytical and presentation layers separate:
 - `candidate_loci.tsv` contains windows strictly above `--signal-fraction`,
   merged as scan intervals only when the intervening gap is at most
   `--merge-gap` (20 kb by default). This is the candidate-locus definition.
-- `plot_loci.tsv` starts from the top `--top-n` hard-call windows per population
-  and connects adjacent selected windows whose positions are separated by at
-  most `--plot-merge-gap` (1 Mb by default). This coarser merging is used only
-  to reduce duplicate gene labels in the detailed whole-genome figure; it does
-  not redefine candidate loci.
+- `plot_loci.tsv` starts from every row in `candidate_loci.tsv` and connects
+  adjacent candidate intervals separated by at most `--plot-merge-gap` (1 Mb by
+  default). This coarser merging only reduces duplicate labels in the detailed
+  whole-genome figure; it never filters or redefines the 20-kb candidate loci.
+  `source_region_ids` preserves the exact candidate rows represented by each
+  label.
+- `ranked_top_windows.tsv` retains the older top-`--top-n` window ranking as a
+  diagnostic table. It is not used to decide which candidate loci receive
+  labels.
 - `report_data_layers.tsv` records the source file, selection rule, merge rule,
-  maximum gap, and purpose of all three layers. `all_candidate_regions.tsv` and
-  `gene_list.tsv` remain compatibility aliases for the candidate and labeled
-  plot-locus outputs, respectively.
+  maximum gap, and purpose of all four layers. `all_candidate_regions.tsv` and
+  `gene_list.tsv` remain compatibility aliases for the candidate and complete
+  labeled plot-locus outputs, respectively.
 
-For this descriptive follow-up list, each population's top 100 hard-call scan
-windows are connected when adjacent selected positions are no more than 1 Mb
-apart. `gene_list.tsv` has one row per merged plot locus, its peak and GRCh38
-coordinates, the nearest protein-coding gene, and every protein-coding gene
-overlapping the hit or lying within 500 kb. These are positional candidates,
-not causal assignments or calibrated selection calls. `--top-n`,
-`--plot-merge-gap`, `--gene-context-flank`, and `--gene-annotation-uri` override
-those report settings. The command also prints the region count for every
-population and the total.
+`gene_list.tsv` has one row per merged candidate-label locus, its contributing
+candidate region IDs, peak and GRCh38 coordinates, the nearest protein-coding
+gene, and every protein-coding gene overlapping the hit or lying within 500 kb.
+The bundled `resources/gamma_smc_2pct_gene_label_overrides.tsv` supplies
+literature-curated labels for the current 2% results and records evidence level,
+rationale, and a primary reference. Unmatched loci retain the positional nearest
+gene and are explicitly marked `positional_only`; neither class is a calibrated
+selection call or proof of causality. `--gene-label-overrides` selects a
+different override TSV. `--top-n` now controls only
+`ranked_top_windows.tsv`; `--plot-merge-gap`, `--gene-context-flank`, and
+`--gene-annotation-uri` control the labeled report. The command also prints the
+region count for every population and the total.
 
 The candidate pass is population-specific. It plots all decoded-pair TMRCA
 quantiles within 500 kb of each peak, queries every BCF record within 100 kb,
@@ -248,8 +257,9 @@ drawn for candidate regions.
 | candidate profile | peak +/-500,000 bp |
 | variant search | peak +/-100,000 bp |
 | minimum class size | 20 ref/ref and 20 matching-alt/matching-alt pairs |
-| plot-label loci | top 100 hard-call windows/population; adjacent positions with <=1 Mb gap connected |
-| ranked-hit gene context | protein-coding genes in merged hit +/-500,000 bp |
+| plot-label loci | all >2% candidate intervals; adjacent candidates with <=1 Mb gap connected |
+| ranked-window diagnostic | top 100 hard-call windows/population |
+| candidate gene context | protein-coding genes in merged label locus +/-500,000 bp |
 | detail plot y ceiling | 4% |
 | gene-label threshold | strictly above 2% |
 
