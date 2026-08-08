@@ -1,5 +1,6 @@
 import json
 import gzip
+import io
 
 import msprime
 import pandas as pd
@@ -9,6 +10,7 @@ from gamma_smc_aou.simulation import SimulationConfig, simulate_replicates, with
 from gamma_smc_aou.tree_sequence import (
     VCF_GZIP_COMPRESSLEVEL,
     diploid_individuals,
+    stream_tree_sequence_vcf,
     tree_sequence_to_vcf,
 )
 
@@ -72,6 +74,16 @@ def test_tsz_conversion_uses_tszip_loader(tmp_path):
     tszip.compress(ts, source)
     tree_sequence_to_vcf(source, vcf)
     records = [line for line in vcf.read_text().splitlines() if not line.startswith("#")]
+    assert len(records) == ts.num_sites
+
+
+def test_tsz_conversion_can_stream_without_a_temporary_vcf(tmp_path):
+    ts = diploid_ts()
+    source = tmp_path / "input.tsz"
+    tszip.compress(ts, source)
+    output = io.StringIO()
+    stream_tree_sequence_vcf(source, output, input_format="tsz")
+    records = [line for line in output.getvalue().splitlines() if not line.startswith("#")]
     assert len(records) == ts.num_sites
 
 

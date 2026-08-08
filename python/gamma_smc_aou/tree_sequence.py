@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 from pathlib import Path
+from typing import TextIO
 
 import tskit
 
@@ -9,9 +10,9 @@ import tskit
 VCF_GZIP_COMPRESSLEVEL = 1
 
 
-def load_tree_sequence(path: str | Path):
+def load_tree_sequence(path: str | Path, input_format: str = "auto"):
     path = Path(path)
-    if path.suffix.lower() == ".tsz":
+    if input_format == "tsz" or (input_format == "auto" and path.suffix.lower() == ".tsz"):
         try:
             import tszip
         except ImportError as error:
@@ -38,9 +39,23 @@ def diploid_individuals(ts) -> list[int]:
     return individuals
 
 
-def tree_sequence_to_vcf(source: str | Path, destination: str | Path) -> Path:
-    ts = load_tree_sequence(source)
+def stream_tree_sequence_vcf(
+    source: str | Path, output: TextIO, *, input_format: str = "auto"
+) -> None:
+    """Write VCF text directly to an open stream without materializing a temporary VCF."""
+    ts = load_tree_sequence(source, input_format=input_format)
     individuals = diploid_individuals(ts)
+    # Tskit coordinates are 0-based, while VCF POS must be at least 1. The
+    # legacy transform preserves the usual rounded positions, maps coordinate
+    # zero to one, and disambiguates any resulting duplicate integer positions.
+    write_options = {"position_transform": "legacy"}
+    if individuals:
+        ts.write_vcf(output, individuals=individuals, **write_options)
+    else:
+        ts.write_vcf(output, ploidy=2, **write_options)
+
+
+def tree_sequence_to_vcf(source: str | Path, destination: str | Path) -> Path:
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.suffix.lower() == ".gz":
@@ -55,13 +70,6 @@ def tree_sequence_to_vcf(source: str | Path, destination: str | Path) -> Path:
         )
     else:
         output_handle = destination.open("w", encoding="utf-8")
-    # Tskit coordinates are 0-based, while VCF POS must be at least 1. The
-    # legacy transform preserves the usual rounded positions, maps coordinate
-    # zero to one, and disambiguates any resulting duplicate integer positions.
-    write_options = {"position_transform": "legacy"}
     with output_handle as output:
-        if individuals:
-            ts.write_vcf(output, individuals=individuals, **write_options)
-        else:
-            ts.write_vcf(output, ploidy=2, **write_options)
+        stream_tree_sequence_vcf(source, output)
     return destination

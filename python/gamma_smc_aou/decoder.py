@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from collections.abc import Sequence
 from pathlib import Path
 from time import perf_counter
@@ -14,6 +15,53 @@ from .defaults import (
     DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
     DEFAULT_SCALED_MUTATION_RATE,
 )
+
+
+TREE_SEQUENCE_SUFFIXES = {".trees", ".ts", ".tsz"}
+
+
+def _streams_tree_sequence(input_path: str | Path, input_format: str) -> bool:
+    return input_format in {"trees", "tsz"} or (
+        input_format == "auto" and Path(input_path).suffix.lower() in TREE_SEQUENCE_SUFFIXES
+    )
+
+
+def _vcf_producer_command(input_path: str | Path, input_format: str) -> list[str]:
+    script = (
+        "import sys; "
+        "from gamma_smc_aou.tree_sequence import stream_tree_sequence_vcf; "
+        "stream_tree_sequence_vcf(sys.argv[1], sys.stdout, input_format=sys.argv[2])"
+    )
+    return [sys.executable, "-c", script, str(input_path), input_format]
+
+
+def _decode_failure(
+    command: list[str],
+    completed: subprocess.CompletedProcess[str],
+    *,
+    producer_command: list[str] | None,
+    producer_returncode: int,
+    producer_stderr: str,
+) -> RuntimeError:
+    parts = [
+        "Gamma-SMC decoder pipeline failed",
+        f"decoder return code: {completed.returncode}",
+        f"decoder command: {command!r}",
+    ]
+    if completed.stdout:
+        parts.extend(["decoder stdout:", completed.stdout.rstrip()])
+    if completed.stderr:
+        parts.extend(["decoder stderr:", completed.stderr.rstrip()])
+    if producer_command is not None:
+        parts.extend(
+            [
+                f"tree-sequence VCF producer return code: {producer_returncode}",
+                f"tree-sequence VCF producer command: {producer_command!r}",
+            ]
+        )
+        if producer_stderr:
+            parts.extend(["tree-sequence VCF producer stderr:", producer_stderr.rstrip()])
+    return RuntimeError("\n".join(parts))
 
 
 def run_within_decoder(
@@ -82,8 +130,11 @@ def run_within_decoder(
             "(the exhaustive default is O(n^2) haplotype pairs)"
         )
 
+    streams_tree_sequence = _streams_tree_sequence(input_path, input_format)
+    decoder_input = "/dev/stdin" if streams_tree_sequence else str(input_path)
+    decoder_input_format = "vcf" if streams_tree_sequence else input_format
     command = [
-        str(executable), "--input", str(input_path), "--input_format", input_format,
+        str(executable), "--input", decoder_input, "--input_format", decoder_input_format,
         "--scaled_mutation_rate", str(scaled_mutation_rate),
         "--recombination_to_mutation_ratio", str(recombination_to_mutation_ratio),
         "--unscaled_mutation_rate", str(mutation_rate),
@@ -131,8 +182,42 @@ def run_within_decoder(
         command.extend(str(value) for value in extra_args)
 
     started = perf_counter()
-    completed = subprocess.run(command, check=True, text=True, capture_output=True)
+    producer_command = (
+        _vcf_producer_command(input_path, input_format) if streams_tree_sequence else None
+    )
+    producer = None
+    producer_returncode = 0
+    producer_stderr = ""
+    if producer_command is not None:
+        producer = subprocess.Popen(
+            producer_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        if producer.stdout is None or producer.stderr is None:
+            raise RuntimeError("could not open tree-sequence VCF streaming pipes")
+    try:
+        completed = subprocess.run(
+            command,
+            check=False,
+            text=True,
+            capture_output=True,
+            stdin=producer.stdout if producer is not None else None,
+        )
+    finally:
+        if producer is not None:
+            producer.stdout.close()
+            producer_stderr = producer.stderr.read().decode("utf-8", errors="replace")
+            producer_returncode = producer.wait()
     decode_seconds = perf_counter() - started
+    if completed.returncode != 0 or producer_returncode != 0:
+        raise _decode_failure(
+            command,
+            completed,
+            producer_command=producer_command,
+            producer_returncode=producer_returncode,
+            producer_stderr=producer_stderr,
+        )
     with output_summary.open(encoding="utf-8") as handle:
         n_output_positions = max(0, sum(1 for _ in handle) - 1)
 
@@ -147,6 +232,9 @@ def run_within_decoder(
 
     run = {
         "command": command,
+        "input_path": str(input_path),
+        "input_format": input_format,
+        "tree_sequence_vcf_producer_command": producer_command,
         "stdout": completed.stdout,
         "stderr": completed.stderr,
         "decode_seconds": float(decode_seconds),
