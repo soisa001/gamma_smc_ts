@@ -1,0 +1,28 @@
+specification_id	selection_coefficient	demography_curve	target_allele_frequency	deterministic_feasible_from_fixed_archaic_source	declared_timeout_seconds	elapsed_seconds	completed_external_draws	interrupted_internal_conditioned_trajectories	last_completed_draw_sample_af	last_completed_draw_accepted	detail	status
+intro_s0p010_af10	0.01		0.1	True	0.0	89.03500779997557	1	0	0.73	True		complete
+intro_s0p010_af20	0.01		0.2	True	300.0	300.2156098000123	1	2	0.945	False	SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p010_af30	0.01		0.3	True	300.0	301.00554650003323	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p010_af40	0.01		0.4	True	0.0	267.7203269000165	1	0	0.665	True		complete
+intro_s0p010_af50	0.01		0.5	True	300.0	300.0340735000209	1	2	0.955	False	SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p010_af60	0.01		0.6	True	300.0	300.84512399998493	2	2	0.955	False	SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p010_af70	0.01		0.7	True	300.0	300.0132084999932	2	2	0.91	False	SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p010_af80	0.01		0.8	True	300.0	300.8309442999889	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p010_af90	0.01		0.9	True	300.0	300.0235477000242	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p005_af10	0.005		0.1	True	0.0	63.680231200007256	1	0	0.8	True		complete
+intro_s0p005_af20	0.005		0.2	True	0.0	48.996028000023216	1	0	0.83	True		complete
+intro_s0p005_af30	0.005		0.3	True	0.0	63.337352700007614	2	0	0.83	True		complete
+intro_s0p005_af40	0.005		0.4	True	0.0	182.23926850000862	2	0	0.765	True		complete
+intro_s0p005_af50	0.005		0.5	True	0.0	54.549952499975916	1	0	0.745	True		complete
+intro_s0p005_af60	0.005		0.6	True	0.0	69.50463780004065	2	0	0.825	True		complete
+intro_s0p005_af70	0.005		0.7	True	0.0	168.78975370002445	4	0	0.91	True		complete
+intro_s0p005_af80	0.005		0.8	True	0.0	123.14338500000304	2	0	0.88	True		complete
+intro_s0p005_af90	0.005		0.9	False	300.0	300.2241363999783	6	2	0.935	False	SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p001_af10	0.001		0.1	False	0.0	53.15609639999457	1	0	0.115	True		complete
+intro_s0p001_af20	0.001		0.2	False	0.0	132.35247540002456	1	0	0.605	True		complete
+intro_s0p001_af30	0.001		0.3	False	300.0	300.13633519998984	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p001_af40	0.001		0.4	False	0.0	141.25860659999307	1	0	0.525	True		complete
+intro_s0p001_af50	0.001		0.5	False	300.0	300.06643460004125	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p001_af60	0.001		0.6	False	300.0	300.19527930003824	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p001_af70	0.001		0.7	False	300.0	300.039343499986	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p001_af80	0.001		0.8	False	300.0	300.17452920001233	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out
+intro_s0p001_af90	0.001		0.9	False	300.0	300.15778149996186	0	2			SLiM conditioning exceeded the declared per-specification limit of 300 seconds	timed_out

@@ -1,0 +1,10 @@
+specification_id	error_type	error	decoder_validation_mode	expected_decoder_sha256	status
+no_intro_s0p001_median_age15728g			recorded_decode_contract		complete
+no_intro_s0p001_q025_age15523g			recorded_decode_contract		complete
+no_intro_s0p001_q975_age16306g			recorded_decode_contract		complete
+no_intro_s0p005_median_age2725g			recorded_decode_contract		complete
+no_intro_s0p005_q025_age2635g			recorded_decode_contract		complete
+no_intro_s0p005_q975_age2781g			recorded_decode_contract		complete
+no_intro_s0p010_median_age1289g			recorded_decode_contract		complete
+no_intro_s0p010_q025_age1275g			recorded_decode_contract		complete
+no_intro_s0p010_q975_age1308g			recorded_decode_contract		complete

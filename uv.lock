@@ -11,6 +11,15 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "appdirs"
+version = "1.4.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/d8/05696357e0311f5b5c316d7b95f46c669dd9c15aaeecbb48c7d0aeb88c40/appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41", size = 13470, upload-time = "2020-05-11T07:59:51.037Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3b/00/2344469e2084fb287c2e0b57b72910309874c3245463acd6cf5e3db69324/appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128", size = 9566, upload-time = "2020-05-11T07:59:49.499Z" },
+]
+
+[[package]]
 name = "attrs"
 version = "26.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -175,6 +184,7 @@ dependencies = [
 [package.optional-dependencies]
 selection = [
     { name = "pyslim" },
+    { name = "stdpopsim" },
 ]
 test = [
     { name = "pytest" },
@@ -192,6 +202,7 @@ requires-dist = [
     { name = "pyslim", marker = "extra == 'selection'", specifier = ">=1.1.1" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
     { name = "scipy", specifier = ">=1.10" },
+    { name = "stdpopsim", marker = "extra == 'selection'", specifier = "==0.3.0" },
     { name = "tskit", specifier = ">=1.0.2" },
     { name = "tszip", marker = "extra == 'tszip'", specifier = ">=0.2" },
     { name = "zstandard", specifier = ">=0.22" },
@@ -948,6 +959,24 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031, upload-time = "2024-12-04T17:35:28.174Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050, upload-time = "2024-12-04T17:35:26.475Z" },
+]
+
+[[package]]
+name = "stdpopsim"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "appdirs" },
+    { name = "attrs" },
+    { name = "humanize" },
+    { name = "msprime" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pyslim" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/44/08/c52c12a068460261efff9940a04068a68541533551904a4ed31d14d108a7/stdpopsim-0.3.0.tar.gz", hash = "sha256:fa9b6d55bfebd7bd5a0e224bf21cad2ff102da8a08a51bcad1136219622c7144", size = 471603, upload-time = "2025-03-19T02:48:20.218Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9b/04/80c8f180babb0a3f664b59488590c87b25e42da3dd666126833d9baec3a7/stdpopsim-0.3.0-py3-none-any.whl", hash = "sha256:4ad3b64bb6baccb4ef761ece740d6bc0399ac070ed40dad9eefa4e26e1f972f8", size = 244631, upload-time = "2025-03-19T02:48:17.931Z" },
 ]
 
 [[package]]

@@ -5,9 +5,16 @@ bin/*
 __pycache__/
 .pytest_cache/
 .venv/
+.venv-wsl/
 .native/
+.native-stdpopsim/
 .tools/
+.wsl-tools/
 *.egg-info/
 sim_results/**/truth_summaries/
 sim_results/**/trees/
 sim_results/history_smoke/
+no_introgression_EAS_sim/work/
+no_introgression_EAS_sim/results/figures/no_intro_*/
+introgression_EAS_sim/work/
+introgression_EAS_sim/results/figures/intro_*/

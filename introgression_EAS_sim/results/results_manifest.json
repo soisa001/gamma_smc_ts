@@ -1,0 +1,140 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "plot",
+  "specifications_plotted": 13,
+  "simulation_status_counts": {
+    "timed_out": 14,
+    "complete": 13
+  },
+  "decode_status_counts": {
+    "not_simulated": 14,
+    "complete": 13
+  },
+  "artifacts": {
+    "acceptance_summary": {
+      "path": "results/acceptance_summary.tsv",
+      "sha256": "2f2072e7ceb7b58e0c9b51bbbbfd031daff1dd8710b9fae23dbc455c356cb799"
+    },
+    "center_internal_contrasts": {
+      "path": "results/center_internal_contrasts.tsv",
+      "sha256": "e55f7324175baad943810ecc259a6c13a889130752ff338a027e859567f8f63f"
+    },
+    "center_tmrca_profiles": {
+      "path": "results/center_tmrca_profiles.tsv",
+      "sha256": "d2af386d77d6f4bfdc08fa4a798706e97d5e5e1e3b970ae472175c5855431950"
+    },
+    "cross_acceptance_effort_pdf": {
+      "path": "results/figures/cross_specification/introgression_neanderthal_introgression_standing_variation_acceptance_effort.pdf",
+      "sha256": "b33a2e9116a5977033956f08c217816954b9fccd7a47fd96c985b7bc91c297f5"
+    },
+    "cross_acceptance_effort_png": {
+      "path": "results/figures/cross_specification/introgression_neanderthal_introgression_standing_variation_acceptance_effort.png",
+      "sha256": "818cb18be05721cf2c43145ea96d8c2cb74833313d2679bbd6a6cc72c37f05f1"
+    },
+    "cross_center_internal_contrasts_pdf": {
+      "path": "results/figures/cross_specification/introgression_neanderthal_introgression_standing_variation_center_internal_contrasts.pdf",
+      "sha256": "6999b5d03f547b806f37adba64bf18ccddb0fd2070cf6a62801c463b74882862"
+    },
+    "cross_center_internal_contrasts_png": {
+      "path": "results/figures/cross_specification/introgression_neanderthal_introgression_standing_variation_center_internal_contrasts.png",
+      "sha256": "4a77a7ed20f8bd295067d0b88660b2df20b74fa437158a882cbca6770d601a2c"
+    },
+    "decode_status_tsv": {
+      "path": "results/decode_status.tsv",
+      "sha256": "f79a435b2defa15bfd383442ef609f794654e5fad290e293566ddf5bcfdd08c1"
+    },
+    "design_ancient_eurasia_timeline_pdf": {
+      "path": "results/figures/design/ancient_eurasia_timeline.pdf",
+      "sha256": "4f231533f29d987ce48e76e642d171246c1c4e91948792456aeafac3ae34e94e"
+    },
+    "design_ancient_eurasia_timeline_png": {
+      "path": "results/figures/design/ancient_eurasia_timeline.png",
+      "sha256": "a805c09cd1994e1ea6574db2afa2a4cab9c1d21e9c9cbd3ee912f3207088966e"
+    },
+    "representative_center_cdf_pdf": {
+      "path": "results/figures/representative/intro_s0p005_af50_center_cdf.pdf",
+      "sha256": "512ca26291b2cdce18842520aac37ae394fa3d9cb62109d6934a0401f456c028"
+    },
+    "representative_center_cdf_png": {
+      "path": "results/figures/representative/intro_s0p005_af50_center_cdf.png",
+      "sha256": "a9cf6010dd6fbac9dfc0f4a05c47e27fb97078516de38e8ac3b58f5a1032fa75"
+    },
+    "representative_spatial_heatmaps_gamma_smc_pdf": {
+      "path": "results/figures/representative/intro_s0p005_af50_spatial_heatmaps_gamma_smc.pdf",
+      "sha256": "a09a4aa8e4930f1bad746ce840e8629b9b0a4c30f4d2d53a6bdcdf95a91dd391"
+    },
+    "representative_spatial_heatmaps_gamma_smc_png": {
+      "path": "results/figures/representative/intro_s0p005_af50_spatial_heatmaps_gamma_smc.png",
+      "sha256": "2d17bbf504a90b0e929454cc453f3af9f01361e03e5da1771e2296184ce2591e"
+    },
+    "representative_spatial_heatmaps_tree_truth_pdf": {
+      "path": "results/figures/representative/intro_s0p005_af50_spatial_heatmaps_tree_truth.pdf",
+      "sha256": "4cb5f6403c057dcb6983e440515261d3388de39834d17cee03c7b741cb95e567"
+    },
+    "representative_spatial_heatmaps_tree_truth_png": {
+      "path": "results/figures/representative/intro_s0p005_af50_spatial_heatmaps_tree_truth.png",
+      "sha256": "3d16f799d17727189dda41e86905c4afee767d0546a81a5841fb3b02b6894ee7"
+    },
+    "representative_tmrca_profiles_pdf": {
+      "path": "results/figures/representative/intro_s0p005_af50_class_tmrca_profiles.pdf",
+      "sha256": "9120c1a3fa0c233b50e848e17ee2779b2638d76127c04e4fa4fc823df147620b"
+    },
+    "representative_tmrca_profiles_png": {
+      "path": "results/figures/representative/intro_s0p005_af50_class_tmrca_profiles.png",
+      "sha256": "4832dd6e768d6186489fe105e70a67604a595fc298f89935787419db7fc233d8"
+    },
+    "simulation_status_pdf": {
+      "path": "results/figures/cross_specification/introgression_simulation_status.pdf",
+      "sha256": "4d57575196a9c1ea03d874df4627e4b78de5d22ba13d0fee4f309d403359f381"
+    },
+    "simulation_status_png": {
+      "path": "results/figures/cross_specification/introgression_simulation_status.png",
+      "sha256": "3126292ba9d8ace980e01f95f39116c83d5d6bc490236c8c5e98066cd7b74bb1"
+    },
+    "simulation_status_tsv": {
+      "path": "results/simulation_status.tsv",
+      "sha256": "40e2d9ec0dee133fdd4771fde20f8396a60e7fcc67e0cdc9e12290047ecd692e"
+    },
+    "specifications_tsv": {
+      "path": "specifications.tsv",
+      "sha256": "65aff886a5a3a7142e79bb6efc6a7b1221df17bb548a9a2add1f42b348fb8d36"
+    },
+    "study_design_json": {
+      "path": "study_design.json",
+      "sha256": "8f9805081375c0a0afc16faa17572f133f647fd4a9d05b7a2db4b97aeeddac04"
+    }
+  },
+  "interpretation": "descriptive internal genotype contrasts; no neutral-null p-values",
+  "runtime": {
+    "repo_root": ".",
+    "sample_diploids": 100,
+    "sequence_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "mutation_rate": 1.25e-08,
+    "recombination_rate": 1e-08,
+    "generation_time_years": 25.0,
+    "output_stride_bp": 10000,
+    "cache_size_bp": 10000,
+    "threads": 4,
+    "simulation_workers": 4,
+    "slim_scaling_factor": 10.0,
+    "slim_burn_in": 0.1,
+    "max_external_draws": 20,
+    "max_specification_seconds": 0.0,
+    "minimum_homozygous_diploids": 2,
+    "base_seed": 20240523
+  },
+  "simulation_software": [
+    {
+      "python": "3.11.15",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "stdpopsim": "0.3.0",
+      "tskit": "1.0.3",
+      "slim_sha256": "994c13ba14252c8ea867a861dccd27802160a660c81de2148bd6a153db09e369",
+      "slim_version_output": "SLiM version 4.2.2, built May  5 2024 12:46:33\nGit commit SHA-1: unknown (built from a non-Git source archive)"
+    }
+  ],
+  "gamma_smc_decoder_sha256s": [
+    "e57182c105e216c5a3c4afad991d7f51343dbf21d4c1889b38af97a3c52e6d40"
+  ]
+}

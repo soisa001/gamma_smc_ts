@@ -1,0 +1,10 @@
+specification_id	selection_coefficient	demography_curve	target_allele_frequency	deterministic_feasible_from_fixed_archaic_source	declared_timeout_seconds	elapsed_seconds	completed_external_draws	interrupted_internal_conditioned_trajectories	last_completed_draw_sample_af	last_completed_draw_accepted	detail	status
+no_intro_s0p010_q025_age1275g	0.01	q025	0.5		0.0	113.37407439999515	3	0	0.515	True		complete
+no_intro_s0p010_median_age1289g	0.01	median	0.5		0.0	24.570239900029264	1	0	0.51	True		complete
+no_intro_s0p010_q975_age1308g	0.01	q975	0.5		0.0	40.95548659999622	1	0	0.49	True		complete
+no_intro_s0p005_q025_age2635g	0.005	q025	0.5		0.0	29.58949169999687	1	0	0.505	True		complete
+no_intro_s0p005_median_age2725g	0.005	median	0.5		0.0	68.59134039998753	1	0	0.515	True		complete
+no_intro_s0p005_q975_age2781g	0.005	q975	0.5		0.0	126.15079799998784	1	0	0.455	True		complete
+no_intro_s0p001_q025_age15523g	0.001	q025	0.5		0.0	2292.7883667999995	2	1	0.505	True		complete
+no_intro_s0p001_median_age15728g	0.001	median	0.5		0.0	1423.235507800011	2	1	0.485	True		complete
+no_intro_s0p001_q975_age16306g	0.001	q975	0.5		0.0	1763.9160610000254	2	0	0.535	True		complete

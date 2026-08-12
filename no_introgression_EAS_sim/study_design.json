@@ -1,0 +1,57 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "plan",
+  "scenario": "no_introgression",
+  "runtime": {
+    "repo_root": ".",
+    "sample_diploids": 100,
+    "sequence_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "mutation_rate": 1.25e-08,
+    "recombination_rate": 1e-08,
+    "generation_time_years": 25.0,
+    "output_stride_bp": 10000,
+    "cache_size_bp": 10000,
+    "threads": 4,
+    "simulation_workers": 4,
+    "slim_scaling_factor": 10.0,
+    "slim_burn_in": 0.1,
+    "max_external_draws": 20,
+    "max_specification_seconds": 0.0,
+    "minimum_homozygous_diploids": 2,
+    "base_seed": 20240523
+  },
+  "tmrca_thresholds_years": [
+    1000,
+    4500,
+    10000,
+    20000,
+    30000,
+    40000,
+    50000
+  ],
+  "selection_coefficients": [
+    0.01,
+    0.005,
+    0.001
+  ],
+  "rng": {
+    "base_seed": 20240523,
+    "derivation": "sha256(base_seed:specification_id:external_draw)"
+  },
+  "frequency_semantics": "SLiM conditions population AF; accepted sample AF and genotype counts are separately validated and reported",
+  "auc_semantics": "normalized within-genotype TMRCA-CDF area, not ROC AUC; no neutral null",
+  "scaling_caveat": "SLiM scaling is an exploratory approximation and is recorded per run",
+  "slim_time_rounding": "stdpopsim rounds extended events to the nearest scaled tick, while its generated demographic time_to_tick truncates positive catalog times; specifications.tsv records both requested and realized study-critical times",
+  "specification_count": 9,
+  "eas_demography_resource": {
+    "path": "resources/EAS.npz",
+    "sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+    "quantiles": [
+      0.025,
+      0.5,
+      0.975
+    ],
+    "interval_semantics": "empirical_pointwise_bootstrap_quantiles"
+  }
+}

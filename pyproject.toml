@@ -20,7 +20,7 @@ dependencies = [
 [project.optional-dependencies]
 tszip = ["tszip>=0.2"]
 test = ["pytest>=8"]
-selection = ["pyslim>=1.1.1"]
+selection = ["pyslim>=1.1.1", "stdpopsim==0.3.0"]
 
 [project.scripts]
 gamma-smc-aou = "gamma_smc_aou.cli:main"

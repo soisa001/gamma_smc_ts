@@ -1,0 +1,61 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "plan",
+  "scenario": "introgression",
+  "runtime": {
+    "repo_root": ".",
+    "sample_diploids": 100,
+    "sequence_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "mutation_rate": 1.25e-08,
+    "recombination_rate": 1e-08,
+    "generation_time_years": 25.0,
+    "output_stride_bp": 10000,
+    "cache_size_bp": 10000,
+    "threads": 4,
+    "simulation_workers": 4,
+    "slim_scaling_factor": 10.0,
+    "slim_burn_in": 0.1,
+    "max_external_draws": 20,
+    "max_specification_seconds": 0.0,
+    "minimum_homozygous_diploids": 2,
+    "base_seed": 20240523
+  },
+  "tmrca_thresholds_years": [
+    1000,
+    4500,
+    10000,
+    20000,
+    30000,
+    40000,
+    50000
+  ],
+  "selection_coefficients": [
+    0.01,
+    0.005,
+    0.001
+  ],
+  "rng": {
+    "base_seed": 20240523,
+    "derivation": "sha256(base_seed:specification_id:external_draw)"
+  },
+  "frequency_semantics": "SLiM conditions population AF; accepted sample AF and genotype counts are separately validated and reported",
+  "auc_semantics": "normalized within-genotype TMRCA-CDF area, not ROC AUC; no neutral null",
+  "scaling_caveat": "SLiM scaling is an exploratory approximation and is recorded per run",
+  "slim_time_rounding": "stdpopsim rounds extended events to the nearest scaled tick, while its generated demographic time_to_tick truncates positive catalog times; specifications.tsv records both requested and realized study-critical times",
+  "specification_count": 27,
+  "scaled_introgression_event_times_generations_ago": {
+    "archaic_mutation_origin": 2400.0,
+    "requested_pre_pulse_source_check": 2270.0,
+    "introgression_pulse_and_selection_onset": 2270.0,
+    "requested_catalog_han_split": 2016.0,
+    "realized_demographic_han_split": 2010.0,
+    "selection_population_transition": 2010.0
+  },
+  "scaled_time_rules": {
+    "extended_events": "round(time/Q)*Q using Python round",
+    "positive_catalog_demographic_events": "floor(time/Q)*Q through generated Eidos asInteger",
+    "han_split_alignment_validated": true
+  },
+  "scaled_time_collision": "the requested 2,273-generation source check and 2,272-generation pulse both execute at 2,270 generations under Q=10"
+}

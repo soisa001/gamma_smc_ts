@@ -1,0 +1,150 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "plot",
+  "specifications_plotted": 9,
+  "simulation_status_counts": {
+    "complete": 9
+  },
+  "decode_status_counts": {
+    "complete": 9
+  },
+  "artifacts": {
+    "acceptance_summary": {
+      "path": "results/acceptance_summary.tsv",
+      "sha256": "2d2ce921335fe2a9c00b16b8c26fbae672e53a301c32090d474e0b7251beb036"
+    },
+    "center_internal_contrasts": {
+      "path": "results/center_internal_contrasts.tsv",
+      "sha256": "edfe2ac96438a2637922759edfebb6fc4801eb343dd64dd6608312bc04ba2eff"
+    },
+    "center_tmrca_profiles": {
+      "path": "results/center_tmrca_profiles.tsv",
+      "sha256": "64e735ca5de6b5750b921349ec06dc562bd2ca1b1dff0d2bdb37c86d5429936d"
+    },
+    "cross_acceptance_effort_pdf": {
+      "path": "results/figures/cross_specification/no_introgression_no_introgression_de_novo_acceptance_effort.pdf",
+      "sha256": "2ce6d057138342286ea7159e1288267889e5cbb062c7a783dcf20e7253ce568f"
+    },
+    "cross_acceptance_effort_png": {
+      "path": "results/figures/cross_specification/no_introgression_no_introgression_de_novo_acceptance_effort.png",
+      "sha256": "efde5c50e9e985f61722f439d77b625e0a43b5312b9ba03ba50283f4d670db3c"
+    },
+    "cross_center_internal_contrasts_pdf": {
+      "path": "results/figures/cross_specification/no_introgression_no_introgression_de_novo_center_internal_contrasts.pdf",
+      "sha256": "ac98c031b3f4e6465032860f21a8377008d1ad01a3038ab5ea621ed825cc25e7"
+    },
+    "cross_center_internal_contrasts_png": {
+      "path": "results/figures/cross_specification/no_introgression_no_introgression_de_novo_center_internal_contrasts.png",
+      "sha256": "21e0c9df51f020a120730dc01f20f39db1f7116ff6b8252eed898ea5e01c58ea"
+    },
+    "decode_status_tsv": {
+      "path": "results/decode_status.tsv",
+      "sha256": "a7eea1f12084f77a31c65a5d0c6136a7f085a0e4141df16f0e2949030723fc06"
+    },
+    "design_eas_demography_and_origins_pdf": {
+      "path": "results/figures/design/eas_demography_and_origins.pdf",
+      "sha256": "ab23a77d39a9131967db05922cc1b6d7a5b9b0fc1fbcf81d4d1160b069a70a28"
+    },
+    "design_eas_demography_and_origins_png": {
+      "path": "results/figures/design/eas_demography_and_origins.png",
+      "sha256": "c375ca2aa01a62fcbcedbd09e61468d4dfab83b8778c041b3a4675e00fd1e95f"
+    },
+    "eas_resource_npz": {
+      "path": "resources/EAS.npz",
+      "sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+    },
+    "eas_resource_provenance_json": {
+      "path": "resources/EAS.provenance.json",
+      "sha256": "d7f98ffee6c76741f7958901daf14b8d91ed35ad6d0621571526b57fb35ab50e"
+    },
+    "origin_age_contracts_json": {
+      "path": "origin_age_contracts.json",
+      "sha256": "fb5d6ac36857a20f9e0d986e8641ffb8c484901459391097d0e64c0b36a773a9"
+    },
+    "representative_center_cdf_pdf": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_center_cdf.pdf",
+      "sha256": "7f0faa94eafdd2808cccf9dd05295a349436089f30443ba369633ea70ee1b502"
+    },
+    "representative_center_cdf_png": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_center_cdf.png",
+      "sha256": "e77d6e318da417d739ff9a47861b17990ef818bfb2629c4867c61816c97ad0fc"
+    },
+    "representative_spatial_heatmaps_gamma_smc_pdf": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_spatial_heatmaps_gamma_smc.pdf",
+      "sha256": "ea059ce4fb0653ca8b76995aca36bbaaa6e691aa7246ccbb4201a8b5852fb2ad"
+    },
+    "representative_spatial_heatmaps_gamma_smc_png": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_spatial_heatmaps_gamma_smc.png",
+      "sha256": "2c75048622ffc60eddc03200c790c28342db2be073788c00429c73762829fae2"
+    },
+    "representative_spatial_heatmaps_tree_truth_pdf": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_spatial_heatmaps_tree_truth.pdf",
+      "sha256": "a8d279467100eda90607c8542a615c463b849a92b45ebb216226a06f85128980"
+    },
+    "representative_spatial_heatmaps_tree_truth_png": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_spatial_heatmaps_tree_truth.png",
+      "sha256": "0d29eefaab2737c63a71e7412f06dbfd55b31bca53ce83b6e08c3fba58171ad4"
+    },
+    "representative_tmrca_profiles_pdf": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_class_tmrca_profiles.pdf",
+      "sha256": "cd74065b6af40b59e7721d9dc9484ae5bede8d794bc999eddf00e4ccd902e4c9"
+    },
+    "representative_tmrca_profiles_png": {
+      "path": "results/figures/representative/no_intro_s0p010_median_age1289g_class_tmrca_profiles.png",
+      "sha256": "cb070cbdc38bfd76cabce1a33f38992388d9a3d832aca401526b251cbc023370"
+    },
+    "simulation_status_pdf": {
+      "path": "results/figures/cross_specification/no_introgression_simulation_status.pdf",
+      "sha256": "54946896e293ccc8a7eed583b29d10cf4127bb8217e8432c7c467cb677374aac"
+    },
+    "simulation_status_png": {
+      "path": "results/figures/cross_specification/no_introgression_simulation_status.png",
+      "sha256": "fab98a3cbcf9d77eb47eb19238e1b708067bc7d669d9bec32f050070d9a2a04c"
+    },
+    "simulation_status_tsv": {
+      "path": "results/simulation_status.tsv",
+      "sha256": "17fe04e6adebd70563d5a89563b9adbbf02627981a4907894315a32d0fd355f1"
+    },
+    "specifications_tsv": {
+      "path": "specifications.tsv",
+      "sha256": "dfc81aa1c1342732d1954eacc80b3e3917e2ed8093cd05f248d8349efce62c3b"
+    },
+    "study_design_json": {
+      "path": "study_design.json",
+      "sha256": "1b936e7957900348faa6112eb3bdd03efe1af78546aba5bb57da38907f5eb87d"
+    }
+  },
+  "interpretation": "descriptive internal genotype contrasts; no neutral-null p-values",
+  "runtime": {
+    "repo_root": ".",
+    "sample_diploids": 100,
+    "sequence_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "mutation_rate": 1.25e-08,
+    "recombination_rate": 1e-08,
+    "generation_time_years": 25.0,
+    "output_stride_bp": 10000,
+    "cache_size_bp": 10000,
+    "threads": 4,
+    "simulation_workers": 4,
+    "slim_scaling_factor": 10.0,
+    "slim_burn_in": 0.1,
+    "max_external_draws": 20,
+    "max_specification_seconds": 0.0,
+    "minimum_homozygous_diploids": 2,
+    "base_seed": 20240523
+  },
+  "simulation_software": [
+    {
+      "python": "3.11.15",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "stdpopsim": "0.3.0",
+      "tskit": "1.0.3",
+      "slim_sha256": "994c13ba14252c8ea867a861dccd27802160a660c81de2148bd6a153db09e369",
+      "slim_version_output": "SLiM version 4.2.2, built May  5 2024 12:46:33\nGit commit SHA-1: unknown (built from a non-Git source archive)"
+    }
+  ],
+  "gamma_smc_decoder_sha256s": [
+    "e57182c105e216c5a3c4afad991d7f51343dbf21d4c1889b38af97a3c52e6d40"
+  ]
+}

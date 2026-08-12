@@ -1,0 +1,10 @@
+scenario	study_type	specification_id	selection_coefficient	demography_curve	target_allele_frequency	achieved_allele_frequency	achieved_allele_frequency_scope	attempts_to_accept	completed_external_sample_panel_draws	interrupted_internal_conditioned_trajectories	accepted_seed	n_hom_ref	n_heterozygous	n_hom_alt	slim_scaling_factor
+no_introgression_de_novo	no_introgression	no_intro_s0p010_q025_age1275g	0.01	q025	0.5	0.515	sample_estimate	3	3	0	1227545173	23	51	26	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p010_median_age1289g	0.01	median	0.5	0.51	sample_estimate	1	1	0	1301930412	26	46	28	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p010_q975_age1308g	0.01	q975	0.5	0.49	sample_estimate	1	1	0	2005268350	24	54	22	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p005_q025_age2635g	0.005	q025	0.5	0.505	sample_estimate	1	1	0	1467260345	28	43	29	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p005_median_age2725g	0.005	median	0.5	0.515	sample_estimate	1	1	0	1225378495	19	59	22	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p005_q975_age2781g	0.005	q975	0.5	0.455	sample_estimate	1	1	0	1117839135	30	49	21	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p001_q025_age15523g	0.001	q025	0.5	0.505	sample_estimate	2	2	1	915012502	26	47	27	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p001_median_age15728g	0.001	median	0.5	0.485	sample_estimate	2	2	1	1093828740	23	57	20	10.0
+no_introgression_de_novo	no_introgression	no_intro_s0p001_q975_age16306g	0.001	q975	0.5	0.535	sample_estimate	2	2	0	1124449436	19	55	26	10.0

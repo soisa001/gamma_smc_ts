@@ -1,0 +1,43 @@
+{
+  "provenance_schema": "gamma-smc-study-resource-provenance/v1",
+  "verified_on": "2026-08-11",
+  "resource": {
+    "path": "EAS.npz",
+    "sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+    "size_bytes": 4110207
+  },
+  "source": {
+    "repository_ssh": "git@github.com:soisa001/SimulatePhase2.git",
+    "repository_https": "https://github.com/soisa001/SimulatePhase2",
+    "path": "mvn/EAS.npz",
+    "content_introducing_commit": "4dd5f1afe66efcb06ecb131f2b339339c6ac34bd",
+    "content_introducing_commit_date": "2026-08-05",
+    "content_introducing_commit_subject": "Install validated PHLASH MVNs and summary plots",
+    "source_checkout_head_at_verification": "d79ead80c856c9d401da1b1fc6e1dd9119b90e0a",
+    "tracked_and_unmodified_at_verification": true
+  },
+  "artifact": {
+    "schema": "phlash.aou.log-ne-mvn/v1",
+    "population": "EAS",
+    "num_bootstrap_curves": 100,
+    "num_time_points": 10000,
+    "min_time_generations": 100.0,
+    "max_time_generations": 40000.0,
+    "covariance_rank_at_most": 99,
+    "jitter_log_ne_sd": 0.0,
+    "arrays": {
+      "schema": {"shape": [], "dtype": "<U24"},
+      "population": {"shape": [], "dtype": "<U3"},
+      "time": {"shape": [10000], "dtype": "float32"},
+      "mean_log_ne": {"shape": [10000], "dtype": "float32"},
+      "covariance_factor": {"shape": [100, 10000], "dtype": "float32"},
+      "bootstrap_ne": {"shape": [100, 10000], "dtype": "float32"},
+      "jitter": {"shape": [], "dtype": "float32"}
+    }
+  },
+  "study_use": {
+    "generation_time_years": 25,
+    "summary_curves": ["pointwise_q025", "pointwise_q500", "pointwise_q975"],
+    "interval_semantics": "empirical pointwise quantiles across bootstrap_ne; not a simultaneous confidence band"
+  }
+}
