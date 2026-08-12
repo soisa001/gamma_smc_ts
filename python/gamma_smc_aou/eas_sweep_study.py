@@ -20,11 +20,14 @@ import platform
 import queue
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter, sleep
 from typing import Any, Iterable, Mapping, Sequence
@@ -113,10 +116,67 @@ EXTERNAL_DRAW_COLUMNS = (
     "n_segregating_nucleotide_snps",
     "vcf_allele_encoding",
 )
+SIMULATION_INVOCATION_COLUMNS = (
+    "invocation_index",
+    "recorded_at_utc",
+    "simulation_contract_sha256",
+    "status",
+    "elapsed_seconds",
+    "declared_timeout_seconds",
+    "effective_timeout_seconds",
+    "completed_external_sample_panel_draws",
+    "interrupted_internal_conditioned_trajectories",
+    "error_type",
+    "core_source_sha256",
+    "orchestrator_source_sha256",
+)
+IMPLEMENTATION_PROVENANCE_SCHEMA = "gamma-smc.eas-sweep-implementation/v1"
+DECODE_CONTRACT_SCHEMA = "gamma-smc.eas-sweep-decode-contract/v2"
+DECODE_CLASS_ORDER = ("overall", "hom_ref", "heterozygous", "hom_alt")
+DECODE_FIXED_SETTINGS = {
+    "input_format": "trees",
+    "decoder_input_format": "vcf",
+    "decoder_input_transport": "python_vcf_stream_to_stdin",
+    "decoder_input_path": "/dev/stdin",
+    "output_at_hets": False,
+    "only_within": False,
+    "n_random_pairs": 0,
+    "pairs_seed": 1729,
+    "exclude_within": False,
+    "recent_call": "median",
+    "recent_call_probability": 0.5,
+    "pair_block": 256,
+    "exp10": "accurate",
+    "backward_alignment": "fixed",
+    "raw_output": None,
+    "bitmatrix_output": None,
+    "mask": None,
+    "masks_per_sample": None,
+    "samples": None,
+    "output_positions_file": None,
+    "pairs_manifest": None,
+    "extra_args": None,
+}
 REPRESENTATIVE_SPECIFICATIONS = {
     "no_introgression": "no_intro_s0p010_median_age1289g",
     "introgression": "intro_s0p005_af50",
 }
+
+
+class SimulationBudgetExhausted(RuntimeError):
+    """Raised when a specification has consumed a declared search ceiling."""
+
+
+class SimulationSpecificationLocked(RuntimeError):
+    """Raised when another process owns a specification work directory."""
+
+
+class DecodeSpecificationLocked(RuntimeError):
+    """Raised when another process owns a specification's decode directory."""
+
+
+class ImplementationProvenanceMismatch(RuntimeError):
+    """Raised before task mutation when parent and child source hashes differ."""
 
 
 @dataclass(frozen=True)
@@ -137,9 +197,12 @@ class StudyRuntime:
     slim_scaling_factor: float = DEFAULT_SLIM_SCALING_FACTOR
     slim_burn_in: float = DEFAULT_SLIM_BURN_IN
     max_external_draws: int = DEFAULT_MAX_EXTERNAL_DRAWS
+    max_launched_draws: int = 0
     max_specification_seconds: float = 0.0
+    max_cumulative_specification_seconds: float = 0.0
     minimum_homozygous_diploids: int = DEFAULT_MIN_HOMOZYGOUS_DIPLOIDS
     base_seed: int = BASE_SEED
+    campaign_subdirectory: str | None = None
 
     def validate(self) -> None:
         if self.sequence_length_bp != SEQUENCE_LENGTH_BP:
@@ -163,6 +226,23 @@ class StudyRuntime:
             raise ValueError("slim_burn_in must be non-negative")
         if self.max_specification_seconds < 0:
             raise ValueError("max_specification_seconds must be non-negative")
+        if self.max_launched_draws < 0:
+            raise ValueError("max_launched_draws must be non-negative")
+        if self.max_cumulative_specification_seconds < 0:
+            raise ValueError(
+                "max_cumulative_specification_seconds must be non-negative"
+            )
+        if self.campaign_subdirectory is not None:
+            campaign = Path(self.campaign_subdirectory)
+            if (
+                campaign.is_absolute()
+                or not campaign.parts
+                or any(part in {"", ".", ".."} for part in campaign.parts)
+            ):
+                raise ValueError(
+                    "campaign_subdirectory must be a nonempty relative path "
+                    "without '.' or '..' components"
+                )
 
 
 def _canonical_json(value: Any) -> str:
@@ -181,13 +261,107 @@ def _sha256(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def _implementation_provenance() -> dict[str, Any]:
+    """Snapshot the implementation actually imported by the current process.
+
+    The campaign orchestrator uses process spawning on Windows.  Hashing here,
+    inside each task process, makes source-epoch changes observable instead of
+    silently attributing a child to the parent's earlier source snapshot.
+    """
+    module_dir = Path(__file__).resolve().parent
+    sources: dict[str, dict[str, Any]] = {}
+    for name, path in {
+        "core": Path(__file__).resolve(),
+        "orchestrator": module_dir / "eas_introgression_replicates.py",
+        "decoder_wrapper": module_dir / "decoder.py",
+        "tree_sequence_vcf_producer": module_dir / "tree_sequence.py",
+    }.items():
+        record: dict[str, Any] = {
+            "path": path.name,
+            "available": path.is_file(),
+            "sha256": None,
+        }
+        if path.is_file():
+            record["sha256"] = _sha256(path)
+        sources[name] = record
+    return {
+        "schema": IMPLEMENTATION_PROVENANCE_SCHEMA,
+        "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
+        "python_implementation": platform.python_implementation(),
+        "python_version": platform.python_version(),
+        "tskit_version": str(tskit.__version__),
+        "sources": sources,
+    }
+
+
+def _implementation_sha256s(
+    provenance: Mapping[str, Any],
+) -> dict[str, str | None]:
+    sources = provenance.get("sources", {})
+    return {
+        name: (
+            str(sources.get(name, {}).get("sha256"))
+            if sources.get(name, {}).get("sha256") is not None
+            else None
+        )
+        for name in ("core", "orchestrator")
+    }
+
+
+def _validated_task_implementation(
+    expected_sha256s: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return actual task provenance or fail before artifact mutation."""
+    actual = _implementation_provenance()
+    if expected_sha256s is None:
+        return actual
+    actual_sha256s = _implementation_sha256s(actual)
+    mismatches = {
+        name: {"expected": expected_sha256s.get(name), "actual": actual_sha256s[name]}
+        for name in ("core", "orchestrator")
+        if expected_sha256s.get(name) != actual_sha256s[name]
+    }
+    if mismatches:
+        raise ImplementationProvenanceMismatch(
+            "task implementation differs from the phase-start source snapshot: "
+            + _canonical_json(mismatches)
+        )
+    return actual
+
+
+def _provenance_source_sha256(provenance: Mapping[str, Any], source_name: str) -> str:
+    value = provenance.get("sources", {}).get(source_name, {}).get("sha256")
+    return str(value) if value is not None else "unavailable"
+
+
+def _replace_with_access_retry(
+    source: str | Path,
+    destination: str | Path,
+    *,
+    max_attempts: int = 7,
+    initial_delay_seconds: float = 0.05,
+) -> None:
+    """Boundedly retry transient Windows/OneDrive access-denied replacements."""
+    for attempt in range(max_attempts):
+        try:
+            os.replace(source, destination)
+            return
+        except OSError as error:
+            access_denied = isinstance(error, PermissionError) or (
+                os.name == "nt" and getattr(error, "winerror", None) == 5
+            )
+            if not access_denied or attempt + 1 >= max_attempts:
+                raise
+            sleep(min(initial_delay_seconds * (2**attempt), 1.0))
+
+
 def _atomic_json(path: str | Path, payload: Any) -> Path:
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(destination.name + f".tmp.{os.getpid()}")
     try:
         temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-        os.replace(temporary, destination)
+        _replace_with_access_retry(temporary, destination)
     finally:
         temporary.unlink(missing_ok=True)
     return destination
@@ -204,7 +378,7 @@ def _atomic_frame(path: str | Path, frame: pd.DataFrame) -> Path:
             index=False,
             compression="gzip" if destination.suffix == ".gz" else None,
         )
-        os.replace(temporary, destination)
+        _replace_with_access_retry(temporary, destination)
     finally:
         temporary.unlink(missing_ok=True)
     return destination
@@ -225,10 +399,393 @@ def _atomic_copy(source: str | Path, destination: str | Path) -> Path:
     temporary = destination.with_name(destination.name + f".tmp.{os.getpid()}")
     try:
         shutil.copy2(source, temporary)
-        os.replace(temporary, destination)
+        _replace_with_access_retry(temporary, destination)
     finally:
         temporary.unlink(missing_ok=True)
     return destination
+
+
+def _simulation_invocation_history(
+    specification_dir: Path,
+    *,
+    expected_contract_sha256: str | None = None,
+    allow_legacy_migration: bool = False,
+) -> pd.DataFrame:
+    """Return validated invocation rows, optionally for one simulation contract.
+
+    Invocation indices are global within the work directory, while cumulative
+    budgets are contract-specific.  Legacy unbound histories can only be
+    migrated when the caller has independently established that the recorded
+    simulation contract is the unchanged current contract.
+    """
+    path = specification_dir / "simulation_invocations.tsv"
+    if not path.is_file():
+        return pd.DataFrame(columns=SIMULATION_INVOCATION_COLUMNS)
+    try:
+        frame = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
+    except (OSError, pd.errors.EmptyDataError, pd.errors.ParserError) as error:
+        raise ValueError(
+            f"simulation invocation history is unreadable: {path}"
+        ) from error
+
+    canonical = set(SIMULATION_INVOCATION_COLUMNS)
+    implementation_columns = {
+        "core_source_sha256",
+        "orchestrator_source_sha256",
+    }
+    pre_provenance = canonical - implementation_columns
+    without_effective = pre_provenance - {"effective_timeout_seconds"}
+    without_contract = pre_provenance - {"simulation_contract_sha256"}
+    original_legacy = pre_provenance - {
+        "simulation_contract_sha256",
+        "effective_timeout_seconds",
+    }
+    migrated = False
+    if canonical.issubset(frame.columns):
+        history = frame.loc[:, list(SIMULATION_INVOCATION_COLUMNS)].copy()
+    elif pre_provenance.issubset(frame.columns):
+        history = frame.loc[:, list(pre_provenance)].copy()
+        migrated = True
+    elif without_effective.issubset(frame.columns):
+        history = frame.loc[:, list(without_effective)].copy()
+        history["effective_timeout_seconds"] = history["declared_timeout_seconds"]
+        migrated = True
+    elif (
+        (
+            without_contract.issubset(frame.columns)
+            or original_legacy.issubset(frame.columns)
+        )
+        and allow_legacy_migration
+        and expected_contract_sha256 is not None
+    ):
+        source_columns = (
+            without_contract
+            if without_contract.issubset(frame.columns)
+            else original_legacy
+        )
+        history = frame.loc[:, list(source_columns)].copy()
+        history["simulation_contract_sha256"] = expected_contract_sha256
+        if "effective_timeout_seconds" not in history:
+            history["effective_timeout_seconds"] = history["declared_timeout_seconds"]
+        migrated = True
+    else:
+        raise ValueError(
+            "simulation invocation history has an incompatible schema: " + str(path)
+        )
+
+    for column in implementation_columns:
+        if column not in history:
+            history[column] = "legacy_unknown"
+    history = history.loc[:, list(SIMULATION_INVOCATION_COLUMNS)]
+
+    invocation_indices = pd.to_numeric(history["invocation_index"], errors="coerce")
+    if (
+        invocation_indices.isna().any()
+        or not np.equal(invocation_indices, np.floor(invocation_indices)).all()
+        or invocation_indices.tolist() != list(range(1, len(history) + 1))
+    ):
+        raise ValueError(
+            "simulation invocation history has nonsequential invocation indices: "
+            + str(path)
+        )
+    history["invocation_index"] = invocation_indices.astype(int)
+    contract_hashes = history["simulation_contract_sha256"].astype(str)
+    if any(
+        len(value) != 64
+        or any(character not in "0123456789abcdef" for character in value)
+        for value in contract_hashes
+    ):
+        raise ValueError(
+            "simulation invocation history has an invalid contract SHA-256: "
+            + str(path)
+        )
+    for column in implementation_columns:
+        for value in history[column].astype(str):
+            if value in {"legacy_unknown", "unavailable"}:
+                continue
+            if len(value) != 64 or any(
+                character not in "0123456789abcdef" for character in value
+            ):
+                raise ValueError(
+                    "simulation invocation history has an invalid implementation "
+                    f"SHA-256 in {column}: {path}"
+                )
+    valid_statuses = {"complete", "timed_out", "failed", "exhausted"}
+    if not set(history["status"].astype(str)).issubset(valid_statuses):
+        raise ValueError(
+            "simulation invocation history has an invalid status: " + str(path)
+        )
+    for column in (
+        "elapsed_seconds",
+        "declared_timeout_seconds",
+        "effective_timeout_seconds",
+    ):
+        values = pd.to_numeric(history[column], errors="coerce").to_numpy(dtype=float)
+        if not np.isfinite(values).all() or (values < 0).any():
+            raise ValueError(
+                f"simulation invocation history has invalid {column}: {path}"
+            )
+        history[column] = values
+    for column in (
+        "completed_external_sample_panel_draws",
+        "interrupted_internal_conditioned_trajectories",
+    ):
+        values = pd.to_numeric(history[column], errors="coerce").to_numpy(dtype=float)
+        if (
+            not np.isfinite(values).all()
+            or (values < 0).any()
+            or not np.equal(values, np.floor(values)).all()
+        ):
+            raise ValueError(
+                f"simulation invocation history has invalid {column}: {path}"
+            )
+        history[column] = values.astype(int)
+    if migrated:
+        _atomic_frame(path, history)
+    if expected_contract_sha256 is not None:
+        if len(expected_contract_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in expected_contract_sha256
+        ):
+            raise ValueError("expected simulation contract SHA-256 is invalid")
+        history = history[
+            history["simulation_contract_sha256"].astype(str)
+            == expected_contract_sha256
+        ].copy()
+    return history.reset_index(drop=True)
+
+
+def _append_simulation_invocation(
+    specification_dir: Path,
+    *,
+    status: str,
+    elapsed_seconds: float,
+    declared_timeout_seconds: float,
+    effective_timeout_seconds: float,
+    completed_draws: int,
+    interrupted_draws: int,
+    error_type: str | None,
+    simulation_contract_sha256: str,
+    implementation: Mapping[str, Any],
+    allow_legacy_migration: bool = False,
+) -> Path:
+    """Append one atomic, per-specification execution-history row."""
+    _simulation_invocation_history(
+        specification_dir,
+        expected_contract_sha256=simulation_contract_sha256,
+        allow_legacy_migration=allow_legacy_migration,
+    )
+    all_history = _simulation_invocation_history(specification_dir)
+    row = pd.DataFrame(
+        [
+            {
+                "invocation_index": len(all_history) + 1,
+                "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
+                "simulation_contract_sha256": simulation_contract_sha256,
+                "status": status,
+                "elapsed_seconds": float(elapsed_seconds),
+                "declared_timeout_seconds": float(declared_timeout_seconds),
+                "effective_timeout_seconds": float(effective_timeout_seconds),
+                "completed_external_sample_panel_draws": int(completed_draws),
+                "interrupted_internal_conditioned_trajectories": int(interrupted_draws),
+                "error_type": error_type,
+                "core_source_sha256": _provenance_source_sha256(implementation, "core"),
+                "orchestrator_source_sha256": _provenance_source_sha256(
+                    implementation, "orchestrator"
+                ),
+            }
+        ]
+    )
+    return _atomic_frame(
+        specification_dir / "simulation_invocations.tsv",
+        pd.concat([all_history, row], ignore_index=True),
+    )
+
+
+def _task_timeout_record(task: Mapping[str, Any]) -> tuple[float, float]:
+    """Return the configured invocation limit and its cumulative-budget clamp."""
+    declared = float(task.get("runtime", {}).get("max_specification_seconds", 0.0))
+    effective = float(task.get("effective_timeout_seconds", declared))
+    if not math.isfinite(effective):
+        effective = 0.0
+    if declared < 0 or effective < 0:
+        raise ValueError("simulation timeout records must be non-negative")
+    return declared, effective
+
+
+def _pid_is_alive(pid: int) -> bool:
+    if pid < 1:
+        return False
+    if os.name == "nt":
+        # ``os.kill(pid, 0)`` is not a harmless existence probe on Windows: a
+        # signal value outside CTRL_C/CTRL_BREAK invokes TerminateProcess and
+        # can therefore kill the lock owner. Query the process handle instead.
+        import ctypes
+        from ctypes import wintypes
+
+        process_query_limited_information = 0x1000
+        still_active = 259
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        kernel32.GetExitCodeProcess.argtypes = [
+            wintypes.HANDLE,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        kernel32.GetExitCodeProcess.restype = wintypes.BOOL
+        kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        kernel32.CloseHandle.restype = wintypes.BOOL
+        handle = kernel32.OpenProcess(
+            process_query_limited_information,
+            False,
+            int(pid),
+        )
+        if not handle:
+            return ctypes.get_last_error() == 5
+        try:
+            exit_code = wintypes.DWORD()
+            if not kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                return True
+            return int(exit_code.value) == still_active
+        finally:
+            kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
+@contextmanager
+def _specification_execution_lock(specification_dir: Path):
+    """Serialize one specification's seed ledger and artifact materialization."""
+    specification_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = specification_dir / ".simulation.lock"
+    hostname = socket.gethostname()
+    payload = {
+        "pid": os.getpid(),
+        "hostname": hostname,
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    for _ in range(2):
+        try:
+            descriptor = os.open(
+                lock_path,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                0o600,
+            )
+        except FileExistsError:
+            try:
+                owner = json.loads(lock_path.read_text(encoding="utf-8"))
+                owner_pid = int(owner["pid"])
+                owner_host = str(owner["hostname"])
+            except (
+                KeyError,
+                OSError,
+                TypeError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as error:
+                raise SimulationSpecificationLocked(
+                    f"simulation lock is unreadable and must be inspected: {lock_path}"
+                ) from error
+            if owner_host != hostname or _pid_is_alive(owner_pid):
+                raise SimulationSpecificationLocked(
+                    "simulation specification is already locked by "
+                    f"pid={owner_pid} host={owner_host}: {lock_path}"
+                )
+            stale_path = lock_path.with_name(
+                f".simulation.lock.stale.{owner_pid}.{os.getpid()}"
+            )
+            try:
+                _replace_with_access_retry(lock_path, stale_path)
+            except FileNotFoundError:
+                continue
+            continue
+        else:
+            try:
+                with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                    json.dump(payload, handle, sort_keys=True)
+                    handle.write("\n")
+                yield lock_path
+            finally:
+                try:
+                    current = json.loads(lock_path.read_text(encoding="utf-8"))
+                except (OSError, ValueError, json.JSONDecodeError):
+                    current = None
+                if current == payload:
+                    lock_path.unlink(missing_ok=True)
+            return
+    raise SimulationSpecificationLocked(
+        f"could not acquire simulation lock: {lock_path}"
+    )
+
+
+@contextmanager
+def _decode_execution_lock(specification_dir: Path):
+    """Serialize all class decodes and bundle publication for one specification."""
+    specification_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = specification_dir / ".decode.lock"
+    hostname = socket.gethostname()
+    payload = {
+        "pid": os.getpid(),
+        "hostname": hostname,
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    for _ in range(2):
+        try:
+            descriptor = os.open(
+                lock_path,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                0o600,
+            )
+        except FileExistsError:
+            try:
+                owner = json.loads(lock_path.read_text(encoding="utf-8"))
+                owner_pid = int(owner["pid"])
+                owner_host = str(owner["hostname"])
+            except (
+                KeyError,
+                OSError,
+                TypeError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as error:
+                raise DecodeSpecificationLocked(
+                    f"decode lock is unreadable and must be inspected: {lock_path}"
+                ) from error
+            if owner_host != hostname or _pid_is_alive(owner_pid):
+                raise DecodeSpecificationLocked(
+                    "decode specification is already locked by "
+                    f"pid={owner_pid} host={owner_host}: {lock_path}"
+                )
+            stale_path = lock_path.with_name(
+                f".decode.lock.stale.{owner_pid}.{os.getpid()}"
+            )
+            try:
+                _replace_with_access_retry(lock_path, stale_path)
+            except FileNotFoundError:
+                continue
+            continue
+        else:
+            try:
+                with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                    json.dump(payload, handle, sort_keys=True)
+                    handle.write("\n")
+                yield lock_path
+            finally:
+                try:
+                    current = json.loads(lock_path.read_text(encoding="utf-8"))
+                except (OSError, ValueError, json.JSONDecodeError):
+                    current = None
+                if current == payload:
+                    lock_path.unlink(missing_ok=True)
+            return
+    raise DecodeSpecificationLocked(f"could not acquire decode lock: {lock_path}")
 
 
 def _stable_seed(base_seed: int, specification_id: str, draw: int) -> int:
@@ -315,6 +872,14 @@ def _study_dir(repo_root: str | Path, scenario: str) -> Path:
     if scenario == "introgression":
         return Path(repo_root) / INTROGRESSION_DIR
     raise ValueError(f"unknown scenario {scenario!r}")
+
+
+def _runtime_study_dir(runtime: StudyRuntime, scenario: str) -> Path:
+    """Resolve a scenario root, optionally below an isolated campaign folder."""
+    study_dir = _study_dir(runtime.repo_root, scenario)
+    if runtime.campaign_subdirectory is not None:
+        study_dir = study_dir / Path(runtime.campaign_subdirectory)
+    return study_dir
 
 
 def _no_introgression_specifications(runtime: StudyRuntime) -> list[dict[str, Any]]:
@@ -492,7 +1057,7 @@ def write_study_plans(
 ) -> dict[str, list[dict[str, Any]]]:
     specifications = build_specifications(runtime, scenarios)
     for scenario, records in specifications.items():
-        study_dir = _study_dir(runtime.repo_root, scenario)
+        study_dir = _runtime_study_dir(runtime, scenario)
         results_dir = study_dir / "results"
         results_dir.mkdir(parents=True, exist_ok=True)
         serializable = [
@@ -849,7 +1414,7 @@ def _build_simulation_objects(
     specification: Mapping[str, Any], runtime: StudyRuntime
 ) -> tuple[Any, Any, dict[str, int], dict[str, Any]]:
     if specification["study_type"] == "no_introgression":
-        study_dir = _study_dir(runtime.repo_root, "no_introgression")
+        study_dir = _runtime_study_dir(runtime, "no_introgression")
         artifact = load_phlash_eas_npz(
             study_dir / "resources" / "EAS.npz",
             expected_sha256=EAS_RESOURCE_SHA256,
@@ -993,6 +1558,7 @@ def _new_external_draw_state(contract_sha256: str) -> dict[str, Any]:
         "next_external_draw_zero_based": 0,
         "completed_external_sample_panel_draws": 0,
         "active_internal_conditioned_trajectory": None,
+        "accepted_tree_checkpoint": None,
         "interrupted_internal_conditioned_trajectories": [],
     }
 
@@ -1019,8 +1585,50 @@ def _validated_external_draw_progress(
             attempts = attempts_frame.to_dict(orient="records")
         else:
             attempts = []
-        if int(state["completed_external_sample_panel_draws"]) != len(attempts):
-            return None
+        recorded_completed = int(state["completed_external_sample_panel_draws"])
+        if recorded_completed != len(attempts):
+            checkpoint = state.get("accepted_tree_checkpoint")
+            checkpoint_draw = (
+                int(checkpoint["external_draw_zero_based"])
+                if checkpoint is not None
+                else None
+            )
+            recoverable_accepted_ledger = (
+                len(attempts) == recorded_completed + 1
+                and checkpoint_draw is not None
+                and any(
+                    int(attempt["external_draw_zero_based"]) == checkpoint_draw
+                    and str(attempt["accepted"]).strip().lower() == "true"
+                    for attempt in attempts
+                )
+            )
+            if not recoverable_accepted_ledger:
+                return None
+            state = dict(state)
+            active = state.get("active_internal_conditioned_trajectory")
+            if active is not None:
+                if int(active["external_draw_zero_based"]) != checkpoint_draw or int(
+                    active["seed"]
+                ) != _stable_seed(
+                    runtime.base_seed,
+                    specification["specification_id"],
+                    checkpoint_draw,
+                ):
+                    return None
+            # A crash can land after the accepted attempt ledger is atomically
+            # replaced but before the state update clears the active draw.  In
+            # that exact case the ledger and checksum-bound tree checkpoint are
+            # authoritative; retaining the active marker would incorrectly
+            # reject the otherwise recoverable progress record.
+            state["active_internal_conditioned_trajectory"] = None
+            state["completed_external_sample_panel_draws"] = len(attempts)
+            state["next_external_draw_zero_based"] = max(
+                int(state["next_external_draw_zero_based"]), checkpoint_draw + 1
+            )
+            state["accepted_tree_checkpoint"] = {
+                **checkpoint,
+                "ledger_reconciled_after_crash": True,
+            }
         draw_indices: list[int] = []
         for attempt in attempts:
             draw = int(attempt["external_draw_zero_based"])
@@ -1042,6 +1650,22 @@ def _validated_external_draw_progress(
                 runtime.base_seed,
                 specification["specification_id"],
                 active_draw,
+            ):
+                return None
+        checkpoint = state.get("accepted_tree_checkpoint")
+        if checkpoint is not None:
+            checkpoint_draw = int(checkpoint["external_draw_zero_based"])
+            checkpoint_seed = int(checkpoint["seed"])
+            checkpoint_path = specification_dir / "accepted_checkpoint.trees"
+            if (
+                checkpoint_seed
+                != _stable_seed(
+                    runtime.base_seed,
+                    specification["specification_id"],
+                    checkpoint_draw,
+                )
+                or not checkpoint_path.is_file()
+                or checkpoint.get("tree_sha256") != _sha256(checkpoint_path)
             ):
                 return None
         interruptions = state.get("interrupted_internal_conditioned_trajectories")
@@ -1150,15 +1774,21 @@ def _resume_external_draw_progress(
         state, attempts = progress
         active = state.get("active_internal_conditioned_trajectory")
         if active is not None:
-            outcome = (
-                "interrupted_stdpopsim_internal_conditioned_trajectory"
-                if active.get("stage") == "stdpopsim_internal_conditioning"
-                else "interrupted_before_external_sample_panel_checkpoint"
-            )
+            accepted_checkpoint = state.get("accepted_tree_checkpoint")
+            if accepted_checkpoint is not None and int(
+                accepted_checkpoint["external_draw_zero_based"]
+            ) == int(active["external_draw_zero_based"]):
+                outcome = "interrupted_after_accepted_tree_checkpoint"
+            elif active.get("stage") == "stdpopsim_internal_conditioning":
+                outcome = "interrupted_stdpopsim_internal_conditioned_trajectory"
+            else:
+                outcome = "interrupted_before_external_sample_panel_checkpoint"
             interrupted = {
                 **active,
                 "outcome": outcome,
-                "external_sample_panel_completed": False,
+                "external_sample_panel_completed": (
+                    outcome == "interrupted_after_accepted_tree_checkpoint"
+                ),
             }
             state["interrupted_internal_conditioned_trajectories"].append(interrupted)
             state["next_external_draw_zero_based"] = (
@@ -1170,7 +1800,15 @@ def _resume_external_draw_progress(
     return state, attempts
 
 
-def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
+def _simulate_specification_task_unlocked(
+    task: Mapping[str, Any],
+    *,
+    implementation: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    if implementation is None:
+        implementation = _validated_task_implementation(
+            task.get("expected_implementation_sha256s")
+        )
     specification = dict(task["specification"])
     runtime = StudyRuntime(**task["runtime"])
     slim_path = Path(task["slim_path"]).resolve()
@@ -1198,6 +1836,12 @@ def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
     if cached is not None:
         return {"status": "cached", "completion": cached}
 
+    contract_sha256 = _contract_sha256(contract)
+    _simulation_invocation_history(
+        specification_dir,
+        expected_contract_sha256=contract_sha256,
+        allow_legacy_migration=prior_contract_matches,
+    )
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     os.environ["MKL_NUM_THREADS"] = "1"
@@ -1216,7 +1860,43 @@ def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
     accepted_payload: tuple[tskit.TreeSequence, pd.DataFrame, dict[str, Any]] | None = (
         None
     )
-    while len(attempts) < runtime.max_external_draws:
+    checkpoint_path = specification_dir / "accepted_checkpoint.trees"
+    checkpoint = state.get("accepted_tree_checkpoint")
+    if checkpoint is not None:
+        ts = tskit.load(checkpoint_path)
+        pair_table, validation = _validate_accepted_tree(ts, specification, runtime)
+        if not validation["accepted"]:
+            raise ValueError("accepted tree checkpoint no longer passes validation")
+        checkpoint_draw = int(checkpoint["external_draw_zero_based"])
+        if not any(
+            int(attempt["external_draw_zero_based"]) == checkpoint_draw
+            for attempt in attempts
+        ):
+            attempts.append(
+                {
+                    "external_draw_zero_based": checkpoint_draw,
+                    "seed": int(checkpoint["seed"]),
+                    "elapsed_seconds": float(checkpoint["elapsed_seconds"]),
+                    **validation,
+                }
+            )
+            attempts.sort(key=lambda row: int(row["external_draw_zero_based"]))
+            _atomic_frame(attempts_path, pd.DataFrame(attempts))
+        state["active_internal_conditioned_trajectory"] = None
+        state["next_external_draw_zero_based"] = max(
+            int(state["next_external_draw_zero_based"]), checkpoint_draw + 1
+        )
+        state["completed_external_sample_panel_draws"] = len(attempts)
+        _atomic_json(state_path, state)
+        accepted_payload = (ts, pair_table, validation)
+    while (
+        accepted_payload is None
+        and len(attempts) < runtime.max_external_draws
+        and (
+            runtime.max_launched_draws == 0
+            or int(state["next_external_draw_zero_based"]) < runtime.max_launched_draws
+        )
+    ):
         draw = int(state["next_external_draw_zero_based"])
         seed = _stable_seed(runtime.base_seed, specification["specification_id"], draw)
         logfile = specification_dir / f"slim_draw_{draw:03d}.csv"
@@ -1246,6 +1926,19 @@ def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
         )
         _atomic_json(state_path, state)
         pair_table, validation = _validate_accepted_tree(ts, specification, runtime)
+        if validation["accepted"]:
+            temporary_checkpoint = checkpoint_path.with_name(
+                checkpoint_path.name + f".tmp.{os.getpid()}"
+            )
+            ts.dump(temporary_checkpoint)
+            _replace_with_access_retry(temporary_checkpoint, checkpoint_path)
+            state["accepted_tree_checkpoint"] = {
+                "external_draw_zero_based": draw,
+                "seed": seed,
+                "elapsed_seconds": elapsed,
+                "tree_sha256": _sha256(checkpoint_path),
+            }
+            _atomic_json(state_path, state)
         attempts.append(
             {
                 "external_draw_zero_based": draw,
@@ -1263,16 +1956,22 @@ def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
             accepted_payload = (ts, pair_table, validation)
             break
     if accepted_payload is None:
-        raise RuntimeError(
+        launched_limit = (
+            f" or {runtime.max_launched_draws} launched seeds"
+            if runtime.max_launched_draws
+            else ""
+        )
+        raise SimulationBudgetExhausted(
             f"{specification['specification_id']} produced no acceptable sampled "
-            f"genotype panel in {runtime.max_external_draws} external SLiM draws"
+            f"genotype panel in {runtime.max_external_draws} completed external "
+            f"SLiM draws{launched_limit}"
         )
 
     ts, pair_table, validation = accepted_payload
     tree_path = specification_dir / "selected.trees"
     temporary_tree = tree_path.with_name(tree_path.name + f".tmp.{os.getpid()}")
     ts.dump(temporary_tree)
-    os.replace(temporary_tree, tree_path)
+    _replace_with_access_retry(temporary_tree, tree_path)
     pair_path = _atomic_frame(specification_dir / "sample_manifest.tsv", pair_table)
     pair_files = write_gamma_pair_files(
         pair_table, specification_dir / "pairs", require_nonempty=True
@@ -1300,6 +1999,7 @@ def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
     truth_contrast_path = _atomic_frame(
         specification_dir / "truth_internal_contrasts.tsv.gz", truth_contrasts
     )
+    declared_timeout_seconds, effective_timeout_seconds = _task_timeout_record(task)
     completion = {
         "schema": SCHEMA_VERSION,
         "phase": "simulate",
@@ -1328,10 +2028,46 @@ def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
         "accepted_seed": int(attempts[-1]["seed"]),
         "validation": validation,
         "elapsed_seconds": perf_counter() - started_all,
+        "declared_timeout_seconds": declared_timeout_seconds,
+        "effective_timeout_seconds": effective_timeout_seconds,
+        "implementation": dict(implementation),
     }
+    _append_simulation_invocation(
+        specification_dir,
+        status="complete",
+        elapsed_seconds=float(completion["elapsed_seconds"]),
+        declared_timeout_seconds=declared_timeout_seconds,
+        effective_timeout_seconds=effective_timeout_seconds,
+        completed_draws=len(attempts),
+        interrupted_draws=len(state["interrupted_internal_conditioned_trajectories"]),
+        error_type=None,
+        simulation_contract_sha256=contract_sha256,
+        implementation=implementation,
+    )
+    # Publish the checksum-valid completion only after every recovery and
+    # invocation-provenance write.  The watchdog can therefore treat this file
+    # as the authoritative terminal marker in a timeout race.
     _atomic_json(specification_dir / "simulation_complete.json", completion)
+    # The accepted checkpoint remains recoverable until after terminal
+    # publication. A watchdog kill during this cleanup can leave redundant
+    # checkpoint files, but cannot destroy the valid completion.
+    state["accepted_tree_checkpoint"] = None
+    _atomic_json(state_path, state)
+    checkpoint_path.unlink(missing_ok=True)
     (specification_dir / "simulation_failed.json").unlink(missing_ok=True)
     return {"status": "complete", "completion": completion}
+
+
+def _simulate_specification_task(task: Mapping[str, Any]) -> dict[str, Any]:
+    implementation = _validated_task_implementation(
+        task.get("expected_implementation_sha256s")
+    )
+    specification_dir = Path(task["specification_dir"])
+    with _specification_execution_lock(specification_dir):
+        return _simulate_specification_task_unlocked(
+            task,
+            implementation=implementation,
+        )
 
 
 def _filtered_records(
@@ -1400,7 +2136,39 @@ def _terminate_process_tree(process: multiprocessing.Process) -> None:
     process.join(timeout=5)
 
 
-def _failed_simulation_result(
+def _recorded_task_contract_if_current(
+    task: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Validate a task's recorded contract, including its requested SLiM binary."""
+    specification = task["specification"]
+    runtime = StudyRuntime(**task["runtime"])
+    specification_dir = Path(task["specification_dir"])
+    contract = _recorded_simulation_contract_if_current(
+        specification_dir, specification, runtime
+    )
+    if contract is None:
+        return None
+    try:
+        slim_path = Path(task["slim_path"]).resolve()
+        if contract["software"]["slim_sha256"] != _sha256(slim_path):
+            return None
+    except (KeyError, OSError):
+        return None
+    return contract
+
+
+def _valid_task_completion(task: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Return a checksum-valid completion for watchdog race resolution."""
+    specification = task["specification"]
+    runtime = StudyRuntime(**task["runtime"])
+    specification_dir = Path(task["specification_dir"])
+    contract = _recorded_task_contract_if_current(task)
+    if contract is None:
+        return None
+    return _valid_simulation_cache(specification_dir, contract, specification, runtime)
+
+
+def _failed_simulation_result_unlocked(
     task: Mapping[str, Any],
     *,
     status: str,
@@ -1412,13 +2180,11 @@ def _failed_simulation_result(
     specification = task["specification"]
     runtime = StudyRuntime(**task["runtime"])
     specification_dir = Path(task["specification_dir"])
-    contract = None
-    contract_path = specification_dir / "simulation_contract.json"
-    try:
-        if contract_path.is_file():
-            contract = json.loads(contract_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        contract = None
+    implementation = _implementation_provenance()
+    actual_implementation_sha256s = _implementation_sha256s(implementation)
+    expected_implementation_sha256s = task.get("expected_implementation_sha256s")
+    contract = _recorded_task_contract_if_current(task)
+    contract_sha256 = _contract_sha256(contract) if contract is not None else None
     progress = (
         _validated_external_draw_progress(
             specification_dir, contract, specification, runtime
@@ -1428,21 +2194,35 @@ def _failed_simulation_result(
     )
     state = progress[0] if progress is not None else {}
     active = state.get("active_internal_conditioned_trajectory")
+    declared_timeout_seconds, effective_timeout_seconds = _task_timeout_record(task)
+    retryable = status != "exhausted" and error_type not in {
+        "InvocationHistoryCorrupt",
+        "SimulationBudgetExhausted",
+    }
+    lock_conflict = error_type == "SimulationSpecificationLocked"
     failure = {
         "schema": SCHEMA_VERSION,
         "phase": "simulate",
         "status": status,
         "specification_id": specification["specification_id"],
         "elapsed_seconds": float(elapsed_seconds),
-        "declared_timeout_seconds": float(
-            task.get("runtime", {}).get("max_specification_seconds", 0.0)
-        ),
+        "declared_timeout_seconds": declared_timeout_seconds,
+        "effective_timeout_seconds": effective_timeout_seconds,
         "error_type": error_type,
         "error": error,
         "traceback": traceback_text,
-        "retryable": True,
-        "simulation_contract_sha256": (
-            _contract_sha256(contract) if contract is not None else None
+        "retryable": retryable,
+        "work_directory_mutated": not lock_conflict,
+        "simulation_contract_sha256": contract_sha256,
+        "implementation": implementation,
+        "expected_implementation_sha256s": expected_implementation_sha256s,
+        "implementation_matches_phase_start": (
+            expected_implementation_sha256s is None
+            or all(
+                expected_implementation_sha256s.get(name)
+                == actual_implementation_sha256s[name]
+                for name in ("core", "orchestrator")
+            )
         ),
         "completed_external_sample_panel_draws": int(
             state.get("completed_external_sample_panel_draws", 0)
@@ -1453,17 +2233,212 @@ def _failed_simulation_result(
             and active.get("stage") == "stdpopsim_internal_conditioning"
         ),
     }
-    _atomic_json(specification_dir / "simulation_failed.json", failure)
+    if not lock_conflict:
+        _atomic_json(specification_dir / "simulation_failed.json", failure)
+    if contract_sha256 is not None and not lock_conflict:
+        try:
+            _append_simulation_invocation(
+                specification_dir,
+                status=status,
+                elapsed_seconds=float(elapsed_seconds),
+                declared_timeout_seconds=declared_timeout_seconds,
+                effective_timeout_seconds=effective_timeout_seconds,
+                completed_draws=int(failure["completed_external_sample_panel_draws"]),
+                interrupted_draws=len(
+                    state.get("interrupted_internal_conditioned_trajectories", [])
+                )
+                + int(active is not None),
+                error_type=error_type,
+                simulation_contract_sha256=contract_sha256,
+                implementation=implementation,
+                allow_legacy_migration=True,
+            )
+        except ValueError as history_error:
+            failure["invocation_history_error"] = str(history_error)
+            failure["retryable"] = False
+            _atomic_json(specification_dir / "simulation_failed.json", failure)
     return {"status": status, "failure": failure}
+
+
+def _failed_simulation_result(
+    task: Mapping[str, Any],
+    *,
+    status: str,
+    elapsed_seconds: float,
+    error_type: str,
+    error: str,
+    traceback_text: str | None = None,
+) -> dict[str, Any]:
+    """Record a terminal invocation while respecting the per-specification lock."""
+    if error_type == "SimulationSpecificationLocked":
+        return _failed_simulation_result_unlocked(
+            task,
+            status=status,
+            elapsed_seconds=elapsed_seconds,
+            error_type=error_type,
+            error=error,
+            traceback_text=traceback_text,
+        )
+    specification_dir = Path(task["specification_dir"])
+    with _specification_execution_lock(specification_dir):
+        return _failed_simulation_result_unlocked(
+            task,
+            status=status,
+            elapsed_seconds=elapsed_seconds,
+            error_type=error_type,
+            error=error,
+            traceback_text=traceback_text,
+        )
+
+
+def record_external_simulation_interruption(
+    task: Mapping[str, Any],
+    *,
+    stopped_at_utc: str,
+) -> dict[str, Any]:
+    """Account for a dead external worker from its persisted lock timestamp.
+
+    This recovery entry point is intentionally explicit: it refuses a live or
+    remote-host owner, preserves a valid completion as authoritative, and then
+    uses the normal failure/invocation path so an active conditioned trajectory
+    remains recoverable on the next simulation invocation.
+    """
+    completion = _valid_task_completion(task)
+    if completion is not None:
+        return {"status": "complete", "completion": completion}
+    specification_dir = Path(task["specification_dir"])
+    lock_path = specification_dir / ".simulation.lock"
+    try:
+        owner = json.loads(lock_path.read_text(encoding="utf-8"))
+        owner_pid = int(owner["pid"])
+        owner_host = str(owner["hostname"])
+        created_at = datetime.fromisoformat(str(owner["created_at_utc"]))
+    except (
+        KeyError,
+        OSError,
+        TypeError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as error:
+        raise ValueError(
+            f"cannot recover an unreadable external simulation lock: {lock_path}"
+        ) from error
+    if created_at.tzinfo is None:
+        raise ValueError("external simulation lock timestamp lacks a timezone")
+    if owner_host != socket.gethostname():
+        raise SimulationSpecificationLocked(
+            "cannot prove a remote-host simulation owner is dead: "
+            f"pid={owner_pid} host={owner_host}"
+        )
+    if _pid_is_alive(owner_pid):
+        raise SimulationSpecificationLocked(
+            f"cannot recover live simulation owner pid={owner_pid}: {lock_path}"
+        )
+    stopped_at = datetime.fromisoformat(stopped_at_utc)
+    if stopped_at.tzinfo is None:
+        raise ValueError("external interruption stop timestamp lacks a timezone")
+    elapsed_seconds = (stopped_at - created_at).total_seconds()
+    if not math.isfinite(elapsed_seconds) or elapsed_seconds < 0:
+        raise ValueError("external interruption stop precedes lock creation")
+    return _failed_simulation_result(
+        task,
+        status="failed",
+        elapsed_seconds=elapsed_seconds,
+        error_type="ExternalProcessInterruption",
+        error=(
+            "external simulation process ended without a terminal record; "
+            f"accounted {elapsed_seconds:g} seconds from lock creation "
+            f"{created_at.isoformat()} through {stopped_at.isoformat()}"
+        ),
+    )
+
+
+def _contract_bound_invocation_history_for_task(
+    task: Mapping[str, Any],
+) -> pd.DataFrame:
+    """Return only current-contract history or fail closed when it is ambiguous."""
+    specification_dir = Path(task["specification_dir"])
+    contract = _recorded_task_contract_if_current(task)
+    if contract is not None:
+        return _simulation_invocation_history(
+            specification_dir,
+            expected_contract_sha256=_contract_sha256(contract),
+            allow_legacy_migration=True,
+        )
+
+    history = _simulation_invocation_history(specification_dir)
+    if history.empty:
+        return history
+    contract_path = specification_dir / "simulation_contract.json"
+    try:
+        prior_contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        if not isinstance(prior_contract, dict):
+            raise ValueError("recorded simulation contract is not an object")
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        raise ValueError(
+            "cannot bind existing invocation history because the recorded "
+            "simulation contract is missing or corrupt"
+        ) from error
+    # A readable but non-current contract describes an intentionally stale
+    # campaign. Its bound rows remain preserved but do not consume the new
+    # contract's cumulative budget.
+    return history.iloc[0:0].copy()
 
 
 def _simulate_tasks_with_timeouts(
     tasks: Sequence[Mapping[str, Any]], runtime: StudyRuntime
 ) -> dict[str, dict[str, Any]]:
     context = multiprocessing.get_context("spawn")
-    pending = list(tasks)
+    pending: list[dict[str, Any]] = []
     active: dict[int, dict[str, Any]] = {}
     results: dict[str, dict[str, Any]] = {}
+    for raw_task in tasks:
+        task = dict(raw_task)
+        specification_id = task["specification"]["specification_id"]
+        _validated_task_implementation(task.get("expected_implementation_sha256s"))
+        try:
+            invocation_history = _contract_bound_invocation_history_for_task(task)
+        except ValueError as history_error:
+            results[specification_id] = _failed_simulation_result(
+                task,
+                status="failed",
+                elapsed_seconds=0.0,
+                error_type="InvocationHistoryCorrupt",
+                error=str(history_error),
+            )
+            continue
+        cumulative_elapsed = float(
+            pd.to_numeric(
+                invocation_history["elapsed_seconds"],
+                errors="coerce",
+            ).sum()
+        )
+        remaining = (
+            runtime.max_cumulative_specification_seconds - cumulative_elapsed
+            if runtime.max_cumulative_specification_seconds > 0
+            else math.inf
+        )
+        if remaining <= 0:
+            task["effective_timeout_seconds"] = 0.0
+            results[specification_id] = _failed_simulation_result(
+                task,
+                status="exhausted",
+                elapsed_seconds=0.0,
+                error_type="CumulativeSpecificationTimeout",
+                error=(
+                    "SLiM conditioning exhausted the declared cumulative "
+                    f"per-specification limit of "
+                    f"{runtime.max_cumulative_specification_seconds:g} seconds"
+                ),
+            )
+            continue
+        invocation_limit = (
+            runtime.max_specification_seconds
+            if runtime.max_specification_seconds > 0
+            else math.inf
+        )
+        task["effective_timeout_seconds"] = min(invocation_limit, remaining)
+        pending.append(task)
     while pending or active:
         while pending and len(active) < runtime.simulation_workers:
             task = pending.pop(0)
@@ -1494,21 +2469,53 @@ def _simulate_tasks_with_timeouts(
                 if message["kind"] == "result":
                     results[specification_id] = message["value"]
                 else:
+                    error_status = (
+                        "exhausted"
+                        if message["error_type"] == "SimulationBudgetExhausted"
+                        else "failed"
+                    )
                     results[specification_id] = _failed_simulation_result(
                         task,
-                        status="failed",
+                        status=error_status,
                         elapsed_seconds=elapsed,
                         error_type=message["error_type"],
                         error=message["error"],
                         traceback_text=message["traceback"],
                     )
+                state["queue"].close()
+                state["queue"].join_thread()
                 del active[pid]
                 continue
-            if (
-                runtime.max_specification_seconds > 0
-                and elapsed >= runtime.max_specification_seconds
-            ):
+            if math.isfinite(
+                float(state["task"]["effective_timeout_seconds"])
+            ) and elapsed >= float(state["task"]["effective_timeout_seconds"]):
+                completion = _valid_task_completion(task)
+                if completion is not None:
+                    process.join(timeout=1)
+                    if process.is_alive():
+                        _terminate_process_tree(process)
+                    results[specification_id] = {
+                        "status": "complete",
+                        "completion": completion,
+                    }
+                    state["queue"].close()
+                    state["queue"].join_thread()
+                    del active[pid]
+                    continue
                 _terminate_process_tree(process)
+                # The worker may have atomically published completion between
+                # the pre-timeout check and termination. Never overwrite that
+                # checksum-valid terminal artifact with a timeout failure.
+                completion = _valid_task_completion(task)
+                if completion is not None:
+                    results[specification_id] = {
+                        "status": "complete",
+                        "completion": completion,
+                    }
+                    state["queue"].close()
+                    state["queue"].join_thread()
+                    del active[pid]
+                    continue
                 results[specification_id] = _failed_simulation_result(
                     task,
                     status="timed_out",
@@ -1516,20 +2523,55 @@ def _simulate_tasks_with_timeouts(
                     error_type="SpecificationTimeout",
                     error=(
                         "SLiM conditioning exceeded the declared per-specification "
-                        f"limit of {runtime.max_specification_seconds:g} seconds"
+                        f"limit of "
+                        f"{float(state['task']['effective_timeout_seconds']):g} seconds"
                     ),
                 )
+                state["queue"].close()
+                state["queue"].join_thread()
                 del active[pid]
                 continue
             if not process.is_alive():
                 process.join(timeout=1)
-                results[specification_id] = _failed_simulation_result(
-                    task,
-                    status="failed",
-                    elapsed_seconds=elapsed,
-                    error_type="WorkerExit",
-                    error=f"simulation worker exited with code {process.exitcode}",
-                )
+                try:
+                    message = state["queue"].get(timeout=0.5)
+                except queue.Empty:
+                    message = None
+                if message is not None and message["kind"] == "result":
+                    results[specification_id] = message["value"]
+                elif message is not None:
+                    error_status = (
+                        "exhausted"
+                        if message["error_type"] == "SimulationBudgetExhausted"
+                        else "failed"
+                    )
+                    results[specification_id] = _failed_simulation_result(
+                        task,
+                        status=error_status,
+                        elapsed_seconds=elapsed,
+                        error_type=message["error_type"],
+                        error=message["error"],
+                        traceback_text=message["traceback"],
+                    )
+                else:
+                    completion = _valid_task_completion(task)
+                    if completion is not None:
+                        results[specification_id] = {
+                            "status": "complete",
+                            "completion": completion,
+                        }
+                    else:
+                        results[specification_id] = _failed_simulation_result(
+                            task,
+                            status="failed",
+                            elapsed_seconds=elapsed,
+                            error_type="WorkerExit",
+                            error=(
+                                f"simulation worker exited with code {process.exitcode}"
+                            ),
+                        )
+                state["queue"].close()
+                state["queue"].join_thread()
                 del active[pid]
         if active:
             sleep(0.25)
@@ -1546,22 +2588,31 @@ def simulate_studies(
     slim_path = Path(slim_path).resolve()
     if not slim_path.is_file():
         raise FileNotFoundError(f"SLiM executable not found: {slim_path}")
+    expected_implementation_sha256s = _implementation_sha256s(
+        _implementation_provenance()
+    )
     tasks = []
     for scenario, records in specifications.items():
-        study_dir = _study_dir(runtime.repo_root, scenario)
+        study_dir = _runtime_study_dir(runtime, scenario)
         for record in _filtered_records(records, specification_filters):
             tasks.append(
                 {
                     "specification": record,
                     "runtime": asdict(runtime),
                     "slim_path": str(slim_path),
+                    "expected_implementation_sha256s": (
+                        expected_implementation_sha256s
+                    ),
                     "specification_dir": str(
                         study_dir / "work" / record["specification_id"]
                     ),
                 }
             )
     results: dict[str, dict[str, Any]] = {}
-    if runtime.max_specification_seconds > 0:
+    if (
+        runtime.max_specification_seconds > 0
+        or runtime.max_cumulative_specification_seconds > 0
+    ):
         results = _simulate_tasks_with_timeouts(tasks, runtime)
         _write_simulation_status_tables(runtime, specifications, results)
         return results
@@ -1572,9 +2623,10 @@ def simulate_studies(
             try:
                 results[specification_id] = _simulate_specification_task(task)
             except Exception as error:
+                exhausted = isinstance(error, SimulationBudgetExhausted)
                 results[specification_id] = _failed_simulation_result(
                     task,
-                    status="failed",
+                    status="exhausted" if exhausted else "failed",
                     elapsed_seconds=perf_counter() - started,
                     error_type=type(error).__name__,
                     error=str(error),
@@ -1592,9 +2644,10 @@ def simulate_studies(
             try:
                 results[specification_id] = future.result()
             except Exception as error:
+                exhausted = isinstance(error, SimulationBudgetExhausted)
                 results[specification_id] = _failed_simulation_result(
                     task,
-                    status="failed",
+                    status="exhausted" if exhausted else "failed",
                     elapsed_seconds=0.0,
                     error_type=type(error).__name__,
                     error=str(error),
@@ -1614,7 +2667,7 @@ def _write_simulation_status_tables(
         for specification in records:
             specification_id = specification["specification_id"]
             specification_dir = (
-                _study_dir(runtime.repo_root, scenario) / "work" / specification_id
+                _runtime_study_dir(runtime, scenario) / "work" / specification_id
             )
             recorded_contract = _recorded_simulation_contract_if_current(
                 specification_dir, specification, runtime
@@ -1631,15 +2684,26 @@ def _write_simulation_status_tables(
             )
             supplied_result = results.get(specification_id)
             result = supplied_result
+            invocation_status = (
+                str(supplied_result.get("status"))
+                if supplied_result is not None
+                else None
+            )
+            invocation_error = (
+                supplied_result.get("failure", {}).get("error")
+                if supplied_result is not None
+                else None
+            )
             stale_cache = False
-            if result is not None and "completion" in result:
-                if valid_completion is None:
-                    result = None
-                    stale_cache = True
-                else:
-                    result = {**result, "completion": valid_completion}
-            if result is None and valid_completion is not None:
+            # A checksum-valid completion is the specification's authoritative
+            # terminal state.  A concurrent invocation may still report a lock
+            # conflict, timeout, or late worker failure; retain that event in
+            # separate invocation fields without downgrading valid artifacts.
+            if valid_completion is not None:
                 result = {"status": "complete", "completion": valid_completion}
+            elif result is not None and "completion" in result:
+                result = None
+                stale_cache = True
             if result is None:
                 completion_path = specification_dir / "simulation_complete.json"
                 failure_path = specification_dir / "simulation_failed.json"
@@ -1689,6 +2753,45 @@ def _write_simulation_status_tables(
             )
             attempts = progress[1] if progress is not None else []
             draw_state = progress[0] if progress is not None else {}
+            partial_progress = bool(
+                progress is not None
+                and (
+                    attempts
+                    or int(draw_state.get("next_external_draw_zero_based", 0)) > 0
+                    or draw_state.get("active_internal_conditioned_trajectory")
+                    is not None
+                    or draw_state.get("accepted_tree_checkpoint") is not None
+                    or draw_state.get(
+                        "interrupted_internal_conditioned_trajectories", []
+                    )
+                )
+            )
+            if result is None and partial_progress:
+                status = "partial"
+                detail = (
+                    "valid contract-bound simulation progress is available for resume"
+                )
+            invocation_history_error = None
+            try:
+                invocation_history = _simulation_invocation_history(
+                    specification_dir,
+                    expected_contract_sha256=(
+                        _contract_sha256(recorded_contract)
+                        if recorded_contract is not None
+                        else None
+                    ),
+                    allow_legacy_migration=recorded_contract is not None,
+                )
+                cumulative_elapsed_seconds = float(
+                    invocation_history["elapsed_seconds"].sum()
+                )
+            except ValueError as history_error:
+                invocation_history = pd.DataFrame(columns=SIMULATION_INVOCATION_COLUMNS)
+                cumulative_elapsed_seconds = math.nan
+                invocation_history_error = str(history_error)
+                if valid_completion is None:
+                    status = "failed"
+                    detail = invocation_history_error
             last_attempt = attempts[-1] if attempts else {}
             completed_draws = len(attempts)
             if not attempts and valid_completion is not None:
@@ -1718,8 +2821,28 @@ def _write_simulation_status_tables(
                     "declared_timeout_seconds": payload.get(
                         "declared_timeout_seconds", runtime.max_specification_seconds
                     ),
+                    "effective_timeout_seconds": payload.get(
+                        "effective_timeout_seconds",
+                        payload.get(
+                            "declared_timeout_seconds",
+                            runtime.max_specification_seconds,
+                        ),
+                    ),
                     "elapsed_seconds": payload.get("elapsed_seconds"),
+                    "cumulative_elapsed_seconds": cumulative_elapsed_seconds,
+                    "invocation_count": len(invocation_history),
+                    "invocation_history_valid": invocation_history_error is None,
+                    "invocation_history_error": invocation_history_error,
+                    "latest_invocation_status": invocation_status,
+                    "latest_invocation_error": invocation_error,
                     "completed_external_draws": completed_draws,
+                    "launched_external_draws": int(
+                        draw_state.get("next_external_draw_zero_based", completed_draws)
+                    )
+                    + int(
+                        draw_state.get("active_internal_conditioned_trajectory")
+                        is not None
+                    ),
                     "interrupted_internal_conditioned_trajectories": (
                         len(
                             draw_state.get(
@@ -1741,9 +2864,7 @@ def _write_simulation_status_tables(
                 }
             )
         _atomic_frame(
-            _study_dir(runtime.repo_root, scenario)
-            / "results"
-            / "simulation_status.tsv",
+            _runtime_study_dir(runtime, scenario) / "results" / "simulation_status.tsv",
             _status_column_last(pd.DataFrame(rows)),
         )
 
@@ -1775,7 +2896,76 @@ def _decode_contract_with_sha256(
     pairs_path: Path,
     decoder_sha256: str,
     genotype_class: str,
+    producer_provenance: Mapping[str, Any] | None = None,
+    migration: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    if producer_provenance is None:
+        implementation = _implementation_provenance()
+        producer_provenance = {
+            "api": (
+                "gamma_smc_aou.tree_sequence.stream_tree_sequence_vcf/"
+                "legacy-position-transform-v1"
+            ),
+            "metadata_status": "recorded",
+            "python_implementation": implementation["python_implementation"],
+            "python_version": implementation["python_version"],
+            "tskit_version": implementation["tskit_version"],
+            "decoder_wrapper_source_sha256": _provenance_source_sha256(
+                implementation, "decoder_wrapper"
+            ),
+            "tree_sequence_source_sha256": _provenance_source_sha256(
+                implementation, "tree_sequence_vcf_producer"
+            ),
+        }
+    contract = {
+        "schema": DECODE_CONTRACT_SCHEMA,
+        "phase": "decode",
+        "specification_id": specification["specification_id"],
+        "genotype_class": genotype_class,
+        "selected_tree_sha256": _sha256(tree_path),
+        "pairs_sha256": _sha256(pairs_path),
+        "decoder_sha256": decoder_sha256,
+        "scaled_mutation_rate": float(specification["theta_for_gamma_smc"]),
+        "unscaled_mutation_rate": runtime.mutation_rate,
+        "recombination_to_mutation_ratio": (
+            runtime.recombination_rate / runtime.mutation_rate
+        ),
+        "thresholds_years": list(DEFAULT_THRESHOLDS_YEARS),
+        "generation_time_years": runtime.generation_time_years,
+        "output_stride_bp": runtime.output_stride_bp,
+        "cache_size_bp": runtime.cache_size_bp,
+        "recent_call": "median",
+        "pair_scope": "explicit_within_diploid_genotype_class",
+        "decode_settings": {
+            **DECODE_FIXED_SETTINGS,
+            # Gamma-SMC's explicit pair set and numerical kernels are
+            # deterministic across worker counts.  Threads affect scheduling
+            # and runtime only, so the actual value is validated and recorded
+            # in the class completion but intentionally excluded from the
+            # cache key.
+            "threads": {
+                "cache_role": "provenance_only",
+                "required_minimum": 1,
+                "determinism_contract": "output_invariant_across_thread_count",
+            },
+        },
+        "python_vcf_producer": dict(producer_provenance),
+    }
+    if migration is not None:
+        contract["migration"] = dict(migration)
+    return contract
+
+
+def _legacy_decode_contract_with_sha256(
+    specification: Mapping[str, Any],
+    runtime: StudyRuntime,
+    *,
+    tree_path: Path,
+    pairs_path: Path,
+    decoder_sha256: str,
+    genotype_class: str,
+) -> dict[str, Any]:
+    """Reconstruct the sole pre-v2 class contract for guarded migration."""
     return {
         "schema": SCHEMA_VERSION,
         "phase": "decode",
@@ -1798,20 +2988,241 @@ def _decode_contract_with_sha256(
     }
 
 
-def _valid_decode_cache(output: Path, contract: Mapping[str, Any]) -> bool:
+def _portable_path_matches(recorded: Any, expected: Path | str) -> bool:
+    """Compare native/WSL spellings while retaining a long artifact suffix."""
+    left = str(recorded).replace("\\", "/").rstrip("/")
+    right = str(expected).replace("\\", "/").rstrip("/")
+    if left == right:
+        return True
+    left_parts = [part for part in left.split("/") if part]
+    right_parts = [part for part in right.split("/") if part]
+    common = min(len(left_parts), len(right_parts))
+    return common >= 4 and left_parts[-common:] == right_parts[-common:]
+
+
+def _decoder_command_options(command: Any) -> tuple[str, dict[str, Any]]:
+    if (
+        not isinstance(command, list)
+        or not command
+        or not all(isinstance(token, str) for token in command)
+    ):
+        raise ValueError("decoder command must be a nonempty string list")
+    executable = command[0]
+    options: dict[str, Any] = {}
+    index = 1
+    while index < len(command):
+        token = command[index]
+        if not token.startswith("--"):
+            raise ValueError(f"unexpected decoder positional argument: {token!r}")
+        if "=" in token:
+            key, value = token.split("=", 1)
+            index += 1
+        elif token == "--only_within":
+            key, value = token, True
+            index += 1
+        else:
+            if index + 1 >= len(command) or command[index + 1].startswith("--"):
+                raise ValueError(f"decoder option lacks a value: {token}")
+            key, value = token, command[index + 1]
+            index += 2
+        if key in options:
+            raise ValueError(f"duplicate decoder option: {key}")
+        options[key] = value
+    return executable, options
+
+
+def _float_matches(value: Any, expected: float) -> bool:
+    try:
+        observed = float(value)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(observed) and math.isclose(
+        observed, float(expected), rel_tol=1e-14, abs_tol=0.0
+    )
+
+
+def _validated_decode_run(
+    output: Path,
+    contract: Mapping[str, Any],
+    *,
+    tree_path: Path,
+    pairs_path: Path,
+    decoder_path: Path | None = None,
+) -> dict[str, Any]:
+    """Validate run.json semantics, including every output-affecting setting."""
+    run_path = output.with_suffix(output.suffix + ".run.json")
+    run = json.loads(run_path.read_text(encoding="utf-8"))
+    executable, options = _decoder_command_options(run.get("command"))
+    if decoder_path is not None and not _portable_path_matches(
+        executable, decoder_path.resolve()
+    ):
+        raise ValueError("run.json decoder executable path does not match request")
+    expected_option_names = {
+        "--input",
+        "--input_format",
+        "--scaled_mutation_rate",
+        "--recombination_to_mutation_ratio",
+        "--unscaled_mutation_rate",
+        "--recent_threshold_years",
+        "--generation_time",
+        "--recent_summary",
+        "--recent_call",
+        "--recent_call_probability",
+        "--output_at_hets",
+        "--output_at_stride",
+        "--cache_size",
+        "--threads",
+        "--pair_block",
+        "--backward_alignment",
+        "--exp10",
+        "--pairs_file",
+    }
+    if set(options) != expected_option_names:
+        raise ValueError(
+            "run.json decoder options differ from the fixed study interface: "
+            + _canonical_json(
+                {
+                    "missing": sorted(expected_option_names - set(options)),
+                    "unexpected": sorted(set(options) - expected_option_names),
+                }
+            )
+        )
+    if options["--input"] != DECODE_FIXED_SETTINGS["decoder_input_path"]:
+        raise ValueError("run.json did not stream the tree sequence over stdin")
+    if options["--input_format"] != DECODE_FIXED_SETTINGS["decoder_input_format"]:
+        raise ValueError("run.json decoder input format is not VCF")
+    if not _float_matches(
+        options["--scaled_mutation_rate"], contract["scaled_mutation_rate"]
+    ):
+        raise ValueError("run.json scaled mutation rate differs from contract")
+    if not _float_matches(
+        options["--recombination_to_mutation_ratio"],
+        contract["recombination_to_mutation_ratio"],
+    ):
+        raise ValueError("run.json recombination ratio differs from contract")
+    if not _float_matches(
+        options["--unscaled_mutation_rate"], contract["unscaled_mutation_rate"]
+    ):
+        raise ValueError("run.json mutation rate differs from contract")
+    thresholds = [
+        float(value) for value in str(options["--recent_threshold_years"]).split(",")
+    ]
+    if thresholds != [float(value) for value in contract["thresholds_years"]]:
+        raise ValueError("run.json thresholds differ from contract")
+    if not _float_matches(
+        options["--generation_time"], contract["generation_time_years"]
+    ):
+        raise ValueError("run.json generation time differs from contract")
+    if not _portable_path_matches(options["--recent_summary"], output):
+        raise ValueError("run.json summary path differs from output")
+    if not _portable_path_matches(options["--pairs_file"], pairs_path):
+        raise ValueError("run.json pair path differs from contract input")
+    exact_options = {
+        "--recent_call": DECODE_FIXED_SETTINGS["recent_call"],
+        "--output_at_hets": str(DECODE_FIXED_SETTINGS["output_at_hets"]).lower(),
+        "--backward_alignment": DECODE_FIXED_SETTINGS["backward_alignment"],
+        "--exp10": DECODE_FIXED_SETTINGS["exp10"],
+    }
+    for option, expected in exact_options.items():
+        if options[option] != expected:
+            raise ValueError(f"run.json {option} differs from contract")
+    numeric_options = {
+        "--recent_call_probability": DECODE_FIXED_SETTINGS["recent_call_probability"],
+        "--output_at_stride": contract["output_stride_bp"],
+        "--cache_size": contract["cache_size_bp"],
+        "--pair_block": DECODE_FIXED_SETTINGS["pair_block"],
+    }
+    for option, expected in numeric_options.items():
+        if not _float_matches(options[option], expected):
+            raise ValueError(f"run.json {option} differs from contract")
+    try:
+        threads = int(options["--threads"])
+    except (TypeError, ValueError) as error:
+        raise ValueError("run.json thread count is not an integer") from error
+    if threads < 1:
+        raise ValueError("run.json thread count must be positive")
+
+    expected_producer_script = (
+        "import sys; "
+        "from gamma_smc_aou.tree_sequence import stream_tree_sequence_vcf; "
+        "stream_tree_sequence_vcf(sys.argv[1], sys.stdout, input_format=sys.argv[2])"
+    )
+    producer = run.get("tree_sequence_vcf_producer_command")
+    if (
+        not isinstance(producer, list)
+        or len(producer) != 5
+        or not all(isinstance(value, str) for value in producer)
+        or not producer[0]
+        or producer[1] != "-c"
+        or producer[2] != expected_producer_script
+        or not _portable_path_matches(producer[3], tree_path)
+        or producer[4] != DECODE_FIXED_SETTINGS["input_format"]
+    ):
+        raise ValueError("run.json Python VCF producer command differs from contract")
+    if not _portable_path_matches(run.get("input_path"), tree_path):
+        raise ValueError("run.json input path differs from selected tree")
+    if run.get("input_format") != DECODE_FIXED_SETTINGS["input_format"]:
+        raise ValueError("run.json requested input format differs from contract")
+    if int(run.get("stride_bp", -1)) != int(contract["output_stride_bp"]):
+        raise ValueError("run.json stride metadata differs from contract")
+    if int(run.get("cache_size_bp", -1)) != int(contract["cache_size_bp"]):
+        raise ValueError("run.json cache metadata differs from contract")
+    decode_seconds = float(run.get("decode_seconds", math.nan))
+    if not math.isfinite(decode_seconds) or decode_seconds < 0:
+        raise ValueError("run.json decode_seconds is invalid")
+    n_output_positions = int(run.get("n_output_positions", -1))
+    if n_output_positions != len(pd.read_csv(output, sep="\t")):
+        raise ValueError("run.json output row count differs from summary")
+    return {
+        "threads": threads,
+        "threads_cache_role": "provenance_only",
+        "run_settings_validated": True,
+    }
+
+
+def _valid_decode_cache(
+    output: Path,
+    contract: Mapping[str, Any],
+    *,
+    tree_path: Path,
+    pairs_path: Path,
+    decoder_path: Path | None = None,
+) -> bool:
     completion_path = output.with_suffix(output.suffix + ".complete.json")
     run_path = output.with_suffix(output.suffix + ".run.json")
     if not (output.is_file() and completion_path.is_file() and run_path.is_file()):
         return False
     try:
         completion = json.loads(completion_path.read_text(encoding="utf-8"))
+        execution = _validated_decode_run(
+            output,
+            contract,
+            tree_path=tree_path,
+            pairs_path=pairs_path,
+            decoder_path=decoder_path,
+        )
+        recorded_execution = completion.get("execution")
+        execution_matches = (
+            recorded_execution == execution
+            if contract.get("schema") == DECODE_CONTRACT_SCHEMA
+            else recorded_execution is None or recorded_execution == execution
+        )
         return (
             completion["contract_sha256"] == _contract_sha256(contract)
             and completion["summary_sha256"] == _sha256(output)
             and completion["run_sha256"] == _sha256(run_path)
             and len(pd.read_csv(output, sep="\t")) > 0
+            and execution_matches
         )
-    except (KeyError, OSError, ValueError, json.JSONDecodeError, pd.errors.ParserError):
+    except (
+        KeyError,
+        OSError,
+        TypeError,
+        ValueError,
+        json.JSONDecodeError,
+        pd.errors.EmptyDataError,
+        pd.errors.ParserError,
+    ):
         return False
 
 
@@ -1833,6 +3244,209 @@ def _decode_bundle_contract(
         "class_decode_contract_sha256s": dict(class_contract_sha256s),
         "class_decode_completion_sha256s": dict(class_completion_sha256s),
     }
+
+
+def _validated_new_decode_contract(
+    recorded_contract: Mapping[str, Any],
+    specification: Mapping[str, Any],
+    runtime: StudyRuntime,
+    *,
+    tree_path: Path,
+    pairs_path: Path,
+    decoder_sha256: str,
+    genotype_class: str,
+) -> dict[str, Any] | None:
+    """Validate a v2 contract without substituting execution-time versions."""
+    if recorded_contract.get("schema") != DECODE_CONTRACT_SCHEMA:
+        return None
+    producer = recorded_contract.get("python_vcf_producer")
+    if not isinstance(producer, dict):
+        return None
+    metadata_status = producer.get("metadata_status")
+    if metadata_status == "recorded":
+        actual = _implementation_provenance()
+        if (
+            producer.get("api")
+            != (
+                "gamma_smc_aou.tree_sequence.stream_tree_sequence_vcf/"
+                "legacy-position-transform-v1"
+            )
+            or producer.get("decoder_wrapper_source_sha256")
+            != _provenance_source_sha256(actual, "decoder_wrapper")
+            or producer.get("tree_sequence_source_sha256")
+            != _provenance_source_sha256(actual, "tree_sequence_vcf_producer")
+            or not all(
+                isinstance(producer.get(key), str) and producer.get(key)
+                for key in (
+                    "python_implementation",
+                    "python_version",
+                    "tskit_version",
+                )
+            )
+        ):
+            return None
+    elif metadata_status == "legacy_not_recorded":
+        migration = recorded_contract.get("migration")
+        if (
+            producer
+            != {
+                "api": (
+                    "gamma_smc_aou.tree_sequence.stream_tree_sequence_vcf/"
+                    "legacy-position-transform-v1"
+                ),
+                "metadata_status": "legacy_not_recorded",
+                "python_implementation": "legacy_unknown",
+                "python_version": "legacy_unknown",
+                "tskit_version": "legacy_unknown",
+                "decoder_wrapper_source_sha256": "legacy_unknown",
+                "tree_sequence_source_sha256": "legacy_unknown",
+            }
+            or not isinstance(migration, dict)
+            or migration.get("from_schema") != SCHEMA_VERSION
+            or migration.get("validation") != "legacy_contract_hash_and_run_semantics"
+        ):
+            return None
+    else:
+        return None
+    expected = _decode_contract_with_sha256(
+        specification,
+        runtime,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_sha256=decoder_sha256,
+        genotype_class=genotype_class,
+        producer_provenance=producer,
+        migration=recorded_contract.get("migration"),
+    )
+    if _canonical_json(recorded_contract) != _canonical_json(expected):
+        return None
+    return dict(recorded_contract)
+
+
+def _validated_or_migrated_class_decode_cache(
+    specification: Mapping[str, Any],
+    runtime: StudyRuntime,
+    *,
+    tree_path: Path,
+    pairs_path: Path,
+    output: Path,
+    decoder_sha256: str,
+    genotype_class: str,
+    decoder_path: Path | None,
+    migrate_legacy: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any], bool] | None:
+    """Validate a v2 class cache or atomically migrate a proven legacy cache."""
+    contract_path = output.with_suffix(output.suffix + ".contract.json")
+    completion_path = output.with_suffix(output.suffix + ".complete.json")
+    if not contract_path.is_file():
+        return None
+    recorded_contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    current_contract = _validated_new_decode_contract(
+        recorded_contract,
+        specification,
+        runtime,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_sha256=decoder_sha256,
+        genotype_class=genotype_class,
+    )
+    if current_contract is not None:
+        if not _valid_decode_cache(
+            output,
+            current_contract,
+            tree_path=tree_path,
+            pairs_path=pairs_path,
+            decoder_path=decoder_path,
+        ):
+            return None
+        execution = _validated_decode_run(
+            output,
+            current_contract,
+            tree_path=tree_path,
+            pairs_path=pairs_path,
+            decoder_path=decoder_path,
+        )
+        return current_contract, execution, False
+
+    legacy_contract = _legacy_decode_contract_with_sha256(
+        specification,
+        runtime,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_sha256=decoder_sha256,
+        genotype_class=genotype_class,
+    )
+    if _canonical_json(recorded_contract) != _canonical_json(legacy_contract):
+        return None
+    if not _valid_decode_cache(
+        output,
+        legacy_contract,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_path=decoder_path,
+    ):
+        return None
+    execution = _validated_decode_run(
+        output,
+        legacy_contract,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_path=decoder_path,
+    )
+    if not migrate_legacy:
+        return legacy_contract, execution, False
+    run_path = output.with_suffix(output.suffix + ".run.json")
+    migration = {
+        "from_schema": SCHEMA_VERSION,
+        "validation": "legacy_contract_hash_and_run_semantics",
+        "legacy_contract_sha256": _contract_sha256(legacy_contract),
+        "run_sha256": _sha256(run_path),
+    }
+    legacy_producer = {
+        "api": (
+            "gamma_smc_aou.tree_sequence.stream_tree_sequence_vcf/"
+            "legacy-position-transform-v1"
+        ),
+        "metadata_status": "legacy_not_recorded",
+        "python_implementation": "legacy_unknown",
+        "python_version": "legacy_unknown",
+        "tskit_version": "legacy_unknown",
+        "decoder_wrapper_source_sha256": "legacy_unknown",
+        "tree_sequence_source_sha256": "legacy_unknown",
+    }
+    migrated_contract = _decode_contract_with_sha256(
+        specification,
+        runtime,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_sha256=decoder_sha256,
+        genotype_class=genotype_class,
+        producer_provenance=legacy_producer,
+        migration=migration,
+    )
+    prior_completion = json.loads(completion_path.read_text(encoding="utf-8"))
+    migrated_completion = {
+        "contract_sha256": _contract_sha256(migrated_contract),
+        "summary_sha256": prior_completion["summary_sha256"],
+        "run_sha256": prior_completion["run_sha256"],
+        "execution": execution,
+        "migration": migration,
+        "implementation": {
+            "legacy_decode_execution": "unknown",
+            "migration_process": _implementation_provenance(),
+        },
+    }
+    _atomic_json(contract_path, migrated_contract)
+    _atomic_json(completion_path, migrated_completion)
+    if not _valid_decode_cache(
+        output,
+        migrated_contract,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_path=decoder_path,
+    ):
+        raise ValueError("migrated decode cache failed its v2 validation")
+    return migrated_contract, execution, True
 
 
 def _valid_recorded_decode_cache(
@@ -1858,7 +3472,7 @@ def _valid_recorded_decode_cache(
     class_contract_sha256s: dict[str, str] = {}
     class_completion_sha256s: dict[str, str] = {}
     try:
-        for genotype_class in ("overall", "hom_ref", "heterozygous", "hom_alt"):
+        for genotype_class in DECODE_CLASS_ORDER:
             pairs_path = specification_dir / "pairs" / f"{genotype_class}.pairs.tsv"
             output = specification_dir / "decoded" / f"{genotype_class}.summary.tsv"
             contract_path = output.with_suffix(output.suffix + ".contract.json")
@@ -1871,19 +3485,24 @@ def _valid_recorded_decode_cache(
                 if current_decoder_sha256 is not None
                 else str(recorded_contract["decoder_sha256"])
             )
-            expected_contract = _decode_contract_with_sha256(
+            validated = _validated_or_migrated_class_decode_cache(
                 specification,
                 runtime,
                 tree_path=tree_path,
                 pairs_path=pairs_path,
+                output=output,
                 decoder_sha256=decoder_sha256,
                 genotype_class=genotype_class,
+                decoder_path=(
+                    current_decoder if current_decoder_sha256 is not None else None
+                ),
             )
-            if _canonical_json(recorded_contract) != _canonical_json(
-                expected_contract
-            ) or not _valid_decode_cache(output, recorded_contract):
+            if validated is None:
                 return None
-            class_contract_sha256s[genotype_class] = _contract_sha256(recorded_contract)
+            validated_contract, _, _ = validated
+            class_contract_sha256s[genotype_class] = _contract_sha256(
+                validated_contract
+            )
             class_completion_sha256s[genotype_class] = _sha256(completion_path)
         expected_bundle = _decode_bundle_contract(
             specification,
@@ -1930,14 +3549,15 @@ def _valid_recorded_decode_cache(
         return None
 
 
-def decode_specification(
+def _decode_specification_unlocked(
     specification: Mapping[str, Any],
     runtime: StudyRuntime,
     *,
     decoder_path: str | Path,
+    implementation: Mapping[str, Any],
 ) -> dict[str, Any]:
     scenario = str(specification["study_type"])
-    study_dir = _study_dir(runtime.repo_root, scenario)
+    study_dir = _runtime_study_dir(runtime, scenario)
     specification_dir = study_dir / "work" / specification["specification_id"]
     tree_path = specification_dir / "selected.trees"
     simulation_completion = _valid_recorded_simulation_cache(
@@ -1955,22 +3575,35 @@ def decode_specification(
     summaries: dict[str, pd.DataFrame] = {}
     class_contract_sha256s: dict[str, str] = {}
     class_completion_sha256s: dict[str, str] = {}
+    class_execution: dict[str, dict[str, Any]] = {}
     decode_dir = specification_dir / "decoded"
     decode_dir.mkdir(parents=True, exist_ok=True)
-    for genotype_class in ("overall", "hom_ref", "heterozygous", "hom_alt"):
+    decoder_sha256 = _sha256(decoder_path)
+    for genotype_class in DECODE_CLASS_ORDER:
         pairs_path = specification_dir / "pairs" / f"{genotype_class}.pairs.tsv"
         output = decode_dir / f"{genotype_class}.summary.tsv"
-        contract = _decode_contract(
+        cached = _validated_or_migrated_class_decode_cache(
             specification,
             runtime,
             tree_path=tree_path,
             pairs_path=pairs_path,
-            decoder_path=decoder_path,
+            output=output,
+            decoder_sha256=decoder_sha256,
             genotype_class=genotype_class,
+            decoder_path=decoder_path,
+            migrate_legacy=True,
         )
-        contract_path = output.with_suffix(output.suffix + ".contract.json")
-        _atomic_json(contract_path, contract)
-        if not _valid_decode_cache(output, contract):
+        if cached is None:
+            contract = _decode_contract(
+                specification,
+                runtime,
+                tree_path=tree_path,
+                pairs_path=pairs_path,
+                decoder_path=decoder_path,
+                genotype_class=genotype_class,
+            )
+            contract_path = output.with_suffix(output.suffix + ".contract.json")
+            _atomic_json(contract_path, contract)
             run_within_decoder(
                 decoder_path,
                 tree_path,
@@ -1988,19 +3621,45 @@ def decode_specification(
                 only_within=False,
                 pairs_file=pairs_path,
                 recent_call="median",
+                recent_call_probability=0.5,
                 threads=runtime.threads,
                 cache_size=runtime.cache_size_bp,
+                pair_block=256,
+                exp10="accurate",
+                backward_alignment="fixed",
             )
             run_path = output.with_suffix(output.suffix + ".run.json")
+            execution = _validated_decode_run(
+                output,
+                contract,
+                tree_path=tree_path,
+                pairs_path=pairs_path,
+                decoder_path=decoder_path,
+            )
             _atomic_json(
                 output.with_suffix(output.suffix + ".complete.json"),
                 {
                     "contract_sha256": _contract_sha256(contract),
                     "summary_sha256": _sha256(output),
                     "run_sha256": _sha256(run_path),
+                    "execution": execution,
+                    "implementation": dict(implementation),
                 },
             )
+            if not _valid_decode_cache(
+                output,
+                contract,
+                tree_path=tree_path,
+                pairs_path=pairs_path,
+                decoder_path=decoder_path,
+            ):
+                raise ValueError(
+                    f"new decode failed contract validation: {genotype_class}"
+                )
+        else:
+            contract, execution, _ = cached
         summaries[genotype_class] = pd.read_csv(output, sep="\t")
+        class_execution[genotype_class] = execution
         class_contract_sha256s[genotype_class] = _contract_sha256(contract)
         class_completion_sha256s[genotype_class] = _sha256(
             output.with_suffix(output.suffix + ".complete.json")
@@ -2031,20 +3690,48 @@ def decode_specification(
         "contract_sha256": _contract_sha256(bundle_contract),
         "decoded_profiles_sha256": _sha256(decoded_path),
         "decoded_internal_contrasts_sha256": _sha256(contrast_path),
+        "class_execution": class_execution,
+        "implementation": dict(implementation),
     }
     _atomic_json(specification_dir / "decode_complete.json", completion)
     return completion
+
+
+def decode_specification(
+    specification: Mapping[str, Any],
+    runtime: StudyRuntime,
+    *,
+    decoder_path: str | Path,
+    expected_implementation_sha256s: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Decode one specification under a source-checked, per-specification lock."""
+    implementation = _validated_task_implementation(expected_implementation_sha256s)
+    scenario = str(specification["study_type"])
+    specification_dir = (
+        _runtime_study_dir(runtime, scenario)
+        / "work"
+        / specification["specification_id"]
+    )
+    with _decode_execution_lock(specification_dir):
+        return _decode_specification_unlocked(
+            specification,
+            runtime,
+            decoder_path=decoder_path,
+            implementation=implementation,
+        )
 
 
 def _decode_specification_task(
     specification: Mapping[str, Any],
     runtime_record: Mapping[str, Any],
     decoder_path: str,
+    expected_implementation_sha256s: Mapping[str, Any],
 ) -> dict[str, Any]:
     return decode_specification(
         specification,
         StudyRuntime(**runtime_record),
         decoder_path=decoder_path,
+        expected_implementation_sha256s=expected_implementation_sha256s,
     )
 
 
@@ -2064,11 +3751,14 @@ def decode_studies(
     if not decoder_resolved.is_file():
         raise FileNotFoundError(f"Gamma-SMC executable not found: {decoder_resolved}")
     decoder = str(decoder_resolved)
+    expected_implementation_sha256s = _implementation_sha256s(
+        _implementation_provenance()
+    )
     results: dict[str, dict[str, Any]] = {}
     for scenario, records in specifications.items():
         selected = _filtered_records(records, specification_filters)
         selected_ids = {record["specification_id"] for record in selected}
-        study_dir = _study_dir(runtime.repo_root, scenario)
+        study_dir = _runtime_study_dir(runtime, scenario)
         ready: list[dict[str, Any]] = []
         selected_status: dict[str, dict[str, Any]] = {}
         for record in selected:
@@ -2098,6 +3788,7 @@ def decode_studies(
                         record,
                         asdict(runtime),
                         decoder,
+                        expected_implementation_sha256s,
                     ): record
                     for record in ready
                 }
@@ -2203,7 +3894,7 @@ def _validated_plot_inputs(
             )
         expected_decoder_sha256 = _sha256(expected_decoder)
 
-    study_dir = _study_dir(runtime.repo_root, scenario)
+    study_dir = _runtime_study_dir(runtime, scenario)
     simulations: dict[str, dict[str, Any]] = {}
     decodes: dict[str, dict[str, Any]] = {}
     status_rows: list[dict[str, Any]] = []
@@ -2268,7 +3959,7 @@ def plot_and_aggregate_studies(
         plot_specification_ids = {
             specification["specification_id"] for specification in plot_records
         }
-        study_dir = _study_dir(runtime.repo_root, scenario)
+        study_dir = _runtime_study_dir(runtime, scenario)
         results_dir = study_dir / "results"
         valid_simulations, valid_decodes, decode_status_path = _validated_plot_inputs(
             runtime,
@@ -2546,10 +4237,22 @@ def build_parser() -> argparse.ArgumentParser:
         "--max-external-draws", type=int, default=DEFAULT_MAX_EXTERNAL_DRAWS
     )
     parser.add_argument(
+        "--max-launched-draws",
+        type=int,
+        default=0,
+        help="cap all launched seed trajectories, including interrupted calls; 0 is unlimited",
+    )
+    parser.add_argument(
         "--spec-timeout-minutes",
         type=float,
         default=0.0,
         help="terminate and provenance-mark a conditioning cell after this wall time; 0 is unlimited",
+    )
+    parser.add_argument(
+        "--cumulative-spec-timeout-minutes",
+        type=float,
+        default=0.0,
+        help="cap cumulative wall time across retries for each specification; 0 is unlimited",
     )
     parser.add_argument(
         "--spec",
@@ -2571,7 +4274,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         slim_scaling_factor=args.slim_scaling_factor,
         slim_burn_in=args.slim_burn_in,
         max_external_draws=args.max_external_draws,
+        max_launched_draws=args.max_launched_draws,
         max_specification_seconds=args.spec_timeout_minutes * 60.0,
+        max_cumulative_specification_seconds=(
+            args.cumulative_spec_timeout_minutes * 60.0
+        ),
     )
     scenarios = _resolve_scenarios(args.scenario)
     specifications = write_study_plans(runtime, scenarios)

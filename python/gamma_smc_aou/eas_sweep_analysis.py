@@ -2178,7 +2178,9 @@ def plot_ancient_eurasia_introgression_timeline(
 _SIMULATION_STATUS_STYLES = {
     "complete": ("COMPLETE", "#b8e3d3", "Complete"),
     "cached": ("CACHED", "#b9d7ea", "Cached (complete artifact)"),
+    "partial": ("PARTIAL", "#c9d7f0", "Partially complete"),
     "timed_out": ("TIMED OUT", "#f9d98c", "Timed out"),
+    "exhausted": ("EXHAUSTED", "#e8b66f", "Search budget exhausted"),
     "failed": ("FAILED", "#f3b5a5", "Failed"),
     "not_requested": ("NOT REQ.", "#dddddd", "Not requested"),
 }

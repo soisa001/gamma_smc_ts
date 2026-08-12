@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import queue
+import socket
 import sys
 from dataclasses import asdict
 from types import SimpleNamespace
@@ -394,6 +396,179 @@ def test_completed_simulation_is_reused_without_another_slim_draw(
     assert len(calls) == 1
 
 
+def test_accepted_tree_checkpoint_resumes_materialization_without_new_draw(
+    tmp_path, monkeypatch
+):
+    runtime = _runtime(tmp_path)
+    specification = _accepted_specification()
+    calls = _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence())
+    specification_dir = tmp_path / "work" / specification["specification_id"]
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+    }
+    atomic_frame = study._atomic_frame  # noqa: SLF001
+    interrupted = False
+
+    def interrupt_after_checkpoint(path, frame):
+        nonlocal interrupted
+        if (
+            not interrupted
+            and str(path).endswith("external_draws.tsv")
+            and (specification_dir / "accepted_checkpoint.trees").is_file()
+            and not frame.empty
+        ):
+            interrupted = True
+            raise RuntimeError("materialization interruption")
+        return atomic_frame(path, frame)
+
+    monkeypatch.setattr(study, "_atomic_frame", interrupt_after_checkpoint)
+    with pytest.raises(RuntimeError, match="materialization interruption"):
+        study._simulate_specification_task(task)  # noqa: SLF001
+    monkeypatch.setattr(study, "_atomic_frame", atomic_frame)
+
+    result = study._simulate_specification_task(task)  # noqa: SLF001
+
+    assert result["status"] == "complete"
+    assert len(calls) == 1
+    assert not (specification_dir / "accepted_checkpoint.trees").exists()
+    attempts = pd.read_csv(specification_dir / "external_draws.tsv", sep="\t")
+    assert attempts["external_draw_zero_based"].tolist() == [0]
+
+
+def test_accepted_checkpoint_reconciles_crash_after_attempt_ledger(
+    tmp_path, monkeypatch
+):
+    runtime = _runtime(tmp_path)
+    specification = _accepted_specification()
+    calls = _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence())
+    specification_dir = tmp_path / "work" / specification["specification_id"]
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+    }
+    atomic_json = study._atomic_json  # noqa: SLF001
+    interrupted = False
+
+    def interrupt_state_after_attempt_ledger(path, payload):
+        nonlocal interrupted
+        if (
+            not interrupted
+            and str(path).endswith("external_draw_state.json")
+            and (specification_dir / "external_draws.tsv").is_file()
+            and payload.get("completed_external_sample_panel_draws") == 1
+            and payload.get("active_internal_conditioned_trajectory") is None
+        ):
+            interrupted = True
+            raise RuntimeError("crash after accepted attempt ledger")
+        return atomic_json(path, payload)
+
+    monkeypatch.setattr(study, "_atomic_json", interrupt_state_after_attempt_ledger)
+    with pytest.raises(RuntimeError, match="crash after accepted attempt ledger"):
+        study._simulate_specification_task(task)  # noqa: SLF001
+    monkeypatch.setattr(study, "_atomic_json", atomic_json)
+
+    result = study._simulate_specification_task(task)  # noqa: SLF001
+
+    assert result["status"] == "complete"
+    assert len(calls) == 1
+    state = json.loads(
+        (specification_dir / "external_draw_state.json").read_text(encoding="utf-8")
+    )
+    assert state["active_internal_conditioned_trajectory"] is None
+    assert state["completed_external_sample_panel_draws"] == 1
+    assert state["interrupted_internal_conditioned_trajectories"] == []
+
+
+def test_launched_seed_cap_counts_interrupted_internal_trajectories(
+    tmp_path, monkeypatch
+):
+    runtime = _runtime(
+        tmp_path,
+        max_external_draws=20,
+        max_launched_draws=2,
+    )
+    specification = _accepted_specification()
+    _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence())
+    seeds = []
+
+    class InterruptedEngine:
+        def simulate(self, *args, **kwargs):
+            seeds.append(kwargs["seed"])
+            raise RuntimeError("interrupted")
+
+    monkeypatch.setattr(study.stdpopsim, "get_engine", lambda name: InterruptedEngine())
+    specification_dir = tmp_path / "work" / specification["specification_id"]
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+    }
+
+    for _ in range(2):
+        with pytest.raises(RuntimeError, match="interrupted"):
+            study._simulate_specification_task(task)  # noqa: SLF001
+    with pytest.raises(study.SimulationBudgetExhausted, match="2 launched seeds"):
+        study._simulate_specification_task(task)  # noqa: SLF001
+
+    assert seeds == [
+        study._stable_seed(  # noqa: SLF001
+            runtime.base_seed, specification["specification_id"], draw
+        )
+        for draw in range(2)
+    ]
+
+
+def test_draw_budget_is_reported_as_nonretryable_exhaustion(tmp_path, monkeypatch):
+    runtime = _runtime(tmp_path, max_external_draws=1)
+    specification = _accepted_specification()
+    _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence((4, 6, 8, 9)))
+
+    result = study.simulate_studies(
+        runtime,
+        {"no_introgression": [specification]},
+        slim_path=sys.executable,
+    )[specification["specification_id"]]
+
+    assert result["status"] == "exhausted"
+    assert result["failure"]["error_type"] == "SimulationBudgetExhausted"
+    assert result["failure"]["retryable"] is False
+
+
+def test_completion_and_history_record_effective_timeout(tmp_path, monkeypatch):
+    runtime = _runtime(tmp_path, max_specification_seconds=300.0)
+    specification = _accepted_specification()
+    _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence())
+    specification_dir = tmp_path / "work" / specification["specification_id"]
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+        "effective_timeout_seconds": 75.0,
+    }
+
+    result = study._simulate_specification_task(task)  # noqa: SLF001
+    history = pd.read_csv(specification_dir / "simulation_invocations.tsv", sep="\t")
+
+    assert result["completion"]["declared_timeout_seconds"] == 300.0
+    assert result["completion"]["effective_timeout_seconds"] == 75.0
+    assert history["declared_timeout_seconds"].tolist() == [300.0]
+    assert history["effective_timeout_seconds"].tolist() == [75.0]
+    assert history["simulation_contract_sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
+    assert history["core_source_sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
+    assert history["orchestrator_source_sha256"].str.fullmatch(r"[0-9a-f]{64}").all()
+    assert (
+        result["completion"]["implementation"]["sources"]["core"]["sha256"]
+        == history.loc[0, "core_source_sha256"]
+    )
+
+
 def test_simulation_cache_requires_all_recorded_outputs(tmp_path, monkeypatch):
     runtime = _runtime(tmp_path)
     specification = _accepted_specification()
@@ -574,6 +749,283 @@ def test_legacy_draw_logs_advance_seed_only_under_unchanged_contract(
     ]
 
 
+def test_invocation_history_filters_contracts_and_fails_closed_on_corruption(
+    tmp_path,
+):
+    specification_dir = tmp_path / "work" / "spec"
+    specification_dir.mkdir(parents=True)
+    current_sha = "a" * 64
+    stale_sha = "b" * 64
+    history_path = specification_dir / "simulation_invocations.tsv"
+    frame = pd.DataFrame(
+        [
+            {
+                "invocation_index": 1,
+                "recorded_at_utc": "2026-08-12T00:00:00+00:00",
+                "simulation_contract_sha256": stale_sha,
+                "status": "timed_out",
+                "elapsed_seconds": 300.0,
+                "declared_timeout_seconds": 300.0,
+                "effective_timeout_seconds": 300.0,
+                "completed_external_sample_panel_draws": 1,
+                "interrupted_internal_conditioned_trajectories": 1,
+                "error_type": "SpecificationTimeout",
+            },
+            {
+                "invocation_index": 2,
+                "recorded_at_utc": "2026-08-12T00:05:00+00:00",
+                "simulation_contract_sha256": current_sha,
+                "status": "complete",
+                "elapsed_seconds": 10.0,
+                "declared_timeout_seconds": 300.0,
+                "effective_timeout_seconds": 25.0,
+                "completed_external_sample_panel_draws": 2,
+                "interrupted_internal_conditioned_trajectories": 1,
+                "error_type": None,
+            },
+        ]
+    )
+    frame.to_csv(history_path, sep="\t", index=False)
+
+    current = study._simulation_invocation_history(  # noqa: SLF001
+        specification_dir, expected_contract_sha256=current_sha
+    )
+
+    assert current["invocation_index"].tolist() == [2]
+    assert current["elapsed_seconds"].tolist() == [10.0]
+    frame["elapsed_seconds"] = frame["elapsed_seconds"].astype(object)
+    frame.loc[1, "elapsed_seconds"] = "corrupt"
+    frame.to_csv(history_path, sep="\t", index=False)
+    with pytest.raises(ValueError, match="invalid elapsed_seconds"):
+        study._simulation_invocation_history(  # noqa: SLF001
+            specification_dir, expected_contract_sha256=current_sha
+        )
+
+
+def test_valid_legacy_invocation_history_is_migrated_to_current_contract(tmp_path):
+    specification_dir = tmp_path / "work" / "spec"
+    specification_dir.mkdir(parents=True)
+    history_path = specification_dir / "simulation_invocations.tsv"
+    legacy = pd.DataFrame(
+        [
+            {
+                "invocation_index": 1,
+                "recorded_at_utc": "2026-08-12T00:00:00+00:00",
+                "status": "timed_out",
+                "elapsed_seconds": 12.5,
+                "declared_timeout_seconds": 20.0,
+                "completed_external_sample_panel_draws": 1,
+                "interrupted_internal_conditioned_trajectories": 1,
+                "error_type": "SpecificationTimeout",
+            }
+        ]
+    )
+    legacy.to_csv(history_path, sep="\t", index=False)
+    contract_sha256 = "c" * 64
+
+    with pytest.raises(ValueError, match="incompatible schema"):
+        study._simulation_invocation_history(  # noqa: SLF001
+            specification_dir, expected_contract_sha256=contract_sha256
+        )
+    migrated = study._simulation_invocation_history(  # noqa: SLF001
+        specification_dir,
+        expected_contract_sha256=contract_sha256,
+        allow_legacy_migration=True,
+    )
+
+    assert migrated["simulation_contract_sha256"].tolist() == [contract_sha256]
+    assert migrated["effective_timeout_seconds"].tolist() == [20.0]
+    persisted = pd.read_csv(history_path, sep="\t")
+    assert list(persisted.columns) == list(study.SIMULATION_INVOCATION_COLUMNS)
+
+
+def test_specification_lock_rejects_live_owner_and_recovers_stale_owner(
+    tmp_path, monkeypatch
+):
+    specification_dir = tmp_path / "work" / "spec"
+    with study._specification_execution_lock(specification_dir):  # noqa: SLF001
+        with pytest.raises(study.SimulationSpecificationLocked, match="already locked"):
+            with study._specification_execution_lock(  # noqa: SLF001
+                specification_dir
+            ):
+                pytest.fail("a second live owner acquired the specification lock")
+    assert not (specification_dir / ".simulation.lock").exists()
+
+    stale_lock = specification_dir / ".simulation.lock"
+    stale_lock.write_text(
+        json.dumps(
+            {
+                "pid": 999_999_999,
+                "hostname": socket.gethostname(),
+                "created_at_utc": "2026-08-12T00:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(study, "_pid_is_alive", lambda pid: False)
+    with study._specification_execution_lock(specification_dir):  # noqa: SLF001
+        assert stale_lock.is_file()
+    assert not stale_lock.exists()
+    assert list(specification_dir.glob(".simulation.lock.stale.*"))
+
+
+def test_atomic_replace_retries_access_denied_and_remains_fail_closed(
+    tmp_path, monkeypatch
+):
+    destination = tmp_path / "state.json"
+    real_replace = study.os.replace
+    calls = []
+    delays = []
+
+    def transient_replace(source, target):
+        calls.append((source, target))
+        if len(calls) < 3:
+            raise PermissionError(13, "transient OneDrive access denied")
+        return real_replace(source, target)
+
+    monkeypatch.setattr(study.os, "replace", transient_replace)
+    monkeypatch.setattr(study, "sleep", delays.append)
+    study._atomic_json(destination, {"status": "complete"})  # noqa: SLF001
+
+    assert json.loads(destination.read_text(encoding="utf-8"))["status"] == "complete"
+    assert len(calls) == 3
+    assert delays == [0.05, 0.1]
+
+    monkeypatch.setattr(
+        study.os,
+        "replace",
+        lambda *args: (_ for _ in ()).throw(PermissionError(13, "still denied")),
+    )
+    with pytest.raises(PermissionError, match="still denied"):
+        study._replace_with_access_retry(  # noqa: SLF001
+            tmp_path / "source", tmp_path / "target", max_attempts=2
+        )
+
+
+def test_status_recovers_valid_partial_draw_progress(tmp_path, monkeypatch):
+    runtime = _runtime(tmp_path, max_external_draws=2)
+    specification = _accepted_specification()
+    _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence())
+
+    class InterruptedEngine:
+        def simulate(self, *args, **kwargs):
+            raise RuntimeError("interrupted conditioned trajectory")
+
+    monkeypatch.setattr(study.stdpopsim, "get_engine", lambda name: InterruptedEngine())
+    specification_dir = (
+        tmp_path
+        / study.NO_INTROGRESSION_DIR
+        / "work"
+        / specification["specification_id"]
+    )
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+    }
+    with pytest.raises(RuntimeError, match="interrupted conditioned"):
+        study._simulate_specification_task(task)  # noqa: SLF001
+    contract = json.loads(
+        (specification_dir / "simulation_contract.json").read_text(encoding="utf-8")
+    )
+    monkeypatch.setattr(
+        study,
+        "_recorded_simulation_contract_if_current",
+        lambda *args, **kwargs: contract,
+    )
+
+    study._write_simulation_status_tables(  # noqa: SLF001
+        runtime, {"no_introgression": [specification]}, {}
+    )
+    status = pd.read_csv(
+        tmp_path / study.NO_INTROGRESSION_DIR / "results" / "simulation_status.tsv",
+        sep="\t",
+    ).iloc[0]
+
+    assert status["status"] == "partial"
+    assert status["completed_external_draws"] == 0
+    assert status["launched_external_draws"] == 1
+    assert "available for resume" in status["detail"]
+
+
+def test_watchdog_prefers_completion_that_races_with_timeout(tmp_path, monkeypatch):
+    runtime = _runtime(tmp_path, max_specification_seconds=1.0)
+    specification = _accepted_specification()
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(tmp_path / "work" / specification["specification_id"]),
+    }
+
+    class FakeQueue:
+        def get_nowait(self):
+            raise queue.Empty
+
+        def close(self):
+            return None
+
+        def join_thread(self):
+            return None
+
+    class FakeProcess:
+        pid = 12345
+        exitcode = None
+
+        def __init__(self, *args, **kwargs):
+            self.alive = True
+
+        def start(self):
+            return None
+
+        def join(self, timeout=None):
+            return None
+
+        def is_alive(self):
+            return self.alive
+
+    process = FakeProcess()
+
+    class FakeContext:
+        def Queue(self):
+            return FakeQueue()
+
+        def Process(self, *args, **kwargs):
+            return process
+
+    clock = iter([0.0, 2.0])
+    monkeypatch.setattr(
+        study.multiprocessing, "get_context", lambda name: FakeContext()
+    )
+    monkeypatch.setattr(study, "perf_counter", lambda: next(clock))
+    terminated = []
+
+    def terminate(fake_process):
+        terminated.append(fake_process.pid)
+        fake_process.alive = False
+
+    monkeypatch.setattr(study, "_terminate_process_tree", terminate)
+    completion_checks = iter([None, {"status": "complete", "tree_sha256": "valid"}])
+    monkeypatch.setattr(
+        study, "_valid_task_completion", lambda current_task: next(completion_checks)
+    )
+    monkeypatch.setattr(
+        study,
+        "_failed_simulation_result",
+        lambda *args, **kwargs: pytest.fail("valid completion was overwritten"),
+    )
+
+    result = study._simulate_tasks_with_timeouts([task], runtime)  # noqa: SLF001
+
+    assert terminated == [12345]
+    assert result[specification["specification_id"]]["status"] == "complete"
+    assert (
+        result[specification["specification_id"]]["completion"]["tree_sha256"]
+        == "valid"
+    )
+
+
 def test_status_and_decode_ignore_stale_simulation_contract(tmp_path, monkeypatch):
     runtime = _runtime(tmp_path)
     specification = _accepted_specification()
@@ -717,6 +1169,401 @@ def test_main_passes_used_decoder_to_all_but_plot_without_override_is_portable(
     assert plot_decoder_paths[-1] is None
 
 
+def _write_decode_cache_fixture(
+    tmp_path,
+    *,
+    legacy=False,
+    threads=4,
+):
+    runtime = _runtime(tmp_path)
+    specification = _accepted_specification()
+    specification_dir = tmp_path / "work" / specification["specification_id"]
+    decoded_dir = specification_dir / "decoded"
+    pairs_dir = specification_dir / "pairs"
+    decoded_dir.mkdir(parents=True)
+    pairs_dir.mkdir(parents=True)
+    tree_path = specification_dir / "selected.trees"
+    pairs_path = pairs_dir / "overall.pairs.tsv"
+    output = decoded_dir / "overall.summary.tsv"
+    decoder_path = tmp_path / "bin" / "gamma_smc"
+    decoder_path.parent.mkdir(parents=True)
+    decoder_path.write_bytes(b"decoder fixture")
+    tree_path.write_bytes(b"tree fixture")
+    pairs_path.write_text("left\tright\n0\t1\n", encoding="utf-8")
+    pd.DataFrame(
+        {"position_0based": [5_000_000], "mean_p_tmrca_lt_threshold": [0.5]}
+    ).to_csv(output, sep="\t", index=False)
+    builder = (
+        study._legacy_decode_contract_with_sha256  # noqa: SLF001
+        if legacy
+        else study._decode_contract_with_sha256  # noqa: SLF001
+    )
+    contract = builder(
+        specification,
+        runtime,
+        tree_path=tree_path,
+        pairs_path=pairs_path,
+        decoder_sha256=hashlib.sha256(decoder_path.read_bytes()).hexdigest(),
+        genotype_class="overall",
+    )
+    contract_path = output.with_suffix(output.suffix + ".contract.json")
+    contract_path.write_text(json.dumps(contract), encoding="utf-8")
+    thresholds = ",".join(str(value) for value in contract["thresholds_years"])
+    producer_script = (
+        "import sys; "
+        "from gamma_smc_aou.tree_sequence import stream_tree_sequence_vcf; "
+        "stream_tree_sequence_vcf(sys.argv[1], sys.stdout, input_format=sys.argv[2])"
+    )
+    command = [
+        str(decoder_path),
+        "--input",
+        "/dev/stdin",
+        "--input_format",
+        "vcf",
+        "--scaled_mutation_rate",
+        str(contract["scaled_mutation_rate"]),
+        "--recombination_to_mutation_ratio",
+        str(contract["recombination_to_mutation_ratio"]),
+        "--unscaled_mutation_rate",
+        str(contract["unscaled_mutation_rate"]),
+        "--recent_threshold_years",
+        thresholds,
+        "--generation_time",
+        str(contract["generation_time_years"]),
+        "--recent_summary",
+        str(output),
+        "--recent_call",
+        "median",
+        "--recent_call_probability",
+        "0.5",
+        "--output_at_hets=false",
+        "--output_at_stride",
+        str(contract["output_stride_bp"]),
+        "--cache_size",
+        str(contract["cache_size_bp"]),
+        "--threads",
+        str(threads),
+        "--pair_block",
+        "256",
+        "--backward_alignment",
+        "fixed",
+        "--exp10",
+        "accurate",
+        "--pairs_file",
+        str(pairs_path),
+    ]
+    run = {
+        "command": command,
+        "input_path": str(tree_path),
+        "input_format": "trees",
+        "tree_sequence_vcf_producer_command": [
+            sys.executable,
+            "-c",
+            producer_script,
+            str(tree_path),
+            "trees",
+        ],
+        "stdout": "",
+        "stderr": "",
+        "decode_seconds": 1.0,
+        "stride_bp": contract["output_stride_bp"],
+        "cache_size_bp": contract["cache_size_bp"],
+        "n_output_positions": 1,
+        "pairs_manifest": None,
+        "n_pairs_recorded": None,
+    }
+    run_path = output.with_suffix(output.suffix + ".run.json")
+    run_path.write_text(json.dumps(run), encoding="utf-8")
+    completion = {
+        "contract_sha256": study._contract_sha256(contract),  # noqa: SLF001
+        "summary_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+        "run_sha256": hashlib.sha256(run_path.read_bytes()).hexdigest(),
+    }
+    if not legacy:
+        completion["execution"] = {
+            "threads": threads,
+            "threads_cache_role": "provenance_only",
+            "run_settings_validated": True,
+        }
+    completion_path = output.with_suffix(output.suffix + ".complete.json")
+    completion_path.write_text(json.dumps(completion), encoding="utf-8")
+    return {
+        "runtime": runtime,
+        "specification": specification,
+        "tree_path": tree_path,
+        "pairs_path": pairs_path,
+        "output": output,
+        "decoder_path": decoder_path,
+        "contract_path": contract_path,
+        "completion_path": completion_path,
+        "run_path": run_path,
+    }
+
+
+def test_decode_lock_is_separate_and_recovers_only_a_dead_local_owner(
+    tmp_path, monkeypatch
+):
+    specification_dir = tmp_path / "work" / "spec"
+    with study._decode_execution_lock(specification_dir):  # noqa: SLF001
+        assert (specification_dir / ".decode.lock").is_file()
+        assert not (specification_dir / ".simulation.lock").exists()
+        with pytest.raises(study.DecodeSpecificationLocked, match="already locked"):
+            with study._decode_execution_lock(specification_dir):  # noqa: SLF001
+                pytest.fail("concurrent decode acquired a live lock")
+    assert not (specification_dir / ".decode.lock").exists()
+
+    stale_lock = specification_dir / ".decode.lock"
+    stale_lock.write_text(
+        json.dumps(
+            {
+                "pid": 999_999_999,
+                "hostname": socket.gethostname(),
+                "created_at_utc": "2026-08-12T00:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(study, "_pid_is_alive", lambda pid: False)
+    with study._decode_execution_lock(specification_dir):  # noqa: SLF001
+        assert stale_lock.is_file()
+    assert list(specification_dir.glob(".decode.lock.stale.*"))
+
+
+def test_decode_contract_binds_fixed_settings_and_threads_are_provenance_only(
+    tmp_path,
+):
+    fixture = _write_decode_cache_fixture(tmp_path, threads=4)
+    contract = json.loads(fixture["contract_path"].read_text(encoding="utf-8"))
+    assert contract["schema"] == study.DECODE_CONTRACT_SCHEMA
+    assert contract["decode_settings"] == {
+        **study.DECODE_FIXED_SETTINGS,
+        "threads": {
+            "cache_role": "provenance_only",
+            "required_minimum": 1,
+            "determinism_contract": "output_invariant_across_thread_count",
+        },
+    }
+    assert contract["python_vcf_producer"]["metadata_status"] == "recorded"
+    assert study._valid_decode_cache(  # noqa: SLF001
+        fixture["output"],
+        contract,
+        tree_path=fixture["tree_path"],
+        pairs_path=fixture["pairs_path"],
+        decoder_path=fixture["decoder_path"],
+    )
+
+    run = json.loads(fixture["run_path"].read_text(encoding="utf-8"))
+    thread_index = run["command"].index("--threads") + 1
+    run["command"][thread_index] = "8"
+    fixture["run_path"].write_text(json.dumps(run), encoding="utf-8")
+    completion = json.loads(fixture["completion_path"].read_text(encoding="utf-8"))
+    completion["run_sha256"] = hashlib.sha256(
+        fixture["run_path"].read_bytes()
+    ).hexdigest()
+    completion["execution"] = {
+        "threads": 8,
+        "threads_cache_role": "provenance_only",
+        "run_settings_validated": True,
+    }
+    fixture["completion_path"].write_text(json.dumps(completion), encoding="utf-8")
+    assert study._valid_decode_cache(  # noqa: SLF001
+        fixture["output"],
+        contract,
+        tree_path=fixture["tree_path"],
+        pairs_path=fixture["pairs_path"],
+        decoder_path=fixture["decoder_path"],
+    )
+
+    run["command"][run["command"].index("--exp10") + 1] = "fast"
+    fixture["run_path"].write_text(json.dumps(run), encoding="utf-8")
+    completion["run_sha256"] = hashlib.sha256(
+        fixture["run_path"].read_bytes()
+    ).hexdigest()
+    fixture["completion_path"].write_text(json.dumps(completion), encoding="utf-8")
+    assert not study._valid_decode_cache(  # noqa: SLF001
+        fixture["output"],
+        contract,
+        tree_path=fixture["tree_path"],
+        pairs_path=fixture["pairs_path"],
+        decoder_path=fixture["decoder_path"],
+    )
+
+
+def test_legacy_decode_cache_migrates_only_after_run_semantics_validate(tmp_path):
+    fixture = _write_decode_cache_fixture(tmp_path, legacy=True)
+    migrated = study._validated_or_migrated_class_decode_cache(  # noqa: SLF001
+        fixture["specification"],
+        fixture["runtime"],
+        tree_path=fixture["tree_path"],
+        pairs_path=fixture["pairs_path"],
+        output=fixture["output"],
+        decoder_sha256=hashlib.sha256(fixture["decoder_path"].read_bytes()).hexdigest(),
+        genotype_class="overall",
+        decoder_path=fixture["decoder_path"],
+        migrate_legacy=True,
+    )
+    assert migrated is not None
+    contract, execution, was_migrated = migrated
+    assert was_migrated is True
+    assert execution["threads"] == 4
+    assert contract["schema"] == study.DECODE_CONTRACT_SCHEMA
+    assert contract["python_vcf_producer"]["metadata_status"] == "legacy_not_recorded"
+    assert contract["migration"]["validation"] == (
+        "legacy_contract_hash_and_run_semantics"
+    )
+    assert (
+        json.loads(fixture["completion_path"].read_text(encoding="utf-8"))["execution"]
+        == execution
+    )
+
+    invalid = _write_decode_cache_fixture(tmp_path / "invalid", legacy=True)
+    run = json.loads(invalid["run_path"].read_text(encoding="utf-8"))
+    run["command"][run["command"].index("--pair_block") + 1] = "128"
+    invalid["run_path"].write_text(json.dumps(run), encoding="utf-8")
+    invalid_completion = json.loads(
+        invalid["completion_path"].read_text(encoding="utf-8")
+    )
+    invalid_completion["run_sha256"] = hashlib.sha256(
+        invalid["run_path"].read_bytes()
+    ).hexdigest()
+    invalid["completion_path"].write_text(
+        json.dumps(invalid_completion), encoding="utf-8"
+    )
+    assert (
+        study._validated_or_migrated_class_decode_cache(  # noqa: SLF001
+            invalid["specification"],
+            invalid["runtime"],
+            tree_path=invalid["tree_path"],
+            pairs_path=invalid["pairs_path"],
+            output=invalid["output"],
+            decoder_sha256=hashlib.sha256(
+                invalid["decoder_path"].read_bytes()
+            ).hexdigest(),
+            genotype_class="overall",
+            decoder_path=invalid["decoder_path"],
+            migrate_legacy=True,
+        )
+        is None
+    )
+    assert (
+        json.loads(invalid["contract_path"].read_text(encoding="utf-8"))["schema"]
+        == study.SCHEMA_VERSION
+    )
+
+
+def test_simulation_status_prefers_valid_completion_over_invocation_failure(
+    tmp_path, monkeypatch
+):
+    runtime = _runtime(tmp_path)
+    specification = _accepted_specification()
+    _install_fake_simulator(monkeypatch, _accepted_tiny_tree_sequence())
+    specification_dir = (
+        tmp_path
+        / study.NO_INTROGRESSION_DIR
+        / "work"
+        / specification["specification_id"]
+    )
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+    }
+    study._simulate_specification_task(task)  # noqa: SLF001
+    recorded_contract = json.loads(
+        (specification_dir / "simulation_contract.json").read_text(encoding="utf-8")
+    )
+    monkeypatch.setattr(
+        study,
+        "_recorded_simulation_contract_if_current",
+        lambda *args, **kwargs: recorded_contract,
+    )
+    study._write_simulation_status_tables(  # noqa: SLF001
+        runtime,
+        {"no_introgression": [specification]},
+        {
+            specification["specification_id"]: {
+                "status": "failed",
+                "failure": {"error": "concurrent invocation saw a simulation lock"},
+            }
+        },
+    )
+    status = pd.read_csv(
+        tmp_path / study.NO_INTROGRESSION_DIR / "results" / "simulation_status.tsv",
+        sep="\t",
+    ).iloc[0]
+    assert status["status"] == "complete"
+    assert status["latest_invocation_status"] == "failed"
+    assert status["latest_invocation_error"] == (
+        "concurrent invocation saw a simulation lock"
+    )
+
+
+def test_source_epoch_mismatch_fails_before_work_directory_mutation(tmp_path):
+    runtime = _runtime(tmp_path)
+    specification = _accepted_specification()
+    specification_dir = tmp_path / "work" / specification["specification_id"]
+    expected = study._implementation_sha256s(  # noqa: SLF001
+        study._implementation_provenance()  # noqa: SLF001
+    )
+    expected["core"] = "0" * 64
+    task = {
+        "specification": specification,
+        "runtime": asdict(runtime),
+        "slim_path": sys.executable,
+        "specification_dir": str(specification_dir),
+        "expected_implementation_sha256s": expected,
+    }
+    with pytest.raises(
+        study.ImplementationProvenanceMismatch, match="phase-start source snapshot"
+    ):
+        study._simulate_specification_task(task)  # noqa: SLF001
+    assert not specification_dir.exists()
+
+
+def test_external_interruption_recovery_uses_lock_interval_and_refuses_live_owner(
+    tmp_path, monkeypatch
+):
+    specification_dir = tmp_path / "work" / "spec"
+    specification_dir.mkdir(parents=True)
+    lock_path = specification_dir / ".simulation.lock"
+    lock_path.write_text(
+        json.dumps(
+            {
+                "pid": 12345,
+                "hostname": socket.gethostname(),
+                "created_at_utc": "2026-08-12T12:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    task = {
+        "specification": {"specification_id": "spec"},
+        "specification_dir": str(specification_dir),
+    }
+    monkeypatch.setattr(study, "_valid_task_completion", lambda task: None)
+    monkeypatch.setattr(study, "_pid_is_alive", lambda pid: False)
+    recorded = {}
+
+    def fake_failure(task, **kwargs):
+        recorded.update(kwargs)
+        return {"status": kwargs["status"]}
+
+    monkeypatch.setattr(study, "_failed_simulation_result", fake_failure)
+    result = study.record_external_simulation_interruption(
+        task, stopped_at_utc="2026-08-12T12:03:30+00:00"
+    )
+    assert result["status"] == "failed"
+    assert recorded["elapsed_seconds"] == 210.0
+    assert recorded["error_type"] == "ExternalProcessInterruption"
+
+    monkeypatch.setattr(study, "_pid_is_alive", lambda pid: True)
+    with pytest.raises(study.SimulationSpecificationLocked, match="live"):
+        study.record_external_simulation_interruption(
+            task, stopped_at_utc="2026-08-12T12:03:30+00:00"
+        )
+
+
 def test_parser_defaults_match_execution_contract(tmp_path):
     args = study.build_parser().parse_args(["plan", "--repo-root", str(tmp_path)])
 
@@ -728,7 +1575,9 @@ def test_parser_defaults_match_execution_contract(tmp_path):
     assert args.slim_scaling_factor == study.DEFAULT_SLIM_SCALING_FACTOR == 10.0
     assert args.slim_burn_in == study.DEFAULT_SLIM_BURN_IN
     assert args.max_external_draws == study.DEFAULT_MAX_EXTERNAL_DRAWS == 20
+    assert args.max_launched_draws == 0
     assert args.spec_timeout_minutes == 0.0
+    assert args.cumulative_spec_timeout_minutes == 0.0
     assert args.spec == []
     assert study._resolve_scenarios(args.scenario) == (  # noqa: SLF001
         "no_introgression",
@@ -743,3 +1592,9 @@ def test_runtime_rejects_invalid_execution_values(tmp_path):
         _runtime(tmp_path, sequence_length_bp=100).validate()
     with pytest.raises(ValueError, match="max_specification_seconds"):
         _runtime(tmp_path, max_specification_seconds=-1).validate()
+    with pytest.raises(ValueError, match="max_launched_draws"):
+        _runtime(tmp_path, max_launched_draws=-1).validate()
+    with pytest.raises(ValueError, match="max_cumulative_specification_seconds"):
+        _runtime(tmp_path, max_cumulative_specification_seconds=-1).validate()
+    with pytest.raises(ValueError, match="campaign_subdirectory"):
+        _runtime(tmp_path, campaign_subdirectory="../escape").validate()

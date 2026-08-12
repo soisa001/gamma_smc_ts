@@ -18,3 +18,5 @@ no_introgression_EAS_sim/work/
 no_introgression_EAS_sim/results/figures/no_intro_*/
 introgression_EAS_sim/work/
 introgression_EAS_sim/results/figures/intro_*/
+introgression_EAS_sim/*/work/
+introgression_EAS_sim/*/invalid_concurrent_smoke_*/
