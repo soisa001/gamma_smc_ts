@@ -64,6 +64,20 @@ _FONT = {"title": 21, "axis": 18, "tick": 15, "legend": 13, "annotation": 12}
 _COLORS = {0.01: "#0072B2", 0.005: "#D55E00", 0.001: "#009E73"}
 _LETTER_LANDSCAPE = (11.0, 8.5)
 _PROFILE_CLASSES = ("overall", "hom_ref", "hom_alt")
+_REPORT_METRIC_LABELS = {
+    "alt_minus_ref_normalized_cdf_auc": (
+        "Normalized integrated TMRCA-CDF area (alt/alt - ref/ref; expected > 0)"
+    ),
+    "alt_minus_ref_mean_tmrca_generations": (
+        "Mean TMRCA in generations (alt/alt - ref/ref; expected < 0)"
+    ),
+}
+_REPORT_CLASS_LABELS = {
+    "overall": "Overall",
+    "hom_ref": "Ref/ref",
+    "hom_alt": "Alt/alt",
+    "heterozygous": "Heterozygous",
+}
 _AGGREGATION_LOCK_NAME = ".replicate_aggregation.lock"
 _COMPACT_SPECIFICATION_INPUTS = (
     "simulation_contract.json",
@@ -458,6 +472,8 @@ def _normalise_specifications(
         "upper_allele_frequency",
         "origin_age_generations",
         "source_minimum_frequency",
+        "slim_scaled_source_check_generations_ago",
+        "slim_scaled_pulse_generations_ago",
     )
     expanded: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
@@ -1434,6 +1450,7 @@ def _threshold_accuracy(profiles: pd.DataFrame) -> pd.DataFrame:
         "gamma_minus_truth_bias",
         "mae",
         "rmse",
+        "aggregation_weighting",
         "pairing_rule",
     ]
     if profiles.empty:
@@ -1462,7 +1479,7 @@ def _threshold_accuracy(profiles: pd.DataFrame) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     groupings = [
         (
-            "overall",
+            "overall_micro_trajectory_weighted",
             ["genotype_class", "threshold_years"],
         ),
         (
@@ -1498,10 +1515,866 @@ def _threshold_accuracy(profiles: pd.DataFrame) -> pd.DataFrame:
                     "gamma_minus_truth_bias": float(np.mean(errors)),
                     "mae": float(np.mean(np.abs(errors))),
                     "rmse": float(np.sqrt(np.mean(errors**2))),
+                    "aggregation_weighting": (
+                        "accepted_trajectory_equal_micro_across_biological_cells"
+                        if scope == "overall_micro_trajectory_weighted"
+                        else "trajectory_equal_within_biological_cell"
+                    ),
                     "pairing_rule": "one_truth_and_one_gamma_value_per_replicate",
                 }
             )
     return pd.DataFrame(rows, columns=columns)
+
+
+def _report_float(value: Any) -> float | None:
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return None
+    return result if math.isfinite(result) else None
+
+
+def _report_int(value: Any) -> str:
+    number = _report_float(value)
+    return "—" if number is None else f"{int(round(number)):,}"
+
+
+def _report_number(value: Any) -> str:
+    number = _report_float(value)
+    if number is None:
+        return "—"
+    if number == 0:
+        return "0"
+    absolute = abs(number)
+    if absolute >= 1_000:
+        return f"{number:,.1f}"
+    if absolute >= 1:
+        return f"{number:.3f}"
+    return f"{number:.4f}"
+
+
+def _report_rate(value: Any) -> str:
+    number = _report_float(value)
+    return "—" if number is None else f"{100.0 * number:.1f}%"
+
+
+def _report_rate_with_interval(
+    record: Mapping[str, Any],
+    field: str,
+    low_field: str,
+    high_field: str,
+) -> str:
+    rate = _report_float(record.get(field))
+    if rate is None:
+        return "—"
+    low = _report_float(record.get(low_field))
+    high = _report_float(record.get(high_field))
+    rendered = _report_rate(rate)
+    if low is not None and high is not None:
+        rendered += f" ({_report_rate(low)}–{_report_rate(high)})"
+    return rendered
+
+
+def _report_markdown_cell(value: Any) -> str:
+    return str(value).replace("|", "\\|").replace("\n", " ")
+
+
+def _append_report_table(
+    lines: list[str], headers: Sequence[str], rows: Sequence[Sequence[Any]]
+) -> None:
+    lines.append("| " + " | ".join(map(_report_markdown_cell, headers)) + " |")
+    lines.append("|" + "|".join("---" for _ in headers) + "|")
+    for row in rows:
+        lines.append("| " + " | ".join(map(_report_markdown_cell, row)) + " |")
+    lines.append("")
+
+
+def _report_frame(frame: pd.DataFrame, columns: Sequence[str]) -> pd.DataFrame:
+    prepared = frame.copy()
+    for column in columns:
+        if column not in prepared:
+            prepared[column] = np.nan
+    return prepared
+
+
+def _single_specification_number(
+    specifications: Sequence[Mapping[str, Any]], key: str, label: str
+) -> float:
+    if not specifications:
+        raise ValueError(f"RUN_RESULTS requires at least one specification for {label}")
+    values = []
+    for specification in specifications:
+        value = _report_float(specification.get(key))
+        if value is None:
+            raise ValueError(
+                f"RUN_RESULTS specification lacks finite {label}: "
+                f"{specification.get('specification_id', '<unknown>')}"
+            )
+        values.append(value)
+    first = values[0]
+    if any(not _same_biological_value(value, first) for value in values[1:]):
+        raise ValueError(f"RUN_RESULTS specifications disagree on {label}")
+    return first
+
+
+def _report_campaign_facts(
+    runtime: StudyRuntime,
+    specifications: Sequence[Mapping[str, Any]],
+    campaign_design: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Extract model-specific report statements from validated campaign inputs."""
+    sample_diploids = _report_float(runtime.sample_diploids)
+    if (
+        sample_diploids is None
+        or sample_diploids <= 0
+        or not sample_diploids.is_integer()
+    ):
+        raise ValueError("RUN_RESULTS requires a positive integer sample_diploids")
+    af_ceiling = _single_specification_number(
+        specifications, "upper_allele_frequency", "AF ceiling"
+    )
+    if not 0 < af_ceiling <= 1:
+        raise ValueError("RUN_RESULTS AF ceiling must be in (0, 1]")
+    scaling = _report_float(runtime.slim_scaling_factor)
+    burn_in = _report_float(runtime.slim_burn_in)
+    if scaling is None or scaling <= 0:
+        raise ValueError("RUN_RESULTS requires a positive SLiM scaling factor")
+    if burn_in is None or burn_in < 0:
+        raise ValueError("RUN_RESULTS requires a nonnegative SLiM burn-in")
+    source_check = _single_specification_number(
+        specifications,
+        "slim_scaled_source_check_generations_ago",
+        "scaled source-check time",
+    )
+    pulse = _single_specification_number(
+        specifications,
+        "slim_scaled_pulse_generations_ago",
+        "scaled introgression-pulse time",
+    )
+    if source_check < 0 or pulse < 0:
+        raise ValueError("RUN_RESULTS scaled event times must be nonnegative")
+    fixed_model = campaign_design.get("fixed_model_contract")
+    campaign_contract = campaign_design.get("campaign_contract")
+    if not isinstance(fixed_model, Mapping) or not isinstance(
+        campaign_contract, Mapping
+    ):
+        raise ValueError("RUN_RESULTS campaign design lacks fixed model contracts")
+    acceptance_contract = campaign_contract.get("acceptance")
+    archaic_contract = (
+        acceptance_contract.get("archaic_specific_no_ils")
+        if isinstance(acceptance_contract, Mapping)
+        else None
+    )
+    if not isinstance(archaic_contract, Mapping):
+        raise ValueError("RUN_RESULTS campaign design lacks archaic/no-ILS contract")
+    mutation_mode = fixed_model.get("mutation_mode")
+    origin_population = archaic_contract.get("mutation_declared_origin_population")
+    after_split = archaic_contract.get("origin_after_human_neanderthal_split")
+    before_pulse = archaic_contract.get("origin_before_introgression_pulse")
+    entry_route = archaic_contract.get("han_entry_route")
+    node_is_evidence = archaic_contract.get("tree_node_population_is_origin_evidence")
+    origin_evidence = archaic_contract.get("origin_evidence")
+    expected_archaic_contract = {
+        "mutation_mode": "single archaic-specific de novo origin",
+        "mutation_declared_origin_population": "Neanderthal",
+        "origin_after_human_neanderthal_split": True,
+        "origin_before_introgression_pulse": True,
+        "han_entry_route": "introgression_pulse_only",
+        "tree_node_population_is_origin_evidence": False,
+        "origin_evidence": "serialized_forward_event_contract",
+    }
+    observed_archaic_contract = {
+        "mutation_mode": mutation_mode,
+        "mutation_declared_origin_population": origin_population,
+        "origin_after_human_neanderthal_split": after_split,
+        "origin_before_introgression_pulse": before_pulse,
+        "han_entry_route": entry_route,
+        "tree_node_population_is_origin_evidence": node_is_evidence,
+        "origin_evidence": origin_evidence,
+    }
+    if observed_archaic_contract != expected_archaic_contract:
+        raise ValueError(
+            "RUN_RESULTS archaic/no-ILS contract is absent or incompatible: "
+            + _canonical_json(observed_archaic_contract)
+        )
+    return {
+        "sample_diploids": int(sample_diploids),
+        "af_ceiling": af_ceiling,
+        "slim_scaling_factor": scaling,
+        "slim_burn_in": burn_in,
+        "scaled_source_check_generations_ago": source_check,
+        "scaled_introgression_pulse_generations_ago": pulse,
+        "scaled_source_pulse_collision": _same_biological_value(source_check, pulse),
+        **observed_archaic_contract,
+    }
+
+
+def _validated_report_campaign_facts(facts: Mapping[str, Any]) -> dict[str, Any]:
+    required = {
+        "sample_diploids",
+        "af_ceiling",
+        "slim_scaling_factor",
+        "slim_burn_in",
+        "scaled_source_check_generations_ago",
+        "scaled_introgression_pulse_generations_ago",
+        "scaled_source_pulse_collision",
+        "mutation_mode",
+        "mutation_declared_origin_population",
+        "origin_after_human_neanderthal_split",
+        "origin_before_introgression_pulse",
+        "han_entry_route",
+        "tree_node_population_is_origin_evidence",
+        "origin_evidence",
+    }
+    missing = sorted(required - set(facts))
+    if missing:
+        raise ValueError(
+            "RUN_RESULTS campaign facts are incomplete: " + ", ".join(missing)
+        )
+    numeric_keys = {
+        "sample_diploids",
+        "af_ceiling",
+        "slim_scaling_factor",
+        "slim_burn_in",
+        "scaled_source_check_generations_ago",
+        "scaled_introgression_pulse_generations_ago",
+    }
+    numeric = {key: _report_float(facts[key]) for key in numeric_keys}
+    if any(value is None for value in numeric.values()):
+        raise ValueError("RUN_RESULTS campaign facts contain nonfinite values")
+    sample = numeric["sample_diploids"]
+    af_ceiling = numeric["af_ceiling"]
+    scaling = numeric["slim_scaling_factor"]
+    burn_in = numeric["slim_burn_in"]
+    source_check = numeric["scaled_source_check_generations_ago"]
+    pulse = numeric["scaled_introgression_pulse_generations_ago"]
+    if sample <= 0 or not sample.is_integer():
+        raise ValueError("RUN_RESULTS sample_diploids must be a positive integer")
+    if not 0 < af_ceiling <= 1 or scaling <= 0 or burn_in < 0:
+        raise ValueError("RUN_RESULTS campaign facts have invalid model parameters")
+    if source_check < 0 or pulse < 0:
+        raise ValueError("RUN_RESULTS campaign facts have invalid event times")
+    collision = facts["scaled_source_pulse_collision"]
+    if not isinstance(collision, (bool, np.bool_)):
+        raise ValueError("RUN_RESULTS source/pulse collision flag must be boolean")
+    observed_collision = _same_biological_value(source_check, pulse)
+    if bool(collision) != observed_collision:
+        raise ValueError("RUN_RESULTS source/pulse collision flag disagrees with times")
+    expected_archaic_contract = {
+        "mutation_mode": "single archaic-specific de novo origin",
+        "mutation_declared_origin_population": "Neanderthal",
+        "origin_after_human_neanderthal_split": True,
+        "origin_before_introgression_pulse": True,
+        "han_entry_route": "introgression_pulse_only",
+        "tree_node_population_is_origin_evidence": False,
+        "origin_evidence": "serialized_forward_event_contract",
+    }
+    observed_archaic_contract = {key: facts[key] for key in expected_archaic_contract}
+    if observed_archaic_contract != expected_archaic_contract:
+        raise ValueError("RUN_RESULTS campaign facts violate archaic/no-ILS contract")
+    return {
+        **numeric,
+        "sample_diploids": int(sample),
+        "scaled_source_pulse_collision": observed_collision,
+        **observed_archaic_contract,
+    }
+
+
+def _report_accuracy_rows(accuracy: pd.DataFrame, scope: str) -> list[dict[str, Any]]:
+    prepared = _report_frame(
+        accuracy,
+        [
+            "summary_scope",
+            "metric",
+            "n_paired_replicates",
+            "n_biological_cells_meeting_minimum",
+            "n_biological_cells_in_detection_rate",
+        ],
+    )
+    selected = prepared[prepared["summary_scope"].astype(str) == scope].copy()
+    paired = pd.to_numeric(selected["n_paired_replicates"], errors="coerce").fillna(0)
+    if scope == "overall_macro_cell_equal":
+        eligible = pd.to_numeric(
+            selected["n_biological_cells_meeting_minimum"], errors="coerce"
+        ).fillna(0)
+        selected = selected[(paired > 0) & (eligible > 0)].copy()
+    elif scope == "overall_micro_trajectory_weighted":
+        selected = selected[paired > 0].copy()
+    if selected.duplicated(["metric"], keep=False).any():
+        raise ValueError(f"RUN_RESULTS has duplicate {scope!r} accuracy rows")
+    metric_order = {metric: index for index, metric in enumerate(_METRICS)}
+    selected["_metric_order"] = (
+        selected["metric"].map(metric_order).fillna(len(metric_order))
+    )
+    selected = selected.sort_values(
+        ["_metric_order", "metric"], kind="mergesort", na_position="last"
+    )
+    return selected.drop(columns="_metric_order").to_dict(orient="records")
+
+
+def _render_run_results_markdown(
+    summary: Mapping[str, Any],
+    coverage: pd.DataFrame,
+    acceptance: pd.DataFrame,
+    accuracy: pd.DataFrame,
+    effects: pd.DataFrame,
+    threshold_accuracy: pd.DataFrame,
+    campaign_facts: Mapping[str, Any],
+) -> str:
+    """Render a byte-stable campaign report from finalized aggregate values.
+
+    The report deliberately contains no wall-clock generation timestamp.  Its
+    bytes depend only on the supplied result objects, so repeated aggregation
+    of the same validated inputs produces the same Markdown and checksum.
+    """
+    del effects  # Cell-stratified effects remain authoritative in their TSV.
+    facts = _validated_report_campaign_facts(campaign_facts)
+    coverage = _report_frame(
+        coverage,
+        [
+            "base_specification_id",
+            "selection_coefficient",
+            "target_allele_frequency",
+            "target_replicates",
+            "attempted_replicates",
+            "accepted_replicates",
+            "decoded_replicates",
+            "timed_out_replicates",
+            "exhausted_replicates",
+            "failed_replicates",
+        ],
+    )
+    coverage_keys = [
+        "base_specification_id"
+        if coverage["base_specification_id"].notna().any()
+        else "selection_coefficient",
+        "target_allele_frequency",
+    ]
+    if not coverage.empty and coverage.duplicated(coverage_keys, keep=False).any():
+        raise ValueError("RUN_RESULTS coverage contains duplicate biological cells")
+    coverage = coverage.sort_values(
+        ["selection_coefficient", "target_allele_frequency"],
+        ascending=[False, True],
+        kind="mergesort",
+        na_position="last",
+    ).reset_index(drop=True)
+    acceptance = _report_frame(
+        acceptance,
+        [
+            "specification_id",
+            "achieved_allele_frequency",
+            "n_hom_ref",
+            "n_heterozygous",
+            "n_hom_alt",
+        ],
+    ).sort_values(["specification_id"], kind="mergesort", na_position="last")
+
+    requested_cells = summary.get("requested_biological_cells", len(coverage))
+    requested_trajectories = summary.get(
+        "requested_trajectories", coverage["target_replicates"].sum()
+    )
+    attempted_trajectories = summary.get(
+        "attempted_trajectories", coverage["attempted_replicates"].sum()
+    )
+    accepted_trajectories = summary.get("accepted_trajectories", len(acceptance))
+    decoded_trajectories = summary.get(
+        "decoded_trajectories", coverage["decoded_replicates"].sum()
+    )
+    represented_cells = int(
+        (pd.to_numeric(coverage["accepted_replicates"], errors="coerce") > 0).sum()
+    )
+    requested_cell_label = "cell" if _report_float(requested_cells) == 1 else "cells"
+    represented_cell_label = "cell" if represented_cells == 1 else "cells"
+    sample_diploids = int(facts["sample_diploids"])
+    af_ceiling = float(facts["af_ceiling"])
+    scaling = float(facts["slim_scaling_factor"])
+    burn_in = float(facts["slim_burn_in"])
+    source_check = float(facts["scaled_source_check_generations_ago"])
+    pulse = float(facts["scaled_introgression_pulse_generations_ago"])
+    if facts["scaled_source_pulse_collision"]:
+        scaled_event_caveat = (
+            f"the scaled source check and introgression pulse both occur at "
+            f"{_report_number(source_check)} generations ago, so their requested "
+            "separation is not retained"
+        )
+    else:
+        scaled_event_caveat = (
+            f"the scaled source check occurs at {_report_number(source_check)} "
+            f"generations ago and the introgression pulse at "
+            f"{_report_number(pulse)} generations ago"
+        )
+
+    lines = [
+        "# Replicated EAS introgressed-sweep results",
+        "",
+        "## Bottom line",
+        "",
+        (
+            f"This bounded campaign requested {_report_int(requested_trajectories)} "
+            f"independently seeded trajectory slots across "
+            f"{_report_int(requested_cells)} biological selection-by-AF-floor "
+            f"{requested_cell_label}. {_report_int(attempted_trajectories)} slots "
+            "were attempted, "
+            f"{_report_int(accepted_trajectories)} produced accepted "
+            f"{sample_diploids}-diploid Han panels, and "
+            f"{_report_int(decoded_trajectories)} were decoded with Gamma-SMC. "
+            f"{_report_int(represented_cells)} biological "
+            f"{represented_cell_label} had at least one accepted trajectory."
+        ),
+        "",
+    ]
+
+    macro_rows = _report_accuracy_rows(accuracy, "overall_macro_cell_equal")
+    recovery = []
+    for record in macro_rows:
+        rate = _report_float(
+            record.get("gamma_detection_given_truth_expected_sign_rate")
+        )
+        cells = _report_float(record.get("n_biological_cells_in_detection_rate"))
+        if rate is not None and cells is not None and cells > 0:
+            metric = str(record.get("metric"))
+            label = _REPORT_METRIC_LABELS.get(metric, metric)
+            recovery.append(
+                f"{label}: {_report_rate(rate)} across "
+                f"{_report_int(cells)} contributing cells"
+            )
+    if recovery:
+        lines.extend(
+            [
+                "The headline cell-equal conditional recovery estimates were "
+                + "; ".join(recovery)
+                + ". These are qualitative recovery checks in accepted, "
+                "tree-truth-positive trajectories, not estimates of power.",
+                "",
+            ]
+        )
+    elif macro_rows:
+        lines.extend(
+            [
+                "Eligible cells were available for the headline cell-equal "
+                "comparison, but none contributed a tree-truth-positive "
+                "trajectory to conditional recovery.",
+                "",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "No biological cell met the prespecified minimum for a headline "
+                "cell-equal truth-versus-Gamma summary.",
+                "",
+            ]
+        )
+
+    lines.extend(["## Execution and coverage", ""])
+    selection_values = sorted(
+        {
+            value
+            for value in (
+                _report_float(item)
+                for item in coverage["selection_coefficient"].tolist()
+            )
+            if value is not None
+        },
+        reverse=True,
+    )
+    if selection_values:
+        coverage_rows = []
+        for selection in selection_values:
+            group = coverage[
+                np.isclose(
+                    pd.to_numeric(
+                        coverage["selection_coefficient"], errors="coerce"
+                    ).to_numpy(dtype=float),
+                    selection,
+                    equal_nan=False,
+                )
+            ]
+            accepted_values = pd.to_numeric(
+                group["accepted_replicates"], errors="coerce"
+            ).fillna(0)
+            coverage_rows.append(
+                [
+                    f"{selection:g}",
+                    _report_int(group["target_replicates"].sum()),
+                    _report_int(group["attempted_replicates"].sum()),
+                    _report_int(accepted_values.sum()),
+                    _report_int(group["decoded_replicates"].sum()),
+                    f"{int((accepted_values > 0).sum())}/{len(group)}",
+                ]
+            )
+        _append_report_table(
+            lines,
+            [
+                "Selection coefficient",
+                "Requested slots",
+                "Attempted",
+                "Accepted",
+                "Decoded",
+                "Cells represented",
+            ],
+            coverage_rows,
+        )
+
+        af_values = sorted(
+            {
+                value
+                for value in (
+                    _report_float(item)
+                    for item in coverage["target_allele_frequency"].tolist()
+                )
+                if value is not None
+            }
+        )
+        lines.extend(
+            [
+                "### Accepted/requested slots by nested AF floor",
+                "",
+            ]
+        )
+        grid_rows = []
+        for selection in selection_values:
+            row = [f"s={selection:g}"]
+            for af in af_values:
+                selected = coverage[
+                    np.isclose(
+                        pd.to_numeric(
+                            coverage["selection_coefficient"], errors="coerce"
+                        ).to_numpy(dtype=float),
+                        selection,
+                        equal_nan=False,
+                    )
+                    & np.isclose(
+                        pd.to_numeric(
+                            coverage["target_allele_frequency"], errors="coerce"
+                        ).to_numpy(dtype=float),
+                        af,
+                        equal_nan=False,
+                    )
+                ]
+                if selected.empty:
+                    row.append("—")
+                else:
+                    record = selected.iloc[0]
+                    row.append(
+                        f"{_report_int(record['accepted_replicates'])}/"
+                        f"{_report_int(record['target_replicates'])} "
+                        f"(d={_report_int(record['decoded_replicates'])})"
+                    )
+            grid_rows.append(row)
+        _append_report_table(
+            lines,
+            ["Selection"] + [f"AF≥{100 * af:g}%" for af in af_values],
+            grid_rows,
+        )
+    else:
+        lines.extend(
+            [
+                "No biological-cell coverage rows were available at aggregation.",
+                "",
+            ]
+        )
+
+    if acceptance.empty:
+        lines.extend(["No trajectories satisfied the acceptance contract.", ""])
+    else:
+        af = pd.to_numeric(
+            acceptance["achieved_allele_frequency"], errors="coerce"
+        ).dropna()
+        lines.append(
+            "Among accepted sample panels, achieved selected-allele AF was "
+            + (
+                f"{100 * af.min():.1f}%–{100 * af.max():.1f}% "
+                f"(median {100 * af.median():.1f}%)."
+                if not af.empty
+                else "not available."
+            )
+        )
+        genotype_fragments = []
+        for column, label in (
+            ("n_hom_ref", "ref/ref"),
+            ("n_heterozygous", "heterozygous"),
+            ("n_hom_alt", "alt/alt"),
+        ):
+            values = pd.to_numeric(acceptance[column], errors="coerce").dropna()
+            if not values.empty:
+                genotype_fragments.append(
+                    f"{label} {_report_int(values.min())}–{_report_int(values.max())}"
+                )
+        if genotype_fragments:
+            lines.append(
+                "Observed per-panel genotype-count ranges were "
+                + ", ".join(genotype_fragments)
+                + "."
+            )
+        lines.append("")
+
+    lines.extend(
+        [
+            f"The AF targets are nested acceptance floors `[f, {af_ceiling:g}]`, "
+            "not disjoint bins. An achieved AF can satisfy every lower floor "
+            "beneath it, although each cell has its own seed stream. Cross-floor "
+            "differences therefore do not estimate a response across mutually "
+            "exclusive AF strata.",
+            "",
+            "All effects are conditional on trajectories that returned within "
+            "the bounded time/draw budgets and passed population AF, sample AF, "
+            "and genotype-comparator checks. Failures are nonrandom. Intervals "
+            "describe variation among accepted trajectories; they do not account "
+            "for conditioning selection or missing cells. Tree-truth summaries "
+            "use accepted trajectories, whereas Gamma and paired summaries "
+            "additionally require a valid decode.",
+            "",
+            "## Truth-versus-Gamma recovery",
+            "",
+            "### Headline: biological-cell-equal macro summary",
+            "",
+        ]
+    )
+    if macro_rows:
+        macro_table = []
+        for record in macro_rows:
+            metric = str(record.get("metric"))
+            macro_table.append(
+                [
+                    _REPORT_METRIC_LABELS.get(metric, metric),
+                    _report_int(record.get("n_biological_cells_meeting_minimum")),
+                    _report_int(record.get("n_paired_replicates")),
+                    _report_rate(record.get("truth_expected_sign_rate")),
+                    _report_rate(record.get("gamma_expected_sign_rate")),
+                    _report_rate(record.get("raw_truth_gamma_sign_agreement_rate")),
+                    _report_rate(
+                        record.get("gamma_detection_given_truth_expected_sign_rate")
+                    ),
+                    _report_number(record.get("gamma_minus_truth_bias")),
+                    _report_number(record.get("mae")),
+                    _report_number(record.get("rmse")),
+                ]
+            )
+        _append_report_table(
+            lines,
+            [
+                "Metric",
+                "Eligible cells",
+                "Paired trajectories",
+                "Truth expected sign",
+                "Gamma expected sign",
+                "Raw sign agreement",
+                "Gamma detection given truth",
+                "Bias",
+                "MAE",
+                "RMSE",
+            ],
+            macro_table,
+        )
+    else:
+        lines.extend(["No cell-equal macro estimate was available.", ""])
+    lines.extend(
+        [
+            "The macro summary gives each eligible biological cell equal weight. "
+            "Eligibility requires at least two paired trajectories; conditional "
+            "detection also requires at least one truth-positive trajectory in "
+            "the cell. No confidence interval is computed for this macro mean.",
+            "",
+            "### Secondary: accepted-trajectory-weighted micro summary",
+            "",
+        ]
+    )
+    micro_rows = _report_accuracy_rows(accuracy, "overall_micro_trajectory_weighted")
+    if micro_rows:
+        micro_table = []
+        for record in micro_rows:
+            metric = str(record.get("metric"))
+            micro_table.append(
+                [
+                    _REPORT_METRIC_LABELS.get(metric, metric),
+                    _report_int(record.get("n_paired_replicates")),
+                    _report_rate_with_interval(
+                        record,
+                        "truth_expected_sign_rate",
+                        "truth_expected_sign_wilson95_low",
+                        "truth_expected_sign_wilson95_high",
+                    ),
+                    _report_rate_with_interval(
+                        record,
+                        "gamma_expected_sign_rate",
+                        "gamma_expected_sign_wilson95_low",
+                        "gamma_expected_sign_wilson95_high",
+                    ),
+                    _report_rate_with_interval(
+                        record,
+                        "raw_truth_gamma_sign_agreement_rate",
+                        "raw_truth_gamma_sign_agreement_wilson95_low",
+                        "raw_truth_gamma_sign_agreement_wilson95_high",
+                    ),
+                    _report_rate_with_interval(
+                        record,
+                        "gamma_detection_given_truth_expected_sign_rate",
+                        "gamma_detection_given_truth_expected_sign_wilson95_low",
+                        "gamma_detection_given_truth_expected_sign_wilson95_high",
+                    ),
+                    _report_number(record.get("gamma_minus_truth_bias")),
+                    _report_number(record.get("mae")),
+                    _report_number(record.get("rmse")),
+                ]
+            )
+        _append_report_table(
+            lines,
+            [
+                "Metric",
+                "Paired trajectories",
+                "Truth expected sign (95% CI)",
+                "Gamma expected sign (95% CI)",
+                "Raw sign agreement (95% CI)",
+                "Gamma detection given truth (95% CI)",
+                "Bias",
+                "MAE",
+                "RMSE",
+            ],
+            micro_table,
+        )
+    else:
+        lines.extend(["No paired trajectory-level estimate was available.", ""])
+    lines.extend(
+        [
+            "The micro summary gives each accepted paired trajectory equal "
+            "weight and therefore overweights easier, higher-coverage cells. It "
+            "is a different estimand from the headline cell-equal macro summary.",
+            "",
+            "Raw sign agreement can count a jointly contrary truth/Gamma pair as "
+            "agreement. Conditional detection does not: it includes only "
+            "trajectories with the expected tree-truth sign and asks whether "
+            "Gamma-SMC also has that sign.",
+            "",
+            "No matched neutral/null trajectories were simulated. These rates "
+            "are descriptive checks, not p-values, sensitivity, specificity, "
+            "false-positive rate, power, or ROC AUC. The normalized integrated "
+            "CDF area is an area under a TMRCA CDF, not classifier AUC.",
+            "",
+            "## TMRCA probability-profile accuracy: overall micro summary",
+            "",
+            "This threshold-error summary pools accepted, decoded paired "
+            "trajectories across biological cells with equal weight per "
+            "trajectory. It is therefore a secondary overall "
+            "micro/trajectory-weighted estimand: easier, higher-coverage cells "
+            "contribute more heavily and can dominate the pooled error.",
+            "",
+        ]
+    )
+    thresholds = _report_frame(
+        threshold_accuracy,
+        [
+            "summary_scope",
+            "genotype_class",
+            "threshold_years",
+            "n_paired_replicates",
+            "gamma_minus_truth_bias",
+            "mae",
+            "rmse",
+        ],
+    )
+    thresholds = thresholds[
+        thresholds["summary_scope"].astype(str) == "overall_micro_trajectory_weighted"
+    ].copy()
+    threshold_pairs = pd.to_numeric(
+        thresholds["n_paired_replicates"], errors="coerce"
+    ).fillna(0)
+    thresholds = thresholds[threshold_pairs > 0].copy()
+    threshold_values = pd.to_numeric(thresholds["threshold_years"], errors="coerce")
+    if not thresholds.empty and threshold_values.notna().any():
+        maximum = float(threshold_values.max())
+        selected = thresholds[np.isclose(threshold_values, maximum)].copy()
+        class_order = {name: index for index, name in enumerate(_PROFILE_CLASSES)}
+        selected["_class_order"] = (
+            selected["genotype_class"].map(class_order).fillna(len(class_order))
+        )
+        selected = selected.sort_values(
+            ["_class_order", "genotype_class"], kind="mergesort"
+        )
+        threshold_rows = []
+        for record in selected.to_dict(orient="records"):
+            genotype_class = str(record.get("genotype_class"))
+            threshold_rows.append(
+                [
+                    _REPORT_CLASS_LABELS.get(genotype_class, genotype_class),
+                    _report_int(record.get("n_paired_replicates")),
+                    _report_number(record.get("gamma_minus_truth_bias")),
+                    _report_number(record.get("mae")),
+                    _report_number(record.get("rmse")),
+                ]
+            )
+        lines.append(f"At the largest decoded cutoff ({maximum / 1_000:g} kya):")
+        lines.append("")
+        _append_report_table(
+            lines,
+            ["Genotype class", "Paired", "Bias", "MAE", "RMSE"],
+            threshold_rows,
+        )
+    else:
+        lines.extend(["No paired truth/Gamma TMRCA-threshold rows were available.", ""])
+    lines.extend(
+        [
+            "Cell-stratified overall, ref/ref, and alt/alt curves and their "
+            "trajectory-bootstrap bands are in "
+            "`results/aggregate_cdf_profiles.tsv` and the PNG/PDF figure set. "
+            "They are not pooled into an AF-response curve.",
+            "",
+            "## Interpretation and provenance limits",
+            "",
+            f"- These results characterize the configured `Q={scaling:g}`, "
+            f"`slim_burn_in={burn_in:g}` process. Q rescaling can materially "
+            "reduce small simulated populations and collapse short demographic "
+            f"phases; in this campaign, {scaled_event_caveat}. Q/burn-in "
+            "sensitivity runs are required before biological calibration.",
+            "- Archaic specificity/no ILS is bound to the validated "
+            f"`{facts['origin_evidence']}`: mutation mode "
+            f"`{facts['mutation_mode']}`, declared origin population "
+            f"`{facts['mutation_declared_origin_population']}`, origin after the "
+            "human-Neanderthal split and before the pulse, and Han entry route "
+            f"`{facts['han_entry_route']}`. The population attached to the "
+            "retained mutation node is contractually not origin evidence; donor "
+            "AF, migrant-copy count, and the full trajectory are not recovered "
+            "from the returned tree.",
+            "- Artifact validity does not establish semantic equivalence across "
+            "implementation source epochs. Any format-only transition that is "
+            "not cryptographically bound per task remains an operator "
+            "attestation; a frozen-source rerun is required to remove that "
+            "provenance limitation.",
+            "",
+            "## Machine-readable outputs",
+            "",
+            "- `results/cell_coverage.tsv`: requested and observed coverage for "
+            "all biological cells.",
+            "- `results/replicate_acceptance.tsv`: achieved sample AF, genotype "
+            "counts, seeds, and effort for accepted panels.",
+            "- `results/cell_effect_summary.tsv`: exact cell/source focal-effect "
+            "summaries and trajectory-bootstrap intervals.",
+            "- `results/truth_gamma_accuracy.tsv`: explicitly labeled macro and "
+            "micro recovery estimands.",
+            "- `results/aggregate_cdf_profiles.tsv` and "
+            "`results/threshold_accuracy.tsv`: TMRCA-CDF profiles and paired "
+            "truth/Gamma errors; the overall threshold rows are explicitly "
+            "trajectory-weighted micro summaries.",
+            "- `results/replicate_results_manifest.json`: artifact-relative "
+            "paths, SHA-256 checksums, contracts, decoder hashes, and environment "
+            "provenance. This `RUN_RESULTS.md` file is itself checksum-covered by "
+            "that manifest.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _atomic_text(path: Path, value: str) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f"{path.name}.tmp.{os.getpid()}.{uuid.uuid4().hex}")
+    try:
+        with temporary.open("w", encoding="utf-8", newline="\n") as handle:
+            handle.write(value)
+        _replace_with_access_retry(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return path
 
 
 def _save_figure(fig, stem: Path) -> dict[str, Path]:
@@ -1921,7 +2794,7 @@ def _plot_cdf_profiles(
 
 def _plot_threshold_mae(summary: pd.DataFrame, stem: Path) -> dict[str, Path]:
     overall = (
-        summary[summary["summary_scope"] == "overall"]
+        summary[summary["summary_scope"] == "overall_micro_trajectory_weighted"]
         if not summary.empty
         else pd.DataFrame()
     )
@@ -1956,7 +2829,10 @@ def _plot_threshold_mae(summary: pd.DataFrame, stem: Path) -> dict[str, Path]:
             )
         ax.set_xlabel("TMRCA threshold (kya)")
         ax.set_ylabel("Mean absolute error in P(TMRCA < threshold)")
-        ax.set_title("Gamma-SMC threshold accuracy across paired trajectories")
+        ax.set_title(
+            "Gamma-SMC threshold accuracy\n"
+            "Overall micro (trajectory-weighted across accepted pairs)"
+        )
         ax.grid(alpha=0.25)
         if not overall.empty:
             ax.legend(fontsize=_FONT["legend"])
@@ -2367,53 +3243,69 @@ def _aggregate_introgression_replicates_locked(
     secondary_micro_accuracy = paired_accuracy[
         paired_accuracy["summary_scope"] == "overall_micro_trajectory_weighted"
     ].to_dict(orient="records")
+    summary_payload = _json_clean(
+        {
+            "schema": REPLICATE_RESULTS_SCHEMA,
+            "requested_biological_cells": len(bases),
+            "requested_trajectories": len(expanded),
+            "accepted_trajectories": len(acceptance),
+            "decoded_trajectories": int(
+                acceptance.get("decoded", pd.Series(dtype=bool)).sum()
+            ),
+            "attempted_trajectories": int(coverage["attempted_replicates"].sum()),
+            "completed_external_draws": int(coverage["completed_external_draws"].sum()),
+            "launched_external_draws": int(coverage["launched_external_draws"].sum()),
+            "interrupted_internal_conditioned_trajectories": int(
+                coverage["interrupted_internal_conditioned_trajectories"].sum()
+            ),
+            "cumulative_simulation_elapsed_seconds": float(
+                coverage["cumulative_elapsed_seconds"].sum()
+            ),
+            "simulation_status_counts": status_counts,
+            "headline_macro_cell_equal_truth_gamma_accuracy": headline_accuracy,
+            "secondary_micro_trajectory_weighted_truth_gamma_accuracy": (
+                secondary_micro_accuracy
+            ),
+            "headline_minimum_paired_replicates_per_cell": (MIN_CELL_PAIRED_REPLICATES),
+            "interpretation": [
+                "The trajectory, not a within-individual pair, is the replicate unit.",
+                "Conditioning failures are nonrandom; effect summaries describe accepted trajectories only.",
+                "Headline overall accuracy is an equal-cell macro mean over biological cells meeting the explicit paired-replicate minimum.",
+                "The secondary micro summary pools accepted trajectories and is therefore trajectory-weighted across nonrandom cell coverage.",
+                "Overall TMRCA-threshold accuracy is a secondary accepted-trajectory-weighted micro summary across biological cells.",
+                "Truth and Gamma expected-sign rates are reported separately.",
+                "Raw truth/Gamma sign agreement is descriptive and may include jointly wrong signs.",
+                "Gamma detection uses only the denominator of replicates with the expected tree-truth sign; jointly wrong signs are never successes.",
+                "Normalized CDF area is a within-genotype TMRCA-CDF area, not ROC AUC.",
+                "No neutral-null p-values or power claims are produced.",
+            ],
+        }
+    )
     summary_path = _atomic_json(
-        results_dir / "replicate_results_summary.json",
-        _json_clean(
-            {
-                "schema": REPLICATE_RESULTS_SCHEMA,
-                "requested_biological_cells": len(bases),
-                "requested_trajectories": len(expanded),
-                "accepted_trajectories": len(acceptance),
-                "decoded_trajectories": int(
-                    acceptance.get("decoded", pd.Series(dtype=bool)).sum()
-                ),
-                "attempted_trajectories": int(coverage["attempted_replicates"].sum()),
-                "completed_external_draws": int(
-                    coverage["completed_external_draws"].sum()
-                ),
-                "launched_external_draws": int(
-                    coverage["launched_external_draws"].sum()
-                ),
-                "interrupted_internal_conditioned_trajectories": int(
-                    coverage["interrupted_internal_conditioned_trajectories"].sum()
-                ),
-                "cumulative_simulation_elapsed_seconds": float(
-                    coverage["cumulative_elapsed_seconds"].sum()
-                ),
-                "simulation_status_counts": status_counts,
-                "headline_macro_cell_equal_truth_gamma_accuracy": headline_accuracy,
-                "secondary_micro_trajectory_weighted_truth_gamma_accuracy": (
-                    secondary_micro_accuracy
-                ),
-                "headline_minimum_paired_replicates_per_cell": (
-                    MIN_CELL_PAIRED_REPLICATES
-                ),
-                "interpretation": [
-                    "The trajectory, not a within-individual pair, is the replicate unit.",
-                    "Conditioning failures are nonrandom; effect summaries describe accepted trajectories only.",
-                    "Headline overall accuracy is an equal-cell macro mean over biological cells meeting the explicit paired-replicate minimum.",
-                    "The secondary micro summary pools accepted trajectories and is therefore trajectory-weighted across nonrandom cell coverage.",
-                    "Truth and Gamma expected-sign rates are reported separately.",
-                    "Raw truth/Gamma sign agreement is descriptive and may include jointly wrong signs.",
-                    "Gamma detection uses only the denominator of replicates with the expected tree-truth sign; jointly wrong signs are never successes.",
-                    "Normalized CDF area is a within-genotype TMRCA-CDF area, not ROC AUC.",
-                    "No neutral-null p-values or power claims are produced.",
-                ],
-            }
-        ),
+        results_dir / "replicate_results_summary.json", summary_payload
     )
     artifact_paths["replicate_results_summary_json"] = summary_path
+    try:
+        campaign_design = json.loads(
+            (snapshot_root / "study_design.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError("RUN_RESULTS campaign design is unreadable") from error
+    if not isinstance(campaign_design, Mapping):
+        raise ValueError("RUN_RESULTS campaign design must be a JSON object")
+    report_path = _atomic_text(
+        campaign_dir / "RUN_RESULTS.md",
+        _render_run_results_markdown(
+            summary_payload,
+            coverage,
+            acceptance,
+            paired_accuracy,
+            effect_summary,
+            threshold_accuracy,
+            _report_campaign_facts(runtime, bases, campaign_design),
+        ),
+    )
+    artifact_paths["run_results_markdown"] = report_path
 
     input_provenance = _campaign_input_provenance(
         campaign_dir, bases, expanded, runtime, snapshot

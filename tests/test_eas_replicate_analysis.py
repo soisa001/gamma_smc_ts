@@ -33,6 +33,8 @@ def _base(identifier: str, selection: float, frequency: float) -> dict:
         "upper_allele_frequency": 0.95,
         "origin_age_generations": 2_400.0,
         "source_minimum_frequency": 0.9,
+        "slim_scaled_source_check_generations_ago": 2_270.0,
+        "slim_scaled_pulse_generations_ago": 2_270.0,
     }
 
 
@@ -113,6 +115,354 @@ def _completion(af: float, seed: int) -> dict:
     }
 
 
+def _campaign_design() -> dict:
+    return {
+        "schema": "test-plan",
+        "fixed_model_contract": {
+            "mutation_mode": "single archaic-specific de novo origin",
+        },
+        "campaign_contract": {
+            "acceptance": {
+                "archaic_specific_no_ils": {
+                    "mutation_declared_origin_population": "Neanderthal",
+                    "origin_after_human_neanderthal_split": True,
+                    "origin_before_introgression_pulse": True,
+                    "han_entry_route": "introgression_pulse_only",
+                    "tree_node_population_is_origin_evidence": False,
+                    "origin_evidence": "serialized_forward_event_contract",
+                }
+            }
+        },
+    }
+
+
+def _archaic_report_facts() -> dict:
+    return {
+        "mutation_mode": "single archaic-specific de novo origin",
+        "mutation_declared_origin_population": "Neanderthal",
+        "origin_after_human_neanderthal_split": True,
+        "origin_before_introgression_pulse": True,
+        "han_entry_route": "introgression_pulse_only",
+        "tree_node_population_is_origin_evidence": False,
+        "origin_evidence": "serialized_forward_event_contract",
+    }
+
+
+def _report_fixture() -> tuple[
+    dict, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, dict
+]:
+    summary = {
+        "requested_biological_cells": 2,
+        "requested_trajectories": 20,
+        "attempted_trajectories": 15,
+        "accepted_trajectories": 2,
+        "decoded_trajectories": 2,
+    }
+    coverage = pd.DataFrame(
+        [
+            {
+                "base_specification_id": "intro_s0p001_af90",
+                "selection_coefficient": 0.001,
+                "target_allele_frequency": 0.9,
+                "target_replicates": 10,
+                "attempted_replicates": 5,
+                "accepted_replicates": 0,
+                "decoded_replicates": 0,
+                "timed_out_replicates": 5,
+                "exhausted_replicates": 0,
+                "failed_replicates": 0,
+            },
+            {
+                "base_specification_id": "intro_s0p010_af10",
+                "selection_coefficient": 0.01,
+                "target_allele_frequency": 0.1,
+                "target_replicates": 10,
+                "attempted_replicates": 10,
+                "accepted_replicates": 2,
+                "decoded_replicates": 2,
+                "timed_out_replicates": 8,
+                "exhausted_replicates": 0,
+                "failed_replicates": 0,
+            },
+        ]
+    )
+    acceptance = pd.DataFrame(
+        [
+            {
+                "specification_id": "intro_s0p010_af10__rep002",
+                "achieved_allele_frequency": 0.45,
+                "n_hom_ref": 30,
+                "n_heterozygous": 50,
+                "n_hom_alt": 20,
+            },
+            {
+                "specification_id": "intro_s0p010_af10__rep001",
+                "achieved_allele_frequency": 0.35,
+                "n_hom_ref": 40,
+                "n_heterozygous": 50,
+                "n_hom_alt": 10,
+            },
+        ]
+    )
+    accuracy_rows = []
+    for metric, bias, mae, rmse in (
+        ("alt_minus_ref_normalized_cdf_auc", 0.02, 0.03, 0.04),
+        ("alt_minus_ref_mean_tmrca_generations", -100.0, 200.0, 250.0),
+    ):
+        accuracy_rows.extend(
+            [
+                {
+                    "summary_scope": "overall_micro_trajectory_weighted",
+                    "metric": metric,
+                    "n_paired_replicates": 2,
+                    "truth_expected_sign_rate": 1.0,
+                    "truth_expected_sign_wilson95_low": 0.342,
+                    "truth_expected_sign_wilson95_high": 1.0,
+                    "gamma_expected_sign_rate": 0.5,
+                    "gamma_expected_sign_wilson95_low": 0.095,
+                    "gamma_expected_sign_wilson95_high": 0.905,
+                    "raw_truth_gamma_sign_agreement_rate": 0.5,
+                    "raw_truth_gamma_sign_agreement_wilson95_low": 0.095,
+                    "raw_truth_gamma_sign_agreement_wilson95_high": 0.905,
+                    "gamma_detection_given_truth_expected_sign_rate": 0.5,
+                    "gamma_detection_given_truth_expected_sign_wilson95_low": 0.095,
+                    "gamma_detection_given_truth_expected_sign_wilson95_high": 0.905,
+                    "gamma_minus_truth_bias": bias,
+                    "mae": mae,
+                    "rmse": rmse,
+                },
+                {
+                    "summary_scope": "overall_macro_cell_equal",
+                    "metric": metric,
+                    "n_paired_replicates": 2,
+                    "n_biological_cells_meeting_minimum": 1,
+                    "n_biological_cells_in_detection_rate": 1,
+                    "truth_expected_sign_rate": 1.0,
+                    "gamma_expected_sign_rate": 0.5,
+                    "raw_truth_gamma_sign_agreement_rate": 0.5,
+                    "gamma_detection_given_truth_expected_sign_rate": 0.5,
+                    "gamma_minus_truth_bias": bias,
+                    "mae": mae,
+                    "rmse": rmse,
+                },
+            ]
+        )
+    threshold_accuracy = pd.DataFrame(
+        [
+            {
+                "summary_scope": "overall_micro_trajectory_weighted",
+                "genotype_class": genotype_class,
+                "threshold_years": threshold,
+                "n_paired_replicates": 2,
+                "gamma_minus_truth_bias": bias,
+                "mae": abs(bias) + 0.01,
+                "rmse": abs(bias) + 0.02,
+            }
+            for threshold in (10_000, 50_000)
+            for genotype_class, bias in (
+                ("hom_alt", -0.03),
+                ("overall", -0.01),
+                ("hom_ref", 0.02),
+            )
+        ]
+    )
+    campaign_facts = {
+        "sample_diploids": 80,
+        "af_ceiling": 0.9,
+        "slim_scaling_factor": 5.0,
+        "slim_burn_in": 0.2,
+        "scaled_source_check_generations_ago": 2_270.0,
+        "scaled_introgression_pulse_generations_ago": 2_265.0,
+        "scaled_source_pulse_collision": False,
+        **_archaic_report_facts(),
+    }
+    return (
+        summary,
+        coverage,
+        acceptance,
+        pd.DataFrame(accuracy_rows),
+        threshold_accuracy,
+        campaign_facts,
+    )
+
+
+def test_run_results_markdown_is_golden_and_order_invariant():
+    summary, coverage, acceptance, accuracy, threshold_accuracy, facts = (
+        _report_fixture()
+    )
+    rendered = replicate._render_run_results_markdown(  # noqa: SLF001
+        summary,
+        coverage,
+        acceptance,
+        accuracy,
+        pd.DataFrame(),
+        threshold_accuracy,
+        facts,
+    )
+    shuffled = replicate._render_run_results_markdown(  # noqa: SLF001
+        summary,
+        coverage.sample(frac=1, random_state=4),
+        acceptance.sample(frac=1, random_state=5),
+        accuracy.sample(frac=1, random_state=6),
+        pd.DataFrame(),
+        threshold_accuracy.sample(frac=1, random_state=7),
+        facts,
+    )
+
+    assert rendered == shuffled
+    assert hashlib.sha256(rendered.encode("utf-8")).hexdigest() == (
+        "43136ea6f144956542c12a5ffb9e817a0fdb68c0b3bc6710905e93e2c07cf529"
+    )
+    assert "Headline: biological-cell-equal macro summary" in rendered
+    assert "Secondary: accepted-trajectory-weighted micro summary" in rendered
+    assert "AF≥10%" in rendered
+    assert "AF≥90%" in rendered
+    assert "No matched neutral/null trajectories were simulated" in rendered
+    assert "80-diploid Han panels" in rendered
+    assert "`[f, 0.9]`" in rendered
+    assert "`Q=5`, `slim_burn_in=0.2`" in rendered
+    assert "source check occurs at 2,270.0" in rendered
+    assert "pulse at 2,265.0" in rendered
+    assert "overall micro/trajectory-weighted" in rendered
+    assert "easier, higher-coverage cells contribute more heavily" in rendered
+    assert "`serialized_forward_event_contract`" in rendered
+    assert "`single archaic-specific de novo origin`" in rendered
+    assert "forbids recurrence" not in rendered
+
+
+def test_run_results_markdown_handles_empty_inputs_and_atomic_write_is_idempotent(
+    tmp_path,
+):
+    structural_zero_accuracy = pd.DataFrame(
+        [
+            {
+                "summary_scope": "overall_macro_cell_equal",
+                "metric": "alt_minus_ref_normalized_cdf_auc",
+                "n_paired_replicates": 0,
+                "n_biological_cells_meeting_minimum": 0,
+            },
+            {
+                "summary_scope": "overall_micro_trajectory_weighted",
+                "metric": "alt_minus_ref_normalized_cdf_auc",
+                "n_paired_replicates": 0,
+            },
+        ]
+    )
+    facts = {
+        "sample_diploids": 12,
+        "af_ceiling": 0.8,
+        "slim_scaling_factor": 1.0,
+        "slim_burn_in": 0.5,
+        "scaled_source_check_generations_ago": 2_273.0,
+        "scaled_introgression_pulse_generations_ago": 2_272.0,
+        "scaled_source_pulse_collision": False,
+        **_archaic_report_facts(),
+    }
+    rendered = replicate._render_run_results_markdown(  # noqa: SLF001
+        {
+            "requested_biological_cells": 1,
+            "requested_trajectories": 10,
+            "attempted_trajectories": 0,
+            "accepted_trajectories": 0,
+            "decoded_trajectories": 0,
+        },
+        pd.DataFrame(),
+        pd.DataFrame(),
+        structural_zero_accuracy,
+        pd.DataFrame(),
+        pd.DataFrame(),
+        facts,
+    )
+    assert "No biological-cell coverage rows were available" in rendered
+    assert "No trajectories satisfied the acceptance contract" in rendered
+    assert "No cell-equal macro estimate was available" in rendered
+    assert "No paired trajectory-level estimate was available" in rendered
+    assert "conditional recovery estimates were" not in rendered
+    assert "12-diploid Han panels" in rendered
+    assert "`[f, 0.8]`" in rendered
+    assert "`Q=1`, `slim_burn_in=0.5`" in rendered
+
+    path = tmp_path / "RUN_RESULTS.md"
+    replicate._atomic_text(path, rendered)  # noqa: SLF001
+    first = path.read_bytes()
+    replicate._atomic_text(path, rendered)  # noqa: SLF001
+    assert path.read_bytes() == first == rendered.encode("utf-8")
+    assert not list(tmp_path.glob("RUN_RESULTS.md.tmp.*"))
+
+
+def test_report_campaign_facts_are_derived_and_fail_closed(tmp_path):
+    runtime = StudyRuntime(
+        repo_root=str(tmp_path),
+        sample_diploids=24,
+        slim_scaling_factor=4.0,
+        slim_burn_in=0.25,
+    )
+    base = {
+        **_base("intro_s0p010_af10", 0.01, 0.1),
+        "upper_allele_frequency": 0.88,
+        "slim_scaled_source_check_generations_ago": 2_272.0,
+        "slim_scaled_pulse_generations_ago": 2_268.0,
+    }
+    facts = replicate._report_campaign_facts(  # noqa: SLF001
+        runtime, [base], _campaign_design()
+    )
+    assert facts == {
+        "sample_diploids": 24,
+        "af_ceiling": 0.88,
+        "slim_scaling_factor": 4.0,
+        "slim_burn_in": 0.25,
+        "scaled_source_check_generations_ago": 2_272.0,
+        "scaled_introgression_pulse_generations_ago": 2_268.0,
+        "scaled_source_pulse_collision": False,
+        **_archaic_report_facts(),
+    }
+    near_but_distinct = {
+        **base,
+        "slim_scaled_source_check_generations_ago": 2_270.01,
+        "slim_scaled_pulse_generations_ago": 2_270.0,
+    }
+    assert not replicate._report_campaign_facts(  # noqa: SLF001
+        runtime, [near_but_distinct], _campaign_design()
+    )["scaled_source_pulse_collision"]
+    disagreeing_base = {
+        **base,
+        "specification_id": "intro_s0p010_af20",
+        "slim_scaled_source_check_generations_ago": 2_272.01,
+    }
+    with pytest.raises(ValueError, match="disagree on scaled source-check time"):
+        replicate._report_campaign_facts(  # noqa: SLF001
+            runtime, [base, disagreeing_base], _campaign_design()
+        )
+
+    missing_time = {
+        key: value
+        for key, value in base.items()
+        if key != "slim_scaled_source_check_generations_ago"
+    }
+    with pytest.raises(ValueError, match="scaled source-check time"):
+        replicate._report_campaign_facts(  # noqa: SLF001
+            runtime, [missing_time], _campaign_design()
+        )
+    invalid_design = _campaign_design()
+    invalid_design["campaign_contract"]["acceptance"]["archaic_specific_no_ils"][
+        "han_entry_route"
+    ] = "ancestral_polymorphism"
+    with pytest.raises(ValueError, match="archaic/no-ILS contract"):
+        replicate._report_campaign_facts(  # noqa: SLF001
+            runtime, [base], invalid_design
+        )
+    with pytest.raises(ValueError, match="campaign facts are incomplete"):
+        replicate._render_run_results_markdown(  # noqa: SLF001
+            {},
+            pd.DataFrame(),
+            pd.DataFrame(),
+            pd.DataFrame(),
+            pd.DataFrame(),
+            pd.DataFrame(),
+            {},
+        )
+
+
 def test_replicate_specifications_reject_duplicate_indices_and_changed_biology():
     base = _base("intro_s0p010_af10", 0.01, 0.1)
     first = _expanded(base, 0)
@@ -128,6 +478,14 @@ def test_replicate_specifications_reject_duplicate_indices_and_changed_biology()
     changed = {**_expanded(base, 1), "selection_coefficient": 0.005}
     with pytest.raises(ValueError, match="changes biological field"):
         replicate._normalise_specifications([base], [changed])  # noqa: SLF001
+    changed_event_time = {
+        **_expanded(base, 1),
+        "slim_scaled_pulse_generations_ago": 2_269.0,
+    }
+    with pytest.raises(ValueError, match="changes biological field slim_scaled_pulse"):
+        replicate._normalise_specifications(  # noqa: SLF001
+            [base], [changed_event_time]
+        )
 
 
 def test_wilson_and_bootstrap_are_bounded_and_deterministic():
@@ -405,6 +763,10 @@ def test_empty_campaign_handles_all_nan_summaries_and_plots(tmp_path, monkeypatc
     base = _base("intro_s0p001_af90", 0.001, 0.9)
     record = _expanded(base, 0)
     campaign = tmp_path / "introgression_EAS_sim" / "empty_campaign"
+    campaign.mkdir(parents=True)
+    (campaign / "study_design.json").write_text(
+        json.dumps(_campaign_design()) + "\n", encoding="utf-8"
+    )
     monkeypatch.setattr(
         replicate,
         "_valid_recorded_simulation_cache",
@@ -441,7 +803,7 @@ def test_aggregate_introgression_replicates_writes_valid_outputs(tmp_path, monke
     campaign = tmp_path / "introgression_EAS_sim" / "replicate_study"
     campaign.mkdir(parents=True)
     (campaign / "study_design.json").write_text(
-        json.dumps({"schema": "test-plan"}) + "\n", encoding="utf-8"
+        json.dumps(_campaign_design()) + "\n", encoding="utf-8"
     )
     pd.DataFrame(records).to_csv(campaign / "specifications.tsv", sep="\t", index=False)
     for record in records[:2]:
@@ -573,6 +935,14 @@ def test_aggregate_introgression_replicates_writes_valid_outputs(tmp_path, monke
         "raw_truth_gamma_sign_agreement",
         "gamma_detected_given_truth_expected_sign",
     }.issubset(paired.columns)
+    threshold = pd.read_csv(artifacts["threshold_accuracy_tsv"], sep="\t")
+    overall_threshold = threshold[
+        threshold["summary_scope"] == "overall_micro_trajectory_weighted"
+    ]
+    assert not overall_threshold.empty
+    assert set(overall_threshold["aggregation_weighting"]) == {
+        "accepted_trajectory_equal_micro_across_biological_cells"
+    }
 
     summary = json.loads(
         Path(artifacts["replicate_results_summary_json"]).read_text(encoding="utf-8")
@@ -581,6 +951,20 @@ def test_aggregate_introgression_replicates_writes_valid_outputs(tmp_path, monke
     assert summary["accepted_trajectories"] == 2
     assert summary["decoded_trajectories"] == 1
     assert any("No neutral-null" in line for line in summary["interpretation"])
+    assert any(
+        "TMRCA-threshold accuracy" in line and "trajectory-weighted" in line
+        for line in summary["interpretation"]
+    )
+    report_path = Path(artifacts["run_results_markdown"])
+    assert report_path == campaign / "RUN_RESULTS.md"
+    report = report_path.read_text(encoding="utf-8")
+    assert "Headline: biological-cell-equal macro summary" in report
+    assert "Secondary: accepted-trajectory-weighted micro summary" in report
+    assert "No biological cell met the prespecified minimum" in report
+    assert "conditional recovery estimates were" not in report
+    assert "10-diploid Han panels" in report
+    assert "overall micro/trajectory-weighted estimand" in report
+    assert "This `RUN_RESULTS.md` file is itself checksum-covered" in report
 
     manifest = json.loads(
         Path(artifacts["replicate_results_manifest_json"]).read_text(encoding="utf-8")
@@ -600,6 +984,10 @@ def test_aggregate_introgression_replicates_writes_valid_outputs(tmp_path, monke
     assert len(provenance["validated_decode_completions"]) == 1
     assert provenance["decoder_sha256s"] == ["a" * 64]
     assert manifest["decoder_sha256s"] == ["a" * 64]
+    assert manifest["artifacts"]["run_results_markdown"] == {
+        "path": "RUN_RESULTS.md",
+        "sha256": hashlib.sha256(report_path.read_bytes()).hexdigest(),
+    }
     for record in manifest["artifacts"].values():
         path = campaign / record["path"]
         assert path.is_file()
