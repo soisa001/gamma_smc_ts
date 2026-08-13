@@ -1,0 +1,101 @@
+{
+  "adapter_schema": "gamma-smc.focused-selected-production-adapter/v2",
+  "authorization_artifacts": {
+    "eas_adapter": {
+      "path": "focused_selection_EAS_sim/calibration/eas_selected/eas_selected_calibration_frozen.adapter.json",
+      "sha256": "154805d197ff4f88be7ad0e24363fae5e9d9333de9c865fbf776267c71989adf",
+      "size_bytes": 2453
+    },
+    "eas_frozen": {
+      "path": "focused_selection_EAS_sim/calibration/eas_selected/eas_selected_calibration_frozen.json",
+      "sha256": "0b495ac0eb6604e43838fc9f3cde0e6fb065a3cffbbb9ab0870fee2c3aad2e73",
+      "size_bytes": 23792
+    }
+  },
+  "authorization_bindings": {
+    "adapter_payload_sha256": "939c7a9d61ee9bc95b2ce7eb8c2888d91c41740c66a1479ae7372d13bf2db358",
+    "cell_authorization_count": 6,
+    "continuous_selection_to_present": true,
+    "frozen_payload_sha256": "89c77e08ec7103432057d8c4d44f03184907b8f8d16434d6e3932c3142c9250a",
+    "production_units": 60,
+    "raw_calibration_completion_files_required": false,
+    "terminal_population_af_conditioning_in_slim": true
+  },
+  "execution_units": {
+    "neutral_cells": 6,
+    "neutral_replicates_per_cell": 100,
+    "neutral_units": 600,
+    "path": "focused_selection_EAS_sim/execution_units.tsv",
+    "selected_cells": 12,
+    "selected_replicates_per_cell": 10,
+    "selected_units": 120,
+    "sha256": "8ea5d2a930e755f5e588bd0a824c3ac03cd9d66ac252c8344d20099356ee07e9",
+    "size_bytes": 172024,
+    "total_units": 720
+  },
+  "implementation": {
+    "campaign_plan_modified": false,
+    "contract_paths": [
+      "python/gamma_smc_aou/.gitattributes",
+      "scripts/.gitattributes",
+      "pyproject.toml",
+      "uv.lock",
+      "python/gamma_smc_aou/focused_selection_simulation.py",
+      "python/gamma_smc_aou/eas_sweep_models.py",
+      "python/gamma_smc_aou/focused_selection_campaign.py",
+      "python/gamma_smc_aou/focused_han_direct_v3.py",
+      "python/gamma_smc_aou/focused_eas_selected_calibration.py",
+      "python/gamma_smc_aou/focused_eas_selected_audit_adapter.py",
+      "python/gamma_smc_aou/focused_selected_production.py",
+      "scripts/run_focused_selected_production.py",
+      "focused_selection_EAS_sim/calibration/focused_selected_production/integration_manifest.json"
+    ],
+    "han_executor_or_artifacts_modified": false,
+    "mode": "eas_selected_worker_process_local_patch",
+    "neutral_executor_modified": false,
+    "selected_objects_patch_only": true,
+    "source_sha256": {
+      "pyproject.toml": "002ba0c6b1840d65eb686677056df3c00d9820c037e3fc0a245e1275e9a2955a",
+      "python/gamma_smc_aou/.gitattributes": "3b9653aa38de61bc0517a81d48d20b8c008b6b3c936ac7de949bf1e0a08160b9",
+      "python/gamma_smc_aou/eas_sweep_models.py": "365854b146d4512b6443d8dc28abaae4e53d7ee0ad5403d03536e06e8b016ae6",
+      "python/gamma_smc_aou/focused_eas_selected_audit_adapter.py": "02da597528ed7e5716d7be1e3830c3a4435afb737cc9bb69010157f75eb8640b",
+      "python/gamma_smc_aou/focused_eas_selected_calibration.py": "34eebaf4e3293454e7552366a52996ffa217c8dae4d1ddddfc898709bfc3da70",
+      "python/gamma_smc_aou/focused_han_direct_v3.py": "4a471605fc5e95e993acc94902fd7d9514eedc74b786767e5d69e872245f1d00",
+      "python/gamma_smc_aou/focused_selected_production.py": "da759aeb8a84b78d2ad44201b33f1c2f32fb3e7f24df19c5f2f0c7b25c56eb84",
+      "python/gamma_smc_aou/focused_selection_campaign.py": "20d7a2123e1096bbb9cf4d84a9dff66e2060733152f9bdbcd307fdb7b3aead5e",
+      "python/gamma_smc_aou/focused_selection_simulation.py": "29b52d52adb76d2aa195fb0900baef829f92f1ed0b7b3edbff93cadce0f26448",
+      "scripts/.gitattributes": "43e4e5442a9a3117ecc24c01c5fa896e5e045e352ed2d2b4435d62887204ff0b",
+      "scripts/run_focused_selected_production.py": "40e6602310bbfbc7f62c000a49e511541c73d50aeccf0ee42b140acbe2b8c250",
+      "uv.lock": "4b6f0055c9f87e079945f2b05013fd1f25cc9490ae1413487efab480c12bb5c5"
+    }
+  },
+  "payload_sha256": "9079cc35a377e906522da356211053384ea03a06af730dfc1feed77cc15febf7",
+  "quarantine": {
+    "expected_preintegration_stale_eas_selected_directories": 24,
+    "han_directories_in_scope": false,
+    "moves_or_deletions_authorized": false,
+    "neutral_directories_in_scope": false,
+    "planning_only": true
+  },
+  "runtime": {
+    "candidate_pool_diploids": 500,
+    "cumulative_timeout_seconds": 122400.0,
+    "eas_max_draws": 68,
+    "per_draw_timeout_seconds": 1800.0,
+    "sample_diploids": 100,
+    "slim": {
+      "path": ".native-stdpopsim/bin/slim",
+      "sha256": "67409ff190808c2967c949cae6697bf235010dbe832389cb4976d9089b5f5e1d",
+      "size_bytes": 8030776
+    },
+    "slim_burn_in": 0.1,
+    "slim_scaling_factor": 5.0
+  },
+  "schema": "gamma-smc.focused-eas-selected-production/v2",
+  "scientific_contract": {
+    "eas": "Q5 de-novo origin; continuous selection to present; terminal population AF bounds retained in SLiM; external 500-diploid AF gate and exact-k N100 panel retained; exactly 60 production units",
+    "gamma_smc_statistics_used_for_calibration": false,
+    "han": "separate direct-production-v3 executor and authorization"
+  },
+  "status": "eas_ready"
+}
