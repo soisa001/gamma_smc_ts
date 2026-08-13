@@ -751,13 +751,14 @@ def test_effect_sign_plot_uses_compact_readable_cell_labels(tmp_path, monkeypatc
     rows = []
     for source in replicate._SOURCES:  # noqa: SLF001
         for metric in replicate._METRICS:  # noqa: SLF001
+            mean = 0.257 if "cdf" in metric else -32600.0
             rows.append(
                 {
                     "source": source,
                     "metric": metric,
                     "selection_coefficient": 0.005,
                     "target_allele_frequency": 0.5,
-                    "mean": 0.257,
+                    "mean": mean,
                     "expected_sign_count": 2,
                     "n_observed_replicates": 3,
                 }
@@ -775,7 +776,10 @@ def test_effect_sign_plot_uses_compact_readable_cell_labels(tmp_path, monkeypatc
     replicate._plot_effect_sign(pd.DataFrame(rows), tmp_path / "effect")  # noqa: SLF001
 
     assert all("\nΔ " in title for title in captured["titles"])
-    assert {text.get_text() for text in captured["labels"]} == {"0.257\n2/3"}
+    assert {text.get_text() for text in captured["labels"]} == {
+        "0.257\n2/3",
+        "-32.6k\n2/3",
+    }
     assert {text.get_fontsize() for text in captured["labels"]} == {8.0}
 
 

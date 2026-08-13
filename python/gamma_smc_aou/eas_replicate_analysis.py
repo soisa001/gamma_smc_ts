@@ -2612,15 +2612,25 @@ def _plot_effect_sign(summary: pd.DataFrame, stem: Path) -> dict[str, Path]:
                     else "Δ mean TMRCA (generations)"
                 )
                 source_label = "Tree truth" if source == "tree_truth" else "Gamma-SMC"
+
+                def cell_label(record: pd.Series) -> str:
+                    if pd.isna(record["mean"]):
+                        return "NA\n0/0"
+                    mean = float(record["mean"])
+                    if "cdf" in metric:
+                        value = f"{mean:.3g}"
+                    else:
+                        value = f"{mean / 1_000:.1f}k"
+                    return (
+                        f"{value}\n{int(record['expected_sign_count'])}/"
+                        f"{int(record['n_observed_replicates'])}"
+                    )
+
                 image = _heatmap(
                     ax,
                     selected,
                     "mean",
-                    lambda record: (
-                        "NA\n0/0"
-                        if pd.isna(record["mean"])
-                        else f"{record['mean']:.3g}\n{int(record['expected_sign_count'])}/{int(record['n_observed_replicates'])}"
-                    ),
+                    cell_label,
                     title=f"{source_label}\n{title_metric}",
                     cmap="RdBu_r",
                     vmin=-bound,
