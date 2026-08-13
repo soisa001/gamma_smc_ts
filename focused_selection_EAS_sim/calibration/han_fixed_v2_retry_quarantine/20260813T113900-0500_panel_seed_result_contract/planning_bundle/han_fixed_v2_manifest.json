@@ -254,7 +254,7 @@
     "python/gamma_smc_aou/eas_sweep_analysis.py": "e8f30519c986416daf4d4bb825aef459d226b8ade90606286d96bed603d4abe6",
     "python/gamma_smc_aou/eas_sweep_models.py": "365854b146d4512b6443d8dc28abaae4e53d7ee0ad5403d03536e06e8b016ae6",
     "python/gamma_smc_aou/eas_sweep_study.py": "caab1f7d682d5d70b39fd39196330bb2aff025b6a974f23d8b1f31b2157e7530",
-    "python/gamma_smc_aou/focused_han_fixed_v2_calibration.py": "dfa1abc5887b6ecbd1aa3c9a698bc9db16d3e9aebbb7edb0981584ccfc909c18",
+    "python/gamma_smc_aou/focused_han_fixed_v2_calibration.py": "4e22ea53ecaadad213c7e666d1f6ce8f494764e4fc5d1ecaca5d314521e4f5ad",
     "python/gamma_smc_aou/focused_selection_calibration.py": "96fcb4fb93403204e6a635eff912d70c77c1b2ab3ee6588a5bf5e2b4684dc403",
     "python/gamma_smc_aou/focused_selection_simulation.py": "29b52d52adb76d2aa195fb0900baef829f92f1ed0b7b3edbff93cadce0f26448",
     "scripts/calibrate_han_fixed_v2.py": "da1c97ac049e1ef514c3b726c0ea1dae05cb4bb8f589e3eca9963cc0162c27bc",
@@ -347,49 +347,6 @@
     "production_seed_digest": "3b09e1588bc1524945c664b150b346bfb1055e8191c0c51d782a24abed812ca3",
     "sha256": "8ea5d2a930e755f5e588bd0a824c3ac03cd9d66ac252c8344d20099356ee07e9"
   },
-  "retry_provenance": [
-    {
-      "inference_use": false,
-      "inventory_path": "focused_selection_EAS_sim/calibration/han_fixed_v2_retry_quarantine/20260813T113900-0500_panel_seed_result_contract/quarantine_inventory.json",
-      "inventory_sha256": "0b834b9547003551218d1a84ef10c7efe89c22f931ad97eafecd852cd9720d64",
-      "quarantine_id": "20260813T113900-0500_panel_seed_result_contract",
-      "reason_code": "null_unused_panel_seed_validator_contract_mismatch",
-      "replacement": {
-        "changed_implementation_sources": [
-          "python/gamma_smc_aou/focused_han_fixed_v2_calibration.py"
-        ],
-        "draw_schema": "gamma-smc.han-fixed-cessation-v2-draw/v2",
-        "implementation_source_path": "python/gamma_smc_aou/focused_han_fixed_v2_calibration.py",
-        "implementation_source_sha256": "dfa1abc5887b6ecbd1aa3c9a698bc9db16d3e9aebbb7edb0981584ccfc909c18",
-        "manifest_schema": "gamma-smc.han-fixed-cessation-v2-manifest/v2",
-        "same_seed_plan_required": true
-      },
-      "schema": "gamma-smc.han-fixed-cessation-v2-retry-quarantine/v1",
-      "status": "bound_noninferential_retry_provenance",
-      "superseded": {
-        "all_phase_plan_path": "focused_selection_EAS_sim/calibration/han_fixed_v2_retry_quarantine/20260813T113900-0500_panel_seed_result_contract/planning_bundle/han_fixed_v2_all_phase_plan.tsv",
-        "all_phase_plan_sha256": "d5891b622fdeb5153deb6ea3d7d19b58a14836bf64a504b71f74b6a4f14c5e7c",
-        "manifest_path": "focused_selection_EAS_sim/calibration/han_fixed_v2_retry_quarantine/20260813T113900-0500_panel_seed_result_contract/planning_bundle/han_fixed_v2_manifest.json",
-        "manifest_schema": "gamma-smc.han-fixed-cessation-v2-manifest/v1",
-        "manifest_sha256": "043cfee3de2d297ac044a6138a8ae76dd745149e19e9ae1c73a1e1e9fbb2a145",
-        "panel_seed_sha256": "1642b1b4f87d1031722df1871113cf11a7919e80bfee5ba88d5ef98d14a7ff9c",
-        "rng_union_sha256": "4d8f15a7ff8e62196e32cd41c2002045fcb02259d04c80f34ed6d7c6c6dd5a53",
-        "rows": 720,
-        "simulation_seed_sha256": "c820bba6fcd494ee835c374280db1505e2d1d79bcdf54cfb40affb59f763d09c"
-      },
-      "work_evidence": {
-        "failure_records": 8,
-        "hits_with_reserved_panel_seed": 4,
-        "nonhits_with_null_unused_panel_seed": 14,
-        "partial_directories": 8,
-        "sigterm_failure_records": 8,
-        "started_directories": 34,
-        "valid_completions": 18,
-        "validated_hits": 4,
-        "validated_nonhits": 14
-      }
-    }
-  ],
   "rows": [
     {
       "candidate_pool_diploids": 500,
@@ -19848,7 +19805,7 @@
     "stdpopsim": "0.3.0",
     "tskit": "1.0.3"
   },
-  "schema": "gamma-smc.han-fixed-cessation-v2-manifest/v2",
+  "schema": "gamma-smc.han-fixed-cessation-v2-manifest/v1",
   "scientific_caveats": [
     "The six endpoints were selected after inspecting the exploratory screen; only fresh confirmation and sensitivity draws validate them.",
     "Recipient nonloss and final AF/panel ascertainment condition on successful introgression and endpoint attainment.",
@@ -19915,9 +19872,9 @@
       "sha256": "caab1f7d682d5d70b39fd39196330bb2aff025b6a974f23d8b1f31b2157e7530"
     },
     "python/gamma_smc_aou/focused_han_fixed_v2_calibration.py": {
-      "bytes": 170210,
-      "path": "python__gamma_smc_aou__focused_han_fixed_v2_calibration.py.sha256_dfa1abc5887b6ecbd1aa3c9a698bc9db16d3e9aebbb7edb0981584ccfc909c18",
-      "sha256": "dfa1abc5887b6ecbd1aa3c9a698bc9db16d3e9aebbb7edb0981584ccfc909c18"
+      "bytes": 147941,
+      "path": "python__gamma_smc_aou__focused_han_fixed_v2_calibration.py.sha256_4e22ea53ecaadad213c7e666d1f6ce8f494764e4fc5d1ecaca5d314521e4f5ad",
+      "sha256": "4e22ea53ecaadad213c7e666d1f6ce8f494764e4fc5d1ecaca5d314521e4f5ad"
     },
     "python/gamma_smc_aou/focused_selection_calibration.py": {
       "bytes": 144118,
@@ -19940,6 +19897,6 @@
       "sha256": "4b6f0055c9f87e079945f2b05013fd1f25cc9490ae1413487efab480c12bb5c5"
     }
   },
-  "source_snapshots_sha256": "d842d17cbe50a2e572d0cf0b168384b0821ecd36d6d8da96ebc03d3846858255",
+  "source_snapshots_sha256": "9d4da3f2ea85a1e8cabf47b4a88e32e5c1e1889fdeb27877fddb1d79d0103747",
   "status": "planned"
 }

@@ -242,6 +242,7 @@ def test_manifest_atomically_reserves_fresh_explicit_sim_and_panel_seeds(
     assert len(all_rng) == 1440
     assert all_rng.is_unique
     assert manifest["seed_registry"]["fixed_v2_union_count"] == 1440
+    assert manifest["retry_provenance"] == []
     assert manifest["inference_contract"] == {
         "endpoint_rule_prespecified_before_exploratory_screen": False,
         "endpoint_rule_changed_after_exploratory_screen": True,
@@ -583,6 +584,56 @@ def test_draw_contract_binds_explicit_rng_and_fresh_validation_only():
     assert contract["processing"]["stdpopsim_recapitation_applied"] is True
 
 
+def _unused_panel_nonhit_result(row):
+    return {
+        **row,
+        "evaluable": True,
+        "hit": False,
+        **calibration._empty_panel_result(),
+    }
+
+
+def test_result_row_accepts_reserved_but_unused_panel_seed_as_null():
+    row = _row("confirmation")
+    result = _unused_panel_nonhit_result(row)
+    assert result["panel_seed"] is None
+    calibration._validate_result_row(result, row)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("hit", True),
+        ("panel_roundtrip_validated", True),
+        ("panel_tree_path", "accepted_panel.trees"),
+        ("panel_tree_sha256", "a" * 64),
+        ("panel_manifest_path", "accepted_panel_manifest.tsv"),
+        ("panel_manifest_sha256", "b" * 64),
+        ("panel_record_json", "{}"),
+        ("panel_identity_json", "{}"),
+        ("panel_alt_count", 20),
+        ("panel_af", 0.1),
+        ("panel_hom_ref", 80),
+        ("panel_heterozygous", 20),
+        ("panel_hom_alt", 0),
+    ],
+)
+def test_null_result_panel_seed_requires_nonhit_and_no_panel_use(field, value):
+    row = _row("confirmation")
+    result = _unused_panel_nonhit_result(row)
+    result[field] = value
+    with pytest.raises(ValueError, match="null result panel seed"):
+        calibration._validate_result_row(result, row)
+
+
+def test_result_row_rejects_an_integer_panel_seed_other_than_reservation():
+    row = _row("confirmation")
+    result = {**row, "evaluable": True, "hit": False}
+    result["panel_seed"] += 1
+    with pytest.raises(ValueError, match="manifest row"):
+        calibration._validate_result_row(result, row)
+
+
 def test_default_exclusions_cover_production_fixed_fallback_and_eas_streams():
     root = Path(__file__).resolve().parents[1]
     campaign = root / "focused_selection_EAS_sim"
@@ -644,8 +695,100 @@ def test_default_exclusions_ignore_own_published_projection_on_plan_rerun(tmp_pa
     own = (
         campaign / "calibration/han_fixed_cessation_v2/han_fixed_v2_all_phase_plan.tsv"
     ).resolve()
+    quarantined = (
+        campaign
+        / "calibration/han_fixed_v2_retry_quarantine/20260813T000000-0500_test/"
+        "planning_bundle/han_fixed_v2_all_phase_plan.tsv"
+    )
+    quarantined.parent.mkdir(parents=True)
+    pd.DataFrame({"seed": [2]}).to_csv(quarantined, sep="\t", index=False)
     assert own not in paths
+    assert quarantined.resolve() not in calibration._default_seed_exclusion_paths(
+        campaign
+    )
     assert len(paths) == 9
+
+
+def test_retry_provenance_binding_checks_every_payload_byte(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    quarantine = (
+        root
+        / calibration.DEFAULT_RETRY_QUARANTINE_RELATIVE_PATH
+        / "20260813T000000-0500_test"
+    )
+    quarantine.mkdir(parents=True)
+    payload = quarantine / "planning_bundle/old.txt"
+    payload.parent.mkdir()
+    payload.write_text("old evidence\n", encoding="utf-8")
+    payload_records = [
+        {
+            "path": payload.relative_to(root).as_posix(),
+            "bytes": payload.stat().st_size,
+            "sha256": sha256_file(payload),
+        }
+    ]
+    checksums = quarantine / "payload_checksums.tsv"
+    pd.DataFrame(payload_records).to_csv(checksums, sep="\t", index=False)
+    current_source_sha256 = "a" * 64
+    monkeypatch.setattr(
+        calibration,
+        "_implementation_sources",
+        lambda _root: {
+            calibration.FIXED_V2_IMPLEMENTATION_RELATIVE_PATH: (current_source_sha256)
+        },
+    )
+    reason = {
+        "schema": calibration.RETRY_QUARANTINE_REASON_SCHEMA,
+        "status": "quarantined_noninferential",
+        "inference_use": False,
+        "reason_code": "null_unused_panel_seed_validator_contract_mismatch",
+        "retry_reuses_identical_planned_simulation_and_panel_seeds": True,
+        "endpoint_or_simulation_design_changed": False,
+        "old_results_used_to_change_endpoints": False,
+    }
+    reason_path = quarantine / "quarantine_reason.json"
+    reason_path.write_text(json.dumps(reason), encoding="utf-8")
+    inventory = {
+        "schema": calibration.RETRY_QUARANTINE_INVENTORY_SCHEMA,
+        "status": "canonical_noninferential_retry_provenance",
+        "inference_use": False,
+        "quarantine_id": quarantine.name,
+        "quarantine_path": quarantine.relative_to(root).as_posix(),
+        "reason": {
+            "path": reason_path.relative_to(root).as_posix(),
+            "sha256": sha256_file(reason_path),
+            "reason_code": reason["reason_code"],
+        },
+        "payload_checksums": {
+            "path": checksums.relative_to(root).as_posix(),
+            "sha256": sha256_file(checksums),
+            "rows": 1,
+            "total_bytes": payload.stat().st_size,
+            "payload_tree_sha256": calibration._canonical_sha256(payload_records),
+        },
+        "superseded": {"manifest_sha256": "b" * 64},
+        "replacement": {
+            "manifest_schema": calibration.MANIFEST_SCHEMA,
+            "draw_schema": calibration.DRAW_SCHEMA,
+            "implementation_source_path": (
+                calibration.FIXED_V2_IMPLEMENTATION_RELATIVE_PATH
+            ),
+            "implementation_source_sha256": current_source_sha256,
+            "changed_implementation_sources": [
+                calibration.FIXED_V2_IMPLEMENTATION_RELATIVE_PATH
+            ],
+            "same_seed_plan_required": True,
+        },
+        "work_evidence": {"valid_completions": 1},
+    }
+    inventory_path = quarantine / "quarantine_inventory.json"
+    inventory_path.write_text(json.dumps(inventory), encoding="utf-8")
+    binding = calibration._bind_retry_provenance([inventory_path], root)
+    assert binding[0]["inventory_sha256"] == sha256_file(inventory_path)
+    assert binding[0]["inference_use"] is False
+    payload.write_text("tampered\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="retry payload differs"):
+        calibration._bind_retry_provenance([inventory_path], root)
 
 
 def test_finalize_is_idempotent_and_existing_production_loader_compatible(
