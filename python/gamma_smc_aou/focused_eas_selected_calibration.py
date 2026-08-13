@@ -82,10 +82,10 @@ from .focused_selection_simulation import (
     validate_selected_focal_identity,
 )
 
-SCHEMA_VERSION = "gamma-smc.eas-selected-calibration/v1"
-PLAN_MANIFEST_SCHEMA = "gamma-smc.eas-selected-calibration-plan/v1"
-FROZEN_SCHEMA_VERSION = "gamma-smc.eas-selected-production-authorization/v1"
-DRAW_CONTRACT_SCHEMA = "gamma-smc.eas-selected-calibration-draw/v1"
+SCHEMA_VERSION = "gamma-smc.eas-selected-calibration/v2"
+PLAN_MANIFEST_SCHEMA = "gamma-smc.eas-selected-calibration-plan/v2"
+FROZEN_SCHEMA_VERSION = "gamma-smc.eas-selected-production-authorization/v2"
+DRAW_CONTRACT_SCHEMA = "gamma-smc.eas-selected-calibration-draw/v2"
 
 PHASE_SCREEN = "screen20"
 PHASE_CONFIRM = "confirm100"
@@ -120,6 +120,17 @@ IMPLEMENTATION_SOURCE_PATHS = (
     "python/gamma_smc_aou/eas_sweep_analysis.py",
     "python/gamma_smc_aou/eas_sweep_study.py",
 )
+HAN_SEED_PLAN_FILENAMES = (
+    "han_selection_end_plan.tsv",
+    "han_selection_end_reconciliation_plan.tsv",
+    "han_selection_end_extension_plan.tsv",
+    "han_frequency_conditioned_all_phase_plan.tsv",
+)
+HAN_FALLBACK_PLAN_FILENAME = "han_frequency_conditioned_all_phase_plan.tsv"
+HAN_FALLBACK_MANIFEST_RELATIVE_PATH = (
+    "calibration/han_frequency_conditioned/han_frequency_conditioned_manifest.json"
+)
+HAN_FALLBACK_MANIFEST_SCHEMA = "gamma-smc.han-frequency-conditioned-manifest/v1"
 PRODUCTION_INTEGRATION_MUTABLE_SOURCE_PATHS = (
     "python/gamma_smc_aou/focused_selection_simulation.py",
 )
@@ -137,6 +148,7 @@ PLAN_COLUMNS = (
     "exact_sample_alt_count",
     "draw_index",
     "seed",
+    "panel_seed",
     "slim_scaling_factor",
     "slim_burn_in",
     "sequence_length_bp",
@@ -332,7 +344,12 @@ def seed_reservation_record(
 
 
 def collect_seed_reservations(campaign_dir: str | Path) -> dict[str, list[int]]:
-    """Collect production and existing Han calibration seeds from TSV artifacts."""
+    """Collect production and all fixed/fallback Han plan RNG streams.
+
+    The named Han plan projections are required so an EAS plan cannot be
+    generated before every intended Han simulation and panel stream has been
+    atomically published. Result/ledger TSVs are deliberately ignored.
+    """
 
     campaign = Path(campaign_dir).resolve()
     units_path = campaign / "execution_units.tsv"
@@ -343,10 +360,66 @@ def collect_seed_reservations(campaign_dir: str | Path) -> dict[str, list[int]]:
         raise ValueError("execution-unit table has no seed column")
     production = [int(value) for value in units["seed"]]
     han: list[int] = []
-    for path in sorted((campaign / "calibration").glob("han*.tsv")):
+    calibration_dir = campaign / "calibration"
+    for name in HAN_SEED_PLAN_FILENAMES:
+        path = calibration_dir / name
+        if not path.is_file():
+            raise ValueError(f"required Han calibration seed plan is absent: {path}")
         frame = pd.read_csv(path, sep="\t")
-        if "seed" in frame:
-            han.extend(int(value) for value in frame["seed"].dropna())
+        if "seed" not in frame:
+            raise ValueError(
+                f"Han calibration plan has no simulation seed column: {path}"
+            )
+        if name == HAN_FALLBACK_PLAN_FILENAME and "panel_seed" not in frame:
+            raise ValueError(f"Han fallback plan has no panel seed column: {path}")
+        if name == HAN_FALLBACK_PLAN_FILENAME:
+            manifest_path = campaign / HAN_FALLBACK_MANIFEST_RELATIVE_PATH
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as error:
+                raise ValueError(
+                    "authoritative Han fallback manifest is absent or unreadable"
+                ) from error
+            reservation = manifest.get("all_phase_seed_reservation")
+            if (
+                manifest.get("schema") != HAN_FALLBACK_MANIFEST_SCHEMA
+                or manifest.get("status") != "planned"
+                or not isinstance(reservation, Mapping)
+            ):
+                raise ValueError("authoritative Han fallback manifest is incompatible")
+            relative_path = Path(str(reservation.get("path", "")))
+            if relative_path.is_absolute():
+                raise ValueError("Han fallback reservation path must be repo-relative")
+            bound_path = (campaign.parent / relative_path).resolve()
+            if (
+                bound_path != path.resolve()
+                or sha256_file(path) != str(reservation.get("sha256", ""))
+                or int(reservation.get("rows", -1)) != len(frame)
+                or reservation.get("simulation_seed_column") != "seed"
+                or reservation.get("panel_seed_column") != "panel_seed"
+                or reservation.get(
+                    "authoritative_only_when_manifest_exists_and_binds_this_sha256"
+                )
+                is not True
+            ):
+                raise ValueError(
+                    "Han fallback all-phase plan is not bound by its authoritative manifest"
+                )
+            if str(reservation.get("simulation_seed_sha256", "")) != _seed_digest(
+                frame["seed"]
+            ) or str(reservation.get("panel_seed_sha256", "")) != _seed_digest(
+                frame["panel_seed"]
+            ):
+                raise ValueError("Han fallback seed-stream digests differ")
+        for column in ("seed", "panel_seed"):
+            if column not in frame:
+                continue
+            numeric = pd.to_numeric(frame[column], errors="raise").dropna()
+            if not np.all(numeric.to_numpy(dtype=float) == np.floor(numeric)):
+                raise ValueError(
+                    f"Han calibration {column} values are not integers: {path}"
+                )
+            han.extend(int(value) for value in numeric)
     if not han:
         raise ValueError(
             "no Han calibration seed table is available; exact cross-phase "
@@ -590,7 +663,7 @@ def build_calibration_plans(
     cells = _cell_contracts(design, root)
     slim_digest = sha256_file(slim)
     plans: dict[str, pd.DataFrame] = {}
-    all_seeds: set[int] = set()
+    all_stream_seeds: set[int] = set()
     for phase in PHASE_ORDER:
         rows: list[dict[str, Any]] = []
         for coefficient in design.selection_coefficients:
@@ -604,15 +677,26 @@ def build_calibration_plans(
                     )
                     seed = _stable_seed(
                         int(design.base_seed),
-                        f"{SCHEMA_VERSION}:{identity}",
+                        f"{SCHEMA_VERSION}:{identity}:simulation",
                     )
-                    if seed in forbidden:
-                        raise ValueError(
-                            f"EAS calibration seed collides with a reserved seed: {seed}"
-                        )
-                    if seed in all_seeds:
-                        raise ValueError(f"EAS calibration seed is duplicated: {seed}")
-                    all_seeds.add(seed)
+                    panel_seed = _stable_seed(
+                        int(design.base_seed),
+                        f"{SCHEMA_VERSION}:{identity}:panel",
+                    )
+                    for stream, value in (
+                        ("simulation", seed),
+                        ("panel", panel_seed),
+                    ):
+                        if value in forbidden:
+                            raise ValueError(
+                                f"EAS calibration {stream} seed collides with a "
+                                f"reserved seed: {value}"
+                            )
+                        if value in all_stream_seeds:
+                            raise ValueError(
+                                f"EAS calibration {stream} seed is duplicated: {value}"
+                            )
+                        all_stream_seeds.add(value)
                     sequence_length = (
                         SEQUENCE_LENGTH_BP
                         if phase == PHASE_SENSITIVITY
@@ -641,6 +725,7 @@ def build_calibration_plans(
                             ),
                             "draw_index": int(draw_index),
                             "seed": int(seed),
+                            "panel_seed": int(panel_seed),
                             "slim_scaling_factor": float(design.slim_scaling_factor),
                             "slim_burn_in": float(design.slim_burn_in),
                             "sequence_length_bp": int(sequence_length),
@@ -688,10 +773,13 @@ def build_calibration_plans(
             "tskit": tskit.__version__,
         },
         "seed_reservations_at_plan_time": reservation_record,
-        "seed_derivation": (
-            "sha256(base_seed:gamma-smc.eas-selected-calibration/v1:identity), "
-            "mapped to 1..2^31-2"
-        ),
+        "seed_derivation": {
+            "algorithm": "sha256 label mapped to 1..2^31-2",
+            "simulation_label": f"{SCHEMA_VERSION}:identity:simulation",
+            "panel_label": f"{SCHEMA_VERSION}:identity:panel",
+            "streams_per_draw": 2,
+            "all_streams_reserved_at_plan_time": True,
+        },
         "plans": {
             phase: {
                 "rows": len(frame),
@@ -717,8 +805,21 @@ def _validate_phase_plan(plan: pd.DataFrame, phase: str) -> None:
     expected_rows = 6 * PHASE_DRAWS[phase]
     if len(plan) != expected_rows:
         raise ValueError(f"{phase} requires exactly {expected_rows} draws")
-    if plan["calibration_id"].duplicated().any() or plan["seed"].duplicated().any():
-        raise ValueError(f"{phase} plan contains duplicate IDs or seeds")
+    if (
+        plan["calibration_id"].duplicated().any()
+        or plan["seed"].duplicated().any()
+        or plan["panel_seed"].duplicated().any()
+    ):
+        raise ValueError(f"{phase} plan contains duplicate IDs or RNG seeds")
+    simulation_seeds = {int(value) for value in plan["seed"]}
+    panel_seeds = {int(value) for value in plan["panel_seed"]}
+    if simulation_seeds.intersection(panel_seeds):
+        raise ValueError(f"{phase} simulation and panel RNG streams overlap")
+    if any(
+        value <= 0 or value >= 2**31 - 1
+        for value in simulation_seeds.union(panel_seeds)
+    ):
+        raise ValueError(f"{phase} contains an RNG seed outside the SLiM range")
     if set(plan["phase"].astype(str)) != {phase}:
         raise ValueError(f"{phase} plan contains another phase")
     if set(plan["processing_mode"].astype(str)) != {PHASE_MODES[phase]}:
@@ -787,7 +888,7 @@ def read_plan_bundle(
     ) != PLAN_MANIFEST_SCHEMA or expected_hash != _canonical_sha256(unhashed):
         raise ValueError("EAS calibration plan manifest is incompatible or corrupt")
     plans: dict[str, pd.DataFrame] = {}
-    all_seeds: set[int] = set()
+    all_stream_seeds: set[int] = set()
     for phase in PHASE_ORDER:
         entry = manifest["plans"][phase]
         path = output / str(entry["path"])
@@ -798,10 +899,12 @@ def read_plan_bundle(
         content_hash = _canonical_sha256(plan.to_dict(orient="records"))
         if content_hash != str(entry["content_sha256"]):
             raise ValueError(f"{phase} plan content binding differs")
-        seeds = {int(value) for value in plan["seed"]}
-        if seeds.intersection(all_seeds):
-            raise ValueError("EAS calibration phase seed streams overlap")
-        all_seeds.update(seeds)
+        seeds = {
+            int(value) for column in ("seed", "panel_seed") for value in plan[column]
+        }
+        if seeds.intersection(all_stream_seeds):
+            raise ValueError("EAS calibration phase RNG streams overlap")
+        all_stream_seeds.update(seeds)
         plans[phase] = plan
     return plans, manifest
 
@@ -889,9 +992,13 @@ def validate_seed_disjointness(
         *({int(value) for value in values} for values in reservations.values())
     )
     observed: set[int] = set()
+    simulation: set[int] = set()
+    panel: set[int] = set()
     for phase in PHASE_ORDER:
         _validate_phase_plan(plans[phase], phase)
-        seeds = {int(value) for value in plans[phase]["seed"]}
+        phase_simulation = {int(value) for value in plans[phase]["seed"]}
+        phase_panel = {int(value) for value in plans[phase]["panel_seed"]}
+        seeds = phase_simulation.union(phase_panel)
         overlap = seeds.intersection(forbidden)
         if overlap:
             preview = ", ".join(str(value) for value in sorted(overlap)[:3])
@@ -901,10 +1008,16 @@ def validate_seed_disjointness(
         if seeds.intersection(observed):
             raise ValueError("EAS calibration phases have overlapping seeds")
         observed.update(seeds)
+        simulation.update(phase_simulation)
+        panel.update(phase_panel)
     return {
         **reservation_record,
         "eas_calibration_n_unique": len(observed),
         "eas_calibration_sha256": _seed_digest(list(observed)),
+        "eas_simulation_n_unique": len(simulation),
+        "eas_simulation_sha256": _seed_digest(list(simulation)),
+        "eas_panel_n_unique": len(panel),
+        "eas_panel_sha256": _seed_digest(list(panel)),
         "disjoint": True,
     }
 
@@ -1216,14 +1329,11 @@ def _run_draw(task: Mapping[str, Any]) -> dict[str, Any]:
             panel_tree_hash = ""
             panel_manifest_hash = ""
             if phase == PHASE_SENSITIVITY and hit:
-                panel_seed = _stable_seed(
-                    int(row["seed"]), "eas-selected-calibration-panel"
-                )
                 panel_ts, _ = select_exact_sample_panel(
                     ts,
                     sample_diploids=int(row["sample_diploids"]),
                     exact_alt_count=int(row["exact_sample_alt_count"]),
-                    seed=panel_seed,
+                    seed=int(row["panel_seed"]),
                 )
                 validate_selected_focal_identity(panel_ts, expectation)
                 panel_table = build_diploid_pair_table(panel_ts, FOCAL_POSITION_BP)

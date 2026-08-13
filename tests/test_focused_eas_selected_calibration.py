@@ -93,18 +93,29 @@ def test_plans_have_exact_three_phase_grid_and_disjoint_seeds(planned_bundle):
         calibration.PHASE_CONFIRM: 600,
         calibration.PHASE_SENSITIVITY: 120,
     }
-    all_seeds = []
+    all_simulation_seeds = []
+    all_panel_seeds = []
     for phase in calibration.PHASE_ORDER:
         plan = plans[phase]
         assert plan["seed"].is_unique
+        assert plan["panel_seed"].is_unique
+        assert set(plan["seed"]).isdisjoint(set(plan["panel_seed"]))
         assert set(
             plan.groupby(["selection_coefficient", "target_allele_frequency"]).size()
         ) == {calibration.PHASE_DRAWS[phase]}
-        all_seeds.extend(int(value) for value in plan["seed"])
-    assert len(all_seeds) == len(set(all_seeds)) == 840
+        all_simulation_seeds.extend(int(value) for value in plan["seed"])
+        all_panel_seeds.extend(int(value) for value in plan["panel_seed"])
+    all_seeds = all_simulation_seeds + all_panel_seeds
+    assert len(all_simulation_seeds) == len(set(all_simulation_seeds)) == 840
+    assert len(all_panel_seeds) == len(set(all_panel_seeds)) == 840
+    assert len(all_seeds) == len(set(all_seeds)) == 1680
     assert set(all_seeds).isdisjoint(
         set(reservations["production"]) | set(reservations["han"])
     )
+    audit = calibration.validate_seed_disjointness(plans, reservations)
+    assert audit["eas_calibration_n_unique"] == 1680
+    assert audit["eas_simulation_n_unique"] == 840
+    assert audit["eas_panel_n_unique"] == 840
     assert len(manifest["cells"]) == 6
     assert {
         key: value["origin_age_generations"] for key, value in manifest["cells"].items()
@@ -161,6 +172,140 @@ def test_seed_collision_with_later_han_phase_is_rejected(planned_bundle):
     collided["han"].append(int(plans[calibration.PHASE_CONFIRM]["seed"].iloc[0]))
     with pytest.raises(ValueError, match="collides"):
         calibration.validate_seed_disjointness(plans, collided)
+
+
+def test_panel_seed_collision_with_later_han_phase_is_rejected(planned_bundle):
+    *_, reservations, plans, _ = planned_bundle
+    collided = {key: list(value) for key, value in reservations.items()}
+    collided["han"].append(int(plans[calibration.PHASE_CONFIRM]["panel_seed"].iloc[0]))
+    with pytest.raises(ValueError, match="collides"):
+        calibration.validate_seed_disjointness(plans, collided)
+
+
+def test_collect_seed_reservations_requires_and_reads_all_han_plan_streams(tmp_path):
+    campaign = tmp_path / "focused_selection_EAS_sim"
+    calibration_dir = campaign / "calibration"
+    calibration_dir.mkdir(parents=True)
+    _production_units().to_csv(
+        campaign / "execution_units.tsv", sep="\t", index=False, lineterminator="\n"
+    )
+    expected_han = []
+    next_seed = 2_000_000
+    fallback_frame = None
+    fallback_path = None
+    for name in calibration.HAN_SEED_PLAN_FILENAMES:
+        frame = pd.DataFrame({"seed": [next_seed, next_seed + 1]})
+        expected_han.extend([next_seed, next_seed + 1])
+        next_seed += 2
+        if name == "han_frequency_conditioned_all_phase_plan.tsv":
+            frame["panel_seed"] = [next_seed, next_seed + 1]
+            expected_han.extend([next_seed, next_seed + 1])
+            next_seed += 2
+        frame.to_csv(calibration_dir / name, sep="\t", index=False, lineterminator="\n")
+        if name == calibration.HAN_FALLBACK_PLAN_FILENAME:
+            fallback_frame = frame
+            fallback_path = calibration_dir / name
+    # A result ledger is not a seed reservation source.
+    pd.DataFrame({"seed": [9_999_999], "panel_seed": [9_999_998]}).to_csv(
+        calibration_dir / "han_frequency_conditioned_draws.tsv",
+        sep="\t",
+        index=False,
+        lineterminator="\n",
+    )
+    with pytest.raises(ValueError, match="authoritative Han fallback manifest"):
+        calibration.collect_seed_reservations(campaign)
+    assert fallback_frame is not None and fallback_path is not None
+    manifest_path = campaign / calibration.HAN_FALLBACK_MANIFEST_RELATIVE_PATH
+    manifest_path.parent.mkdir(parents=True)
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "schema": calibration.HAN_FALLBACK_MANIFEST_SCHEMA,
+                "status": "planned",
+                "all_phase_seed_reservation": {
+                    "path": fallback_path.relative_to(campaign.parent).as_posix(),
+                    "sha256": calibration.sha256_file(fallback_path),
+                    "rows": len(fallback_frame),
+                    "simulation_seed_column": "seed",
+                    "simulation_seed_sha256": calibration._seed_digest(
+                        fallback_frame["seed"]
+                    ),
+                    "panel_seed_column": "panel_seed",
+                    "panel_seed_sha256": calibration._seed_digest(
+                        fallback_frame["panel_seed"]
+                    ),
+                    "authoritative_only_when_manifest_exists_and_binds_this_sha256": (
+                        True
+                    ),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    reservations = calibration.collect_seed_reservations(campaign)
+    assert reservations["production"] == _production_units()["seed"].tolist()
+    assert reservations["han"] == expected_han
+    assert 9_999_999 not in reservations["han"]
+
+    (calibration_dir / calibration.HAN_SEED_PLAN_FILENAMES[-1]).unlink()
+    with pytest.raises(
+        ValueError, match="required Han calibration seed plan is absent"
+    ):
+        calibration.collect_seed_reservations(campaign)
+
+    fallback = calibration_dir / calibration.HAN_SEED_PLAN_FILENAMES[-1]
+    pd.DataFrame({"seed": [next_seed]}).to_csv(
+        fallback, sep="\t", index=False, lineterminator="\n"
+    )
+    with pytest.raises(ValueError, match="fallback plan has no panel seed column"):
+        calibration.collect_seed_reservations(campaign)
+
+
+def test_collect_seed_reservations_rejects_fallback_projection_tampering(tmp_path):
+    campaign = tmp_path / "focused_selection_EAS_sim"
+    calibration_dir = campaign / "calibration"
+    calibration_dir.mkdir(parents=True)
+    _production_units().to_csv(
+        campaign / "execution_units.tsv", sep="\t", index=False, lineterminator="\n"
+    )
+    for index, name in enumerate(calibration.HAN_SEED_PLAN_FILENAMES):
+        frame = pd.DataFrame(
+            {"seed": [2_100_000 + index], "panel_seed": [2_200_000 + index]}
+        )
+        frame.to_csv(calibration_dir / name, sep="\t", index=False)
+    fallback = calibration_dir / calibration.HAN_FALLBACK_PLAN_FILENAME
+    fallback_frame = pd.read_csv(fallback, sep="\t")
+    manifest_path = campaign / calibration.HAN_FALLBACK_MANIFEST_RELATIVE_PATH
+    manifest_path.parent.mkdir(parents=True)
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "schema": calibration.HAN_FALLBACK_MANIFEST_SCHEMA,
+                "status": "planned",
+                "all_phase_seed_reservation": {
+                    "path": fallback.relative_to(campaign.parent).as_posix(),
+                    "sha256": calibration.sha256_file(fallback),
+                    "rows": len(fallback_frame),
+                    "simulation_seed_column": "seed",
+                    "simulation_seed_sha256": calibration._seed_digest(
+                        fallback_frame["seed"]
+                    ),
+                    "panel_seed_column": "panel_seed",
+                    "panel_seed_sha256": calibration._seed_digest(
+                        fallback_frame["panel_seed"]
+                    ),
+                    "authoritative_only_when_manifest_exists_and_binds_this_sha256": (
+                        True
+                    ),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    calibration.collect_seed_reservations(campaign)
+    fallback.write_bytes(fallback.read_bytes() + b"\n")
+    with pytest.raises(ValueError, match="not bound by its authoritative manifest"):
+        calibration.collect_seed_reservations(campaign)
 
 
 def test_design_rejects_any_tunable_scientific_grid():
@@ -373,6 +518,34 @@ def test_completion_contract_tampering_is_rejected(planned_bundle, tmp_path):
     completion = work / phase / identity / "completion.json"
     payload = json.loads(completion.read_text(encoding="utf-8"))
     payload["contract"]["scientific_contract"]["selection"] = "changed"
+    completion.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="contract differs"):
+        calibration.audit_phase_completions(
+            plans[phase],
+            ledgers[phase],
+            repo_root=root,
+            work_root=work,
+            slim_path=slim,
+            manifest=manifest,
+        )
+
+
+def test_completion_planned_panel_seed_tampering_is_rejected(planned_bundle, tmp_path):
+    root, slim, _, work, _, _, plans, manifest = _clone_bundle(planned_bundle, tmp_path)
+    ledgers = _synthetic_completions(
+        root,
+        slim,
+        work,
+        plans,
+        manifest,
+        phases=(calibration.PHASE_SCREEN,),
+    )
+    phase = calibration.PHASE_SCREEN
+    identity = str(plans[phase]["calibration_id"].iloc[0])
+    completion = work / phase / identity / "completion.json"
+    payload = json.loads(completion.read_text(encoding="utf-8"))
+    payload["contract"]["plan_row"]["panel_seed"] += 1
+    payload["contract_sha256"] = calibration._canonical_sha256(payload["contract"])
     completion.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(ValueError, match="contract differs"):
         calibration.audit_phase_completions(
