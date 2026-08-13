@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from matplotlib import image as mpl_image
+from matplotlib import pyplot as plt
 
 import gamma_smc_aou.eas_replicate_analysis as replicate
 from gamma_smc_aou.eas_sweep_study import StudyRuntime
@@ -744,6 +745,38 @@ def test_snapshot_copies_compact_inputs_and_hashes_bulky_raw_artifacts(tmp_path)
     assert records[contract_relative]["snapshot_mode"] == "copied"
     assert (Path(snapshot["root"]) / contract_relative).is_file()
     assert records["phase_invocations/phase.json"]["snapshot_mode"] == "copied"
+
+
+def test_effect_sign_plot_uses_compact_readable_cell_labels(tmp_path, monkeypatch):
+    rows = []
+    for source in replicate._SOURCES:  # noqa: SLF001
+        for metric in replicate._METRICS:  # noqa: SLF001
+            rows.append(
+                {
+                    "source": source,
+                    "metric": metric,
+                    "selection_coefficient": 0.005,
+                    "target_allele_frequency": 0.5,
+                    "mean": 0.257,
+                    "expected_sign_count": 2,
+                    "n_observed_replicates": 3,
+                }
+            )
+    captured = {}
+
+    def capture_figure(fig, stem):
+        del stem
+        captured["titles"] = [ax.get_title() for ax in fig.axes[:4]]
+        captured["labels"] = [text for ax in fig.axes[:4] for text in ax.texts]
+        plt.close(fig)
+        return {}
+
+    monkeypatch.setattr(replicate, "_save_figure", capture_figure)
+    replicate._plot_effect_sign(pd.DataFrame(rows), tmp_path / "effect")  # noqa: SLF001
+
+    assert all("\nΔ " in title for title in captured["titles"])
+    assert {text.get_text() for text in captured["labels"]} == {"0.257\n2/3"}
+    assert {text.get_fontsize() for text in captured["labels"]} == {8.0}
 
 
 def test_decode_status_evidence_distinguishes_failure_partial_and_stale(tmp_path):

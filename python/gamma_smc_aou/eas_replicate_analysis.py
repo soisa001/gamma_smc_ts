@@ -2422,6 +2422,7 @@ def _heatmap(
     cmap: str = "Blues",
     vmin: float | None = 0,
     vmax: float | None = 1,
+    annotation_fontsize: float | None = None,
 ) -> None:
     selections = sorted(frame["selection_coefficient"].unique(), reverse=True)
     frequencies = sorted(frame["target_allele_frequency"].unique())
@@ -2439,8 +2440,11 @@ def _heatmap(
     ax.set_xlabel("Required final Han AF floor")
     ax.set_ylabel("Selection coefficient")
     ax.set_title(title)
+    annotation_fontsize = (
+        _FONT["annotation"] if annotation_fontsize is None else annotation_fontsize
+    )
     for (i, j), label in labels.items():
-        ax.text(j, i, label, ha="center", va="center", fontsize=_FONT["annotation"])
+        ax.text(j, i, label, ha="center", va="center", fontsize=annotation_fontsize)
     return image
 
 
@@ -2603,10 +2607,11 @@ def _plot_effect_sign(summary: pd.DataFrame, stem: Path) -> dict[str, Path]:
                 if not np.isfinite(bound) or bound <= 0:
                     bound = 1.0
                 title_metric = (
-                    "Delta normalized CDF area"
+                    "Δ normalized CDF area"
                     if "cdf" in metric
-                    else "Delta mean TMRCA (generations)"
+                    else "Δ mean TMRCA (generations)"
                 )
+                source_label = "Tree truth" if source == "tree_truth" else "Gamma-SMC"
                 image = _heatmap(
                     ax,
                     selected,
@@ -2614,12 +2619,13 @@ def _plot_effect_sign(summary: pd.DataFrame, stem: Path) -> dict[str, Path]:
                     lambda record: (
                         "NA\n0/0"
                         if pd.isna(record["mean"])
-                        else f"{record['mean']:.3g}\n{int(record['expected_sign_count'])}/{int(record['n_observed_replicates'])} sign"
+                        else f"{record['mean']:.3g}\n{int(record['expected_sign_count'])}/{int(record['n_observed_replicates'])}"
                     ),
-                    title=f"{source}: {title_metric}",
+                    title=f"{source_label}\n{title_metric}",
                     cmap="RdBu_r",
                     vmin=-bound,
                     vmax=bound,
+                    annotation_fontsize=8,
                 )
                 fig.colorbar(image, ax=ax, shrink=0.8, label="Mean alt - ref effect")
         fig.suptitle(
