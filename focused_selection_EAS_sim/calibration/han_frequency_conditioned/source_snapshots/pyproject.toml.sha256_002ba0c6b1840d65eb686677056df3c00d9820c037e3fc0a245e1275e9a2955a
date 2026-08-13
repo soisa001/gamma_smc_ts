@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gamma-smc-aou"
+version = "0.1.0"
+description = "Within-individual Gamma-SMC selection scan and neutral calibration"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "matplotlib>=3.7",
+  "msprime>=1.4.1",
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "scipy>=1.10",
+  "tskit>=1.0.2",
+  "zstandard>=0.22",
+]
+
+[project.optional-dependencies]
+tszip = ["tszip>=0.2"]
+test = ["pytest>=8"]
+selection = ["pyslim>=1.1.1", "stdpopsim==0.3.0"]
+
+[project.scripts]
+gamma-smc-aou = "gamma_smc_aou.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.setuptools.package-data]
+gamma_smc_aou = ["slim/*.slim"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv]
+required-version = ">=0.11.16,<0.12"
+link-mode = "copy"
