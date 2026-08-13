@@ -1,0 +1,118 @@
+{
+  "schema": "gamma-smc.eas-introgression-replicates/v1",
+  "phase": "plan",
+  "scenario": "introgression",
+  "campaign_contract": {
+    "scenario": "introgression",
+    "campaign_subdirectory": "replicate_study_n10",
+    "biological_specification_count": 27,
+    "replicates_per_biological_specification": 10,
+    "target_execution_slots": 270,
+    "selection_coefficients": [
+      0.01,
+      0.005,
+      0.001
+    ],
+    "han_final_frequency_floors": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ],
+    "sequence_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "sample_diploids": 100,
+    "acceptance": {
+      "han_population_frequency": {
+        "minimum_inclusive": "cell target_allele_frequency",
+        "maximum_inclusive": 0.95,
+        "conditioned_during_slim": true
+      },
+      "sample_frequency": {
+        "minimum_inclusive": "cell target_allele_frequency",
+        "maximum_inclusive": 0.95,
+        "validated_after_sampling": true
+      },
+      "genotype_classes": {
+        "hom_ref_minimum_diploids": 2,
+        "heterozygous_minimum_diploids": 1,
+        "hom_alt_minimum_diploids": 2
+      },
+      "archaic_specific_no_ils": {
+        "mutation_declared_origin_population": "Neanderthal",
+        "origin_after_human_neanderthal_split": true,
+        "origin_before_introgression_pulse": true,
+        "source_frequency_minimum_inclusive": 0.1,
+        "han_entry_route": "introgression_pulse_only",
+        "tree_node_population_is_origin_evidence": false,
+        "origin_evidence": "serialized_forward_event_contract"
+      }
+    },
+    "selection": {
+      "mode": "standing_variation_at_introgression_onset",
+      "dominance_coefficient": 0.5
+    }
+  },
+  "campaign_contract_sha256": "889994b3b84eb0eb8a21743afb84e15e1d3bd39a757f97a18e37e56e780afbbf",
+  "runtime": {
+    "repo_root": ".",
+    "sample_diploids": 100,
+    "sequence_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "mutation_rate": 1.25e-08,
+    "recombination_rate": 1e-08,
+    "generation_time_years": 25.0,
+    "output_stride_bp": 10000,
+    "cache_size_bp": 10000,
+    "threads": 4,
+    "simulation_workers": 12,
+    "slim_scaling_factor": 10.0,
+    "slim_burn_in": 0.1,
+    "max_external_draws": 20,
+    "max_launched_draws": 40,
+    "max_specification_seconds": 300.0,
+    "max_cumulative_specification_seconds": 1800.0,
+    "minimum_homozygous_diploids": 2,
+    "base_seed": 20240523,
+    "campaign_subdirectory": "replicate_study_n10"
+  },
+  "rng": {
+    "base_seed": 20240523,
+    "replicate_id_semantics": "globally unique expanded specification ID: <base>__repNNN",
+    "external_draw_index_origin": 0,
+    "derivation": "sha256(base_seed:replicate_id:external_draw)",
+    "integer_mapping": "1 + first_8_digest_bytes mod (2^31 - 2)"
+  },
+  "cache_semantics": {
+    "unit_identity": "replicate_id",
+    "replicate_count_stored_on_unit": false,
+    "extension_rule": "increasing target slots preserves existing repNNN IDs and work caches"
+  },
+  "hashes": {
+    "base_specifications_sha256": "0c108b40d754c6bec2d1dcffbca7937062bd14ab7ab7beae2b05a0347162dd34",
+    "specifications_tsv_sha256": "7c57648b7460c770144c7570ffd537cec84bb81f7ea91bec787dea100191362c",
+    "orchestrator_source_sha256": "c01b07250547b1d775e065bf3ad061122dc8310b4b2ae114abd4aabbef7080b8",
+    "core_orchestrator_source_sha256": "87ff8c98733c0809d8d4fc55fcad6adcbd4672c50bb6d86602852be3d6f68c7a"
+  },
+  "software": {
+    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "stdpopsim": "0.3.0",
+    "tskit": "1.0.3"
+  },
+  "fixed_model_contract": {
+    "demography": "stdpopsim AncientEurasia_9K19",
+    "mutation_mode": "single archaic-specific de novo origin",
+    "selection_onset": "introgression onset; standing variation thereafter",
+    "neutral_null_simulations": false
+  },
+  "slim_compatibility": {
+    "required_version": "4.2.2",
+    "slim_5_2": "rejected: incompatible with the stdpopsim 0.3 generated model"
+  }
+}

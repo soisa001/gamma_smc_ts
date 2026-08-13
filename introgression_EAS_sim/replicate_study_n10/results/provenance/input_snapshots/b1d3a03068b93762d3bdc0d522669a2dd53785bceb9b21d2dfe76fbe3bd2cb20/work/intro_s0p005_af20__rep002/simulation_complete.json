@@ -1,0 +1,54 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "simulate",
+  "status": "complete",
+  "specification_id": "intro_s0p005_af20__rep002",
+  "contract_sha256": "cf92d428c34d4e0ebc050161b1f4aeb5ff22d036ec37a4df9370d639b7154064",
+  "tree_sha256": "4f70c71c4d77f73d8ed9b7be8600514fc856f442b5f946bf0d4df62e9d9b6f96",
+  "sample_manifest_sha256": "5db6566d9758c69225f4c191f24108f3182a76d959d16e880966e55c3eeaff66",
+  "truth_profiles_sha256": "8bbe45261f792429ddf27946de5a992c1b942012e87b455818cdd8be1b7d234b",
+  "truth_internal_contrasts_sha256": "d986c61ef5ede2bcbb456c32d8c4c5c2f0b7122636e9ccf2a4725bd6c736cf73",
+  "pair_files": {
+    "overall": {
+      "path": "pairs/overall.pairs.tsv",
+      "sha256": "f0820da6ca261236681bcf56d3da1457c5605eb8fc693d743dd8fcb0ebd03e9e"
+    },
+    "hom_ref": {
+      "path": "pairs/hom_ref.pairs.tsv",
+      "sha256": "bbb82c475218c41875b11c886b756e0e5bcb15a6873d4f056b0100d0bf5a136d"
+    },
+    "heterozygous": {
+      "path": "pairs/heterozygous.pairs.tsv",
+      "sha256": "6ed06ee47e22dfce795671811b5af68046b3ba9c6301e07fb379abe4d0e8103c"
+    },
+    "hom_alt": {
+      "path": "pairs/hom_alt.pairs.tsv",
+      "sha256": "09e19cea01c59859a1e9cca2ee209f37fde99711b8766d1e7cfd2b28df6259e4"
+    }
+  },
+  "accepted_external_draw_zero_based": 0,
+  "attempts_to_accept": 1,
+  "completed_external_sample_panel_draws": 1,
+  "interrupted_internal_conditioned_trajectories": 0,
+  "accepted_seed": 1130458583,
+  "validation": {
+    "accepted": true,
+    "achieved_allele_frequency": 0.725,
+    "achieved_allele_frequency_scope": "sample_estimate",
+    "population_frequency_condition_lower": 0.2,
+    "population_frequency_condition_upper": 0.95,
+    "n_sample_diploids": 100,
+    "n_hom_ref": 9,
+    "n_heterozygous": 37,
+    "n_hom_alt": 54,
+    "focal_site_id": 16426,
+    "focal_mutation_count": 1,
+    "focal_mutation_node_population": "Neanderthal",
+    "focal_mutation_declared_origin_population": "Neanderthal",
+    "focal_mutation_node_population_is_origin_evidence": false,
+    "focal_mutation_origin_evidence": "serialized_forward_event_contract",
+    "n_segregating_nucleotide_snps": 33422,
+    "vcf_allele_encoding": "single_nucleotide_ACGT"
+  },
+  "elapsed_seconds": 96.44947110000066
+}

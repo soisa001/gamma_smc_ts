@@ -1,0 +1,6 @@
+external_draw_zero_based	seed	elapsed_seconds	accepted	achieved_allele_frequency	achieved_allele_frequency_scope	population_frequency_condition_lower	population_frequency_condition_upper	n_sample_diploids	n_hom_ref	n_heterozygous	n_hom_alt	focal_site_id	focal_mutation_count	focal_mutation_node_population	focal_mutation_declared_origin_population	focal_mutation_node_population_is_origin_evidence	focal_mutation_origin_evidence	n_segregating_nucleotide_snps	vcf_allele_encoding
+0	108234699	46.384473699959926	False	0.9	sample_estimate	0.4	0.95	100	0	20	80	17591	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	34437	single_nucleotide_ACGT
+1	1591557022	45.86770240002079	False	0.925	sample_estimate	0.4	0.95	100	0	15	85	16501	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	31089	single_nucleotide_ACGT
+2	2080633041	41.51622710004449	False	0.92	sample_estimate	0.4	0.95	100	0	16	84	16773	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	32807	single_nucleotide_ACGT
+3	339215099	41.87057219998678	False	0.96	sample_estimate	0.4	0.95	100	0	8	92	15492	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	32392	single_nucleotide_ACGT
+4	1375802212	89.73936910001794	True	0.85	sample_estimate	0.4	0.95	100	3	24	73	17478	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	34062	single_nucleotide_ACGT

@@ -1,0 +1,39 @@
+{
+  "contract_sha256": "a469d0673339a35343f1fdde6224b8094b7b895b131700f255565f95a5ab40e9",
+  "summary_sha256": "ebf3cdba5375c0e7ee6efdcc61d5e19f007c1dc3e054df3594bf894b583dcd36",
+  "run_sha256": "9ba66b2a25866c6b0b0b9229fabde24b7f2a61e1a8f15434b6b9b2c043d56c3b",
+  "execution": {
+    "threads": 1,
+    "threads_cache_role": "provenance_only",
+    "run_settings_validated": true
+  },
+  "implementation": {
+    "schema": "gamma-smc.eas-sweep-implementation/v1",
+    "recorded_at_utc": "2026-08-12T23:37:18.829030+00:00",
+    "python_implementation": "CPython",
+    "python_version": "3.11.15",
+    "tskit_version": "1.0.3",
+    "sources": {
+      "core": {
+        "path": "eas_sweep_study.py",
+        "available": true,
+        "sha256": "bef802f46dde46318c03c70629c581475c10437122132714a518c0cd3e29a766"
+      },
+      "orchestrator": {
+        "path": "eas_introgression_replicates.py",
+        "available": true,
+        "sha256": "74d4d9cc2b8d7f1b58c80376a79f7e6d9d2396ed96c175caaf659f93068c838c"
+      },
+      "decoder_wrapper": {
+        "path": "decoder.py",
+        "available": true,
+        "sha256": "bba1329963327729b25da63c65191e052eec5acd70c1569d6a7ff11b4c54df52"
+      },
+      "tree_sequence_vcf_producer": {
+        "path": "tree_sequence.py",
+        "available": true,
+        "sha256": "2e02df22db2f1f4ef64ae24d6c8339366d90d48cf430c24308be509438cd485a"
+      }
+    }
+  }
+}

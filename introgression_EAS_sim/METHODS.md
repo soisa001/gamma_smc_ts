@@ -10,6 +10,15 @@ including accepted and timed-out cells, is reported in
 [`RUN_RESULTS.md`](RUN_RESULTS.md); this document defines the reusable methods
 contract.
 
+A completed exploratory extension requested ten independently seeded slots per
+selection-by-AF-floor cell; this was a request, not a guarantee of ten accepted
+trajectories. Of 270 requested slots, 155 were accepted and decoded across
+24/27 represented cells; 22 cells met the macro headline's requirement of at
+least two paired trajectories. Another 104 exhausted their search budget, 11
+ended timed out, and 0 failed. Its distinct restart/aggregation contract and results are in
+[`replicate_study_n10/METHODS.md`](replicate_study_n10/METHODS.md) and
+[`replicate_study_n10/RUN_RESULTS.md`](replicate_study_n10/RUN_RESULTS.md).
+
 The pilot seeks one accepted trajectory per requested specification. It is
 descriptive: matched neutral simulations, null calibration, p-values,
 false-positive rates, and power are deferred. A specification that exhausts

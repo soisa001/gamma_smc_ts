@@ -101,9 +101,15 @@ sequences and decoder intermediates remain restartable under the ignored
 - The 10%-90% grid is exploratory. No qualifying genome-wide distribution of
   archaic-specific, no-ILS Han SNV frequencies was identified for replacing it
   in this run.
-- One trajectory per accepted cell is suitable for method inspection only.
-  Replicates, less aggressive scaling, longer burn-in, matched neutral
-  simulations, and null-calibrated p-values remain follow-up work.
+- One trajectory per accepted cell in this pilot is suitable for method
+  inspection only. A completed exploratory extension requested ten seeded slots
+  per cell: 270 requested, 155 accepted and decoded across 24/27 represented
+  cells (22 with at least two paired trajectories for the macro headline), 104
+  exhausted, 11 timed out, and 0 failed. See
+  [`replicate_study_n10/RUN_RESULTS.md`](replicate_study_n10/RUN_RESULTS.md).
+  Those replicate summaries remain conditional on accepted trajectories;
+  less-aggressive scaling, longer burn-in, matched neutral simulations, and
+  null-calibrated p-values remain follow-up work.
 
 The machine-readable source of truth is
 `results/results_manifest.json`; methods and the reusable run contract are in

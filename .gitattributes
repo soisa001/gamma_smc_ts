@@ -1,0 +1,2 @@
+# Preserve the byte identity of checksummed replicated-campaign artifacts.
+introgression_EAS_sim/replicate_study_n10/** -text -diff

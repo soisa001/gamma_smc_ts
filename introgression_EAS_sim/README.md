@@ -6,6 +6,17 @@ restartable under `work/`; compact summaries and cross-specification figures
 are written under `results/`. The checked execution outcome and its limitations
 are summarized in [`RUN_RESULTS.md`](RUN_RESULTS.md).
 
+The completed exploratory replicate extension is documented in
+[`replicate_study_n10/README.md`](replicate_study_n10/README.md), with methods
+in [`replicate_study_n10/METHODS.md`](replicate_study_n10/METHODS.md) and final
+results in
+[`replicate_study_n10/RUN_RESULTS.md`](replicate_study_n10/RUN_RESULTS.md). It
+requested ten independently seeded slots per biological cell rather than
+guaranteeing ten accepted replicates: 270 slots were requested, 155 were
+accepted and decoded across 24/27 represented cells (22 with at least two
+paired trajectories for the macro headline), 104 exhausted their search budget,
+11 ended timed out, and 0 failed.
+
 ## Bootstrap
 
 From a fresh or existing checkout of the run branch:

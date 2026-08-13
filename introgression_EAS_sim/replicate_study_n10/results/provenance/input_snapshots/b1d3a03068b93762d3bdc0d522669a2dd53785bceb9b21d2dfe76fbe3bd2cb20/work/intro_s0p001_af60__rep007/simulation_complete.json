@@ -1,0 +1,85 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "simulate",
+  "status": "complete",
+  "specification_id": "intro_s0p001_af60__rep007",
+  "contract_sha256": "14c52d7385b218341fe7e8e3f2f20212f897c89f9b191a550cafabbf914372f9",
+  "tree_sha256": "b4f3c0fd58cafebb23990bc6463b53d210074315df24e02177d0412a74deb8e1",
+  "sample_manifest_sha256": "371815e63ca331eab1ae75fe54118eee7d8fa1401f87baff3b0d23ad70da3e18",
+  "truth_profiles_sha256": "77bebce11d837e83a0f8dd0d94e885cd6155bef0c9f49a51cf274c9bc2d91e4d",
+  "truth_internal_contrasts_sha256": "9b57b8165415112b223adeb2165ec6c7f4e35dcb1a387eabfe874112a1c8f298",
+  "pair_files": {
+    "overall": {
+      "path": "pairs/overall.pairs.tsv",
+      "sha256": "f0820da6ca261236681bcf56d3da1457c5605eb8fc693d743dd8fcb0ebd03e9e"
+    },
+    "hom_ref": {
+      "path": "pairs/hom_ref.pairs.tsv",
+      "sha256": "f46a85137ed790a0a5af4322c205aee2d5550adc6bd612672a60e29628bc750c"
+    },
+    "heterozygous": {
+      "path": "pairs/heterozygous.pairs.tsv",
+      "sha256": "a6a75eac4eacbd7fc23d2a16dec9205e4e2e9aa6d89e1b19ef13981053da7edc"
+    },
+    "hom_alt": {
+      "path": "pairs/hom_alt.pairs.tsv",
+      "sha256": "e30b662fadf1cf85bcc386073b3ecb55370fbc2c57dfa0831570dc948bffa203"
+    }
+  },
+  "accepted_external_draw_zero_based": 5,
+  "attempts_to_accept": 1,
+  "completed_external_sample_panel_draws": 1,
+  "interrupted_internal_conditioned_trajectories": 5,
+  "accepted_seed": 1196846750,
+  "validation": {
+    "accepted": true,
+    "achieved_allele_frequency": 0.625,
+    "achieved_allele_frequency_scope": "sample_estimate",
+    "population_frequency_condition_lower": 0.6,
+    "population_frequency_condition_upper": 0.95,
+    "n_sample_diploids": 100,
+    "n_hom_ref": 12,
+    "n_heterozygous": 51,
+    "n_hom_alt": 37,
+    "focal_site_id": 16831,
+    "focal_mutation_count": 1,
+    "focal_mutation_node_population": "Loschbour",
+    "focal_mutation_declared_origin_population": "Neanderthal",
+    "focal_mutation_node_population_is_origin_evidence": false,
+    "focal_mutation_origin_evidence": "serialized_forward_event_contract",
+    "n_segregating_nucleotide_snps": 33090,
+    "vcf_allele_encoding": "single_nucleotide_ACGT"
+  },
+  "elapsed_seconds": 194.81638699999894,
+  "declared_timeout_seconds": 300.0,
+  "effective_timeout_seconds": 297.33495510004286,
+  "implementation": {
+    "schema": "gamma-smc.eas-sweep-implementation/v1",
+    "recorded_at_utc": "2026-08-12T22:40:40.153350+00:00",
+    "python_implementation": "CPython",
+    "python_version": "3.11.15",
+    "tskit_version": "1.0.3",
+    "sources": {
+      "core": {
+        "path": "eas_sweep_study.py",
+        "available": true,
+        "sha256": "bef802f46dde46318c03c70629c581475c10437122132714a518c0cd3e29a766"
+      },
+      "orchestrator": {
+        "path": "eas_introgression_replicates.py",
+        "available": true,
+        "sha256": "74d4d9cc2b8d7f1b58c80376a79f7e6d9d2396ed96c175caaf659f93068c838c"
+      },
+      "decoder_wrapper": {
+        "path": "decoder.py",
+        "available": true,
+        "sha256": "bba1329963327729b25da63c65191e052eec5acd70c1569d6a7ff11b4c54df52"
+      },
+      "tree_sequence_vcf_producer": {
+        "path": "tree_sequence.py",
+        "available": true,
+        "sha256": "2e02df22db2f1f4ef64ae24d6c8339366d90d48cf430c24308be509438cd485a"
+      }
+    }
+  }
+}

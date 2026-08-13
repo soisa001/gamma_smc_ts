@@ -1,0 +1,70 @@
+{
+  "schema": "gamma-smc.eas-sweep-decode-contract/v2",
+  "phase": "decode",
+  "specification_id": "intro_s0p001_af10__rep001",
+  "genotype_class": "heterozygous",
+  "selected_tree_sha256": "54cfb49d42e51cf28b3a5c043372e4896353e1ac03981f3f1dfb5e57182a4cf1",
+  "pairs_sha256": "3fe4a761a1c8ac2b4d54d45882d96dfa9504c17fb32ab182fc082b48c80cc358",
+  "decoder_sha256": "e57182c105e216c5a3c4afad991d7f51343dbf21d4c1889b38af97a3c52e6d40",
+  "scaled_mutation_rate": 0.00031499999999999996,
+  "unscaled_mutation_rate": 1.25e-08,
+  "recombination_to_mutation_ratio": 0.8,
+  "thresholds_years": [
+    1000,
+    4500,
+    10000,
+    20000,
+    30000,
+    40000,
+    50000
+  ],
+  "generation_time_years": 25.0,
+  "output_stride_bp": 10000,
+  "cache_size_bp": 10000,
+  "recent_call": "median",
+  "pair_scope": "explicit_within_diploid_genotype_class",
+  "decode_settings": {
+    "input_format": "trees",
+    "decoder_input_format": "vcf",
+    "decoder_input_transport": "python_vcf_stream_to_stdin",
+    "decoder_input_path": "/dev/stdin",
+    "output_at_hets": false,
+    "only_within": false,
+    "n_random_pairs": 0,
+    "pairs_seed": 1729,
+    "exclude_within": false,
+    "recent_call": "median",
+    "recent_call_probability": 0.5,
+    "pair_block": 256,
+    "exp10": "accurate",
+    "backward_alignment": "fixed",
+    "raw_output": null,
+    "bitmatrix_output": null,
+    "mask": null,
+    "masks_per_sample": null,
+    "samples": null,
+    "output_positions_file": null,
+    "pairs_manifest": null,
+    "extra_args": null,
+    "threads": {
+      "cache_role": "provenance_only",
+      "required_minimum": 1,
+      "determinism_contract": "output_invariant_across_thread_count"
+    }
+  },
+  "python_vcf_producer": {
+    "api": "gamma_smc_aou.tree_sequence.stream_tree_sequence_vcf/legacy-position-transform-v1",
+    "metadata_status": "legacy_not_recorded",
+    "python_implementation": "legacy_unknown",
+    "python_version": "legacy_unknown",
+    "tskit_version": "legacy_unknown",
+    "decoder_wrapper_source_sha256": "legacy_unknown",
+    "tree_sequence_source_sha256": "legacy_unknown"
+  },
+  "migration": {
+    "from_schema": "gamma-smc.eas-sweep-study/v1",
+    "validation": "legacy_contract_hash_and_run_semantics",
+    "legacy_contract_sha256": "1a68f63d095082955b3c42f3d041e89a396304f654c4d2772cd2a34e3cf3d341",
+    "run_sha256": "0a42e121be43ee7686ccd0276a698ddb060a2c60f2943c8fd2cbe1e0821b1ec7"
+  }
+}
