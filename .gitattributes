@@ -1,2 +1,17 @@
 # Preserve the byte identity of checksummed replicated-campaign artifacts.
 introgression_EAS_sim/replicate_study_n10/** -text -diff
+
+# Preserve byte-exact focused-campaign contracts across Windows and Linux.
+# These sources and calibration artifacts are SHA-256-bound by frozen plans.
+pyproject.toml -text
+uv.lock -text
+python/gamma_smc_aou/eas_sweep_analysis.py -text
+python/gamma_smc_aou/eas_sweep_models.py -text
+python/gamma_smc_aou/eas_sweep_study.py -text
+python/gamma_smc_aou/focused_eas_selected_calibration.py -text
+python/gamma_smc_aou/focused_han_frequency_conditioned_calibration.py -text
+python/gamma_smc_aou/focused_selection_simulation.py -text
+scripts/calibrate_eas_selected.py -text
+scripts/calibrate_han_frequency_conditioned.py -text
+focused_selection_EAS_sim/execution_units.tsv -text -diff
+focused_selection_EAS_sim/calibration/** -text -diff
