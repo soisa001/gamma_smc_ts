@@ -1,0 +1,93 @@
+attempt_zero_based	seed	status	timeout_seconds	candidate_pool_alt_count	candidate_pool_af	sample_alt_count	sample_af	n_hom_ref	n_heterozygous	n_hom_alt	elapsed_seconds	accepted	rejection_reason	error
+0	1096564453	complete	300.0	0.0	0.0						35.178606226000056	False	focal_mutation_absent_at_present	
+1	1601280737	complete	300.0	0.0	0.0						43.087267699999984	False	focal_mutation_absent_at_present	
+2	1375382157	complete	300.0	0.0	0.0						37.03246282299983	False	focal_mutation_absent_at_present	
+3	755839493	complete	300.0	0.0	0.0						34.703390849000016	False	focal_mutation_absent_at_present	
+4	440204444	complete	300.0	0.0	0.0						36.26177882100001	False	focal_mutation_absent_at_present	
+5	1573031805	complete	300.0	0.0	0.0						36.12072863100002	False	focal_mutation_absent_at_present	
+6	1054088420	complete	300.0	0.0	0.0						34.698062803000084	False	focal_mutation_absent_at_present	
+7	2027090349	complete	300.0	0.0	0.0						36.01511673899995	False	focal_mutation_absent_at_present	
+8	1178092601	complete	300.0	0.0	0.0						33.33155687499993	False	focal_mutation_absent_at_present	
+9	1701467107	complete	300.0	0.0	0.0						33.41537393800013	False	focal_mutation_absent_at_present	
+10	738670674	complete	300.0	0.0	0.0						35.6968654169998	False	focal_mutation_absent_at_present	
+11	314230758	complete	300.0	0.0	0.0						35.42035400300006	False	focal_mutation_absent_at_present	
+12	914250865	complete	300.0	0.0	0.0						33.77769766600022	False	focal_mutation_absent_at_present	
+13	1288630642	complete	300.0	0.0	0.0						37.39934646999996	False	focal_mutation_absent_at_present	
+14	587998146	complete	300.0	0.0	0.0						35.06042746899993	False	focal_mutation_absent_at_present	
+15	1604246336	complete	300.0	0.0	0.0						36.49419473900002	False	focal_mutation_absent_at_present	
+16	1419065611	complete	300.0	0.0	0.0						36.14004306400011	False	focal_mutation_absent_at_present	
+17	1390404553	complete	300.0	0.0	0.0						33.87440597900013	False	focal_mutation_absent_at_present	
+18	1360420071	complete	300.0	0.0	0.0						33.72349870400012	False	focal_mutation_absent_at_present	
+19	1652443281	complete	300.0	0.0	0.0						39.41291560900004	False	focal_mutation_absent_at_present	
+20	1298170138	complete	300.0	0.0	0.0						36.80193616499992	False	focal_mutation_absent_at_present	
+21	157918722	complete	300.0	0.0	0.0						36.85813706999989	False	focal_mutation_absent_at_present	
+22	996614046	complete	300.0	0.0	0.0						40.11752918399998	False	focal_mutation_absent_at_present	
+23	857555658	complete	300.0	0.0	0.0						35.836706567999954	False	focal_mutation_absent_at_present	
+24	1158476892	complete	300.0	0.0	0.0						36.016481715000054	False	focal_mutation_absent_at_present	
+25	354560414	complete	300.0	973.0	0.973						36.524751068000114	False		
+26	761074806	complete	300.0	0.0	0.0						31.837378418999837	False	focal_mutation_absent_at_present	
+27	790393453	complete	300.0	0.0	0.0						29.63634808200004	False	focal_mutation_absent_at_present	
+28	1721731549	complete	300.0	0.0	0.0						29.20703150700001	False	focal_mutation_absent_at_present	
+29	318486299	complete	300.0	0.0	0.0						27.04717883100011	False	focal_mutation_absent_at_present	
+30	796972379	complete	300.0	0.0	0.0						26.311198505999982	False	focal_mutation_absent_at_present	
+31	1390392299	complete	300.0	0.0	0.0						25.63219917600009	False	focal_mutation_absent_at_present	
+32	1695714130	complete	300.0	0.0	0.0						26.456695365000087	False	focal_mutation_absent_at_present	
+33	247247552	complete	300.0	0.0	0.0						25.5278248880004	False	focal_mutation_absent_at_present	
+34	31774533	complete	300.0	0.0	0.0						25.36302969799999	False	focal_mutation_absent_at_present	
+35	1118699695	complete	300.0	0.0	0.0						27.985847174000355	False	focal_mutation_absent_at_present	
+36	927733023	complete	300.0	0.0	0.0						28.65046474300016	False	focal_mutation_absent_at_present	
+37	433241711	complete	300.0	0.0	0.0						24.76470475600036	False	focal_mutation_absent_at_present	
+38	86079873	complete	300.0	0.0	0.0						26.37275992500008	False	focal_mutation_absent_at_present	
+39	2015825262	complete	300.0	0.0	0.0						26.135492056999738	False	focal_mutation_absent_at_present	
+40	269432401	complete	300.0	0.0	0.0						25.56377884099993	False	focal_mutation_absent_at_present	
+41	1080711437	complete	300.0	0.0	0.0						24.729283189999933	False	focal_mutation_absent_at_present	
+42	1887135374	complete	300.0	0.0	0.0						26.39738161800005	False	focal_mutation_absent_at_present	
+43	21944744	complete	300.0	0.0	0.0						25.24610619399982	False	focal_mutation_absent_at_present	
+44	136529993	complete	300.0	947.0	0.947						27.99300170599963	False		
+45	1185038060	complete	300.0	0.0	0.0						26.83110769299992	False	focal_mutation_absent_at_present	
+46	1501822355	complete	300.0	0.0	0.0						25.304772514999968	False	focal_mutation_absent_at_present	
+47	401307465	complete	297.56496716899983	0.0	0.0						24.732438433000425	False	focal_mutation_absent_at_present	
+48	743795797	complete	272.8246934069998	0.0	0.0						26.166738385999903	False	focal_mutation_absent_at_present	
+49	1156692897	complete	246.6500724479997	908.0	0.908						25.75654527400002	False		
+50	1404952874	complete	220.8863694339998	0.0	0.0						25.261796925	False	focal_mutation_absent_at_present	
+51	1349264422	complete	195.61578640800008	0.0	0.0						26.714700973999697	False	focal_mutation_absent_at_present	
+52	1465092068	complete	168.89378144900002	0.0	0.0						26.17383726800017	False	focal_mutation_absent_at_present	
+53	783889463	complete	142.71192147700003	0.0	0.0						25.040387320000264	False	focal_mutation_absent_at_present	
+54	1923664365	complete	117.66457854100008	0.0	0.0						22.65667291299997	False	focal_mutation_absent_at_present	
+55	1589556424	complete	95.001075399	0.0	0.0						23.964653696999903	False	focal_mutation_absent_at_present	
+56	563555709	complete	71.02844116699998	873.0	0.873						25.55646373099989	False		
+57	1071114737	complete	45.46424697700013	0.0	0.0						23.276683104999847	False	focal_mutation_absent_at_present	
+58	1470920828	timed_out	22.1804399130001								22.18329020400006	False		SLiM draw exceeded 22.180 wall-clock seconds
+59	1134206790	complete	300.0	954.0	0.954						25.817634586999993	False		
+60	1158932909	complete	300.0	0.0	0.0						22.3955876	False	focal_mutation_absent_at_present	
+61	225864421	complete	300.0	0.0	0.0						23.327768054999993	False	focal_mutation_absent_at_present	
+62	1922407794	complete	300.0	0.0	0.0						24.441625180000003	False	focal_mutation_absent_at_present	
+63	133310697	complete	300.0	0.0	0.0						23.0652891	False	focal_mutation_absent_at_present	
+64	790683827	complete	300.0	0.0	0.0						21.676128438000006	False	focal_mutation_absent_at_present	
+65	133757421	complete	300.0	0.0	0.0						22.411760880000003	False	focal_mutation_absent_at_present	
+66	1714675708	complete	300.0	0.0	0.0						22.750772043000012	False	focal_mutation_absent_at_present	
+67	1408106930	complete	300.0	710.0	0.71						24.632009283000002	False		
+68	1448478283	complete	300.0	0.0	0.0						25.127613763	False	focal_mutation_absent_at_present	
+69	1470010677	complete	300.0	0.0	0.0						26.03187299399997	False	focal_mutation_absent_at_present	
+70	710445518	complete	300.0	784.0	0.784						24.87904909499997	False		
+71	75003572	complete	300.0	0.0	0.0						21.613937942000007	False	focal_mutation_absent_at_present	
+72	2034791666	complete	300.0	909.0	0.909						26.241140100999985	False		
+73	1720470415	complete	300.0	0.0	0.0						22.617648026999973	False	focal_mutation_absent_at_present	
+74	256170112	complete	300.0	0.0	0.0						22.818009184000005	False	focal_mutation_absent_at_present	
+75	1613789275	complete	300.0	0.0	0.0						23.217820030999974	False	focal_mutation_absent_at_present	
+76	479095946	complete	300.0	0.0	0.0						23.551051144999974	False	focal_mutation_absent_at_present	
+77	1446432343	complete	300.0	0.0	0.0						23.131898417000002	False	focal_mutation_absent_at_present	
+78	1077912799	complete	300.0	0.0	0.0						22.696471152000015	False	focal_mutation_absent_at_present	
+79	1171267411	complete	300.0	0.0	0.0						24.575712973999998	False	focal_mutation_absent_at_present	
+80	839039124	complete	300.0	0.0	0.0						22.092761588999906	False	focal_mutation_absent_at_present	
+81	818881750	complete	300.0	773.0	0.773						23.930069172000003	False		
+82	671984880	complete	300.0	0.0	0.0						23.492742635000013	False	focal_mutation_absent_at_present	
+83	2103965896	complete	300.0	0.0	0.0						22.962300829000014	False	focal_mutation_absent_at_present	
+84	147483710	complete	300.0	0.0	0.0						21.786621844000024	False	focal_mutation_absent_at_present	
+85	572582508	complete	300.0	0.0	0.0						22.458426611999926	False	focal_mutation_absent_at_present	
+86	1946131285	complete	300.0	0.0	0.0						22.13612295200005	False	focal_mutation_absent_at_present	
+87	620909924	complete	300.0	885.0	0.885						23.481753414999957	False		
+88	1311679641	complete	300.0	0.0	0.0						22.24905721899995	False	focal_mutation_absent_at_present	
+89	2112935206	complete	300.0	0.0	0.0						22.32134966000001	False	focal_mutation_absent_at_present	
+90	612286413	complete	300.0	0.0	0.0						23.194435530999954	False	focal_mutation_absent_at_present	
+91	1266213069	complete	300.0	543.0	0.543	40.0	0.2	65.0	30.0	5.0	23.700792976000002	True		

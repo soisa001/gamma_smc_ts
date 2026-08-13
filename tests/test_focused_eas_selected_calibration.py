@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from gamma_smc_aou import focused_eas_selected_audit_adapter as audit_adapter
 from gamma_smc_aou import focused_eas_selected_calibration as calibration
 
 SOURCE_REPO = Path(__file__).resolve().parents[1]
@@ -18,6 +19,9 @@ def _isolated_repo(tmp_path: Path) -> tuple[Path, Path]:
         destination = root / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(SOURCE_REPO / relative, destination)
+    adapter_source = root / audit_adapter.MODULE_SOURCE_PATH
+    adapter_source.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(SOURCE_REPO / audit_adapter.MODULE_SOURCE_PATH, adapter_source)
     resource = root / calibration.EAS_RESOURCE_PATH
     resource.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(SOURCE_REPO / calibration.EAS_RESOURCE_PATH, resource)
@@ -590,5 +594,84 @@ def test_completion_planned_panel_seed_tampering_is_rejected(planned_bundle, tmp
             repo_root=root,
             work_root=work,
             slim_path=slim,
+            manifest=manifest,
+        )
+
+
+def test_audit_adapter_repairs_only_structural_text_blanks_and_binds_outputs(
+    planned_bundle, tmp_path
+):
+    root, slim, output, work, _, _, plans, manifest = _clone_bundle(
+        planned_bundle, tmp_path
+    )
+    phase = calibration.PHASE_SCREEN
+    ledgers = _synthetic_completions(root, slim, work, plans, manifest, phases=(phase,))
+    # Real evaluable calibration draws always have a trajectory checksum.  Keep
+    # this synthetic fixture realistic so the adapter needs to repair only the
+    # three intentionally structural text blanks.
+    for index, row in ledgers[phase].iterrows():
+        directory = work / phase / str(row["calibration_id"])
+        trajectory = directory / "trajectory.csv"
+        trajectory.write_text("tick,population_size\n0,1000\n", encoding="utf-8")
+        digest = calibration.sha256_file(trajectory)
+        ledgers[phase].loc[index, "trajectory_sha256"] = digest
+        completion = directory / "completion.json"
+        completion_payload = json.loads(completion.read_text(encoding="utf-8"))
+        completion_payload["result"]["trajectory_sha256"] = digest
+        completion.write_text(
+            json.dumps(completion_payload, sort_keys=True), encoding="utf-8"
+        )
+    ledger_path = output / f"{phase}_ledger.tsv"
+    ledgers[phase].to_csv(ledger_path, sep="\t", index=False, lineterminator="\n")
+
+    raw = pd.read_csv(ledger_path, sep="\t")
+    assert raw["panel_tree_sha256"].isna().all()
+    assert raw["sample_alt_count"].isna().all()
+    normalized = audit_adapter._normalized_ledger(ledger_path)
+    assert normalized["panel_tree_sha256"].eq("").all()
+    assert normalized["panel_manifest_sha256"].eq("").all()
+    assert normalized["error"].eq("").all()
+    assert normalized["sample_alt_count"].isna().all()
+
+    payload = audit_adapter.validate_phase_with_adapter(
+        phase,
+        repo_root=root,
+        campaign_dir=root / "focused_selection_EAS_sim",
+        slim_path=slim,
+    )
+    assert payload["status"] == "validated"
+    assert payload["counts"] == {
+        "planned": 120,
+        "validated_completions": 120,
+        "completion_checksum_rows": 120,
+        "cells": 6,
+        "passing_cells": 6,
+    }
+    assert payload["adapter"] == {
+        "path": audit_adapter.MODULE_SOURCE_PATH,
+        "sha256": calibration.sha256_file(root / audit_adapter.MODULE_SOURCE_PATH),
+    }
+    assert payload["legacy_source_sha256"] == manifest["source_sha256"]
+    assert payload["completion_mapping"]["rows"] == 120
+    assert len(payload["completion_mapping"]["entries"]) == 120
+    sidecar = output / f"{phase}_adapter_audit.json"
+    assert sidecar.is_file()
+    reloaded = audit_adapter._load_phase_sidecar(
+        phase,
+        output=output,
+        repo_root=root,
+        adapter_sha256=payload["adapter"]["sha256"],
+        manifest=manifest,
+    )
+    assert reloaded["payload_sha256"] == payload["payload_sha256"]
+
+    summary = output / f"{phase}_summary.tsv"
+    summary.write_bytes(summary.read_bytes() + b"\n")
+    with pytest.raises(ValueError, match="output binding differs"):
+        audit_adapter._load_phase_sidecar(
+            phase,
+            output=output,
+            repo_root=root,
+            adapter_sha256=payload["adapter"]["sha256"],
             manifest=manifest,
         )
