@@ -2437,6 +2437,11 @@ def _heatmap(
     image = ax.imshow(masked, aspect="auto", cmap=cmap, vmin=vmin, vmax=vmax)
     ax.set_xticks(range(len(frequencies)), [f"{x:.0%}" for x in frequencies])
     ax.set_yticks(range(len(selections)), [f"{x:g}" for x in selections])
+    ax.tick_params(axis="x", labelsize=12)
+    for label in ax.get_xticklabels():
+        label.set_rotation(45)
+        label.set_horizontalalignment("right")
+        label.set_rotation_mode("anchor")
     ax.set_xlabel("Required final Han AF floor")
     ax.set_ylabel("Selection coefficient")
     ax.set_title(title)
