@@ -515,6 +515,73 @@ def _load_eas_cell(
     )
 
 
+def _load_planned_eas_cell(
+    repo_root: Path,
+    row: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+) -> tuple[Any, Any, Any, dict[str, Any], dict[str, Any]]:
+    """Rebuild one cell from its canonical manifest design, fail closed.
+
+    TSV serialization can shorten a bound such as ``0.07500000000000001`` to
+    ``0.075``.  Reconstructing the AF half-width as ``target - TSV lower`` then
+    changes the exact serialized extended-event contract despite representing
+    the same numerical interval.  The manifest design is the canonical input
+    that originally generated both the cell contract and the TSV projection,
+    so use its preserved half-width and require the rebuilt origin/events to
+    match both bindings exactly.
+    """
+
+    _validate_manifest_integrity(manifest)
+    normalized = _normalized_row(row)
+    design = manifest.get("design")
+    cells = manifest.get("cells")
+    if not isinstance(design, Mapping) or not isinstance(cells, Mapping):
+        raise TypeError("EAS plan manifest design or cell contracts are absent")
+    try:
+        coefficient = float(normalized["selection_coefficient"])
+        target = float(normalized["target_allele_frequency"])
+        half_width = float(design["af_half_width"])
+        lower = float(normalized["population_af_lower"])
+        upper = float(normalized["population_af_upper"])
+        scaling_factor = float(normalized["slim_scaling_factor"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError("EAS planned cell parameters are absent or invalid") from error
+    expected_lower = target - half_width
+    expected_upper = target + half_width
+    if (
+        not math.isfinite(half_width)
+        or half_width <= 0.0
+        or not math.isclose(lower, expected_lower, rel_tol=0.0, abs_tol=1e-12)
+        or not math.isclose(upper, expected_upper, rel_tol=0.0, abs_tol=1e-12)
+    ):
+        raise ValueError("EAS planned AF bounds differ from the manifest design")
+    key = f"s={coefficient:.6f}|af={target:.6f}"
+    cell = cells.get(key)
+    if not isinstance(cell, Mapping):
+        raise ValueError("EAS planned scientific cell contract is absent")
+    model, sweep, demographic, origin, event = _load_eas_cell(
+        repo_root,
+        selection_coefficient=coefficient,
+        target_frequency=target,
+        af_half_width=half_width,
+        slim_scaling_factor=scaling_factor,
+    )
+    origin_hash = _canonical_sha256(origin)
+    if (
+        origin_hash != str(normalized["origin_contract_sha256"])
+        or origin_hash != str(cell.get("origin_contract_sha256"))
+        or origin != cell.get("origin_contract")
+    ):
+        raise ValueError("draw origin-age contract differs from plan")
+    if (
+        event["event_contract_sha256"] != str(normalized["event_contract_sha256"])
+        or event["event_contract_sha256"] != str(cell.get("event_contract_sha256"))
+        or event["events"] != cell.get("extended_events")
+    ):
+        raise ValueError("draw extended-event contract differs from plan")
+    return model, sweep, demographic, origin, event
+
+
 def _event_time(event: Mapping[str, Any], key: str) -> float:
     value = event.get(key)
     if not isinstance(value, Mapping) or "generations_ago" not in value:
@@ -1245,20 +1312,7 @@ def _run_draw(task: Mapping[str, Any]) -> dict[str, Any]:
         started = perf_counter()
         trajectory_path = directory / "trajectory.csv"
         try:
-            model, sweep, _, origin, event = _load_eas_cell(
-                root,
-                selection_coefficient=float(row["selection_coefficient"]),
-                target_frequency=float(row["target_allele_frequency"]),
-                af_half_width=(
-                    float(row["target_allele_frequency"])
-                    - float(row["population_af_lower"])
-                ),
-                slim_scaling_factor=float(row["slim_scaling_factor"]),
-            )
-            if _canonical_sha256(origin) != str(row["origin_contract_sha256"]):
-                raise ValueError("draw origin-age contract differs from plan")
-            if event["event_contract_sha256"] != str(row["event_contract_sha256"]):
-                raise ValueError("draw extended-event contract differs from plan")
+            model, sweep, _, _, _ = _load_planned_eas_cell(root, row, manifest)
             if phase != PHASE_SENSITIVITY:
                 sweep = replace(
                     sweep,

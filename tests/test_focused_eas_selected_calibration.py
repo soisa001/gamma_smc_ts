@@ -155,6 +155,42 @@ def test_cell_contract_retains_continuous_selection_and_both_terminal_bounds(
         }
 
 
+def test_tsv_roundtrip_rebuilds_exact_planned_extended_events(planned_bundle):
+    root, _, _, _, _, _, plans, manifest = planned_bundle
+    screen = plans[calibration.PHASE_SCREEN]
+    representatives = screen.drop_duplicates(
+        ["selection_coefficient", "target_allele_frequency"]
+    )
+    observed_shortened_bound = False
+    for row in representatives.to_dict(orient="records"):
+        key = (
+            f"s={float(row['selection_coefficient']):.6f}|"
+            f"af={float(row['target_allele_frequency']):.6f}"
+        )
+        cell = manifest["cells"][key]
+        observed_shortened_bound |= float(row["population_af_lower"]) != float(
+            cell["population_af_lower_inclusive"]
+        )
+        _, _, _, origin, event = calibration._load_planned_eas_cell(root, row, manifest)
+        assert origin == cell["origin_contract"]
+        assert event["events"] == cell["extended_events"]
+        assert event["event_contract_sha256"] == row["event_contract_sha256"]
+    assert observed_shortened_bound
+
+
+def test_planned_cell_rebuild_rejects_self_consistent_bound_tampering(
+    planned_bundle,
+):
+    root, _, _, _, _, _, plans, manifest = planned_bundle
+    row = plans[calibration.PHASE_SCREEN].iloc[0].to_dict()
+    tampered = json.loads(json.dumps(manifest))
+    tampered["design"]["af_half_width"] = 0.026
+    tampered.pop("contract_sha256")
+    tampered["contract_sha256"] = calibration._canonical_sha256(tampered)
+    with pytest.raises(ValueError, match="AF bounds differ"):
+        calibration._load_planned_eas_cell(root, row, tampered)
+
+
 def test_plan_manifest_and_plan_checksum_tampering_is_rejected(
     planned_bundle, tmp_path
 ):
