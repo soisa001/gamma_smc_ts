@@ -691,7 +691,7 @@ def test_aggregation_lock_recovers_dead_local_owner(tmp_path):
     assert list(tmp_path.glob(".replicate_aggregation.lock.stale.*"))
 
 
-def test_snapshot_copies_compact_coverage_inputs_and_hashes_tree(tmp_path):
+def test_snapshot_copies_compact_inputs_and_hashes_bulky_raw_artifacts(tmp_path):
     base = _base("intro_s0p010_af10", 0.01, 0.1)
     record = _expanded(base, 0)
     campaign = tmp_path / "campaign"
@@ -706,6 +706,14 @@ def test_snapshot_copies_compact_coverage_inputs_and_hashes_tree(tmp_path):
     for filename, contents in expected.items():
         (specification_dir / filename).write_text(contents, encoding="utf-8")
     (specification_dir / "selected.trees").write_bytes(b"tree bytes")
+    decoded_dir = specification_dir / "decoded"
+    decoded_dir.mkdir()
+    raw_summary = decoded_dir / "overall.summary.tsv"
+    raw_summary.write_text("position\tvalue\n1\t0.5\n", encoding="utf-8")
+    raw_run = decoded_dir / "overall.summary.tsv.run.json"
+    raw_run.write_text('{"stdout":"verbose progress"}\n', encoding="utf-8")
+    compact_contract = decoded_dir / "overall.summary.tsv.contract.json"
+    compact_contract.write_text('{"decoder_sha256":"abc"}\n', encoding="utf-8")
     event_dir = campaign / "phase_invocations"
     event_dir.mkdir(parents=True)
     (event_dir / "phase.json").write_text(
@@ -722,6 +730,19 @@ def test_snapshot_copies_compact_coverage_inputs_and_hashes_tree(tmp_path):
     tree_relative = f"work/{record['specification_id']}/selected.trees"
     assert records[tree_relative]["snapshot_mode"] == "hash_only"
     assert records[tree_relative]["sha256"] == hashlib.sha256(b"tree bytes").hexdigest()
+    for raw_path in (raw_summary, raw_run):
+        relative = f"work/{record['specification_id']}/decoded/{raw_path.name}"
+        assert records[relative]["snapshot_mode"] == "hash_only"
+        assert records[relative]["snapshot_path"] is None
+        assert (
+            records[relative]["sha256"]
+            == hashlib.sha256(raw_path.read_bytes()).hexdigest()
+        )
+    contract_relative = (
+        f"work/{record['specification_id']}/decoded/{compact_contract.name}"
+    )
+    assert records[contract_relative]["snapshot_mode"] == "copied"
+    assert (Path(snapshot["root"]) / contract_relative).is_file()
     assert records["phase_invocations/phase.json"]["snapshot_mode"] == "copied"
 
 

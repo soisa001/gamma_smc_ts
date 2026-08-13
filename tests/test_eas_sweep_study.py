@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import queue
 import socket
 import sys
 from dataclasses import asdict
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -1298,6 +1300,79 @@ def _write_decode_cache_fixture(
         "completion_path": completion_path,
         "run_path": run_path,
     }
+
+
+def test_portable_path_matches_wsl_drvfs_and_windows_spelling():
+    windows = (
+        r"C:\Users\Lenovo\OneDrive\Documents\cxt_demo\gamma_smc_ts"
+        r"\work\intro_s0p001_af10__rep001\decoded\overall.summary.tsv"
+    )
+    wsl = (
+        "/mnt/c/Users/Lenovo/OneDrive/Documents/cxt_demo/gamma_smc_ts/"
+        "work/intro_s0p001_af10__rep001/decoded/overall.summary.tsv"
+    )
+
+    assert study._portable_path_matches(wsl, windows)  # noqa: SLF001
+    assert study._portable_path_matches(  # noqa: SLF001
+        wsl, windows.replace("C:", "c:", 1)
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        wsl.replace("/mnt/c/", "/mnt/d/"), windows
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        wsl.replace("rep001", "rep002"), windows
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        wsl.replace("/mnt/c/", "/mnt/C/"), windows
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        wsl.replace("/Users/", "/users/"), windows
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        "work/intro_s0p001_af10__rep001/decoded/overall.summary.tsv", windows
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        "/unrelated/work/intro_s0p001_af10__rep001/decoded/overall.summary.tsv",
+        windows,
+    )
+    assert not study._portable_path_matches(  # noqa: SLF001
+        wsl.replace("/work/", "/work/../work/"), windows
+    )
+
+
+@pytest.mark.skipif(os.name != "nt", reason="requires native Windows path spellings")
+def test_decode_cache_accepts_equivalent_wsl_run_paths(tmp_path):
+    fixture = _write_decode_cache_fixture(tmp_path)
+    run = json.loads(fixture["run_path"].read_text(encoding="utf-8"))
+
+    def as_wsl(path):
+        resolved = Path(path).resolve()
+        return f"/mnt/{resolved.drive[0].lower()}{resolved.as_posix()[2:]}"
+
+    run["command"][0] = as_wsl(fixture["decoder_path"])
+    run["command"][run["command"].index("--recent_summary") + 1] = as_wsl(
+        fixture["output"]
+    )
+    run["command"][run["command"].index("--pairs_file") + 1] = as_wsl(
+        fixture["pairs_path"]
+    )
+    run["tree_sequence_vcf_producer_command"][3] = as_wsl(fixture["tree_path"])
+    run["input_path"] = as_wsl(fixture["tree_path"])
+    fixture["run_path"].write_text(json.dumps(run), encoding="utf-8")
+    completion = json.loads(fixture["completion_path"].read_text(encoding="utf-8"))
+    completion["run_sha256"] = hashlib.sha256(
+        fixture["run_path"].read_bytes()
+    ).hexdigest()
+    fixture["completion_path"].write_text(json.dumps(completion), encoding="utf-8")
+
+    contract = json.loads(fixture["contract_path"].read_text(encoding="utf-8"))
+    assert study._valid_decode_cache(  # noqa: SLF001
+        fixture["output"],
+        contract,
+        tree_path=fixture["tree_path"],
+        pairs_path=fixture["pairs_path"],
+        decoder_path=fixture["decoder_path"],
+    )
 
 
 def test_decode_lock_is_separate_and_recovers_only_a_dead_local_owner(

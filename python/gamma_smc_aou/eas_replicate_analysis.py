@@ -94,6 +94,10 @@ _COMPACT_SPECIFICATION_INPUTS = (
     "decoded_profiles.tsv.gz",
     "decoded_internal_contrasts.tsv.gz",
 )
+_HASH_ONLY_DECODE_SUFFIXES = (
+    ".summary.tsv",
+    ".summary.tsv.run.json",
+)
 
 
 def _utc_now() -> str:
@@ -259,7 +263,7 @@ def _snapshot_input_paths(
     campaign_dir: Path,
     expanded: Sequence[Mapping[str, Any]],
 ) -> dict[Path, str]:
-    """Return every compact analysis input plus hash-only large tree inputs."""
+    """Return compact analysis inputs plus hash-only bulky raw artifacts."""
     paths: dict[Path, str] = {}
 
     def include(path: Path, mode: str = "copied") -> None:
@@ -283,9 +287,15 @@ def _snapshot_input_paths(
         )
         for filename in _COMPACT_SPECIFICATION_INPUTS:
             include(specification_dir / filename)
-        for subdirectory in ("pairs", "decoded"):
-            for path in sorted((specification_dir / subdirectory).glob("*")):
-                include(path)
+        for path in sorted((specification_dir / "pairs").glob("*")):
+            include(path)
+        for path in sorted((specification_dir / "decoded").glob("*")):
+            mode = (
+                "hash_only"
+                if path.name.endswith(_HASH_ONLY_DECODE_SUFFIXES)
+                else "copied"
+            )
+            include(path, mode=mode)
         for pattern in (".simulation.lock.stale.*", ".decode.lock.stale.*"):
             for path in sorted(specification_dir.glob(pattern)):
                 include(path)

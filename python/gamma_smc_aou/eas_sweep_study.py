@@ -18,6 +18,7 @@ import multiprocessing
 import os
 import platform
 import queue
+import re
 import shutil
 import signal
 import socket
@@ -2988,16 +2989,42 @@ def _legacy_decode_contract_with_sha256(
     }
 
 
+def _portable_path_parts(value: Any) -> tuple[str | None, list[str]]:
+    """Return lexical path parts with Windows and WSL drive roots unified.
+
+    A decoder invoked from WSL records ``/mnt/c/...`` even when a later
+    integrity-only plot pass sees the same file as ``C:\\...``.  Treat only
+    that explicit drvfs mapping as the same root. Path components retain their
+    recorded case, and dot components are rejected rather than resolved.
+    """
+    text = str(value).replace("\\", "/").rstrip("/")
+    wsl_drive = re.fullmatch(r"/mnt/([a-z])(?:/(.*))?", text)
+    windows_drive = re.fullmatch(r"([A-Za-z]):(?:/(.*))?", text)
+    drive_match = wsl_drive or windows_drive
+    if drive_match is not None:
+        drive = drive_match.group(1).casefold()
+        remainder = drive_match.group(2) or ""
+        parts = [part for part in remainder.split("/") if part]
+        if any(part in {".", ".."} for part in parts):
+            return None, []
+        return drive, parts
+    return None, []
+
+
 def _portable_path_matches(recorded: Any, expected: Path | str) -> bool:
-    """Compare native/WSL spellings while retaining a long artifact suffix."""
-    left = str(recorded).replace("\\", "/").rstrip("/")
-    right = str(expected).replace("\\", "/").rstrip("/")
-    if left == right:
+    """Compare absolute Windows and explicit lowercase WSL drvfs paths."""
+    left_text = str(recorded).replace("\\", "/").rstrip("/")
+    right_text = str(expected).replace("\\", "/").rstrip("/")
+    if left_text == right_text:
         return True
-    left_parts = [part for part in left.split("/") if part]
-    right_parts = [part for part in right.split("/") if part]
-    common = min(len(left_parts), len(right_parts))
-    return common >= 4 and left_parts[-common:] == right_parts[-common:]
+    left_drive, left_parts = _portable_path_parts(recorded)
+    right_drive, right_parts = _portable_path_parts(expected)
+    return (
+        left_drive is not None
+        and right_drive is not None
+        and left_drive == right_drive
+        and left_parts == right_parts
+    )
 
 
 def _decoder_command_options(command: Any) -> tuple[str, dict[str, Any]]:
