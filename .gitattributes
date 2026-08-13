@@ -20,7 +20,9 @@ scripts/audit_freeze_eas_selected.py -text
 scripts/calibrate_han_frequency_conditioned.py -text
 scripts/calibrate_han_fixed_v2.py -text
 python/gamma_smc_aou/focused_han_direct_v3.py -text
+python/gamma_smc_aou/focused_selected_production.py -text
 scripts/run_focused_han_direct_v3.py -text
+scripts/run_focused_selected_production.py -text
 scripts/bootstrap_focused_han_direct_v3.sh -text
 scripts/bootstrap_eas_sweep_study.sh -text
 scripts/bootstrap_uv.sh -text
