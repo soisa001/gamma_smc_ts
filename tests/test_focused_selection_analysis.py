@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import struct
 
 import numpy as np
 import pandas as pd
@@ -401,11 +403,84 @@ def test_spatial_profiles_validate_counts_and_write_png_pdf_with_source_label(tm
     assert paths
     assert {path.suffix for path in paths} == {".png", ".pdf"}
     assert all(path.is_file() and path.stat().st_size > 0 for path in paths)
+    png = next(path for path in paths if path.suffix == ".png")
+    with png.open("rb") as stream:
+        stream.seek(16)
+        width, height = struct.unpack(">II", stream.read(8))
+    assert (width, height) == (3_300, 2_550)
 
     bad = spatial.copy()
     bad.loc[bad.index[0], "n_units"] += 1
     with pytest.raises(ValueError, match="unit count"):
         analysis.validate_spatial_summaries(bad, classes)
+
+
+def test_spatial_profiles_use_one_shared_x_label_for_three_af_panels(
+    tmp_path, monkeypatch
+):
+    spatial = pd.concat(
+        [
+            _synthetic_spatial().assign(target_allele_frequency=af)
+            for af in (0.1, 0.2, 0.3)
+        ],
+        ignore_index=True,
+    )
+    captured = []
+
+    def capture_layout(figure, _path, **save_options):
+        if not captured:
+            captured.append(
+                {
+                    "figure_labels": [text.get_text() for text in figure.texts],
+                    "axis_labels": [axis.get_xlabel() for axis in figure.axes],
+                    "axes_count": len(figure.axes),
+                    "subplot_bottom": figure.subplotpars.bottom,
+                    "save_options": save_options,
+                }
+            )
+
+    monkeypatch.setattr(analysis, "_atomic_figure", capture_layout)
+    paths = analysis.plot_spatial_probability_profiles(spatial, tmp_path)
+
+    assert paths
+    assert captured[0]["axes_count"] == 3
+    assert captured[0]["figure_labels"].count("Position in 10-Mb region (Mb)") == 1
+    assert captured[0]["axis_labels"] == ["", "", ""]
+    assert captured[0]["subplot_bottom"] == pytest.approx(0.28)
+    assert captured[0]["save_options"] == {"bbox_inches": None}
+
+
+def test_analysis_source_hash_is_portable_across_crlf_checkouts(tmp_path):
+    lf = tmp_path / "lf.py"
+    crlf = tmp_path / "crlf.py"
+    lf.write_bytes(b"print('one')\nprint('two')\n")
+    crlf.write_bytes(b"print('one')\r\nprint('two')\r\n")
+
+    expected = hashlib.sha256(lf.read_bytes()).hexdigest()
+    assert analysis._canonical_text_sha256(lf) == expected
+    assert analysis._canonical_text_sha256(crlf) == expected
+
+
+@pytest.mark.parametrize(
+    "payload",
+    (b"\xef\xbb\xbfprint('bom')\n", b"print('bare')\rnext\n", b"\xff\n"),
+)
+def test_analysis_source_hash_rejects_nonportable_text(tmp_path, payload):
+    source = tmp_path / "source.py"
+    source.write_bytes(payload)
+
+    with pytest.raises(ValueError):
+        analysis._canonical_text_sha256(source)
+
+
+def test_analysis_implementation_paths_are_repo_relative():
+    contract = analysis._analysis_implementation_contract()
+
+    assert contract["path_identity"] == "repo-relative POSIX for in-repository paths"
+    assert all(
+        record["path"].startswith("python/gamma_smc_aou/")
+        for record in contract["sources"].values()
+    )
 
 
 def test_empirical_schema_matches_exact_cell_and_uses_plus_one_null():

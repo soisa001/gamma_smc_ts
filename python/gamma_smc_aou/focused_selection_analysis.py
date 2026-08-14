@@ -159,6 +159,42 @@ def _canonical_sha256(value: Any) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _canonical_text_sha256(path: str | Path) -> str:
+    """Hash strict UTF-8 source text with CRLF canonicalized to LF."""
+
+    source_path = Path(path)
+    try:
+        raw = source_path.read_bytes()
+    except OSError as error:
+        raise ValueError(f"analysis source is unreadable: {source_path}") from error
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError(f"analysis source has a UTF-8 BOM: {source_path}")
+    try:
+        text = raw.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as error:
+        raise ValueError(
+            f"analysis source is not strict UTF-8: {source_path}"
+        ) from error
+    without_crlf = text.replace("\r\n", "")
+    if "\r" in without_crlf:
+        raise ValueError(
+            f"analysis source contains a bare carriage return: {source_path}"
+        )
+    canonical = text.replace("\r\n", "\n").encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _analysis_path_identity(path: str | Path) -> str:
+    """Use a stable repo-relative identity for in-repository analysis inputs."""
+
+    resolved = Path(path).resolve()
+    repository_root = Path(__file__).resolve().parents[2]
+    try:
+        return resolved.relative_to(repository_root).as_posix()
+    except ValueError:
+        return str(resolved)
+
+
 def _stable_seed(base_seed: int, label: str) -> int:
     digest = hashlib.sha256(f"{base_seed}:{label}".encode()).digest()
     return int(1 + int.from_bytes(digest[:8], "big") % (2**32 - 2))
@@ -170,11 +206,19 @@ def _analysis_implementation_contract() -> dict[str, Any]:
         if not path.is_file():
             raise ValueError(f"analysis implementation source is absent: {path}")
         sources[path.name] = {
-            "path": str(path),
-            "sha256": sha256_file(path),
+            "path": _analysis_path_identity(path),
+            "sha256": _canonical_text_sha256(path),
         }
     return {
         "sources": sources,
+        "source_hashing": {
+            "encoding": "strict UTF-8",
+            "newline_canonicalization": "CRLF to LF",
+            "unicode_normalization": "none",
+            "reject_bom": True,
+            "reject_bare_carriage_return": True,
+        },
+        "path_identity": "repo-relative POSIX for in-repository paths",
         "software": {
             "python": platform.python_version(),
             "matplotlib": matplotlib.__version__,
@@ -217,7 +261,9 @@ def _atomic_frame(path: Path, frame: pd.DataFrame) -> None:
         temporary.unlink(missing_ok=True)
 
 
-def _atomic_figure(figure: plt.Figure, path: Path) -> None:
+def _atomic_figure(
+    figure: plt.Figure, path: Path, *, bbox_inches: str | None = "tight"
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + f".tmp.{os.getpid()}")
     try:
@@ -225,7 +271,7 @@ def _atomic_figure(figure: plt.Figure, path: Path) -> None:
             temporary,
             format=path.suffix.removeprefix("."),
             dpi=300 if path.suffix == ".png" else None,
-            bbox_inches="tight",
+            bbox_inches=bbox_inches,
         )
         os.replace(temporary, path)
     finally:
@@ -2398,11 +2444,15 @@ def plot_spatial_probability_profiles(
                         alpha=0.8,
                     )
                     axis.set_title(f"Final AF {100 * af:.0f}%", fontsize=18)
-                    axis.set_xlabel("Position in 10-Mb region (Mb)", fontsize=16)
                     axis.tick_params(labelsize=13)
                     axis.grid(alpha=0.20)
                 axes[0].set_ylabel(
                     f"Mean P(TMRCA < {threshold / 1_000:g} kya)", fontsize=16
+                )
+                figure.supxlabel(
+                    "Position in 10-Mb region (Mb)",
+                    fontsize=16,
+                    y=0.205,
                 )
                 handles, labels = axes[-1].get_legend_handles_labels()
                 figure.legend(
@@ -2422,7 +2472,7 @@ def plot_spatial_probability_profiles(
                     f"s={coefficient:g}, x={threshold / 1_000:g} kya",
                     fontsize=20,
                 )
-                figure.subplots_adjust(bottom=0.23, top=0.88, wspace=0.18)
+                figure.subplots_adjust(bottom=0.28, top=0.88, wspace=0.18)
                 safe = str(demography).replace("/", "_")
                 coefficient_slug = str(coefficient).replace(".", "p")
                 threshold_slug = f"{float(threshold):g}".replace(".", "p")
@@ -2431,7 +2481,7 @@ def plot_spatial_probability_profiles(
                         f"spatial_probability_{safe}_s{coefficient_slug}_"
                         f"t{threshold_slug}.{extension}"
                     )
-                    _atomic_figure(figure, path)
+                    _atomic_figure(figure, path, bbox_inches=None)
                     outputs.append(path)
                 plt.close(figure)
     return outputs
@@ -2760,23 +2810,29 @@ def run_focused_analysis(
         "schema": SCHEMA_VERSION,
         "implementation": _analysis_implementation_contract(),
         "inputs": {
-            "class_summaries_path": str(class_summaries_path),
+            "class_summaries_path": _analysis_path_identity(class_summaries_path),
             "class_summaries_sha256": sha256_file(class_summaries_path),
             "pair_summaries_path": (
-                str(pair_summaries) if pair_summaries is not None else None
+                _analysis_path_identity(pair_summaries)
+                if pair_summaries is not None
+                else None
             ),
             "pair_summaries_sha256": (
                 sha256_file(pair_summaries) if pair_summaries is not None else None
             ),
             "spatial_summaries_path": (
-                str(spatial_summaries) if spatial_summaries is not None else None
+                _analysis_path_identity(spatial_summaries)
+                if spatial_summaries is not None
+                else None
             ),
             "spatial_summaries_sha256": (
                 sha256_file(spatial_summaries)
                 if spatial_summaries is not None
                 else None
             ),
-            "empirical_path": str(empirical) if empirical is not None else None,
+            "empirical_path": (
+                _analysis_path_identity(empirical) if empirical is not None else None
+            ),
             "empirical_sha256": sha256_file(empirical)
             if empirical is not None
             else None,
