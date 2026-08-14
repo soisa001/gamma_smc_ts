@@ -1,0 +1,45 @@
+{
+  "attempt_record": {
+    "adopted_children_reaped": 0,
+    "attempt_zero_based": 3,
+    "child_identity_observed": true,
+    "child_pgid": 1448,
+    "child_pid": 1448,
+    "child_process_identity": {
+      "boot_id": "b1241197-5e9c-41f5-a737-6d5f395b103f",
+      "pid": 1448,
+      "start_ticks": 393262
+    },
+    "child_sid": 1448,
+    "direct_child_reaped": false,
+    "engine_wrapper_pid": 1449,
+    "engine_wrapper_process_identity": {
+      "boot_id": "b1241197-5e9c-41f5-a737-6d5f395b103f",
+      "pid": 1449,
+      "start_ticks": 393273
+    },
+    "execution_id": "2143141300ba6c18893fbc58f4422db548142a864bc83f957c68b62286c3e9fd",
+    "parent_death_watchdog_armed": true,
+    "process_group_gone": false,
+    "schema": "gamma-smc.han-direct-production-v3-process-supervisor/v1",
+    "sigkill_sent": false,
+    "sigterm_sent": false,
+    "simulation_seed": 1155429407,
+    "supervisor_pid": 427,
+    "supervisor_process_identity": {
+      "boot_id": "b1241197-5e9c-41f5-a737-6d5f395b103f",
+      "pid": 427,
+      "start_ticks": 312732
+    },
+    "supervisor_started_unix_ns": 1786658829820002827,
+    "temp_directory": ".han_v3_attempt_003_seed_1155429407_g9r_5uv2",
+    "temp_tree_created": false,
+    "temp_tree_loaded": false,
+    "temp_tree_removed": false,
+    "term_grace_seconds": 5.0,
+    "timeout_seconds": 300.0
+  },
+  "payload_sha256": "f7e5570746670f6a73a356d6ec69609557d9e74d4536f529dfb0c80d43e5c309",
+  "schema": "gamma-smc.han-direct-production-v3-active-supervision/v1",
+  "status": "active"
+}

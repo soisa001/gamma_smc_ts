@@ -1,0 +1,11 @@
+{
+  "parent_death_watchdog_armed": true,
+  "session_pgid": 1322,
+  "session_pid": 1322,
+  "session_process_identity": {
+    "boot_id": "b1241197-5e9c-41f5-a737-6d5f395b103f",
+    "pid": 1322,
+    "start_ticks": 391791
+  },
+  "session_sid": 1322
+}

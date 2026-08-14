@@ -1,0 +1,116 @@
+{
+  "implementation": {
+    "eas_resource_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+    "slim": {
+      "path": ".native-stdpopsim/bin/slim",
+      "sha256": "67409ff190808c2967c949cae6697bf235010dbe832389cb4976d9089b5f5e1d"
+    },
+    "sources": {
+      "focused_selection_EAS_sim/calibration/han_direct_production_v3/han_direct_v3_attempt_seed_plan.tsv": "04017a12d2a39709777be7fc9767fcf6834bf714519296bf3a7f0878e536f376",
+      "focused_selection_EAS_sim/calibration/han_direct_production_v3/han_direct_v3_excluded_seed_inventory.json": "5ffd2085d4e9598855ff000a7486b6e9bee45e5b9076bd70357ca346095149b5",
+      "focused_selection_EAS_sim/calibration/han_direct_production_v3/han_direct_v3_excluded_seed_registry.tsv": "85035c70242f16b614a43dedf8d04020f5b185feabf9ade85370d0867ee067be",
+      "focused_selection_EAS_sim/calibration/han_direct_production_v3/han_direct_v3_manifest.json": "7ba2be1875ea804c1cdbec4ae3b9fa5dffb8307799d6af0c810ccc9df5c40e79",
+      "python/gamma_smc_aou/eas_sweep_analysis.py": "e8f30519c986416daf4d4bb825aef459d226b8ade90606286d96bed603d4abe6",
+      "python/gamma_smc_aou/eas_sweep_models.py": "365854b146d4512b6443d8dc28abaae4e53d7ee0ad5403d03536e06e8b016ae6",
+      "python/gamma_smc_aou/eas_sweep_study.py": "caab1f7d682d5d70b39fd39196330bb2aff025b6a974f23d8b1f31b2157e7530",
+      "python/gamma_smc_aou/focused_han_direct_v3.py": "4a471605fc5e95e993acc94902fd7d9514eedc74b786767e5d69e872245f1d00",
+      "python/gamma_smc_aou/focused_han_fixed_v2_calibration.py": "dfa1abc5887b6ecbd1aa3c9a698bc9db16d3e9aebbb7edb0981584ccfc909c18",
+      "python/gamma_smc_aou/focused_selection_simulation.py": "29b52d52adb76d2aa195fb0900baef829f92f1ed0b7b3edbff93cadce0f26448",
+      "scripts/run_focused_han_direct_v3.py": "a0346b4c9eb1d80f229e0758c3046df6a60e14b0d713868220f03c5fe048703e",
+      "tests/test_focused_han_direct_v3.py": "c903e689414f3e69a59b6363b3e96b5aa5bd2b8eda20bba53d2f526ef1dc1b51"
+    }
+  },
+  "parameters": {
+    "candidate_pool_diploids": 500,
+    "candidate_pool_frequency_gate": {
+      "interval_source": "unit.population_af_lower_to_population_af_upper_inclusive",
+      "order": "before_exact_sample_panel",
+      "schema": "gamma-smc.candidate-pool-frequency-gate/v1",
+      "scope": "selected_and_neutral"
+    },
+    "focal_semantic_validation": {
+      "exact_sample_alt_count": 60,
+      "identity": {
+        "expected_mutation_type": 1,
+        "expected_selection_coeff": 0.0,
+        "focal_position_0based": 5000000,
+        "realized_origin_time_generations": 2400.0,
+        "requested_origin_time_generations": 2400.0,
+        "schema": "gamma-smc.selected-focal-identity/v1",
+        "single_site_id": "eas_selected_site",
+        "slim_scaling_factor": 5.0,
+        "slim_time_rule": "cycle - realized_origin_time / Q",
+        "source_population": "Neanderthal",
+        "source_subpopulation": 7
+      },
+      "minimum_heterozygous_diploids": 1,
+      "minimum_hom_alt_diploids": 2,
+      "minimum_hom_ref_diploids": 2,
+      "sample_diploids": 100,
+      "schema": "gamma-smc.focused-focal-semantics/v1",
+      "simulation_class": "selected",
+      "tree_manifest_exact_match": true
+    },
+    "han_selection_calibration": {
+      "attempt_schedule_sha256": "45c4a50bacb5e367a32c7523970ec25535b04a3ab3f0f886d6b2b862b0920192",
+      "failed_v2_inferential_use": false,
+      "gamma_smc_statistics_used": false,
+      "manifest_path": "focused_selection_EAS_sim/calibration/han_direct_production_v3/han_direct_v3_manifest.json",
+      "manifest_sha256": "7ba2be1875ea804c1cdbec4ae3b9fa5dffb8307799d6af0c810ccc9df5c40e79",
+      "realized_selection_end_generations_ago": 1185.0,
+      "schema": "gamma-smc.han-direct-production-v3-authorization/v1",
+      "seed_plan_path": "focused_selection_EAS_sim/calibration/han_direct_production_v3/han_direct_v3_attempt_seed_plan.tsv",
+      "seed_plan_sha256": "04017a12d2a39709777be7fc9767fcf6834bf714519296bf3a7f0878e536f376",
+      "status": "planned_direct_production_unit",
+      "unit_id": "ancient_eurasia_han_introgression__af30__selected_s0p005__rep009"
+    },
+    "introgression_mutation_age_generations": 2400.0,
+    "introgression_source_presence_epsilon": 1e-09,
+    "neutral_ancestry_batch_size": 4,
+    "neutral_ancestry_model": "DTWF200ThenSmcPrimeApproxCoalescent",
+    "neutral_ancestry_model_keywords": [
+      "dtwf",
+      "smc_prime"
+    ],
+    "neutral_candidate_index": {
+      "introgression": "pulse_migrations_then_branch_crossing_2400_generations",
+      "no_introgression": "marginal_tree_at_fixed_5Mb_site"
+    },
+    "neutral_eas_ascertainment_length_bp": 10000000,
+    "neutral_han_ascertainment_length_bp": 20000000,
+    "neutral_pool_diploids": 500,
+    "neutral_recent_dtwf_duration_generations": 200.0,
+    "selected_pool_diploids": 500,
+    "slim_burn_in": 0.1,
+    "slim_scaling_factor": 5.0
+  },
+  "schema": "gamma-smc.focused-selection-simulation/v5",
+  "software": {
+    "msprime": "1.4.2",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "pyslim": "1.1.1",
+    "python": "3.11.15",
+    "stdpopsim": "0.3.0",
+    "tskit": "1.0.3"
+  },
+  "unit": {
+    "demography_id": "ancient_eurasia_han_introgression",
+    "demography_kind": "introgression",
+    "exact_sample_alt_count": 60,
+    "focal_position_bp": 5000000,
+    "population": "Han",
+    "population_af_lower": 0.2749999999999999,
+    "population_af_upper": 0.325,
+    "replicate_index": 9,
+    "sample_diploids": 100,
+    "seed": 1163267586,
+    "selection_coefficient": 0.005,
+    "selection_origin": "archaic_specific_introgressed_standing_variation",
+    "sequence_length_bp": 10000000,
+    "simulation_class": "selected",
+    "source_model": "stdpopsim AncientEurasia_9K19",
+    "target_allele_frequency": 0.3,
+    "unit_id": "ancient_eurasia_han_introgression__af30__selected_s0p005__rep009"
+  }
+}
