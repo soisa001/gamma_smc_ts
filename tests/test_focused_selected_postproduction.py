@@ -248,10 +248,13 @@ def test_authorization_load_rejects_current_evidence_drift(tmp_path, monkeypatch
 
 def test_parser_and_module_have_no_simulation_capable_action():
     assert postproduction.POSTPRODUCTION_ACTIONS == (
+        "attest-eas",
+        "supersede-legacy",
         "authorize",
         "validate",
         "aggregate-validate",
         "aggregate",
+        "decode",
         "analyze",
         "report",
     )
@@ -356,6 +359,22 @@ def test_authorization_build_validates_evidence_before_entering_patch(
     normalization = root / postproduction.DEFAULT_NORMALIZATION_RELATIVE_PATH
     normalization.parent.mkdir(parents=True)
     normalization.write_text("{}", encoding="utf-8")
+    eas_attestation_path = root / postproduction.DEFAULT_EAS_ATTESTATION_RELATIVE_PATH
+    eas_attestation_path.parent.mkdir(parents=True, exist_ok=True)
+    eas_attestation_path.write_text("{}", encoding="utf-8")
+    legacy = _signed(
+        {
+            "schema": postproduction.LEGACY_POSTPRODUCTION_AUTHORIZATION_SCHEMA,
+            "status": "authorized",
+        }
+    )
+    legacy_path = (
+        root
+        / postproduction.DEFAULT_SUPERSEDED_AUTHORIZATION_RELATIVE_DIR
+        / f"postproduction_authorization_v1__{legacy['payload_sha256']}.json"
+    )
+    legacy_path.parent.mkdir(parents=True)
+    legacy_path.write_text(json.dumps(legacy), encoding="utf-8")
     for relative in (
         *postproduction.POSTPRODUCTION_SOURCE_PATHS,
         *postproduction.DELEGATED_SOURCE_PATHS,
@@ -365,6 +384,14 @@ def test_authorization_build_validates_evidence_before_entering_patch(
         source.write_text(f"# {relative}\n", encoding="utf-8")
 
     order: list[str] = []
+    eas_attestation = {
+        "payload_sha256": "e" * 64,
+        "cache_audit": {
+            "units": 60,
+            "cache_validated_read_only": True,
+            "variant_counts": {"canonical": 20, "transient_audit_text": 40},
+        },
+    }
     evidence = {
         "normalization": {"path": normalization.relative_to(root).as_posix()},
         "canonical_han_artifacts": {
@@ -381,9 +408,15 @@ def test_authorization_build_validates_evidence_before_entering_patch(
 
     @contextmanager
     def patched():
-        order.append("enter")
+        order.append("han-enter")
         yield
-        order.append("exit")
+        order.append("han-exit")
+
+    @contextmanager
+    def patched_eas(*_args, **_kwargs):
+        order.append("eas-enter")
+        yield
+        order.append("eas-exit")
 
     preflight = {
         "payload_sha256": "p" * 64,
@@ -418,11 +451,299 @@ def test_authorization_build_validates_evidence_before_entering_patch(
     monkeypatch.setattr(
         postproduction.selected, "build_aggregate_readiness", build_readiness
     )
+    monkeypatch.setattr(
+        postproduction,
+        "load_eas_contract_attestation",
+        lambda *_args, **_kwargs: (order.append("eas-audit"), eas_attestation)[1],
+    )
+    monkeypatch.setattr(
+        postproduction,
+        "patched_eas_contract_attestation_validation",
+        patched_eas,
+    )
+    monkeypatch.setattr(
+        postproduction,
+        "_validate_eas_preflight_binding",
+        lambda *_args, **_kwargs: order.append("eas-binding"),
+    )
     payload = postproduction.build_postproduction_authorization(
         repo_root=root,
         slim_path=slim,
         integration_manifest_path=integration,
         normalization_path=normalization,
+        eas_attestation_path=eas_attestation_path,
     )
-    assert order == ["evidence", "enter", "preflight", "exit"]
+    assert order == [
+        "evidence",
+        "eas-audit",
+        "han-enter",
+        "eas-enter",
+        "preflight",
+        "eas-exit",
+        "han-exit",
+        "eas-binding",
+    ]
     assert payload["simulation_route_present"] is False
+
+
+def _contract_with_attribute_pair(pair, *, science_value=1):
+    return {
+        "schema": "simulation-contract",
+        "science": {"fixed_value": science_value},
+        "implementation": {
+            "sources": {
+                postproduction.EAS_ATTRIBUTE_SOURCE_PATHS[0]: pair[0],
+                postproduction.EAS_ATTRIBUTE_SOURCE_PATHS[1]: pair[1],
+                "python/gamma_smc_aou/focused_selection_simulation.py": "s" * 64,
+            }
+        },
+    }
+
+
+def test_legacy_authorization_is_atomically_preserved_and_bound(tmp_path):
+    root = tmp_path.resolve()
+    canonical = root / postproduction.DEFAULT_AUTHORIZATION_RELATIVE_PATH
+    canonical.parent.mkdir(parents=True)
+    legacy = _signed(
+        {
+            "schema": postproduction.LEGACY_POSTPRODUCTION_AUTHORIZATION_SCHEMA,
+            "status": "authorized",
+            "evidence": "legacy-v1",
+        }
+    )
+    content = (json.dumps(legacy, indent=2, sort_keys=True) + "\n").encode()
+    canonical.write_bytes(content)
+    record = postproduction.supersede_legacy_postproduction_authorization(
+        repo_root=root
+    )
+    archive = root / record["path"]
+    assert not canonical.exists()
+    assert archive.read_bytes() == content
+    assert record["payload_sha256"] == legacy["payload_sha256"]
+    assert record["preservation_operation"] == "same_volume_atomic_rename"
+    assert record["bytes_deleted"] is False
+    assert (
+        postproduction.supersede_legacy_postproduction_authorization(repo_root=root)
+        == record
+    )
+
+
+def test_unknown_legacy_authorization_is_not_moved(tmp_path):
+    root = tmp_path.resolve()
+    canonical = root / postproduction.DEFAULT_AUTHORIZATION_RELATIVE_PATH
+    canonical.parent.mkdir(parents=True)
+    content = b'{"schema":"unknown","status":"authorized"}\n'
+    canonical.write_bytes(content)
+    with pytest.raises(ValueError, match="schema is unknown"):
+        postproduction.supersede_legacy_postproduction_authorization(
+            repo_root=root
+        )
+    assert canonical.read_bytes() == content
+    archive_dir = root / postproduction.DEFAULT_SUPERSEDED_AUTHORIZATION_RELATIVE_DIR
+    assert not archive_dir.exists()
+
+
+def test_transient_attribute_evidence_is_exact_and_hash_bound(tmp_path):
+    records = postproduction._transient_attribute_evidence_records(tmp_path)
+    assert tuple(record["sha256"] for record in records.values()) == (
+        postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR
+    )
+    for source_path, record in records.items():
+        fixed = postproduction.EAS_TRANSIENT_ATTRIBUTE_EVIDENCE[source_path]
+        content = postproduction.base64.b64decode(fixed["content_base64"])
+        assert len(content) == record["size_bytes"]
+        assert hashlib.sha256(content).hexdigest() == record["sha256"]
+        assert content.endswith(b"focused_han_direct_v3_recovery_audit.py -text\n")
+
+
+def test_contract_normalization_allows_only_exact_two_attribute_differences():
+    expected = _contract_with_attribute_pair(
+        postproduction.EAS_CANONICAL_ATTRIBUTE_HASH_PAIR
+    )
+    transient = _contract_with_attribute_pair(
+        postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR
+    )
+    differences = postproduction._deep_difference_paths(transient, expected)
+    assert set(differences) == set(postproduction.EAS_ATTRIBUTE_CONTRACT_PATHS)
+    assert (
+        postproduction._classify_eas_contract_variant(
+            postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR, differences
+        )
+        == "transient_audit_text"
+    )
+    assert postproduction._normalized_eas_contract(transient, expected) == expected
+
+    science_drift = _contract_with_attribute_pair(
+        postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR, science_value=2
+    )
+    drift = postproduction._deep_difference_paths(science_drift, expected)
+    with pytest.raises(ValueError, match="outside two attributes"):
+        postproduction._classify_eas_contract_variant(
+            postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR, drift
+        )
+    assert postproduction._normalized_eas_contract(science_drift, expected) != expected
+
+
+@pytest.mark.parametrize(
+    "pair",
+    [
+        ("f" * 64, "e" * 64),
+        (
+            postproduction.EAS_CANONICAL_ATTRIBUTE_HASH_PAIR[0],
+            postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR[1],
+        ),
+        (
+            postproduction.EAS_TRANSIENT_ATTRIBUTE_HASH_PAIR[0],
+            postproduction.EAS_CANONICAL_ATTRIBUTE_HASH_PAIR[1],
+        ),
+    ],
+)
+def test_unknown_or_mixed_attribute_pairs_fail_closed(pair):
+    with pytest.raises(ValueError, match="unknown or mixed"):
+        postproduction._classify_eas_contract_variant(
+            pair, postproduction.EAS_ATTRIBUTE_CONTRACT_PATHS
+        )
+
+
+def test_eas_attestation_payload_corruption_fails_closed():
+    payload = _signed(
+        {
+            "schema": postproduction.EAS_CONTRACT_ATTESTATION_SCHEMA,
+            "status": "passed",
+            "cache_audit": {"units": 60},
+        }
+    )
+    payload["cache_audit"]["units"] = 59
+    with pytest.raises(ValueError, match="corrupt or incompatible"):
+        postproduction._validate_hashed_payload(
+            payload,
+            schema=postproduction.EAS_CONTRACT_ATTESTATION_SCHEMA,
+            status="passed",
+            label="EAS attestation",
+        )
+
+
+def test_output_artifact_tamper_is_detected(tmp_path):
+    unit = tmp_path / "work" / "unit"
+    artifacts = postproduction.simulation._completion_artifacts(unit)
+    paths = {
+        "tree": artifacts.tree_path,
+        "pair_table": artifacts.pair_table_path,
+        "overall_pairs": artifacts.overall_pairs_path,
+        "truth_profiles": artifacts.truth_profiles_path,
+        "truth_class_summaries": artifacts.truth_class_summaries_path,
+    }
+    outputs = {}
+    for index, (label, path) in enumerate(paths.items()):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(f"artifact-{index}\n".encode())
+        outputs[label] = {
+            "path": path.relative_to(unit).as_posix(),
+            "sha256": han_v3.sha256_file(path),
+        }
+    completion = {"outputs": outputs}
+    records = postproduction._attested_output_records(
+        unit_dir=unit, completion=completion, repo_root=tmp_path
+    )
+    assert set(records) == set(paths)
+    artifacts.tree_path.write_bytes(b"tampered\n")
+    with pytest.raises(ValueError, match="checksum differs: tree"):
+        postproduction._attested_output_records(
+            unit_dir=unit, completion=completion, repo_root=tmp_path
+        )
+
+
+def test_standard_raw_validator_fails_but_scoped_attestation_patch_succeeds_and_restores(
+    tmp_path, monkeypatch
+):
+    root = tmp_path.resolve()
+    integration = root / "integration.json"
+    units = root / "execution_units.tsv"
+    attestation_path = root / postproduction.DEFAULT_EAS_ATTESTATION_RELATIVE_PATH
+    attestation_path.parent.mkdir(parents=True)
+    integration.write_text("integration\n", encoding="utf-8")
+    units.write_text("units\n", encoding="utf-8")
+    attestation_path.write_text("attestation\n", encoding="utf-8")
+    payload = {
+        "payload_sha256": "a" * 64,
+        "selected_integration": {
+            **postproduction._file_record(integration, root),
+            "payload_sha256": "i" * 64,
+        },
+        "execution_units": postproduction._file_record(units, root),
+        "cache_audit": {"units": 60, "cache_validated_read_only": True},
+    }
+    bundle = SimpleNamespace(
+        integration_manifest_path=integration,
+        execution_units_path=units,
+    )
+
+    def raw_failure(_bundle):
+        raise ValueError("raw current-contract mismatch")
+
+    monkeypatch.setattr(
+        postproduction.selected,
+        "validate_eas_cached_units_read_only",
+        raw_failure,
+    )
+    with pytest.raises(ValueError, match="raw current-contract mismatch"):
+        postproduction.selected.validate_eas_cached_units_read_only(bundle)
+    with postproduction.patched_eas_contract_attestation_validation(
+        payload, path=attestation_path, repo_root=root
+    ):
+        patched = postproduction.selected.validate_eas_cached_units_read_only(bundle)
+        assert patched["units"] == 60
+        assert patched["contract_attestation"]["payload_sha256"] == "a" * 64
+    assert postproduction.selected.validate_eas_cached_units_read_only is raw_failure
+
+
+def test_decode_delegates_exact_720_defaults_inside_authorized_context(
+    tmp_path, monkeypatch
+):
+    root = tmp_path.resolve()
+    slim = root / ".native-stdpopsim/bin/slim"
+    decoder = root / postproduction.DEFAULT_DECODER_RELATIVE_PATH
+    slim.parent.mkdir(parents=True)
+    decoder.parent.mkdir(parents=True)
+    slim.write_bytes(b"slim")
+    decoder.write_bytes(b"decoder")
+    active = {"value": False}
+    observed = {}
+
+    @contextmanager
+    def authorized(**_kwargs):
+        active["value"] = True
+        try:
+            yield {"payload_sha256": "p" * 64}
+        finally:
+            active["value"] = False
+
+    def decode_main(argv):
+        assert active["value"] is True
+        assert argv[0] == "decode"
+        assert "simulate" not in argv
+        assert "--remove-raw-after-success" not in argv
+        observed["argv"] = argv
+        results = (
+            root
+            / postproduction.selected.DEFAULT_CAMPAIGN_RELATIVE_PATH
+            / "results"
+        )
+        results.mkdir(parents=True)
+        pd.DataFrame(
+            {"unit_id": [f"unit-{index:03d}" for index in range(720)], "status": "cached"}
+        ).to_csv(results / "decode_status.tsv", sep="\t", index=False)
+        return 0
+
+    monkeypatch.setattr(postproduction, "authorized_postproduction_context", authorized)
+    monkeypatch.setattr(postproduction.campaign, "main", decode_main)
+    assert (
+        postproduction.main(
+            ["decode", "--repo-root", str(root), "--slim-bin", str(slim)]
+        )
+        == 0
+    )
+    assert active["value"] is False
+    argv = observed["argv"]
+    assert argv[argv.index("--workers") + 1] == "20"
+    assert argv[argv.index("--threads") + 1] == "1"
