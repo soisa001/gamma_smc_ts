@@ -1,0 +1,83 @@
+{
+  "contract": {
+    "implementation": {
+      "path_identity": "repo-relative POSIX for in-repository paths",
+      "software": {
+        "matplotlib": "3.11.1",
+        "numpy": "2.4.6",
+        "pandas": "3.0.3",
+        "python": "3.11.15",
+        "scipy": "1.17.1"
+      },
+      "source_hashing": {
+        "encoding": "strict UTF-8",
+        "newline_canonicalization": "CRLF to LF",
+        "reject_bare_carriage_return": true,
+        "reject_bom": true,
+        "unicode_normalization": "none"
+      },
+      "sources": {
+        "calibration.py": {
+          "path": "python/gamma_smc_aou/calibration.py",
+          "sha256": "65561810fa84c7d7ae18d5c70039a21a61a6338313f30a5f58c62e0e73646b64"
+        },
+        "eas_sweep_models.py": {
+          "path": "python/gamma_smc_aou/eas_sweep_models.py",
+          "sha256": "179d38774f50af26aa9528c1badd5c5506f05fee13912f875c16b8db250a7210"
+        },
+        "eas_sweep_study.py": {
+          "path": "python/gamma_smc_aou/eas_sweep_study.py",
+          "sha256": "1d85a57ba1040a1ec3bf1bd2dc7c3949c14e0bbe9e9a4eebe4c7a3f6bf087f6f"
+        },
+        "focused_selection_analysis.py": {
+          "path": "python/gamma_smc_aou/focused_selection_analysis.py",
+          "sha256": "ef7548c454dd3e6f7f924726aae2ab6499623b3bfffd783327e6e629f969759d"
+        },
+        "focused_selection_decode.py": {
+          "path": "python/gamma_smc_aou/focused_selection_decode.py",
+          "sha256": "7d5e64f3c56e7d18277ade91cbac9183044b72593681cec225da4ec6dad36b50"
+        }
+      }
+    },
+    "inputs": {
+      "gamma_sha256": "de7fb92aec0718be1bced89c3b11c7fe10fc81e2acc47f09eaa7f97c482cfa93",
+      "truth_sha256": "438245ef3c503e513463670a41af15962f6f0c589ac6d8bdcf6a6e2eb3a61f6f"
+    },
+    "parameters": {
+      "minimum_neutral_per_cell": 100,
+      "minimum_selected_per_cell": 10
+    },
+    "schema": "gamma-smc.focused-selection-analysis/v3"
+  },
+  "contract_sha256": "ccaf63ff105abab5e085e6f4ddfa65145a38af5679b758f485163f61a382d3d1",
+  "outputs": {
+    "figures": [
+      {
+        "path": "truth_gamma_primary_focal_nearest.png",
+        "sha256": "28cecfc189b44abdb6ebf3310b77d03aa18c493e291edc589fe6552033c73b6e"
+      },
+      {
+        "path": "truth_gamma_primary_focal_nearest.pdf",
+        "sha256": "a25c97a944c65e5eb68930a09bf818595d947d15ff6e51c01d553a401b5ef6d2"
+      },
+      {
+        "path": "truth_gamma_primary_region_mean.png",
+        "sha256": "5c7db1d7ae100823c220e22ff3fe50ab1af26afc80aa8c5dda6dddaa6980c73f"
+      },
+      {
+        "path": "truth_gamma_primary_region_mean.pdf",
+        "sha256": "0c330526becad171f8c7295f14cf76c8a014aa085aa63d19b2a2ae6ffb2772ab"
+      }
+    ],
+    "paired": {
+      "path": "truth_gamma_paired_statistics.tsv.gz",
+      "sha256": "efcdf5e0aa95ab361599a4c92336404dda8995b011d4969db2634a618256f00f"
+    },
+    "summary": {
+      "path": "truth_gamma_accuracy.tsv",
+      "sha256": "4f3dea592d900cad9ab1871059c548dc86be928af28c14daab8eba674f97ae6d"
+    }
+  },
+  "schema": "gamma-smc.focused-selection-analysis/v3",
+  "status": "complete"
+}
