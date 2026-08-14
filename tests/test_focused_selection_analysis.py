@@ -435,6 +435,8 @@ def test_spatial_profiles_use_one_shared_x_label_for_three_af_panels(
                     "axis_labels": [axis.get_xlabel() for axis in figure.axes],
                     "axes_count": len(figure.axes),
                     "subplot_bottom": figure.subplotpars.bottom,
+                    "subplot_top": figure.subplotpars.top,
+                    "title": figure._suptitle.get_text(),
                     "save_options": save_options,
                 }
             )
@@ -447,6 +449,10 @@ def test_spatial_profiles_use_one_shared_x_label_for_three_af_panels(
     assert captured[0]["figure_labels"].count("Position in 10-Mb region (Mb)") == 1
     assert captured[0]["axis_labels"] == ["", "", ""]
     assert captured[0]["subplot_bottom"] == pytest.approx(0.28)
+    assert captured[0]["subplot_top"] == pytest.approx(0.82)
+    assert captured[0]["title"] == (
+        "Gamma-SMC genomic profiles: EAS median demography\ns=0.01, x=1 kya"
+    )
     assert captured[0]["save_options"] == {"bbox_inches": None}
 
 

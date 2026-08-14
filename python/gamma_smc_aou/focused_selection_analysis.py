@@ -2468,11 +2468,11 @@ def plot_spatial_probability_profiles(
                     else "Han AncientEurasia introgression"
                 )
                 figure.suptitle(
-                    f"{display_source} genomic profiles: {title}, "
+                    f"{display_source} genomic profiles: {title}\n"
                     f"s={coefficient:g}, x={threshold / 1_000:g} kya",
                     fontsize=20,
                 )
-                figure.subplots_adjust(bottom=0.28, top=0.88, wspace=0.18)
+                figure.subplots_adjust(bottom=0.28, top=0.82, wspace=0.18)
                 safe = str(demography).replace("/", "_")
                 coefficient_slug = str(coefficient).replace(".", "p")
                 threshold_slug = f"{float(threshold):g}".replace(".", "p")
