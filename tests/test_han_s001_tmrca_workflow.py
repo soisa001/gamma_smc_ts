@@ -166,6 +166,57 @@ def test_atomic_analysis_bundle_is_exact_and_cache_validates(monkeypatch, tmp_pa
     assert cached["contract_sha256"] == completion["contract_sha256"]
 
 
+def test_analysis_contract_uses_durable_rounded_score_payload(monkeypatch, tmp_path):
+    scores = _install_fake_study(monkeypatch, tmp_path)
+    score_path = tmp_path / workflow.simulation.SCORES_RELATIVE_PATH
+    ephemeral = scores.copy()
+    ephemeral.loc[0, "score"] = 0.040000000000123456
+
+    def collect_scores(_root):
+        ephemeral.to_csv(
+            score_path,
+            sep="\t",
+            index=False,
+            lineterminator="\n",
+            float_format="%.12g",
+        )
+        return ephemeral.copy()
+
+    monkeypatch.setattr(
+        workflow.simulation,
+        "collect_replicate_scores",
+        collect_scores,
+    )
+    completion = workflow.analyze_study(
+        tmp_path,
+        output_dir=tmp_path / "rounded_analysis",
+        n_neutral=2,
+        n_selected=2,
+        bootstrap_draws=5,
+        permutation_draws=7,
+        base_seed=11,
+    )
+    durable = analysis.load_replicate_scores(score_path)
+    durable_sha256 = workflow._frame_payload_sha256(durable)
+    assert workflow._frame_payload_sha256(ephemeral) != durable_sha256
+    assert (
+        completion["contract"]["inputs"]["replicate_score_payload_sha256"]
+        == durable_sha256
+    )
+
+    verified = workflow.verify_analysis(
+        tmp_path,
+        output_dir=tmp_path / "rounded_analysis",
+        n_neutral=2,
+        n_selected=2,
+        bootstrap_draws=5,
+        permutation_draws=7,
+        base_seed=11,
+    )
+    assert verified["cache_hit"] is True
+    assert verified["contract_sha256"] == completion["contract_sha256"]
+
+
 @pytest.mark.parametrize("failure_mode", ("tampered", "extra"))
 def test_cached_verify_rejects_tampered_or_extra_outputs(
     monkeypatch, tmp_path, failure_mode
@@ -237,10 +288,20 @@ def test_analysis_fails_closed_on_incomplete_verification_or_wrong_counts(
         lambda _root: {"status": "complete"},
     )
     incomplete_scores = scores[scores["unit_id"] != "neutral_0001"].copy()
+
+    def collect_incomplete_scores(_root):
+        incomplete_scores.to_csv(
+            tmp_path / workflow.simulation.SCORES_RELATIVE_PATH,
+            sep="\t",
+            index=False,
+            lineterminator="\n",
+        )
+        return incomplete_scores
+
     monkeypatch.setattr(
         workflow.simulation,
         "collect_replicate_scores",
-        lambda _root: incomplete_scores,
+        collect_incomplete_scores,
     )
     with pytest.raises(ValueError, match="replicate counts do not match"):
         workflow.analyze_study(

@@ -283,6 +283,15 @@ def _plan_counts(loaded: Any) -> dict[str, int]:
     raise TypeError("simulation load_plan must expose planned replicate counts")
 
 
+def _load_durable_replicate_scores(repo_root: Path) -> pd.DataFrame:
+    """Load the canonical score payload published by the simulation workflow."""
+
+    relative_scores = getattr(simulation, "SCORES_RELATIVE_PATH", None)
+    if relative_scores is None:
+        raise ValueError("simulation module does not expose its verified score path")
+    return analysis.load_replicate_scores(repo_root / Path(relative_scores))
+
+
 def _empirical_input(
     empirical_path: str | Path | None, repo_root: Path
 ) -> tuple[pd.DataFrame | None, dict[str, Any]]:
@@ -345,16 +354,8 @@ def _analysis_inputs(
     if verification.get("status") != "complete":
         raise ValueError("simulation/decode verification is not complete")
     if collect_scores:
-        scores = analysis.validate_replicate_scores(
-            simulation.collect_replicate_scores(repo_root)
-        )
-    else:
-        relative_scores = getattr(simulation, "SCORES_RELATIVE_PATH", None)
-        if relative_scores is None:
-            raise ValueError(
-                "simulation module does not expose its verified score path"
-            )
-        scores = analysis.load_replicate_scores(repo_root / Path(relative_scores))
+        simulation.collect_replicate_scores(repo_root)
+    scores = _load_durable_replicate_scores(repo_root)
     unit_classes = scores.loc[:, ["unit_id", "simulation_class"]].drop_duplicates()
     if unit_classes["unit_id"].duplicated(keep=False).any():
         raise ValueError("collected unit changes simulation class")
