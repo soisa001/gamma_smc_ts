@@ -1,0 +1,7 @@
+demography_id	neutral_selection_coefficient	selected_selection_coefficient	statistic	population_af_roc_auc_survivors	n_neutral_survivors	n_selected_survivors
+eas_phlash_median	0	0.001	P(AF_selected > AF_s0 | population survival) + half ties	0.643134664507	2498	2679
+eas_phlash_median	0	0.005	P(AF_selected > AF_s0 | population survival) + half ties	0.971422470152	2498	2303
+eas_phlash_median	0	0.01	P(AF_selected > AF_s0 | population survival) + half ties	0.999251844986	2498	1903
+ancient_eurasia_han_introgression	0	0.001	P(AF_selected > AF_s0 | population survival) + half ties	0.67769675234	4934	7055
+ancient_eurasia_han_introgression	0	0.005	P(AF_selected > AF_s0 | population survival) + half ties	0.988099849711	4934	12854
+ancient_eurasia_han_introgression	0	0.01	P(AF_selected > AF_s0 | population survival) + half ties	0.999958564905	4934	16281

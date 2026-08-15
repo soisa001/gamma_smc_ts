@@ -1,0 +1,5 @@
+# Natural final-AF selection sensitivity
+
+This additive extension simulates only `s=0.001` and `s=0.005`. The published `natural_final_af` bundle supplies checksum-validated `s=0` and `s=0.01` summary and survivor rows; its source and artifacts are not modified or resimulated. The all-attempt table in this directory therefore contains only the four new cells, while the survivor, summary, comparison, and figure artifacts combine all four coefficients.
+
+All fixed attempted Wright--Fisher trajectories are retained. Population survival (`final_alt_count > 0`) is the only analysis filter; there is no terminal-AF gate, fixation counts as survival, and the one Binomial(200, population AF) panel draw is never an acceptance condition. EAS begins from one de novo copy 2,000 generations ago. Han uses the donor-fixed pulse approximation at 2.96%. Selection is additive (`h=0.5`) from origin/pulse through the present. AUC rows compare each positive coefficient separately with neutral among population survivors.
