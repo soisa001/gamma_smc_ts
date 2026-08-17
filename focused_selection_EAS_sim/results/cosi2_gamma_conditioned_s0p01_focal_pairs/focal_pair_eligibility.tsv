@@ -1,0 +1,203 @@
+unit_id	demography	simulation_class	selection_coefficient	seed	generation_time_years	focal_status	focal_alt_count_full_sample	focal_alt_count_pair_panel	n_hom_ref_pairs	n_heterozygous_pairs	n_hom_alt_pairs	hom_ref_eligible	heterozygous_eligible	hom_alt_eligible	primary_shared_homozygote_eligible	exclusion_reason
+eas_neutral_exact_population_af_reverse_bridge_r000	EAS	neutral	0	2026083600	25	unique_exact_focal_site	44	23	2926	1771	253	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r001	EAS	neutral	0	2026083601	25	unique_exact_focal_site	33	15	3570	1275	105	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r002	EAS	neutral	0	2026083602	25	unique_exact_focal_site	46	24	2850	1824	276	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r003	EAS	neutral	0	2026083603	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r004	EAS	neutral	0	2026083604	25	ambiguous_exact_coordinate_collision	-1	-1	0	0	0	False	False	False	False	ambiguous_exact_coordinate_collision
+eas_neutral_exact_population_af_reverse_bridge_r005	EAS	neutral	0	2026083605	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r006	EAS	neutral	0	2026083606	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r007	EAS	neutral	0	2026083607	25	unique_exact_focal_site	38	19	3240	1539	171	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r008	EAS	neutral	0	2026083608	25	unique_exact_focal_site	34	16	3486	1344	120	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r009	EAS	neutral	0	2026083609	25	unique_exact_focal_site	36	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r010	EAS	neutral	0	2026083610	25	unique_exact_focal_site	28	12	3828	1056	66	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r011	EAS	neutral	0	2026083611	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r012	EAS	neutral	0	2026083612	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r013	EAS	neutral	0	2026083613	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r014	EAS	neutral	0	2026083614	25	unique_exact_focal_site	38	19	3240	1539	171	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r015	EAS	neutral	0	2026083615	25	unique_exact_focal_site	34	16	3486	1344	120	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r016	EAS	neutral	0	2026083616	25	unique_exact_focal_site	46	24	2850	1824	276	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r017	EAS	neutral	0	2026083617	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r018	EAS	neutral	0	2026083618	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r019	EAS	neutral	0	2026083619	25	unique_exact_focal_site	37	18	3321	1476	153	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r020	EAS	neutral	0	2026083620	25	unique_exact_focal_site	38	19	3240	1539	171	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r021	EAS	neutral	0	2026083621	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r022	EAS	neutral	0	2026083622	25	unique_exact_focal_site	43	22	3003	1716	231	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r023	EAS	neutral	0	2026083623	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r024	EAS	neutral	0	2026083624	25	unique_exact_focal_site	36	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r025	EAS	neutral	0	2026083625	25	unique_exact_focal_site	43	22	3003	1716	231	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r026	EAS	neutral	0	2026083626	25	unique_exact_focal_site	44	23	2926	1771	253	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r027	EAS	neutral	0	2026083627	25	unique_exact_focal_site	31	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r028	EAS	neutral	0	2026083628	25	ambiguous_exact_coordinate_collision	-1	-1	0	0	0	False	False	False	False	ambiguous_exact_coordinate_collision
+eas_neutral_exact_population_af_reverse_bridge_r029	EAS	neutral	0	2026083629	25	unique_exact_focal_site	34	16	3486	1344	120	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r030	EAS	neutral	0	2026083630	25	unique_exact_focal_site	39	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r031	EAS	neutral	0	2026083631	25	unique_exact_focal_site	34	16	3486	1344	120	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r032	EAS	neutral	0	2026083632	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r033	EAS	neutral	0	2026083633	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r034	EAS	neutral	0	2026083634	25	unique_exact_focal_site	45	24	2850	1824	276	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r035	EAS	neutral	0	2026083635	25	unique_exact_focal_site	48	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r036	EAS	neutral	0	2026083636	25	unique_exact_focal_site	34	16	3486	1344	120	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r037	EAS	neutral	0	2026083637	25	unique_exact_focal_site	48	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r038	EAS	neutral	0	2026083638	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r039	EAS	neutral	0	2026083639	25	unique_exact_focal_site	49	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r040	EAS	neutral	0	2026083640	25	unique_exact_focal_site	47	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r041	EAS	neutral	0	2026083641	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r042	EAS	neutral	0	2026083642	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r043	EAS	neutral	0	2026083643	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r044	EAS	neutral	0	2026083644	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r045	EAS	neutral	0	2026083645	25	unique_exact_focal_site	30	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r046	EAS	neutral	0	2026083646	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r047	EAS	neutral	0	2026083647	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r048	EAS	neutral	0	2026083648	25	unique_exact_focal_site	39	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r049	EAS	neutral	0	2026083649	25	unique_exact_focal_site	27	11	3916	979	55	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r050	EAS	neutral	0	2026083650	25	unique_exact_focal_site	38	19	3240	1539	171	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r051	EAS	neutral	0	2026083651	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r052	EAS	neutral	0	2026083652	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r053	EAS	neutral	0	2026083653	25	unique_exact_focal_site	38	19	3240	1539	171	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r054	EAS	neutral	0	2026083654	25	ambiguous_exact_coordinate_collision	-1	-1	0	0	0	False	False	False	False	ambiguous_exact_coordinate_collision
+eas_neutral_exact_population_af_reverse_bridge_r055	EAS	neutral	0	2026083655	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r056	EAS	neutral	0	2026083656	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r057	EAS	neutral	0	2026083657	25	unique_exact_focal_site	34	16	3486	1344	120	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r058	EAS	neutral	0	2026083658	25	unique_exact_focal_site	30	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r059	EAS	neutral	0	2026083659	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r060	EAS	neutral	0	2026083660	25	unique_exact_focal_site	46	24	2850	1824	276	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r061	EAS	neutral	0	2026083661	25	unique_exact_focal_site	36	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r062	EAS	neutral	0	2026083662	25	unique_exact_focal_site	33	15	3570	1275	105	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r063	EAS	neutral	0	2026083663	25	unique_exact_focal_site	37	18	3321	1476	153	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r064	EAS	neutral	0	2026083664	25	unique_exact_focal_site	36	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r065	EAS	neutral	0	2026083665	25	unique_exact_focal_site	43	22	3003	1716	231	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r066	EAS	neutral	0	2026083666	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r067	EAS	neutral	0	2026083667	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r068	EAS	neutral	0	2026083668	25	unique_exact_focal_site	31	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r069	EAS	neutral	0	2026083669	25	unique_exact_focal_site	31	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r070	EAS	neutral	0	2026083670	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r071	EAS	neutral	0	2026083671	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r072	EAS	neutral	0	2026083672	25	unique_exact_focal_site	37	18	3321	1476	153	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r073	EAS	neutral	0	2026083673	25	unique_exact_focal_site	45	24	2850	1824	276	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r074	EAS	neutral	0	2026083674	25	unique_exact_focal_site	44	23	2926	1771	253	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r075	EAS	neutral	0	2026083675	25	unique_exact_focal_site	43	22	3003	1716	231	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r076	EAS	neutral	0	2026083676	25	unique_exact_focal_site	32	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r077	EAS	neutral	0	2026083677	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r078	EAS	neutral	0	2026083678	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r079	EAS	neutral	0	2026083679	25	unique_exact_focal_site	44	23	2926	1771	253	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r080	EAS	neutral	0	2026083680	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r081	EAS	neutral	0	2026083681	25	unique_exact_focal_site	38	19	3240	1539	171	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r082	EAS	neutral	0	2026083682	25	unique_exact_focal_site	29	13	3741	1131	78	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r083	EAS	neutral	0	2026083683	25	unique_exact_focal_site	47	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r084	EAS	neutral	0	2026083684	25	unique_exact_focal_site	41	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r085	EAS	neutral	0	2026083685	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r086	EAS	neutral	0	2026083686	25	unique_exact_focal_site	47	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r087	EAS	neutral	0	2026083687	25	unique_exact_focal_site	44	23	2926	1771	253	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r088	EAS	neutral	0	2026083688	25	unique_exact_focal_site	35	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r089	EAS	neutral	0	2026083689	25	unique_exact_focal_site	33	15	3570	1275	105	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r090	EAS	neutral	0	2026083690	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r091	EAS	neutral	0	2026083691	25	unique_exact_focal_site	36	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r092	EAS	neutral	0	2026083692	25	unique_exact_focal_site	36	17	3403	1411	136	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r093	EAS	neutral	0	2026083693	25	unique_exact_focal_site	45	24	2850	1824	276	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r094	EAS	neutral	0	2026083694	25	unique_exact_focal_site	48	25	2775	1875	300	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r095	EAS	neutral	0	2026083695	25	unique_exact_focal_site	32	14	3655	1204	91	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r096	EAS	neutral	0	2026083696	25	unique_exact_focal_site	33	15	3570	1275	105	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r097	EAS	neutral	0	2026083697	25	ambiguous_exact_coordinate_collision	-1	-1	0	0	0	False	False	False	False	ambiguous_exact_coordinate_collision
+eas_neutral_exact_population_af_reverse_bridge_r098	EAS	neutral	0	2026083698	25	unique_exact_focal_site	43	22	3003	1716	231	True	True	True	True	
+eas_neutral_exact_population_af_reverse_bridge_r099	EAS	neutral	0	2026083699	25	unique_exact_focal_site	42	21	3081	1659	210	True	True	True	True	
+eas_selected_s0p01	EAS	selected	0.01	20240524	25	unique_exact_focal_site	40	20	3160	1600	190	True	True	True	True	
+han_introgressed_neutral_g645_gate_r000	Han	neutral	0	2026082605	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r001	Han	neutral	0	2026082614	29	unique_exact_focal_site	9	6	4371	564	15	True	True	True	True	
+han_introgressed_neutral_g645_gate_r002	Han	neutral	0	2026082622	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r003	Han	neutral	0	2026082645	29	unique_exact_focal_site	12	7	4278	651	21	True	True	True	True	
+han_introgressed_neutral_g645_gate_r004	Han	neutral	0	2026082686	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r005	Han	neutral	0	2026084640	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r006	Han	neutral	0	2026084650	29	unique_exact_focal_site	9	6	4371	564	15	True	True	True	True	
+han_introgressed_neutral_g645_gate_r007	Han	neutral	0	2026084676	29	unique_exact_focal_site	12	7	4278	651	21	True	True	True	True	
+han_introgressed_neutral_g645_gate_r008	Han	neutral	0	2026084697	29	unique_exact_focal_site	7	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r009	Han	neutral	0	2026084751	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r010	Han	neutral	0	2026084752	29	unique_exact_focal_site	8	5	4465	475	10	True	True	True	True	
+han_introgressed_neutral_g645_gate_r011	Han	neutral	0	2026084761	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r012	Han	neutral	0	2026084805	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r013	Han	neutral	0	2026084836	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r014	Han	neutral	0	2026084840	29	unique_exact_focal_site	5	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r015	Han	neutral	0	2026084841	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r016	Han	neutral	0	2026084853	29	unique_exact_focal_site	21	9	4095	819	36	True	True	True	True	
+han_introgressed_neutral_g645_gate_r017	Han	neutral	0	2026084949	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r018	Han	neutral	0	2026084958	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r019	Han	neutral	0	2026085010	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r020	Han	neutral	0	2026085015	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r021	Han	neutral	0	2026085048	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r022	Han	neutral	0	2026085057	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r023	Han	neutral	0	2026085106	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r024	Han	neutral	0	2026085146	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r025	Han	neutral	0	2026085183	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r026	Han	neutral	0	2026085184	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r027	Han	neutral	0	2026085233	29	unique_exact_focal_site	8	5	4465	475	10	True	True	True	True	
+han_introgressed_neutral_g645_gate_r028	Han	neutral	0	2026085273	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r029	Han	neutral	0	2026085309	29	unique_exact_focal_site	7	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r030	Han	neutral	0	2026085326	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r031	Han	neutral	0	2026085340	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r032	Han	neutral	0	2026085350	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r033	Han	neutral	0	2026085391	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r034	Han	neutral	0	2026085417	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r035	Han	neutral	0	2026085458	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r036	Han	neutral	0	2026085476	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r037	Han	neutral	0	2026085477	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r038	Han	neutral	0	2026085506	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r039	Han	neutral	0	2026085517	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r040	Han	neutral	0	2026085550	29	ambiguous_exact_coordinate_collision	-1	-1	0	0	0	False	False	False	False	ambiguous_exact_coordinate_collision
+han_introgressed_neutral_g645_gate_r041	Han	neutral	0	2026085553	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r042	Han	neutral	0	2026085568	29	unique_exact_focal_site	11	6	4371	564	15	True	True	True	True	
+han_introgressed_neutral_g645_gate_r043	Han	neutral	0	2026085643	29	unique_exact_focal_site	5	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r044	Han	neutral	0	2026085730	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r045	Han	neutral	0	2026085733	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r046	Han	neutral	0	2026085762	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r047	Han	neutral	0	2026085828	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r048	Han	neutral	0	2026085837	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r049	Han	neutral	0	2026085874	29	unique_exact_focal_site	5	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r050	Han	neutral	0	2026085890	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r051	Han	neutral	0	2026085940	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r052	Han	neutral	0	2026085973	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r053	Han	neutral	0	2026085992	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r054	Han	neutral	0	2026085994	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r055	Han	neutral	0	2026086012	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r056	Han	neutral	0	2026086013	29	unique_exact_focal_site	9	6	4371	564	15	True	True	True	True	
+han_introgressed_neutral_g645_gate_r057	Han	neutral	0	2026086031	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r058	Han	neutral	0	2026086037	29	unique_exact_focal_site	5	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r059	Han	neutral	0	2026086059	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r060	Han	neutral	0	2026086087	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r061	Han	neutral	0	2026086123	29	unique_exact_focal_site	10	6	4371	564	15	True	True	True	True	
+han_introgressed_neutral_g645_gate_r062	Han	neutral	0	2026086215	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r063	Han	neutral	0	2026086230	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r064	Han	neutral	0	2026086233	29	unique_exact_focal_site	11	6	4371	564	15	True	True	True	True	
+han_introgressed_neutral_g645_gate_r065	Han	neutral	0	2026086249	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r066	Han	neutral	0	2026086378	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r067	Han	neutral	0	2026086441	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r068	Han	neutral	0	2026086539	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r069	Han	neutral	0	2026086559	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r070	Han	neutral	0	2026086644	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r071	Han	neutral	0	2026086696	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r072	Han	neutral	0	2026086716	29	unique_exact_focal_site	5	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r073	Han	neutral	0	2026086727	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r074	Han	neutral	0	2026086806	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r075	Han	neutral	0	2026086831	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r076	Han	neutral	0	2026086844	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r077	Han	neutral	0	2026086934	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r078	Han	neutral	0	2026086983	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r079	Han	neutral	0	2026087068	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r080	Han	neutral	0	2026087121	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r081	Han	neutral	0	2026087134	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r082	Han	neutral	0	2026087139	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r083	Han	neutral	0	2026087143	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r084	Han	neutral	0	2026087151	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r085	Han	neutral	0	2026087173	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r086	Han	neutral	0	2026087178	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r087	Han	neutral	0	2026087210	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r088	Han	neutral	0	2026087231	29	unique_exact_focal_site	2	2	4753	196	1	True	True	True	True	
+han_introgressed_neutral_g645_gate_r089	Han	neutral	0	2026087268	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r090	Han	neutral	0	2026087299	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r091	Han	neutral	0	2026087337	29	unique_exact_focal_site	7	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r092	Han	neutral	0	2026087365	29	unique_exact_focal_site	4	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r093	Han	neutral	0	2026087398	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r094	Han	neutral	0	2026087440	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r095	Han	neutral	0	2026087442	29	absent_from_sample	0	0	4950	0	0	True	False	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r096	Han	neutral	0	2026087484	29	unique_exact_focal_site	3	3	4656	291	3	True	True	True	True	
+han_introgressed_neutral_g645_gate_r097	Han	neutral	0	2026087510	29	unique_exact_focal_site	6	4	4560	384	6	True	True	True	True	
+han_introgressed_neutral_g645_gate_r098	Han	neutral	0	2026087551	29	unique_exact_focal_site	1	1	4851	99	0	True	True	False	False	fewer_than_two_alt_haplotypes_in_fixed_pair_panel
+han_introgressed_neutral_g645_gate_r099	Han	neutral	0	2026087564	29	unique_exact_focal_site	9	6	4371	564	15	True	True	True	True	
+han_selected_s0p01	Han	selected	0.01	20240658	29	unique_exact_focal_site	32	14	3655	1204	91	True	True	True	True	
