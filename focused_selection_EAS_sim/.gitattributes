@@ -1,3 +1,5 @@
 # Preserve byte-exact published result and report hashes across platforms.
 RUN_RESULTS.md -text -diff
 results/** -text -diff
+ancient_eurasia_single_origin_survival_v2/plan/** -text -diff
+ancient_eurasia_single_origin_survival_v2/results/** -text -diff

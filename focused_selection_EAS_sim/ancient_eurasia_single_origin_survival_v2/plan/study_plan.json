@@ -1,0 +1,345 @@
+{
+  "contract": {
+    "base_seed": 20240523,
+    "decoder_binary": {
+      "identity": "bin/gamma_smc",
+      "sha256": "057774590af12efbbedc9d1ffb736747c0dba2604ef0028dcf9b65e275e70a22",
+      "size_bytes": 11330184
+    },
+    "decoder_settings": {
+      "backward_alignment": "fixed",
+      "cache_size": 1000,
+      "exp10": "accurate",
+      "generation_time_years": 25.0,
+      "input_format": "trees_via_streamed_vcf",
+      "n_pairs": 100,
+      "output_at_hets": false,
+      "output_at_stride": 10000,
+      "pair_block": 256,
+      "pair_selector": "explicit_within_individual_pairs",
+      "recent_call": "median",
+      "recent_call_probability": 0.5,
+      "recombination_to_mutation_ratio": 0.8,
+      "scaled_mutation_rate": 0.000315,
+      "threads": 1,
+      "thresholds_years": [
+        1000,
+        4500,
+        10000,
+        20000,
+        30000,
+        40000,
+        50000
+      ],
+      "unscaled_mutation_rate": 1.25e-08
+    },
+    "estimand": {
+      "candidate_pool_diploids": 500,
+      "mutation_age_generations": 2400.0,
+      "mutation_origin_mode": "single_copy",
+      "mutation_origin_population": "Neanderthal",
+      "panel_sampling": "uniform_100_of_500",
+      "pool_frequency_conditioning": false,
+      "present_conditioning": "strict_segregating_in_present_han_census",
+      "pulse_generations": 2272.0,
+      "sample_detection_conditioning": false,
+      "sample_diploids": 100,
+      "selection_coefficient": 0.0,
+      "source_model": "stdpopsim AncientEurasia_9K19",
+      "terminal_af_target_or_band_conditioning": false,
+      "thresholds_years": [
+        1000,
+        4500,
+        10000,
+        20000,
+        30000,
+        40000,
+        50000
+      ]
+    },
+    "event_transform": {
+      "added_terminal_han_strict_upper_count": 1,
+      "event_schedule": [
+        {
+          "event_type": "DrawMutation",
+          "population": "Neanderthal",
+          "single_site_id": "eas_selected_site",
+          "time": {
+            "generations_ago": 2400.0,
+            "semantics": "exact_generation"
+          }
+        },
+        {
+          "allele_frequency": 0.0,
+          "end_time": {
+            "generations_ago": 2273.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": ">",
+          "population": "Neanderthal",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2400.0,
+            "semantics": "generation_after_in_forward_time"
+          }
+        },
+        {
+          "allele_frequency": 1e-09,
+          "end_time": {
+            "generations_ago": 2273.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": ">=",
+          "population": "Neanderthal",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2273.0,
+            "semantics": "exact_generation"
+          }
+        },
+        {
+          "allele_frequency": 0.0,
+          "end_time": {
+            "generations_ago": 2015.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": ">",
+          "population": "Loschbour",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2272.0,
+            "semantics": "generation_after_in_forward_time"
+          }
+        },
+        {
+          "allele_frequency": 0.0,
+          "end_time": {
+            "generations_ago": 0.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": ">",
+          "population": "Han",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2015.0,
+            "semantics": "generation_after_in_forward_time"
+          }
+        },
+        {
+          "allele_frequency": 1.0,
+          "end_time": {
+            "generations_ago": 0.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": "<",
+          "population": "Han",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 0.0,
+            "semantics": "exact_generation"
+          }
+        }
+      ],
+      "nominal_han_split_generations_ago": 2016.0,
+      "nominal_pulse_generations_ago": 2272.0,
+      "realized_han_split_generations_ago_q5": 2015.0,
+      "realized_pulse_generations_ago_q5": 2270.0,
+      "removed_change_mutation_fitness_count": 2,
+      "removed_terminal_han_af_band_count": 2,
+      "selection_coefficient_after_transform": 0.0,
+      "source_constructor": "focused_selection_simulation.build_raw_han_selected_sweep",
+      "source_constructor_slim_scaling_factor": 5.0
+    },
+    "execution_units_sha256": "e4cc0726fc0fd8ef8d900288df22718a271907d9e55e767051dcc08aa4ef1709",
+    "expected_units": 100,
+    "focal_overlay_patch": {
+      "detection": "every intercepted msprime.RateMap with positive integrated rate on the target interval",
+      "expected_call_count": 2,
+      "expected_call_inventory": [
+        {
+          "end_time": "finite_shared_slim_tick",
+          "layer": "ordinary_neutral_dfe",
+          "model_class": "msprime.mutations.SLiMMutationModel",
+          "model_type": 0,
+          "original_positions": [
+            0.0,
+            5000000.0,
+            5000001.0,
+            10000000.0
+          ],
+          "original_rates": [
+            1.25e-08,
+            0.0,
+            1.25e-08
+          ],
+          "passed_positions": [
+            0.0,
+            5000000.0,
+            5000001.0,
+            10000000.0
+          ],
+          "passed_rates": [
+            1.25e-08,
+            0.0,
+            1.25e-08
+          ],
+          "patched": false,
+          "start_time": null
+        },
+        {
+          "end_time": null,
+          "layer": "recapitation",
+          "model_class": "msprime.mutations.SLiMMutationModel",
+          "model_type": 2,
+          "original_positions": [
+            0.0,
+            10000000.0
+          ],
+          "original_rates": [
+            1.25e-08
+          ],
+          "passed_positions": [
+            0.0,
+            5000000.0,
+            5000001.0,
+            10000000.0
+          ],
+          "passed_rates": [
+            1.25e-08,
+            0.0,
+            1.25e-08
+          ],
+          "patched": true,
+          "start_time": "finite_shared_slim_tick"
+        }
+      ],
+      "expected_patched_call_count": 1,
+      "flank_rates_and_integrals": "exactly_preserved",
+      "inventory_freeze_state": "frozen_after_rep051_smoke",
+      "minimum_patched_call_count": 1,
+      "non_rate_arguments": "preserved_by_identity",
+      "patched_callable": "msprime.mutations.sim_mutations",
+      "patched_callable_signature": "(tree_sequence, rate=None, *, random_seed=None, model=None, start_time=None, end_time=None, discrete_genome=None, keep=None, record_provenance=True)",
+      "patched_callable_source_sha256": "c4b787534d05f07b09d17e47a77115234377d987618e5ee046729be4ad30423f",
+      "replacement": "insert target breakpoints and set only the target interval rate to zero",
+      "restoration": "original_callable_restored_on_success_and_exception",
+      "schema": "gamma-smc.ancient-eurasia-reserved-focal-overlay-patch/v1",
+      "scope": "only_during_one_stdpopsim_slim_engine_simulate_call",
+      "target_interval_0based_half_open": [
+        5000000,
+        5000001
+      ],
+      "upstream_overlay_method": "stdpopsim.slim_engine._SLiMEngine._recap_and_rescale",
+      "upstream_overlay_method_signature": "(self, ts, seed, recap_epoch, contig, slim_scaling_factor, keep_mutation_ids_as_alleles, extended_events=None)",
+      "upstream_overlay_method_source_sha256": "dd6cb4f6373b73638483c5053cdd5e28c42820cb69b54641e9f9a1537820cda2"
+    },
+    "individual_location_canonicalization": {
+      "canonical_flat_location_record": {
+        "dtype": "<f8",
+        "sha256": "ff6698a6e831ffcf47af2fed388ffc262f319e72b26cd140929d1e19b1246ad4",
+        "shape": [
+          1500
+        ]
+      },
+      "canonical_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "canonical_location_offset_record": {
+        "dtype": "<u4",
+        "sha256": "5d348c3a0a5849e32e7c21925d7532df9762cf2fa2435d1ff297b9c0f1602a9d",
+        "shape": [
+          501
+        ]
+      },
+      "expected_individual_count": 500,
+      "mutation": "IndividualTable.packset_location_only",
+      "mutation_api": "tskit.tables.IndividualTable.packset_location",
+      "mutation_api_signature": "(self, locations)",
+      "mutation_api_source_sha256": "a41ee8aecaeb0dc3829403bba3df77caf9e4748ee48ed595874bab1fa2ffa5f3",
+      "precanonicalization_values": "arbitrary_float64_bits_semantically_discarded",
+      "preserve_all_nonlocation_individual_columns": true,
+      "preserve_all_other_tables_ts_metadata_and_reference": true,
+      "preserve_location_offsets_and_widths": true,
+      "required_location_width_per_individual": 3,
+      "schema": "gamma-smc.ancient-eurasia-individual-location-canonicalization/v1",
+      "scope": "immediately_after_uniform_panel_before_analysis_or_persistence"
+    },
+    "runtime_versions": {
+      "msprime": "1.4.2",
+      "numpy": "2.4.6",
+      "pandas": "3.0.3",
+      "pyslim": "1.1.1",
+      "python": "3.11.15",
+      "scipy": "1.17.1",
+      "stdpopsim": "0.3.0",
+      "tskit": "1.0.3"
+    },
+    "seed_derivation": "1 + int.from_bytes(sha256(f'{base_seed}:{study_id}:{label}'.encode('utf-8'))[:8], 'big') % (2**31 - 2)",
+    "simulation_law": {
+      "ancestry_scan": false,
+      "background_mutation_overlay": "stdpopsim_post_slim_neutral_msprime_overlay",
+      "background_overlay_reserved_interval": "every_layer_masks_0based_half_open_[5000000,5000001)",
+      "branch_enumeration": false,
+      "branch_span_weighting": false,
+      "conditioning": "internal_slim_extended_event_rejection",
+      "cropping": false,
+      "demographic_model": "AncientEurasia_9K19",
+      "engine": "stdpopsim_slim_forward",
+      "external_pool_frequency_rejection": false,
+      "external_sample_detection_rejection": false,
+      "external_terminal_target_af_rejection": false,
+      "mutation_introduction": "single_copy_drawmutation_neanderthal_at_2400_generations",
+      "nonspatial_individual_location_canonicalization": "post_uniform_panel_pre_analysis_exact_500x3_float64_zeros",
+      "posthoc_causal_mutation_placement": false,
+      "reserved_focal_base_overlay_guard": "scoped_msprime_sim_mutations_rate_map_mask_during_engine_simulate",
+      "sequence_scope": "direct_full_10mb"
+    },
+    "simulation_parameters": {
+      "census_semantics": "complete_simulated_q5_present_han_census",
+      "focal_position_0based": 5000000,
+      "generation_time_years": 25.0,
+      "mutation_rate": 1.25e-08,
+      "output_stride_bp": 10000,
+      "pool_diploids": 500,
+      "present_han_scaled_census_diploids_q5": 1260,
+      "present_han_scaled_census_genomes_q5": 2520,
+      "present_han_unscaled_ne": 6300.0,
+      "recombination_rate": 1e-08,
+      "sample_diploids": 100,
+      "sequence_length_bp": 10000000,
+      "slim_burn_in": 0.1,
+      "slim_scaling_factor": 5.0
+    },
+    "source_hashes": {
+      "python/gamma_smc_aou/ancient_eurasia_survival_neutral.py": "6b30517b768656f0de0ce7aab72e7e12ec0e92cdb00bbf65a51c01186fed3c33",
+      "python/gamma_smc_aou/decoder.py": "09513076c812a1c3f2bf0a9d9e53102913860169a83ad1a5eae9c3750a15797f",
+      "python/gamma_smc_aou/eas_sweep_analysis.py": "918cd83c6380089d0f34a58d5eea009595d67f3e0ce1b64c34067aa263cccd5e",
+      "python/gamma_smc_aou/eas_sweep_models.py": "179d38774f50af26aa9528c1badd5c5506f05fee13912f875c16b8db250a7210",
+      "python/gamma_smc_aou/focused_selection_campaign.py": "20d7a2123e1096bbb9cf4d84a9dff66e2060733152f9bdbcd307fdb7b3aead5e",
+      "python/gamma_smc_aou/focused_selection_decode.py": "7d5e64f3c56e7d18277ade91cbac9183044b72593681cec225da4ec6dad36b50",
+      "python/gamma_smc_aou/focused_selection_simulation.py": "29b52d52adb76d2aa195fb0900baef829f92f1ed0b7b3edbff93cadce0f26448",
+      "python/gamma_smc_aou/han_s001_tmrca_simulation.py": "1480404ebf2b2c88a4c1c80928fd966e97e9e67172268492ee412e527ad902e5",
+      "python/gamma_smc_aou/tree_sequence.py": "2e02df22db2f1f4ef64ae24d6c8339366d90d48cf430c24308be509438cd485a"
+    },
+    "study_id": "ancient_eurasia_single_origin_survival"
+  },
+  "contract_sha256": "a01027c0cef37fa055b3824f1b72089adcc470934905ee629328376cfd536733",
+  "created_utc": "2026-08-17T23:27:24Z",
+  "outputs": {
+    "execution_units": {
+      "path": "execution_units.tsv",
+      "rows": 100,
+      "sha256": "e4cc0726fc0fd8ef8d900288df22718a271907d9e55e767051dcc08aa4ef1709",
+      "size_bytes": 22079
+    }
+  },
+  "schema": "gamma-smc.ancient-eurasia-survival-neutral-plan/v2",
+  "status": "complete"
+}
