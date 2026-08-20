@@ -1,0 +1,56 @@
+{
+  "schema": "gamma-smc.eas-sweep-external-draw-state/v1",
+  "simulation_contract_sha256": "233373d999ec80443404be559bb82b9fdd79773724a4ca6bf02fe96259e8feaf",
+  "next_external_draw_zero_based": 8,
+  "completed_external_sample_panel_draws": 2,
+  "active_internal_conditioned_trajectory": {
+    "external_draw_zero_based": 8,
+    "seed": 1617695160,
+    "stage": "stdpopsim_internal_conditioning"
+  },
+  "accepted_tree_checkpoint": null,
+  "interrupted_internal_conditioned_trajectories": [
+    {
+      "external_draw_zero_based": 0,
+      "seed": 116989003,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    },
+    {
+      "external_draw_zero_based": 2,
+      "seed": 932982935,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    },
+    {
+      "external_draw_zero_based": 3,
+      "seed": 349970669,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    },
+    {
+      "external_draw_zero_based": 4,
+      "seed": 1802389324,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    },
+    {
+      "external_draw_zero_based": 6,
+      "seed": 982695256,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    },
+    {
+      "external_draw_zero_based": 7,
+      "seed": 55221874,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    }
+  ]
+}

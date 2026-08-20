@@ -1,0 +1,60 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "decode",
+  "status": "complete",
+  "specification_id": "intro_s0p010_af60__rep009",
+  "contract_sha256": "47bfc893c39c997db4f7a2ca851863da53c7583c49e6ecb8e1f1a44ea9a565a8",
+  "decoded_profiles_sha256": "152da7a8371f893cc2a387596d860540f653761cc6a59d7fe256a9ddeda07ed3",
+  "decoded_internal_contrasts_sha256": "e1801054b2c51cdf50e6963018ba9abe2e293cc591ec3353346a80788abd8da4",
+  "class_execution": {
+    "overall": {
+      "threads": 1,
+      "threads_cache_role": "provenance_only",
+      "run_settings_validated": true
+    },
+    "hom_ref": {
+      "threads": 1,
+      "threads_cache_role": "provenance_only",
+      "run_settings_validated": true
+    },
+    "heterozygous": {
+      "threads": 1,
+      "threads_cache_role": "provenance_only",
+      "run_settings_validated": true
+    },
+    "hom_alt": {
+      "threads": 1,
+      "threads_cache_role": "provenance_only",
+      "run_settings_validated": true
+    }
+  },
+  "implementation": {
+    "schema": "gamma-smc.eas-sweep-implementation/v1",
+    "recorded_at_utc": "2026-08-13T00:00:40.472959+00:00",
+    "python_implementation": "CPython",
+    "python_version": "3.11.15",
+    "tskit_version": "1.0.3",
+    "sources": {
+      "core": {
+        "path": "eas_sweep_study.py",
+        "available": true,
+        "sha256": "bef802f46dde46318c03c70629c581475c10437122132714a518c0cd3e29a766"
+      },
+      "orchestrator": {
+        "path": "eas_introgression_replicates.py",
+        "available": true,
+        "sha256": "74d4d9cc2b8d7f1b58c80376a79f7e6d9d2396ed96c175caaf659f93068c838c"
+      },
+      "decoder_wrapper": {
+        "path": "decoder.py",
+        "available": true,
+        "sha256": "bba1329963327729b25da63c65191e052eec5acd70c1569d6a7ff11b4c54df52"
+      },
+      "tree_sequence_vcf_producer": {
+        "path": "tree_sequence.py",
+        "available": true,
+        "sha256": "2e02df22db2f1f4ef64ae24d6c8339366d90d48cf430c24308be509438cd485a"
+      }
+    }
+  }
+}
