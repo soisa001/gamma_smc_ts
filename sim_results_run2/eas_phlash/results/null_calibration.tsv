@@ -1,0 +1,8 @@
+arm_id	threshold_years	n_null	false_positive_rate	median_p_value	significance_level
+eas_phlash	1000.0	100	0.02	1.0	0.05
+eas_phlash	4500.0	100	0.01	1.0	0.05
+eas_phlash	10000.0	100	0.05	1.0	0.05
+eas_phlash	20000.0	100	0.05	0.59	0.05
+eas_phlash	30000.0	100	0.05	0.51	0.05
+eas_phlash	40000.0	100	0.05	0.52	0.05
+eas_phlash	50000.0	100	0.05	0.51	0.05

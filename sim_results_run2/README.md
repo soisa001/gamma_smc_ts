@@ -3,7 +3,7 @@
 Can selection at an introgressed locus be detected from the within-individual
 TMRCA distribution alone?
 
-**Status: code written and pre-flight validated. No simulations have been run.**
+**Status: complete. 400/400 replicates run, zero failures. See [RESULTS.md](RESULTS.md).**
 [`FRAMEWORK.md`](FRAMEWORK.md) is the pre-registration; this file is how to run it.
 
 ## Design in one paragraph

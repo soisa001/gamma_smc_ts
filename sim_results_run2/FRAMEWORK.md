@@ -1,6 +1,6 @@
 # run2 — framework sketch
 
-**Status: code written and pre-flight validated. No simulations have been run.**
+**Status: complete. 400/400 replicates run, zero failures. See [RESULTS.md](RESULTS.md).**
 This document is the pre-registration for `sim_results_run2/`; nothing in this
 directory yet contains results. See [`README.md`](README.md) for how to run it,
 and `validation_report.json` for the gates that already pass.

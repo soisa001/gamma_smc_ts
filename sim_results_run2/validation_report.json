@@ -54,7 +54,7 @@
               }
             }
           },
-          "script_characters": 27572,
+          "script_characters": 27535,
           "script_checks": {
             "arm_id": "chb_ancient_eurasia",
             "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
@@ -65,7 +65,7 @@
             "rejection_sampling": false,
             "standing_variation_tick_offset": null
           },
-          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\chb_ancient_eurasia\\validation\\neutral.slim"
+          "script_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/sim_results_run2/chb_ancient_eurasia/validation/neutral.slim"
         },
         "selected": {
           "model": {
@@ -158,7 +158,7 @@
               }
             }
           },
-          "script_characters": 31500,
+          "script_characters": 31463,
           "script_checks": {
             "arm_id": "chb_ancient_eurasia",
             "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
@@ -172,7 +172,7 @@
             "rejection_sampling": false,
             "standing_variation_tick_offset": 453
           },
-          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\chb_ancient_eurasia\\validation\\selected.slim"
+          "script_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/sim_results_run2/chb_ancient_eurasia/validation/selected.slim"
         }
       },
       "tick_schedule": {
@@ -256,7 +256,7 @@
               }
             }
           },
-          "script_characters": 841904,
+          "script_characters": 841867,
           "script_checks": {
             "arm_id": "eas_phlash",
             "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
@@ -267,7 +267,7 @@
             "rejection_sampling": false,
             "standing_variation_tick_offset": null
           },
-          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\eas_phlash\\validation\\neutral.slim"
+          "script_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/sim_results_run2/eas_phlash/validation/neutral.slim"
         },
         "selected": {
           "model": {
@@ -337,7 +337,7 @@
               }
             }
           },
-          "script_characters": 844809,
+          "script_characters": 844772,
           "script_checks": {
             "arm_id": "eas_phlash",
             "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
@@ -350,7 +350,7 @@
             "rejection_sampling": false,
             "standing_variation_tick_offset": 453
           },
-          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\eas_phlash\\validation\\selected.slim"
+          "script_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/sim_results_run2/eas_phlash/validation/selected.slim"
         }
       },
       "tick_schedule": {
@@ -381,10 +381,17 @@
       }
     }
   },
-  "elapsed_seconds": 5.7723618999589235,
+  "elapsed_seconds": 6.035634348000002,
   "environment": {
-    "note": "SLiM was not checked; pass --slim-bin to run gate G0",
-    "slim_checked": false
+    "cpu_count": 24,
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+    "python": "3.11.15",
+    "slim_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native-stdpopsim/bin/slim",
+    "slim_version_reported": "SLiM version 4.2.2, built Sep 17 2024 14:39:28\nGit commit SHA-1: unknown (built from a non-Git source archive)",
+    "stdpopsim": "0.3.0",
+    "tskit": "1.0.3"
   },
   "focal_mask": {
     "expected_integrated_rate": 0.12499998749999999,
