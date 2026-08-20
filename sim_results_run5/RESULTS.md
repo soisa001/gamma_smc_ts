@@ -210,6 +210,53 @@ good calibration. AUC agrees there is genuinely nothing to find (0.52 at 10 ky),
 so the conclusion is unchanged, but the p-value machinery should not be read as
 calibrated in that range. Raising the pair count would relieve the discreteness.
 
+## Why the statistic depends on final frequency: the trimodal decomposition
+
+The within-individual TMRCA at an introgressed swept locus is **trimodal**, and
+the three genotype classes pull in opposite directions. Measured on the
+`chb_from_introgression` selected replicates, against a neutral baseline of
+median 9,660 generations (280 ky) and `P(TMRCA < 30 ky) = 0.076`:
+
+| within-individual class | pairs | median TMRCA | P(TMRCA < 30 ky) |
+|---|---:|---:|---:|
+| **hom carrier** (archaic x archaic) | 5,536 | **1,155 gen (33 ky)** | **0.564** |
+| **heterozygous** (archaic x modern) | 3,024 | **25,914 gen (752 ky)** | **0.000** |
+| hom non-carrier (modern x modern) | 1,440 | 8,143 gen (236 ky) | 0.087 |
+
+Both intuitions are correct, for different pairs of the same tree:
+
+* Two archaic haplotypes in one individual descend from the introgressed
+  material and, under a sweep, coalesce **after** introgression. They are eight
+  times *shallower* than neutral.
+* One archaic and one modern haplotype cannot coalesce until before the
+  human-Neanderthal split. They are **three times deeper** than neutral, and
+  `P(TMRCA < 30 ky)` is **exactly zero** -- not small, zero. Those pairs can never
+  be recent.
+
+`P(TMRCA < x)` sums over all three, so it only shows net signal once the
+hom-carrier mass outweighs the heterozygous mass. At Hardy-Weinberg proportions
+that is `f^2 > 2f(1-f)`, i.e. **f > 2/3**. The observed counts bracket it: at
+final frequency 0.4-0.7 there are 1,368 hom-carrier pairs against 1,952
+heterozygous, and at 0.7-1.0 it is 4,151 against 889.
+
+This is the mechanism behind the AUC-versus-frequency result, and it explains the
+sub-chance AUC at low frequency (0.41 at a 40 ky cutoff) that would otherwise
+look like noise: below `f = 2/3` the heterozygous class actively drives the
+statistic *below* neutral, because those pairs are deeper than any neutral pair.
+
+It also explains why the best cutoff moves deeper as frequency rises. Hom-carrier
+`P(TMRCA < 30 ky)` is 0.871 in the 0.4-0.7 band but only 0.461 above 0.7: once
+the allele is near fixation the carrier class has been large for long enough to
+accumulate its own internal coalescent depth, so its signal shifts to deeper
+cutoffs.
+
+**Practical consequence.** `P(TMRCA < x)` over all pairs is a lossy summary of a
+distribution whose shape is far more diagnostic than its left tail. A statistic
+keyed on the *trimodality* -- or one restricted to hom-carrier pairs, or a
+two-sided test that also rewards the anomalous heterozygous depth -- should beat
+it, particularly below `f = 2/3` where the current statistic is actively
+misleading.
+
 ## Null calibration
 
 Leave-one-out false-positive rates against the null itself, averaged over
