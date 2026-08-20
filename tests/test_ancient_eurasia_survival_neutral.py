@@ -29,6 +29,25 @@ def _bind_decoder_contract_to_current_test_build(monkeypatch) -> None:
         )
 
 
+@pytest.fixture
+def stub_binary_preflight(monkeypatch) -> None:
+    """Isolate mocked SLiM launches from the repository-local production binary."""
+
+    binary_record = workflow._binary_record
+
+    def record(path, repo_root, *, expected_sha256: str, label: str):
+        if label == "SLiM":
+            return {}
+        return binary_record(
+            path,
+            repo_root,
+            expected_sha256=expected_sha256,
+            label=label,
+        )
+
+    monkeypatch.setattr(workflow, "_binary_record", record)
+
+
 def test_binary_record_requires_the_exact_supplied_digest(tmp_path: Path) -> None:
     binary = tmp_path / "gamma_smc"
     binary.write_bytes(b"test binary")
@@ -37,9 +56,12 @@ def test_binary_record_requires_the_exact_supplied_digest(tmp_path: Path) -> Non
         workflow._binary_record(
             binary, tmp_path, expected_sha256="0" * 64, label="test"
         )
-    assert workflow._binary_record(
-        binary, tmp_path, expected_sha256=observed, label="test"
-    )["sha256"] == observed
+    assert (
+        workflow._binary_record(
+            binary, tmp_path, expected_sha256=observed, label="test"
+        )["sha256"]
+        == observed
+    )
 
 
 def _fake_sim_mutations(
@@ -662,7 +684,7 @@ def test_pair_file_is_exact_100_within_diploid_pairs(tmp_path: Path) -> None:
 
 
 def test_simulate_unit_selector_keeps_100_unit_plan(
-    monkeypatch, tmp_path: Path
+    monkeypatch, tmp_path: Path, stub_binary_preflight
 ) -> None:
     study = tmp_path / workflow.INSTRUMENTED_SMOKE_ROOT_BASENAME
     plan_path = workflow.write_plan(REPO_ROOT, root=study)
@@ -688,7 +710,7 @@ def test_simulate_unit_selector_keeps_100_unit_plan(
 
 
 def test_provisional_overlay_inventory_fails_closed_outside_rep051_smoke(
-    monkeypatch, tmp_path: Path
+    monkeypatch, tmp_path: Path, stub_binary_preflight
 ) -> None:
     monkeypatch.setattr(workflow, "EXPECTED_OVERLAY_CALL_COUNT", None)
     monkeypatch.setattr(workflow, "EXPECTED_OVERLAY_PATCHED_COUNT", None)
