@@ -1,0 +1,876 @@
+{
+  "contract": {
+    "batch_inputs": [
+      {
+        "batch_index": 0,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "86b98acae7fa6c96f28c9b686396623a71376936e999ab346dab946324d81d18",
+        "table_sha256": "7eaa72f4332dd4cbbe44c94c8ecd4575f415845d8dfff9cf490fa35eddbb27c2"
+      },
+      {
+        "batch_index": 1,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "3977833d2f6c32631ca07b0cf4f5d0f2257b0036e7f8f796a10b1b1cc68ff1e3",
+        "table_sha256": "cc314e54f0a50e6c293d8a3ac6df241c6a0cb6c13b0af2fdd014b38401fb7e3b"
+      },
+      {
+        "batch_index": 2,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "06b84ff7ed5a0c84af8b94d325eb1d85ec3be5a8ee59b349a77efc0f177d4dcb",
+        "table_sha256": "9756d733dbe4420f360857f748859e101707cf43c8441b345f42b0838e02663c"
+      },
+      {
+        "batch_index": 3,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "730d44702594d7a66b62ed3b1ca34b0552813ca3662eb613962d391a2d53e053",
+        "table_sha256": "92bbe24744f64557df765c5b8f26cab66457f88c4d2f7f8d9faaaf26ed43f5c4"
+      },
+      {
+        "batch_index": 4,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "917133175fbf2b74835572d0bbe98dd598d9a913fb13b4643dd841685553a75d",
+        "table_sha256": "300aec9f540a653eaa1f2ed9d02b79d13bd1ab6d05f6b18710547c76166ec5f3"
+      },
+      {
+        "batch_index": 5,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "cc3c815f10339587ff178701e701158036494d5f15f505f4af85df1e2fc9b80c",
+        "table_sha256": "6c6cfdb8b640d44d36bf8ccc34d452116626d9e29c6e87881c4318a74b3c5bbf"
+      },
+      {
+        "batch_index": 6,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "1277d557d775fa89d56574d32d26208fe98af4badd787b5f5fe4cf5c699c32c9",
+        "table_sha256": "c63f9e6b4e49c8257a3472a9de2c81f262024322c54e5c23add309e2de786052"
+      },
+      {
+        "batch_index": 7,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "8fe418a482bc69615a370ce1b5d3d71123c7929fb07ffcc4f115930dabab18a7",
+        "table_sha256": "53e9937d23a6a7a3cf46e6f069363611cab5c8fe3c9aac285d8a0bfd641ab6a4"
+      },
+      {
+        "batch_index": 8,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "b4520b9b5eb61a92720fda883e27a2b0d5bc1b43ea01759ef416434db9943d2a",
+        "table_sha256": "e5db322c4295994310c7518eb5d35a677102ce4d6f6df2286b96f73a00814078"
+      },
+      {
+        "batch_index": 9,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "3facf0aa2edc80f4357c1e03fb8853161d71cc234c95b881d5032a6cc3b16462",
+        "table_sha256": "96d2e654bcb30dcaf401d27a811a9f68f3ce135a6431ccff3d553da189dd3de9"
+      },
+      {
+        "batch_index": 10,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "f57913cc4204e8dfe387d61a04e9d1e722e041ec0a7a86284b0b679be7829394",
+        "table_sha256": "fef83276b5ed7b69826468f4eaaaf0ee8b85d1d9b906b6a56a3a8f6980165249"
+      },
+      {
+        "batch_index": 11,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "e59819f0dd295b9693935255376a7f60e7f2e71100647c299f61ee4257807425",
+        "table_sha256": "e775e3a0d3bf2577279b2321d4ed6412e5833445fdd41c57f9d6370906fceb2d"
+      },
+      {
+        "batch_index": 12,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "df8e458ca09177d35637b5b0240976a15681f7e371b558da2a43f8704117ceae",
+        "table_sha256": "81b40ea8e35d334848597ca0b9c956e0e967938a2c1c00b4ddc6ca1cef31f0e5"
+      },
+      {
+        "batch_index": 13,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "43430b876059aa383ad6dabc2c1cf09329a4244928abf5bb4aed6af7cb3ac858",
+        "table_sha256": "9ad5e53a967605b1e457a508e245984a3d8a8089a573c73f92850822e7a588de"
+      },
+      {
+        "batch_index": 14,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "a540c0dbbe797f3a1efefc873c6ad385a87a496be9a4242c79997bc513f4dfd5",
+        "table_sha256": "cf4e8b5361dd0972a0fc4706d6e0866d0700e4a31ec85582278bacda6ee5a4c3"
+      },
+      {
+        "batch_index": 15,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "36230169c99aae7c15c2cafe9a62777fc965492d217ddbf2fa530bb1df7c4693",
+        "table_sha256": "ad76996046fc239bbca0aa6d90a1f16d4ecc6bbcbbeed100b344c689699836ee"
+      },
+      {
+        "batch_index": 16,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "6cb2d2cc965a5f714e0db37b18e363f1c4136fccfaf66c818aa02f556795fb74",
+        "table_sha256": "491d1cf1dc77310c20fbe656109e55680ac2e07218162accdf49e463b775f6db"
+      },
+      {
+        "batch_index": 17,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "a5f2f59fdf65b29d21b5a7c156ae95cf9a11145d50340ad97fa3df4b8eebf2ab",
+        "table_sha256": "58c25b6e5b5d81fce6f203dd9de94e6e86baf7eff6a7aa4c55c9485d5792fc75"
+      },
+      {
+        "batch_index": 18,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "db914de79f9ff4d2bba9b900ff5571b4f16928f323874cf96cd5eb7a1c0575c9",
+        "table_sha256": "43dbeaaafe2599d5dec230284cfa0d5255e43e19a0a091023aae5ebf778a8775"
+      },
+      {
+        "batch_index": 19,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "08846cbe08fa2a6886944d276fc45e8e81f7ea4f4618c1a58a98a1beb6ebc0c3",
+        "table_sha256": "4f2611c987ede52a134773a720d64eaf0f4a83405c22b5245246889b56c337cd"
+      },
+      {
+        "batch_index": 20,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "7c877e0b990a2aec39b1ab821d386dd8da3dbb67d74f5d9aa9dab519ad82a470",
+        "table_sha256": "b93b57b32f5f24c2ee0a150ff0a91bf0844f5f8b3e8d64b3f65f92040d859774"
+      },
+      {
+        "batch_index": 21,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "9aa2913bc62c848fde12ea6e8450ccb3627dfaf3cc6df18bee8b4c4ecfb7f9ef",
+        "table_sha256": "6997f8652c3bc842a56a48376e7673260d75fd4ac1a26a083eb91098d0af7abb"
+      },
+      {
+        "batch_index": 22,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "241befede6c21ce17534752ef672ae2d46005bba24a0c975ae64b199270942b4",
+        "table_sha256": "d714d75686d9d7bb1373b627fb8dc408ec460b4531632d4a6a56dc7bf4f1e6f0"
+      },
+      {
+        "batch_index": 23,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "ead07d7d1783bfb2cf0637f2c915698a994fb60f1f8f20e2bd8668313f73e441",
+        "table_sha256": "1c57fad335ae9f79989f6caab4a3f319dd9e284cb3a66ce127e54e1099071eaf"
+      },
+      {
+        "batch_index": 24,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "140a49d3089eb2fcdbe64478461f25620cc811dc0e88a6a0ab029ef44c8925f9",
+        "table_sha256": "e5edfec2a4be0cfbf2c4915f8ed86094ba307ea475106bfd8d1fd3c544933d6a"
+      },
+      {
+        "batch_index": 25,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "6756c019983d08a3bd0f04cb6ecd361ab25633afc27a6e6c0c77ce2b87d635bd",
+        "table_sha256": "6e716c0ee0c8c47e9c8258886fee9c8bf0f90ffc27dd5ea0736b4b8247f09225"
+      },
+      {
+        "batch_index": 26,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "f6639c94be4b0e4fcab9e6c507ecd7ed7adf24d95791a9716736751cdd75b950",
+        "table_sha256": "84a9df99b6687e3ea16a843450837d80fb0d7c28ffcc09363391349d5acfe5cf"
+      },
+      {
+        "batch_index": 27,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "c9b5f8721b80a14675dafd28dde00033dd287bd66eba96ff5f3774db542742ea",
+        "table_sha256": "1cef1e7cb005473e246cd5cf7e2b6ae9ab864b625bd9dd19c60b3fc7621ff17f"
+      },
+      {
+        "batch_index": 28,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "fd9aa48d445644ed50543c0492bdcea7f173a6129d11f20517914d1bf036c89a",
+        "table_sha256": "57328132a8901a640200243e13c0fd81e6760813c4c08cf605811e38a7dd0583"
+      },
+      {
+        "batch_index": 29,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "8f0a32279fa789dbfde143a71100a04c2df33dcd302fa86a6fbdd1f664034266",
+        "table_sha256": "08b092105089b4af300312f9630287610ca58e52124c3b18001273ccfff0794a"
+      },
+      {
+        "batch_index": 30,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "957ea36e6528bea1c4cf969d590d059cca524b80c337440b8ccbbb4d0193c051",
+        "table_sha256": "e268ed1ffc4f0d32c846d7b356fd649f3c7b9e0b1413a90d1c35a48280bf9c2f"
+      },
+      {
+        "batch_index": 31,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "64804a04ed561e3b5c588e55c662baf019be5399883c1f343fa15de94f39622e",
+        "table_sha256": "aad6cfffb1f9164c61b9746ca4537ca6153d25a41cdbb733b1ddc1b4e11ab514"
+      },
+      {
+        "batch_index": 32,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "3d60c48826e9a80d568383ab34e22898c980e22387ec00d1d90dccb24421b783",
+        "table_sha256": "3cd10a381b64e591a7eb987ff6d94ce7b8d8b056fd92ef0aada553d1234cf7cb"
+      },
+      {
+        "batch_index": 33,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "d0c086762b627f78aa8e0f1893b14988336f4aabb8331e7e17bcb847d3a85d35",
+        "table_sha256": "c676f2d3b4bc989fc2fbd8fc7a76169f7af5227fede5e307b8a708ae29c1e630"
+      },
+      {
+        "batch_index": 34,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "36ec0aba93e4e1b1f9ae0282657d70ff97596dce2b464d20807eb7abdf736d48",
+        "table_sha256": "ce287490cc3609279b4d9fa45356b3289cdec95bd75455fff5e579029c9b9817"
+      },
+      {
+        "batch_index": 35,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "c570337541cee6d6498a16e293751ec3a9073e66356936a8010f26a03500a713",
+        "table_sha256": "3c4306a91f4bfd53c9791a412acb69e6ebf0ecf15eb6d77d5c24d88c087a2bdb"
+      },
+      {
+        "batch_index": 36,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "2b30a76af8a5bd6c35c529f7544d28b5c5f946f12d3a910cdb3eb5a1158f2fc0",
+        "table_sha256": "db80836cbc9a09671aa12737f765cd0bd4bf55d6e05a33012cdc797a964bcfb0"
+      },
+      {
+        "batch_index": 37,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "8833faf0b896babc27dd4e3112f98821f511c53377c6069a85174e827df6f6d2",
+        "table_sha256": "db7966865946aeafcc5451dbd0205750ae1cb129dcffa56244490a00cb1aa9b7"
+      },
+      {
+        "batch_index": 38,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "04efa6adfa911fbbc691bc2bac59d1e186df576bada00f0fef99c5c936b6efdf",
+        "table_sha256": "167220ed73faaf16ab9dce0868fc5cbc932134ef8ee76714949e7ef800dce641"
+      },
+      {
+        "batch_index": 39,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "completion_sha256": "258ca78bacf7c34c680cc4014d23e03acd8ac6920fa611926393e5902137b61b",
+        "table_sha256": "f74ae8ca7b27fcd7af0b50481d20a73fb5c01dc2f6121b56b97e18765759c9b0"
+      },
+      {
+        "batch_index": 0,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "2205bf3d637767af61432fc4d6badad7a68ad393fb0d6f6c2a4d2a90821c9339",
+        "table_sha256": "1ca409139bed603f7052bf44e40bb5dfb77a09cb23856e22268532cff16b9b81"
+      },
+      {
+        "batch_index": 1,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "afd35870fa284d3932b70c2898b9b79b212272b2a42779fdb2bb1ae47e6a67dc",
+        "table_sha256": "3abbbc31b8a0d870a255fa9ed0c0689b048c61364af47d2a275ffa5698168741"
+      },
+      {
+        "batch_index": 2,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "99a682821cfa7b56d8bd8e6c67cbfe1fd22c605c0cf773896768843ead77474f",
+        "table_sha256": "77cfe09e64d8e9202fdafa153539b2d4e5184b4a1bd55f3d119d22eb7e0c60cd"
+      },
+      {
+        "batch_index": 3,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "ef1d6a19129f09dd3fa04f0ceb6c7d24fb729322d7afb98c86e4b57a3d604329",
+        "table_sha256": "60f349c546002d04729f40e0dc6301e4b2cc979154b33dae07b8619688308807"
+      },
+      {
+        "batch_index": 4,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "12d858d5ed728d51504e15f9bd6233358b080e1fe4154af96f3db3ddef5f3988",
+        "table_sha256": "815c0c90492ebbf9d78eeda4d8991871f92abef241c3870f86688cb03c659a71"
+      },
+      {
+        "batch_index": 5,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "d3e33d12394bd8d717a9bdcd3c7d7ee52e3e7dc2a5b0424319dbb19e818cd22c",
+        "table_sha256": "233318e477f6ac9070ea65884599c4327f38726a685926116aca7981340f39da"
+      },
+      {
+        "batch_index": 6,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "a3c3b47b1e21e013f3b9d463e9a5201e4db405435332508b3d50ed02d9c3ddef",
+        "table_sha256": "cee9eb65dbc09b03637420d46b88a551876d91e890c6e5ba3e4cc363b455bc7a"
+      },
+      {
+        "batch_index": 7,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "5a0657e6f679889225cbd5192a0e73772cdd88fbf176ec7e617dbf8d2fd6efdd",
+        "table_sha256": "1a213072758e37b080166c9349df544b52dcc1a14ccf2ca7a9368970a61a788e"
+      },
+      {
+        "batch_index": 8,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "93043936ea7b24af63bb2f6aae5bec35a63f857ae9bd2de6e0b3f10ed21d4620",
+        "table_sha256": "6f16bbacb964a8a94dd7d12ce51ffafc48a8e97c419df08f285099d683e12b1c"
+      },
+      {
+        "batch_index": 9,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "4681c8ceb27112a0704a736d2ffe939485fdff1fe92fa568d9ccc6efa88a059e",
+        "table_sha256": "00ec963430cced6388b992974c5dcfb48e8c7446174dd0f00b7ecfe7af1c8cb1"
+      },
+      {
+        "batch_index": 10,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "16072e9c860badcdeb34655065455c0183ae35afe06126fc9e06095cf7efc302",
+        "table_sha256": "90ca20b8c16ec4b112f7495b170df0b00fdd505e940387b168e40c1677b6c4b0"
+      },
+      {
+        "batch_index": 11,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "b76126254c21b6a8439cc92e6888ebc37d5eef892a52bb06f3885c525fd20184",
+        "table_sha256": "10916468d8b7114dc2b79780a16f9205c63831cb4fc3b88d6c05a62879cb8b31"
+      },
+      {
+        "batch_index": 12,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "b616bf93e6331624f88124dd9ea900c8d1e0a1c6ca038a614aef071788f52b22",
+        "table_sha256": "2a1837e66394a3f725a1efe1a2d0efc9b03aecf8b1a6358c6a122fe8c46de7cf"
+      },
+      {
+        "batch_index": 13,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "2c313168451b4b9ddf1c721e27d476a96cd7b0870dca83b5141072d34d3bcde6",
+        "table_sha256": "5191df7bf9829ab6468db8bd6391b4504542c6c7dba0f18196eff6d4800760d2"
+      },
+      {
+        "batch_index": 14,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "c8b0f1af1ee3bb2b214669f9b11a6ca691504ef011a49445be78727184941a7e",
+        "table_sha256": "b3e969b5f62f76f0d70ea9d3bc5f289a522a42b219b980d5d7283c7f11270fb9"
+      },
+      {
+        "batch_index": 15,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "3df3ae1f2b703d5908573c0f41090b1e29ca77065aae3aa28253a419d7aa04f7",
+        "table_sha256": "ee093533a0bc180845d3d06e65a8a11a9b0100c646ddff999f3e23c3dbd1fe75"
+      },
+      {
+        "batch_index": 16,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "96e44d838afb504482248d69e2a4f53219d647f9193b8448e65909c03f0b81ee",
+        "table_sha256": "a6c31215e269135b4b390c53d8fa9c91a851024bd9d4eb22d0990c7cb52618cd"
+      },
+      {
+        "batch_index": 17,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "f7347f4ec1d245ba1ed298517fb9adc13048e3f61b78c538148923fcf22bd34b",
+        "table_sha256": "f2b752e930bb855f6cbf9f86ca3c128598819fa5124b2e18ee67f63bfcb03af5"
+      },
+      {
+        "batch_index": 18,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "8a98d2ab8d729ce3b292b863af3c11c409dca6c9025dc35711e48bcb26df47c8",
+        "table_sha256": "f80351aa167175cc7ac0d19a65d122336e2ec10bfcb1557639077e58283048cc"
+      },
+      {
+        "batch_index": 19,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "completion_sha256": "3110b1daad74afd7ec84dd02a87db115d85ff0f9cf5c5eb4f169a8e3fedcb23e",
+        "table_sha256": "f4a2dd2df0bc01c9d8193726c06b03b372fb4e2fe1c845796641acc19f4d3102"
+      },
+      {
+        "batch_index": 0,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "548e10c22e7391ab10afb6cf792fb3eec0aef1489c4d5a60891e340078c2cd4e",
+        "table_sha256": "af3972c0b476a588acf8a01ea069f109463bfd1ecb084e015f28966973bc31fa"
+      },
+      {
+        "batch_index": 1,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "1ebfe2d19ec7edcb38b994bc5c330a4db09ad34c62400bd5fdff89c012902118",
+        "table_sha256": "8477c8a0168ed5039d6c705c85f742d2dae58b91f9dfe051b9380c45612c581e"
+      },
+      {
+        "batch_index": 2,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "e5b78d03b5c73cfdb7d7a2aff0a5649f05167b43a0b3099fc7b9cc1c52de08b2",
+        "table_sha256": "dd365e69c662bf82fc1004cf3028d52c918358d581fb0ff7d3b5b872572bd56e"
+      },
+      {
+        "batch_index": 3,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "1855b9971be537d8850c2428acd36b72a240b702416514413862c8df4ab2a1cd",
+        "table_sha256": "595cbe833ba9d59ae545886f1d37933efeb20a1d0e137cf1f1b2d82b49ec0f0e"
+      },
+      {
+        "batch_index": 4,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "8ce047edba587b7a9fc310b4a5d7da726e1308d2f15152c2751d696423129bad",
+        "table_sha256": "86bd591e999170500d79a7fd9b908f96bfaff73f046ea9782e1eaca97c67cf51"
+      },
+      {
+        "batch_index": 5,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "7126c5c24105907c3de23b2eb02855c3fc72f3e112b3fb41fb83e8272c56e447",
+        "table_sha256": "3c8579653468fe66daa966540bd17e866162b4c73fd739edae250d6c30a9778e"
+      },
+      {
+        "batch_index": 6,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "7c195bf926a7d8a7b0602cba4978795ac5cca2a239d89e0df2c4f0320c3594cd",
+        "table_sha256": "c1bbc71ea9f7d55bfe9a6fe7211f6b388c0eb492b37b172588ad7eaadb7fe339"
+      },
+      {
+        "batch_index": 7,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "43b2662b1401747fed55afeacecdea6c974a9904649fe2992698ac92dff98510",
+        "table_sha256": "bef65385c9b8daaef65fb5d26922837e5dc80b326b8a5ab2641538ff0a591295"
+      },
+      {
+        "batch_index": 8,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "b2a8560463dd8cd5ac45ed204e4741a478734f622ac2c0ea2ae19a5a3a6d3eaa",
+        "table_sha256": "8a88c2cdec31dbed05a749b5ab7a9fe02c35dd9eb4ec9f6b96c1d73dbbc101ad"
+      },
+      {
+        "batch_index": 9,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "1c7015a0225882da42f74ee75004f0240d923770c2fc5053b7259015c5af2248",
+        "table_sha256": "fc341d049d4152b7679eb444986c8d720e726775dae1ea2ab5799e1e0d164d1a"
+      },
+      {
+        "batch_index": 10,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "417fb7db328d90cc861d5b6d0fee40bd1c8ca21ca56e759396f5002d88d320b1",
+        "table_sha256": "435f2dd7ebd1414fffffcf869cbdb9e184b3c5b800bd6af7a6d9cba87d73a058"
+      },
+      {
+        "batch_index": 11,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "df46e6580ef913d6dd8a00baca4c5552a46a37441cd30d798893aaccb319fe7f",
+        "table_sha256": "c29318ae7e8a507d9a700d7ee75504bc172b15b4dcf2221391df41bd60ff1407"
+      },
+      {
+        "batch_index": 12,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "d3dcba50b404c8b3c2dba650c2f185eef4956713a6a4d00e55d1559a0ab82926",
+        "table_sha256": "3015db6f10f6b47064444a35753c1b5a5e3a39d038e1bf7e92e9974a67b6838a"
+      },
+      {
+        "batch_index": 13,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "45ed3b6f8e7170f8cb9277f4c70780989bc9834216a7ea06e18d89d59d25975a",
+        "table_sha256": "0a9d932ce5344d07942a75ad314901d1e7e0d29553b309da96389c0173326dce"
+      },
+      {
+        "batch_index": 14,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "2e7baebc8a73787f32ade5ca9ab9d15a90cd7706483db78ad3347e89e7148217",
+        "table_sha256": "4038be1adcc3aa5b473ddc3dd2545d1905c40671b37856a23710c0b8937d01e6"
+      },
+      {
+        "batch_index": 15,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "da0fd96b0dd6f9f8ba053a1d82eaf28d05390b8f436110be0a58dbd6c62421f6",
+        "table_sha256": "3fed057119b753d45ca79199d8c10a8de1b58b214fd628d506a6d20ab6f99408"
+      },
+      {
+        "batch_index": 16,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "9441c44d7dae5bf7845d6c51555b3ccc4dbb9c2e9cfa5232014887120f85b86e",
+        "table_sha256": "95551ee8ab40f3bb980ec52573b0211c27f7af404b0abcc9f59e034c7c97e286"
+      },
+      {
+        "batch_index": 17,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "0f3c3c51ca26edae079a51fd4eaced6d64f6eb8dd14ff37204d3623cc9dd4ca5",
+        "table_sha256": "f9b41685f6236df31ab3dd1cba786df6d69059d23bd14b826df064821d95f098"
+      },
+      {
+        "batch_index": 18,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "737903fb8eadcae74cc7f61f588ca46bfbab99ec9ec301389674db403c62f2e9",
+        "table_sha256": "a3f357ffb5a9d2948dcdac1627f82b373664db7c8c12b7008e2797116bcdbb00"
+      },
+      {
+        "batch_index": 19,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "completion_sha256": "4498aa91d8ca076789cba4286c9e08c538bc08236b8de49f4effa82b473cdf5e",
+        "table_sha256": "23d6c35b59edee6be5d2e783545c669ee1497a30942c6cd1f975841b6c9b8887"
+      },
+      {
+        "batch_index": 0,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "717cd6ec30379d290691610bb253a63a8a903086c5a0c3d867a49ae072f96054",
+        "table_sha256": "32df60f9e270695f2951076c73df1ed3b5904022726a47100bdc797c577e3db6"
+      },
+      {
+        "batch_index": 1,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "a00085cee995fc6e40303e90f6f7730c60e8e8b20c879d88c7c21c4967923424",
+        "table_sha256": "022f73b00179e69609976892280efc60cee09819b4e31aa828eec3aba7c00f25"
+      },
+      {
+        "batch_index": 2,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "9c7f86535faefd9ffcf6e36240ebbe8efc777971c2a93079841f5526b88b2816",
+        "table_sha256": "48ea93cbbafeeeea8b6c37a7cc2247d6f4b028cfd598dcfe6acf540a09792340"
+      },
+      {
+        "batch_index": 3,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "3ae163df9a337a1d93ac195eff86ce18e4afcfe09e33e843e5c320ca930b04cb",
+        "table_sha256": "4923457eb30070e60cfb5ef14a332bed292c1b2611fb914867ebad982fbf3604"
+      },
+      {
+        "batch_index": 4,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "84dbfcdff0f796daf24f03787230d4110f5abbb2f66d3a52afaf898465cbcaf6",
+        "table_sha256": "8d25299711a609d605ab3755fee03a556ffcceda4f8467fd153eb0f761fc3265"
+      },
+      {
+        "batch_index": 5,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "4479739c99a498cc34a52bb72879ad6e19d02cdbfe199d91411d0b366b67d6f6",
+        "table_sha256": "58079710fa488b54436686de40fe77d714ed2af35e6f0c8eb1dec68848883711"
+      },
+      {
+        "batch_index": 6,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "4804b94c8db9e770326f2275b754636fe81e22692190d3947a54e0298b260baa",
+        "table_sha256": "5e8ae50a3b8c959f7c88c0c92eb3aefde831b62690c7956c46214832720546dc"
+      },
+      {
+        "batch_index": 7,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "9a2c1cf653c61893d9d796e2efa6b14f4fc78436695132ddf0907d70e29e45dd",
+        "table_sha256": "c89b744772e47dae50bc4b3b5f0cc570b15ba8d1e8788713cc0078c898d0d979"
+      },
+      {
+        "batch_index": 8,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "9f2edb4cea6cf33968b0073b23ac369f4e8cac0b99fc7120cdd9815412573d30",
+        "table_sha256": "41262ee91b1968012166ad62a09d88b567dcd8bc4b001029eb2143f2a6c0225a"
+      },
+      {
+        "batch_index": 9,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "2a329c1dbd98245d91d736878bd213b47cb1cdd0a2490ea9f20f06de25e070e5",
+        "table_sha256": "978230d4125720b18891d19bdcd90f8176c27d12a8d5f05538b79c78851580cd"
+      },
+      {
+        "batch_index": 10,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "cff9574cae89e36cac3ccac4709a5329c7833b890d66a0202e3a8c47dbfc865d",
+        "table_sha256": "b859c0d4da41e435cf9714a74096287297a1b8d7161dcea14298501609b920d5"
+      },
+      {
+        "batch_index": 11,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "551680b144746450f87727f50a2575d3eb777e95f52c7b60ef53ed374c4d11cf",
+        "table_sha256": "394f952882ef1331c822328893921390893b605cfd53ff403df93c490c133427"
+      },
+      {
+        "batch_index": 12,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "551b35ae270b8c11890ea9dbfd46e1af0fad08c006c84d070640841a0ab99b37",
+        "table_sha256": "8f4607d61608ea30b86d57302ff0e15686a83367487e32cb7e033b5663b5a60e"
+      },
+      {
+        "batch_index": 13,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "3030908f765bf7b744db30cde6c7a7d97883fc9bfb85f0401089693b60ecc494",
+        "table_sha256": "6611f0f6c6eaa995e31871cc41ad28e2316773146ce67500a02d175dde99686d"
+      },
+      {
+        "batch_index": 14,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "f36e0045cc040c056ffec34d13ed2e5e984881b509c632744e3652056f6730e0",
+        "table_sha256": "a86fd71bc383e3c14d179c540697d455133131076ee2ce72302d0f784c1f869c"
+      },
+      {
+        "batch_index": 15,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "c448dfbe2b2538eaf040a67056500c927b38eedbe199a257a6554b3840aa73d7",
+        "table_sha256": "2e669c8cbc19ea71eec814b5ad2e84689ce8b4290877ba15eef42f8ac6582c58"
+      },
+      {
+        "batch_index": 16,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "bfba8610b7b83d74f36aababa0a8837246ddd475269e82160790f4718cb1a7f7",
+        "table_sha256": "be7af99e3d8f4000f04d8fff9034fbd4ec719cb8837f973f5454be3dd8f0c1a2"
+      },
+      {
+        "batch_index": 17,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "a5712b8b330b285e371c92ad2caf9701c9200a9a9fd17df83da16c1b8f492d16",
+        "table_sha256": "e6f16c845b7e0fbf56f8661cfc2b95215cce7f1cf099344207d0e21a3f658c7e"
+      },
+      {
+        "batch_index": 18,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "abdfa1d510c33e57f11a3e95255bac95918bdcd283dd7d0845a8b3e76999dfbe",
+        "table_sha256": "ddb1438604f19aefdafbd3200d990e37b0eea9a70fc5d4ab538e2bd85c516794"
+      },
+      {
+        "batch_index": 19,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "completion_sha256": "845bed02a5bb1297a01c545bb5c71f2f0c16d2d7a8e763111e489cb1618eaa6f",
+        "table_sha256": "40bc5b1804cea59ba2adf00e652be1ac0f8e46ff68082ec3fe0a6c34cbb1d3f3"
+      }
+    ],
+    "cells": [
+      {
+        "attempts": 2000000,
+        "batch_size": 50000,
+        "cell_id": "eas_phlash_median__neutral_s0p000",
+        "demography_id": "eas_phlash_median",
+        "dominance_coefficient": 0.5,
+        "n_batches": 40,
+        "population": "EAS",
+        "selection_coefficient": 0.0,
+        "simulation_class": "neutral"
+      },
+      {
+        "attempts": 200000,
+        "batch_size": 10000,
+        "cell_id": "eas_phlash_median__selected_s0p010",
+        "demography_id": "eas_phlash_median",
+        "dominance_coefficient": 0.5,
+        "n_batches": 20,
+        "population": "EAS",
+        "selection_coefficient": 0.01,
+        "simulation_class": "selected"
+      },
+      {
+        "attempts": 20000,
+        "batch_size": 1000,
+        "cell_id": "ancient_eurasia_han_introgression__neutral_s0p000",
+        "demography_id": "ancient_eurasia_han_introgression",
+        "dominance_coefficient": 0.5,
+        "n_batches": 20,
+        "population": "Han",
+        "selection_coefficient": 0.0,
+        "simulation_class": "neutral"
+      },
+      {
+        "attempts": 20000,
+        "batch_size": 1000,
+        "cell_id": "ancient_eurasia_han_introgression__selected_s0p010",
+        "demography_id": "ancient_eurasia_han_introgression",
+        "dominance_coefficient": 0.5,
+        "n_batches": 20,
+        "population": "Han",
+        "selection_coefficient": 0.01,
+        "simulation_class": "selected"
+      }
+    ],
+    "implementation": {
+      "hash_method": "sha256(strict UTF-8 without BOM or bare CR; CRLF canonicalized to LF)",
+      "python/gamma_smc_aou/eas_sweep_models.py": "179d38774f50af26aa9528c1badd5c5506f05fee13912f875c16b8db250a7210",
+      "python/gamma_smc_aou/natural_final_af.py": "31e9cd277f59ec2bf97668f89eb84ef7a3a3f9959a8e582f7ca4128ce28639e9",
+      "scripts/run_natural_final_af.py": "6f8291fb89e7bb224a5acc7718cd8cd27c3ed6a8ace9a64fa56764406fcd09ea"
+    },
+    "plan_sha256": "baf56f93f9b1693ac5fcb6590dde5e52aa3bf37806613981a35afaa82f5171a2",
+    "sample_panel_is_not_a_filter": true,
+    "schema": "gamma-smc.natural-final-af-analysis/v1",
+    "software": {
+      "matplotlib": "3.11.1",
+      "msprime": "1.4.2",
+      "numpy": "2.5.1",
+      "pandas": "3.0.3",
+      "python": "3.12.13",
+      "stdpopsim": "0.3.0"
+    },
+    "survival_filter": "final_alt_count > 0",
+    "table_payload_sha256": {
+      "attempts": "cb8fec8808af8c782b572e1c0d34ae0666b0c35550de61f6cf319008096271f3",
+      "comparisons": "a8e7e2823b97ee1dba736dfddb05eeeeccafb6cbd9db202932c966745d0518f0",
+      "schedules": "cda3157a819776febc09f48c73128a260cd94e48bd79571ec5fd10b792a3b76f",
+      "summary": "535f4f0c91df623cca22acf82c05f4d5df5d7d832cf6eafbf018c83745552f64",
+      "survivors": "7868ac87f62fc7bf2f3854a982baaa791fe637bee76c59f82261cf01436856e3"
+    }
+  },
+  "contract_sha256": "2fdf110ab9fb39361d22b985dafddefe3e260e878aed6998d2781b84ad92947c",
+  "outputs": {
+    "attempts": {
+      "columns": [
+        "trajectory_id",
+        "cell_id",
+        "demography_id",
+        "population",
+        "simulation_class",
+        "selection_coefficient",
+        "dominance_coefficient",
+        "attempt_index",
+        "batch_index",
+        "batch_seed",
+        "panel_seed",
+        "origin_generations_ago",
+        "initial_population",
+        "initial_diploid_n",
+        "initial_alt_count",
+        "initial_population_af",
+        "present_diploid_n",
+        "final_alt_count",
+        "final_population_af",
+        "focal_allele_outcome",
+        "population_survived",
+        "absorption_generations_ago",
+        "panel_diploids",
+        "sample_alt_count",
+        "sample_af",
+        "sample_detected"
+      ],
+      "path": "final_af_attempts.tsv.gz",
+      "rows": 2240000,
+      "sha256": "aff677e7ad586081cbba218436a16a6bc19c1f911991ac0f94f5909ededc62c4",
+      "size_bytes": 17859721
+    },
+    "comparisons": {
+      "columns": [
+        "demography_id",
+        "statistic",
+        "population_af_roc_auc_survivors",
+        "n_neutral_survivors",
+        "n_selected_survivors"
+      ],
+      "path": "final_af_comparisons.tsv",
+      "rows": 2,
+      "sha256": "a8e7e2823b97ee1dba736dfddb05eeeeccafb6cbd9db202932c966745d0518f0",
+      "size_bytes": 308
+    },
+    "fate_pdf": {
+      "geometry": {
+        "height_points": 612.0,
+        "page_count": 1,
+        "width_points": 792.0
+      },
+      "path": "unconditional_fate_fractions.pdf",
+      "sha256": "00e219065ad6ee07ed4aa2c3e7de30d0e7b2e2fbc1f857d9b94f7cd94be783de",
+      "size_bytes": 20176
+    },
+    "fate_png": {
+      "geometry": {
+        "height_px": 2550,
+        "width_px": 3300
+      },
+      "path": "unconditional_fate_fractions.png",
+      "sha256": "b8f2d8439eccc80f92b6a2dde50dab54b549b7ac65c87ac3c7969390b2af49c4",
+      "size_bytes": 220881
+    },
+    "population_ecdf_pdf": {
+      "geometry": {
+        "height_points": 612.0,
+        "page_count": 1,
+        "width_points": 792.0
+      },
+      "path": "final_population_af_survivor_ecdf.pdf",
+      "sha256": "cc4935e12c50c45ef58d27e441cc3a2f92cce18211032ec5cd5caf08f72ed5d8",
+      "size_bytes": 50778
+    },
+    "population_ecdf_png": {
+      "geometry": {
+        "height_px": 2550,
+        "width_px": 3300
+      },
+      "path": "final_population_af_survivor_ecdf.png",
+      "sha256": "dee415bbbeb4f988bfd931fc8c3b8b94989009d1d716358b285a12d9d8685d48",
+      "size_bytes": 294049
+    },
+    "population_sample_ecdf_pdf": {
+      "geometry": {
+        "height_points": 612.0,
+        "page_count": 1,
+        "width_points": 792.0
+      },
+      "path": "population_vs_sample_af_survivor_ecdf.pdf",
+      "sha256": "db25d52fb8c8f10d2b146693bf8ca210d664eb71bf017219c3672d5fb644fa64",
+      "size_bytes": 54393
+    },
+    "population_sample_ecdf_png": {
+      "geometry": {
+        "height_px": 2550,
+        "width_px": 3300
+      },
+      "path": "population_vs_sample_af_survivor_ecdf.png",
+      "sha256": "c24f9401dae3cddf39da4913e98167f0dfa8d2d15f0a9b9f70b4794d15307981",
+      "size_bytes": 266221
+    },
+    "readme": {
+      "path": "README.md",
+      "sha256": "83f4b50dddd5fbc858d45ef87215cb716aa2111600edd10bf3abdeeece30edde",
+      "size_bytes": 1034
+    },
+    "schedules": {
+      "columns": [
+        "demography_id",
+        "generations_ago",
+        "population",
+        "diploid_n"
+      ],
+      "path": "integer_demography_schedules.tsv.gz",
+      "rows": 4274,
+      "sha256": "6482b3b7f0eabaa2771ebc40c9ab7379b7164c14050d0bc1834e9cf9da02c897",
+      "size_bytes": 15623
+    },
+    "summary": {
+      "columns": [
+        "demography_id",
+        "population",
+        "simulation_class",
+        "selection_coefficient",
+        "n_attempted",
+        "n_lost",
+        "n_segregating",
+        "n_fixed",
+        "lost_fraction",
+        "segregating_fraction",
+        "fixed_fraction",
+        "n_population_survived",
+        "population_survival_fraction",
+        "population_survival_wilson_ci_low",
+        "population_survival_wilson_ci_high",
+        "fixation_fraction_among_survivors",
+        "initial_population_af_mean_all_attempts",
+        "final_population_af_mean_all_attempts",
+        "neutral_martingale_difference",
+        "neutral_martingale_mc_se",
+        "neutral_martingale_z",
+        "n_sample_detected_among_survivors",
+        "sample_detection_fraction_among_survivors",
+        "population_af_mean_survivors",
+        "population_af_median_survivors",
+        "population_af_q025_survivors",
+        "population_af_q25_survivors",
+        "population_af_q75_survivors",
+        "population_af_q975_survivors",
+        "sample_af_mean_survivors",
+        "sample_af_median_survivors"
+      ],
+      "path": "final_af_summary.tsv",
+      "rows": 4,
+      "sha256": "535f4f0c91df623cca22acf82c05f4d5df5d7d832cf6eafbf018c83745552f64",
+      "size_bytes": 1987
+    },
+    "survivors": {
+      "columns": [
+        "trajectory_id",
+        "cell_id",
+        "demography_id",
+        "population",
+        "simulation_class",
+        "selection_coefficient",
+        "dominance_coefficient",
+        "attempt_index",
+        "batch_index",
+        "batch_seed",
+        "panel_seed",
+        "origin_generations_ago",
+        "initial_population",
+        "initial_diploid_n",
+        "initial_alt_count",
+        "initial_population_af",
+        "present_diploid_n",
+        "final_alt_count",
+        "final_population_af",
+        "focal_allele_outcome",
+        "population_survived",
+        "absorption_generations_ago",
+        "panel_diploids",
+        "sample_alt_count",
+        "sample_af",
+        "sample_detected"
+      ],
+      "path": "final_af_population_survivors.tsv.gz",
+      "rows": 25616,
+      "sha256": "75e994d0431f0dada61aa109b8b2d5e5eb9804739716e5ce6f8e43d59e3f3dbb",
+      "size_bytes": 430586
+    }
+  },
+  "schema": "gamma-smc.natural-final-af-analysis/v1",
+  "status": "complete"
+}

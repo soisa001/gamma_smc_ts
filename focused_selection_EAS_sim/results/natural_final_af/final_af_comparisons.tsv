@@ -1,0 +1,3 @@
+demography_id	statistic	population_af_roc_auc_survivors	n_neutral_survivors	n_selected_survivors
+ancient_eurasia_han_introgression	P(AF_s0.01 > AF_s0 | population survival) + half ties	0.999958564905	4934	16281
+eas_phlash_median	P(AF_s0.01 > AF_s0 | population survival) + half ties	0.999251844986	2498	1903
