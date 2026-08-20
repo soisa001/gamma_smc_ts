@@ -18,11 +18,16 @@ Three arms, each with a plain neutral null that contains **no focal allele at
 all**:
 
 1. ``chb_archaic_single_founder`` -- the EPAS1 model. The allele is fixed in
-   Neanderthal after the archaic split so it marks archaic ancestry, introgresses
-   into CHB, and is then reduced to a single archaic founding haplotype at the
-   selection onset. Replicates with no archaic ancestry at the focal base are
-   rejected and re-drawn, which is exactly the ascertainment that makes EPAS1 a
-   locus worth studying in the first place.
+   Neanderthal after the archaic split so it marks archaic ancestry, and
+   introgresses into CHB by continuous migration. Selection then acts on the
+   whole introgressed haplotype class, which sits at roughly the archaic ancestry
+   proportion (~1.5%) at the onset. That head start is the point: 205 generations
+   at s = 0.05 take 1.5% to ~72%, matching EPAS1's 63-87%, whereas a single copy
+   reaches only ~1.3%. Replicates with no archaic ancestry at the focal base are
+   re-drawn, which is the ascertainment that makes EPAS1 a locus worth studying.
+   At a single base archaic ancestry usually traces to one introgression event,
+   so the class is effectively single-founder; the realised founder count is
+   measured rather than imposed.
 2. ``chb_denovo`` -- positive control. Same demography, same onset, same s, but
    the allele starts as a single de novo copy on a random CHB genome with no
    archaic background. This is the upper bound on detectability.
@@ -44,6 +49,14 @@ from typing import Any
 SEQUENCE_LENGTH_BP = 10_000_000
 FOCAL_POSITION_BP = 5_000_000
 FOCAL_SITE_ID = "run4_focal_site"
+#: A second reserved base carrying a neutral marker fixed in Neanderthal. It
+#: identifies which CHB genomes are archaic at the focal locus, so the selected
+#: allele can be seeded on exactly one of them. Using a marker rather than
+#: removing mutations matters: SLiM's removeMutations leaves empty derived
+#: states that stdpopsim's recapitation cannot parse.
+MARKER_SITE_ID = "run4_archaic_marker"
+MARKER_POSITION_BP = FOCAL_POSITION_BP + 1
+RESERVED_POSITIONS = (FOCAL_POSITION_BP, MARKER_POSITION_BP)
 
 MUTATION_RATE = 1.25e-8
 RECOMBINATION_RATE = 1.0e-8
@@ -167,11 +180,11 @@ CHB_ARCHAIC_ARM = Run4Arm(
     description=(
         "The allele is fixed in Neanderthal one tick after the archaic split, so "
         "it marks archaic ancestry exactly, and introgresses into CHB by the "
-        "catalog's continuous migration. At the selection onset it is reduced to "
-        "a single archaic founding haplotype -- every present-day carrier "
-        "therefore descends from one introgressed genome, as EPAS1 does. "
-        "Replicates with no archaic ancestry at the focal base are re-drawn; "
-        "that is the same ascertainment that makes a locus like EPAS1 worth "
+        "catalog's continuous migration. Selection acts on the introgressed "
+        "haplotype class, which sits at roughly the archaic ancestry proportion "
+        "at the onset -- the standing-variation head start that lets EPAS1 reach "
+        "63-87% in 6,000 years. Replicates with no archaic ancestry at the focal "
+        "base are re-drawn, the same ascertainment that makes such a locus worth "
         "studying."
     ),
 )
@@ -352,7 +365,10 @@ __all__ = [
     "EAS_POPULATION",
     "FOCAL_POSITION_BP",
     "FOCAL_SITE_ID",
+    "MARKER_POSITION_BP",
+    "MARKER_SITE_ID",
     "MAX_ASCERTAINMENT_ATTEMPTS",
+    "RESERVED_POSITIONS",
     "MODES",
     "MUTATION_RATE",
     "NEANDERTHAL_SPLIT_GENERATIONS",

@@ -19,7 +19,7 @@ initialize() {
 
     defineConstant("burn_in", 0.1);
     defineConstant("generation_time", 29);
-    defineConstant("trees_file", "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\stdpopsim_7gkjq9pt\\1b2aa8.trees");
+    defineConstant("trees_file", "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\stdpopsim_rj5w4lez\\6840dc.trees");
     defineConstant("pop_names", c("YRI", "CEU", "CHB", "Neanderthal", "ArchaicAFR"));
 
     _recombination_rates = c(
@@ -166,8 +166,9 @@ initialize() {
     // Allele frequency conditioning, one row for each.
     defineConstant("condition_on_allele_frequency", array(c(
         // start_time, end_time, mut_type, pop_id, op, allele_frequency
+        c(5945.0, 5945.0, 1, 2, 2, 0.0),
         c(5800.0, 0.0, 1, 2, 2, 0.0)
-    ), c(6, 1)));
+    ), c(6, 2)));
 
     // One row for each sampling episode.
     defineConstant("sampling_episodes", array(c(
@@ -366,43 +367,6 @@ function (void)restore(void) {
     sim.setValue("restore_function", F);
 }
 
-
-// run4: reduce the introgressed allele to a single archaic founding haplotype.
-// Every present-day carrier then descends from one introgressed genome, which is
-// what a locus like EPAS1 looks like. If no archaic ancestry reached the focal
-// base, restore() re-draws the replicate from stdpopsim's own checkpoint.
-function (void)run4_single_founder(integer$ target_id) {
-    mt_id = metadata.getValue("run4_focal_mutation_type_id");
-    mt_matches = sim.mutationTypes[sim.mutationTypes.id == mt_id];
-    if (size(mt_matches) != 1)
-        err("run4: the focal mutation type is not unique at the reduction tick");
-    mt = mt_matches[0];
-    pop_matches = sim.subpopulations[sim.subpopulations.id == target_id];
-    if (size(pop_matches) != 1)
-        err("run4: the target population does not exist at the reduction tick");
-    pop = pop_matches[0];
-    muts = sim.mutationsOfType(mt);
-    if (size(muts) != 1) {
-        restore();
-        return;
-    }
-    mut = muts[0];
-    carriers = pop.genomes[pop.genomes.containsMutations(mut)];
-    n_carriers = size(carriers);
-    if (n_carriers == 0) {
-        restore();
-        return;
-    }
-    keep = sample(carriers, 1);
-    pos = metadata.getValue("run4_focal_position");
-    sim.subpopulations.genomes.removeMutations(mut, F);
-    keep.addNewDrawnMutation(mt, pos);
-    metadata.setValue("run4_reduction_tick", community.tick);
-    metadata.setValue("run4_archaic_carriers_before_reduction", n_carriers);
-    metadata.setValue("run4_archaic_genomes_at_reduction", size(pop.genomes));
-    metadata.setValue("run4_archaic_frequency_before_reduction",
-                      n_carriers / size(pop.genomes));
-}
 
 
 1 early() {
@@ -704,10 +668,6 @@ function (void)run4_single_founder(integer$ target_id) {
                 g, g);
         }
     }
-
-    // run4: reduce to a single archaic founder at the selection onset.
-    community.registerLateEvent(NULL, "{run4_single_founder(2);}",
-        time_to_tick(5945.0), time_to_tick(5945.0));
 
     community.registerLateEvent(NULL, "{dbg(self.source); end();}", G_end, G_end);
 

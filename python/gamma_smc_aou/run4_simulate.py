@@ -44,7 +44,8 @@ from .run4_models import (
     build_extended_events,
     model_record,
     population_id,
-    scoped_focal_overlay_patch,
+    reserved_positions,
+    scoped_reserved_overlay_patch,
     scoped_slim_patch,
 )
 
@@ -230,14 +231,14 @@ def run_replicate(task: ReplicateTask) -> dict[str, Any]:
     try:
         arm = get_arm(task.arm_id)
         model = build_demographic_model(arm, task.repo_root)
-        contig = build_contig()
+        contig = build_contig(arm)
         events = build_extended_events(arm, task.mode)
         target_id = population_id(model, arm.target_population)
         engine = stdpopsim.get_engine("slim")
 
         with (
             scoped_slim_patch(arm, task.mode, target_id) as slim_patch,
-            scoped_focal_overlay_patch() as overlay,
+            scoped_reserved_overlay_patch(reserved_positions(arm)) as overlay,
         ):
             ts = engine.simulate(
                 model,

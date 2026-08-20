@@ -81,6 +81,21 @@
                 }
               },
               {
+                "allele_frequency": 0.0,
+                "end_time": {
+                  "generations_ago": 205.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ConditionOnAlleleFrequency",
+                "operator": ">",
+                "population": "CHB",
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 205.0,
+                  "semantics": "exact_generation"
+                }
+              },
+              {
                 "dominance_coefficient": 0.5,
                 "end_time": {
                   "generations_ago": 0.0,
@@ -542,7 +557,7 @@
       }
     }
   },
-  "elapsed_seconds": 11.405900300014764,
+  "elapsed_seconds": 5.733623699983582,
   "environment": {
     "slim_checked": false
   },

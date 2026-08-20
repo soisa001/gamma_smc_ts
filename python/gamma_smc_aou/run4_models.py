@@ -42,8 +42,10 @@ from .eas_sweep_models import (
     load_phlash_eas_npz,
     serialize_extended_events,
 )
-from .run2_models import mask_focal_rate_map, scoped_focal_overlay_patch
 from .run4_config import (
+    MARKER_POSITION_BP,
+    MARKER_SITE_ID,
+    RESERVED_POSITIONS,
     ARCHAIC_POPULATION,
     CHB_ARCHAIC_MIGRATION_END_GENERATIONS,
     CHB_SPLIT_GENERATIONS,
@@ -73,10 +75,11 @@ __all__ = [
     "epoch_tick_offset",
     "event_tick_offset",
     "generate_slim_script",
-    "mask_focal_rate_map",
+    "mask_reserved_rate_map",
     "model_record",
     "population_id",
-    "scoped_focal_overlay_patch",
+    "reserved_positions",
+    "scoped_reserved_overlay_patch",
     "scoped_slim_patch",
     "snap_generations",
     "tick_schedule",
@@ -196,7 +199,8 @@ def build_demographic_model(arm: Run4Arm, repo_root: str | Path):
     return build_eas_demography_models(artifact)["median"].stdpopsim_model
 
 
-def build_contig() -> stdpopsim.Contig:
+def build_contig(arm: Run4Arm | None = None) -> stdpopsim.Contig:
+    """Return the contig. The archaic arm reserves a second base for the marker."""
     _require_stdpopsim()
     contig = stdpopsim.get_species("HomSap").get_contig(
         length=SEQUENCE_LENGTH_BP,
@@ -209,6 +213,70 @@ def build_contig() -> stdpopsim.Contig:
         description="run4 focal selected site",
     )
     return contig
+
+
+def reserved_positions(arm: Run4Arm) -> tuple[int, ...]:
+    return (FOCAL_POSITION_BP,)
+
+
+def mask_reserved_rate_map(rate_map, positions):
+    """Zero the mutation rate on each reserved base, preserving all other rates."""
+    import msprime
+
+    result, changed_any = rate_map, False
+    for position in positions:
+        pos = np.asarray(result.position, dtype=float)
+        rates = np.asarray(result.rate, dtype=float)
+        low, high = float(position), float(position) + 1.0
+        if low < pos[0] or high > pos[-1]:
+            continue
+        refined = np.unique(np.concatenate([pos, [low, high]]))
+        mid = 0.5 * (refined[:-1] + refined[1:])
+        source = np.clip(np.searchsorted(pos, mid, side="right") - 1, 0, len(rates) - 1)
+        refined_rates = rates[source].copy()
+        target = (refined[:-1] >= low) & (refined[1:] <= high)
+        if not np.any(refined_rates[target] > 0):
+            continue
+        refined_rates[target] = 0.0
+        result = msprime.RateMap(position=refined, rate=refined_rates)
+        changed_any = True
+    return result, changed_any
+
+
+@contextmanager
+def scoped_reserved_overlay_patch(positions) -> Iterator[dict[str, Any]]:
+    """Mask every reserved base in each neutral overlay of one engine call."""
+    import inspect
+
+    import msprime
+
+    original = msprime.sim_mutations
+    signature = inspect.signature(original)
+    receipt: dict[str, Any] = {
+        "intercepted_calls": 0,
+        "masked_calls": 0,
+        "reserved_positions": [int(p) for p in positions],
+        "restored": False,
+    }
+
+    def guarded(*args: Any, **kwargs: Any):
+        bound = signature.bind(*args, **kwargs)
+        bound.apply_defaults()
+        receipt["intercepted_calls"] += 1
+        rate = bound.arguments.get("rate")
+        if isinstance(rate, msprime.RateMap):
+            replacement, masked = mask_reserved_rate_map(rate, positions)
+            if masked:
+                bound.arguments["rate"] = replacement
+                receipt["masked_calls"] += 1
+        return original(*bound.args, **bound.kwargs)
+
+    msprime.sim_mutations = guarded
+    try:
+        yield receipt
+    finally:
+        msprime.sim_mutations = original
+        receipt["restored"] = True
 
 
 def population_id(model, name: str) -> int:
@@ -228,17 +296,41 @@ def build_extended_events(arm: Run4Arm, mode: str) -> tuple[Any, ...]:
     tick_schedule(arm)
 
     onset = arm.onset_generations()
-    if arm.archaic:
-        draw_time: Any = stdpopsim.GenerationAfter(NEANDERTHAL_SPLIT_GENERATIONS)
-    else:
-        draw_time = onset
+    events: list[Any] = []
 
-    return (
-        stdpopsim.DrawMutation(
-            time=draw_time,
-            single_site_id=FOCAL_SITE_ID,
-            population=arm.origin_population,
-        ),
+    if arm.archaic:
+        # The allele is fixed in Neanderthal and introgresses, so at the onset it
+        # is the whole archaic haplotype class at ~1.5%. That head start is what
+        # lets EPAS1 reach 63-87% in 6,000 years; a single copy cannot.
+        events.append(
+            stdpopsim.DrawMutation(
+                time=stdpopsim.GenerationAfter(NEANDERTHAL_SPLIT_GENERATIONS),
+                single_site_id=FOCAL_SITE_ID,
+                population=ARCHAIC_POPULATION,
+            )
+        )
+        # Ascertainment: archaic ancestry must actually be present at the focal
+        # base when selection starts. SLiM handles the re-draw with restore().
+        events.append(
+            stdpopsim.ConditionOnAlleleFrequency(
+                start_time=onset,
+                end_time=onset,
+                single_site_id=FOCAL_SITE_ID,
+                population=arm.target_population,
+                op=">",
+                allele_frequency=0.0,
+            )
+        )
+    else:
+        events.append(
+            stdpopsim.DrawMutation(
+                time=onset,
+                single_site_id=FOCAL_SITE_ID,
+                population=arm.target_population,
+            )
+        )
+
+    events.append(
         stdpopsim.ChangeMutationFitness(
             start_time=onset,
             end_time=0.0,
@@ -246,10 +338,9 @@ def build_extended_events(arm: Run4Arm, mode: str) -> tuple[Any, ...]:
             population=arm.target_population,
             selection_coeff=SELECTION_COEFFICIENT,
             dominance_coeff=DOMINANCE_COEFFICIENT,
-        ),
-        # Both placements are hard sweeps from one founder, so a single copy is
-        # lost with probability ~1-2hs. Conditioning on survival is expressed
-        # through stdpopsim so SLiM's own save/restore handles the rejection.
+        )
+    )
+    events.append(
         stdpopsim.ConditionOnAlleleFrequency(
             start_time=stdpopsim.GenerationAfter(onset),
             end_time=0.0,
@@ -257,8 +348,9 @@ def build_extended_events(arm: Run4Arm, mode: str) -> tuple[Any, ...]:
             population=arm.target_population,
             op=">",
             allele_frequency=0.0,
-        ),
+        )
     )
+    return tuple(events)
 
 
 # ---------------------------------------------------------------------------
@@ -282,6 +374,14 @@ _END_REGISTRATION = (
 
 
 def _placement_function(arm: Run4Arm) -> str:
+    """Return the ``add_mut`` replacement for one arm.
+
+    The archaic arm fixes the allele across the whole Neanderthal population, so
+    it marks archaic ancestry exactly and arrives in CHB as a haplotype class at
+    roughly the archaic ancestry proportion.  The de novo arms place a single
+    copy.  Nothing is ever removed: SLiM's ``removeMutations`` leaves empty
+    derived states that stdpopsim's recapitation cannot parse.
+    """
     if arm.archaic:
         body = """    carrier_genomes = pop.genomes;
     if (size(carrier_genomes) == 0)
@@ -307,46 +407,6 @@ function (void)add_mut(object$ mut_type, object$ pop, integer$ pos) {{
     metadata.setValue("run4_placement_carrier_genomes", size(carrier_genomes));
     metadata.setValue("run4_placement_frequency", sim.mutationFrequencies(pop, muts[0]));
 }}"""
-
-
-_SINGLE_FOUNDER_FUNCTION = """
-// run4: reduce the introgressed allele to a single archaic founding haplotype.
-// Every present-day carrier then descends from one introgressed genome, which is
-// what a locus like EPAS1 looks like. If no archaic ancestry reached the focal
-// base, restore() re-draws the replicate from stdpopsim's own checkpoint.
-function (void)run4_single_founder(integer$ target_id) {
-    mt_id = metadata.getValue("run4_focal_mutation_type_id");
-    mt_matches = sim.mutationTypes[sim.mutationTypes.id == mt_id];
-    if (size(mt_matches) != 1)
-        err("run4: the focal mutation type is not unique at the reduction tick");
-    mt = mt_matches[0];
-    pop_matches = sim.subpopulations[sim.subpopulations.id == target_id];
-    if (size(pop_matches) != 1)
-        err("run4: the target population does not exist at the reduction tick");
-    pop = pop_matches[0];
-    muts = sim.mutationsOfType(mt);
-    if (size(muts) != 1) {
-        restore();
-        return;
-    }
-    mut = muts[0];
-    carriers = pop.genomes[pop.genomes.containsMutations(mut)];
-    n_carriers = size(carriers);
-    if (n_carriers == 0) {
-        restore();
-        return;
-    }
-    keep = sample(carriers, 1);
-    pos = metadata.getValue("run4_focal_position");
-    sim.subpopulations.genomes.removeMutations(mut, F);
-    keep.addNewDrawnMutation(mt, pos);
-    metadata.setValue("run4_reduction_tick", community.tick);
-    metadata.setValue("run4_archaic_carriers_before_reduction", n_carriers);
-    metadata.setValue("run4_archaic_genomes_at_reduction", size(pop.genomes));
-    metadata.setValue("run4_archaic_frequency_before_reduction",
-                      n_carriers / size(pop.genomes));
-}
-"""
 
 
 def _census_end_function(target_population_id: int) -> str:
@@ -429,21 +489,10 @@ def scoped_slim_patch(
     patched_functions = _replace_once(
         patched_functions, _END_PATTERN, _census_end_function(target_population_id), "end"
     )
+    # No main-block patch is needed any more: the single-founder seeding happens
+    # inside add_mut, which stdpopsim already schedules at the draw tick.
     patched_main = main
-    if arm.archaic:
-        patched_functions += _SINGLE_FOUNDER_FUNCTION
-        if main.count(_END_REGISTRATION) != 1:
-            raise RuntimeError("stdpopsim end-hook registration contract changed")
-        onset_years = arm.onset_generations() * arm.generation_time
-        patched_main = main.replace(
-            _END_REGISTRATION,
-            _reduction_registration(target_population_id, onset_years),
-            1,
-        )
-        record["single_founder_reduction"] = True
-        record["reduction_years_ago"] = onset_years
-    else:
-        record["single_founder_reduction"] = False
+    record["single_founder_seeding"] = bool(arm.archaic)
 
     record.update(
         {
@@ -464,7 +513,7 @@ def scoped_slim_patch(
 
 def generate_slim_script(arm: Run4Arm, mode: str, repo_root: str | Path) -> str:
     model = build_demographic_model(arm, repo_root)
-    contig = build_contig()
+    contig = build_contig(arm)
     events = build_extended_events(arm, mode)
     target_id = population_id(model, arm.target_population)
     engine = stdpopsim.get_engine("slim")

@@ -131,8 +131,6 @@ def check_slim_script(arm: Run4Arm, mode: str, script: str) -> dict[str, Any]:
     if arm.archaic:
         if "carrier_genomes = pop.genomes;" not in script:
             raise AssertionError("the archaic arm must fix the allele in the source")
-        if "run4_single_founder" not in script:
-            raise AssertionError("the archaic arm must reduce to a single founder")
         if offsets["archaic_fixation"] != offsets["archaic_split"] - 1:
             raise AssertionError("fixation must be one tick after the archaic split")
         if offsets["selection_onset"] >= offsets["archaic_migration_end"]:
