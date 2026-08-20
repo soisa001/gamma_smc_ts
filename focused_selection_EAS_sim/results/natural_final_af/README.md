@@ -1,5 +1,0 @@
-# Natural final-AF sensitivity
-
-All fixed attempted Wright--Fisher trajectories are retained. Population survival (`final_alt_count > 0`) is the only analysis filter; there is no terminal-AF gate, and fixation counts as survival. Each trajectory also has one independent Binomial(200, population AF) panel draw with no resampling.
-
-The EAS variant begins as one copy 2,000 generations (50 kya) ago under the PHLASH pointwise-median piecewise-constant Ne history; this is an age-matched de novo neutral comparison, not a mixture over neutral mutation ages. The Han donor-fixed pulse approximation sets K0 to the immediately-post-pulse Loschbour state Binomial(4,680, 0.0296) at generation 2,272, followed by 256 Loschbour and 2,016 Han transitions. Selection is additive (`h=0.5`) and runs from origin/pulse through the present for the `s=0.01` class. Survivor ECDFs estimate P(final AF | K_present > 0); unconditional fate fractions preserve the loss mass and fixation atom. The all-attempt table is the audit/replot source artifact.

@@ -1,0 +1,99 @@
+arm_id	estimator	genotype_class	conditioned_on_presence	threshold_years	n_selected	n_significant	power	median_p_value	median_observed	n_null
+chb_archaic_single_founder	gamma_smc_frac	overall	False	1000.0	100	0	0.0	1.0	0.0	100
+chb_archaic_single_founder	gamma_smc_frac	overall	False	4500.0	100	59	0.59	0.039603960396039604	0.03	100
+chb_archaic_single_founder	gamma_smc_frac	overall	False	10000.0	100	58	0.58	0.0297029702970297	0.14	100
+chb_archaic_single_founder	gamma_smc_frac	overall	False	20000.0	100	27	0.27	0.2079207920792079	0.27	100
+chb_archaic_single_founder	gamma_smc_frac	overall	False	30000.0	100	20	0.2	0.2871287128712871	0.345	100
+chb_archaic_single_founder	gamma_smc_frac	overall	False	40000.0	100	13	0.13	0.34158415841584155	0.375	100
+chb_archaic_single_founder	gamma_smc_frac	overall	False	50000.0	100	10	0.1	0.37623762376237624	0.41	100
+chb_archaic_single_founder	gamma_smc_frac	overall	True	1000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_frac	overall	True	4500.0	0	0				0
+chb_archaic_single_founder	gamma_smc_frac	overall	True	10000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_frac	overall	True	20000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_frac	overall	True	30000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_frac	overall	True	40000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_frac	overall	True	50000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	1000.0	100	52	0.52	0.04455445544554455	0.022816667955	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	4500.0	100	47	0.47	0.08415841584158416	0.094274277585	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	10000.0	100	37	0.37	0.13861386138613863	0.17706795485	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	20000.0	100	23	0.23	0.22772277227722773	0.27851851885	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	30000.0	100	21	0.21	0.3316831683168317	0.3322367821	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	40000.0	100	15	0.15	0.45544554455445546	0.36977772345	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	50000.0	100	13	0.13	0.5148514851485149	0.39526690244999996	100
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	1000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	4500.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	10000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	20000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	30000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	40000.0	0	0				0
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	False	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	any_carrier	True	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	False	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	het	True	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	False	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_carrier	True	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	1000.0	93	2	0.021505376344086023	1.0	0.0	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	4500.0	93	7	0.07526881720430108	1.0	0.0	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	10000.0	93	6	0.06451612903225806	1.0	0.0	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	20000.0	93	17	0.1827956989247312	0.7227722772277227	0.013888888888888888	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	30000.0	93	17	0.1827956989247312	0.4752475247524752	0.07216494845360824	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	40000.0	93	22	0.23655913978494625	0.43564356435643564	0.20833333333333334	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	50000.0	93	17	0.1827956989247312	0.39603960396039606	0.296875	100
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	50000.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	False	1000.0	100	4	0.04	1.0	0.0	100
+chb_archaic_single_founder	tree_truth	overall	False	4500.0	100	6	0.06	1.0	0.0	100
+chb_archaic_single_founder	tree_truth	overall	False	10000.0	100	66	0.66	0.009900990099009901	0.04	100
+chb_archaic_single_founder	tree_truth	overall	False	20000.0	100	73	0.73	0.009900990099009901	0.13	100
+chb_archaic_single_founder	tree_truth	overall	False	30000.0	100	65	0.65	0.009900990099009901	0.23	100
+chb_archaic_single_founder	tree_truth	overall	False	40000.0	100	43	0.43	0.12376237623762376	0.305	100
+chb_archaic_single_founder	tree_truth	overall	False	50000.0	100	23	0.23	0.2376237623762376	0.36	100
+chb_archaic_single_founder	tree_truth	overall	True	1000.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	True	4500.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	True	10000.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	True	20000.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	True	30000.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	True	40000.0	0	0				0
+chb_archaic_single_founder	tree_truth	overall	True	50000.0	0	0				0

@@ -1,3 +1,0 @@
-invocation_index	recorded_at_utc	simulation_contract_sha256	status	elapsed_seconds	declared_timeout_seconds	effective_timeout_seconds	completed_external_sample_panel_draws	interrupted_internal_conditioned_trajectories	error_type	core_source_sha256	orchestrator_source_sha256
-1	2026-08-12T10:43:28.970826+00:00	9934bff37c1adbbe26d99384dfac65152e5a9c5189503c59d31b798703cf0f5a	timed_out	300.0629018000327	300.0	300.0	0	1	SpecificationTimeout	legacy_unknown	legacy_unknown
-2	2026-08-12T12:21:15.045740+00:00	9934bff37c1adbbe26d99384dfac65152e5a9c5189503c59d31b798703cf0f5a	complete	177.5192421999527	300.0	300.0	1	1		legacy_unknown	legacy_unknown

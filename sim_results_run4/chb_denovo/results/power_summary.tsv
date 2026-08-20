@@ -1,0 +1,99 @@
+arm_id	estimator	genotype_class	conditioned_on_presence	threshold_years	n_selected	n_significant	power	median_p_value	median_observed	n_null
+chb_denovo	gamma_smc_frac	overall	False	1000.0	100	0	0.0	1.0	0.0	100
+chb_denovo	gamma_smc_frac	overall	False	4500.0	100	5	0.05	0.38613861386138615	0.01	100
+chb_denovo	gamma_smc_frac	overall	False	10000.0	100	3	0.03	0.48514851485148514	0.05	100
+chb_denovo	gamma_smc_frac	overall	False	20000.0	100	0	0.0	0.5643564356435643	0.16	100
+chb_denovo	gamma_smc_frac	overall	False	30000.0	100	1	0.01	0.5099009900990099	0.275	100
+chb_denovo	gamma_smc_frac	overall	False	40000.0	100	2	0.02	0.5247524752475248	0.33	100
+chb_denovo	gamma_smc_frac	overall	False	50000.0	100	2	0.02	0.5148514851485149	0.38	100
+chb_denovo	gamma_smc_frac	overall	True	1000.0	0	0				0
+chb_denovo	gamma_smc_frac	overall	True	4500.0	0	0				0
+chb_denovo	gamma_smc_frac	overall	True	10000.0	0	0				0
+chb_denovo	gamma_smc_frac	overall	True	20000.0	0	0				0
+chb_denovo	gamma_smc_frac	overall	True	30000.0	0	0				0
+chb_denovo	gamma_smc_frac	overall	True	40000.0	0	0				0
+chb_denovo	gamma_smc_frac	overall	True	50000.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	False	1000.0	100	3	0.03	0.39603960396039606	0.01323868944	100
+chb_denovo	gamma_smc_meanp	overall	False	4500.0	100	1	0.01	0.48514851485148514	0.057371314	100
+chb_denovo	gamma_smc_meanp	overall	False	10000.0	100	1	0.01	0.5099009900990099	0.12258249385	100
+chb_denovo	gamma_smc_meanp	overall	False	20000.0	100	1	0.01	0.5445544554455446	0.21777849955	100
+chb_denovo	gamma_smc_meanp	overall	False	30000.0	100	1	0.01	0.5396039603960396	0.2938606131	100
+chb_denovo	gamma_smc_meanp	overall	False	40000.0	100	2	0.02	0.5346534653465347	0.35792741715	100
+chb_denovo	gamma_smc_meanp	overall	False	50000.0	100	2	0.02	0.5148514851485149	0.4140945554	100
+chb_denovo	gamma_smc_meanp	overall	True	1000.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	True	4500.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	True	10000.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	True	20000.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	True	30000.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	True	40000.0	0	0				0
+chb_denovo	gamma_smc_meanp	overall	True	50000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	1000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	4500.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	10000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	20000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	30000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	40000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	False	50000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	1000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	4500.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	10000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	20000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	30000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	40000.0	0	0				0
+chb_denovo	tree_truth	any_carrier	True	50000.0	0	0				0
+chb_denovo	tree_truth	het	False	1000.0	0	0				0
+chb_denovo	tree_truth	het	False	4500.0	0	0				0
+chb_denovo	tree_truth	het	False	10000.0	0	0				0
+chb_denovo	tree_truth	het	False	20000.0	0	0				0
+chb_denovo	tree_truth	het	False	30000.0	0	0				0
+chb_denovo	tree_truth	het	False	40000.0	0	0				0
+chb_denovo	tree_truth	het	False	50000.0	0	0				0
+chb_denovo	tree_truth	het	True	1000.0	0	0				0
+chb_denovo	tree_truth	het	True	4500.0	0	0				0
+chb_denovo	tree_truth	het	True	10000.0	0	0				0
+chb_denovo	tree_truth	het	True	20000.0	0	0				0
+chb_denovo	tree_truth	het	True	30000.0	0	0				0
+chb_denovo	tree_truth	het	True	40000.0	0	0				0
+chb_denovo	tree_truth	het	True	50000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	1000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	4500.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	10000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	20000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	30000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	40000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	False	50000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	1000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	4500.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	10000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	20000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	30000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	40000.0	0	0				0
+chb_denovo	tree_truth	hom_carrier	True	50000.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	False	1000.0	100	5	0.05	1.0	0.0	100
+chb_denovo	tree_truth	hom_noncarrier	False	4500.0	100	12	0.12	1.0	0.0	100
+chb_denovo	tree_truth	hom_noncarrier	False	10000.0	100	11	0.11	1.0	0.0	100
+chb_denovo	tree_truth	hom_noncarrier	False	20000.0	100	8	0.08	0.37623762376237624	0.020513359983168524	100
+chb_denovo	tree_truth	hom_noncarrier	False	30000.0	100	5	0.05	0.36633663366336633	0.08063392546151167	100
+chb_denovo	tree_truth	hom_noncarrier	False	40000.0	100	4	0.04	0.5544554455445545	0.18875	100
+chb_denovo	tree_truth	hom_noncarrier	False	50000.0	100	8	0.08	0.43564356435643564	0.2961779448621554	100
+chb_denovo	tree_truth	hom_noncarrier	True	1000.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	True	4500.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	True	10000.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	True	20000.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	True	30000.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	True	40000.0	0	0				0
+chb_denovo	tree_truth	hom_noncarrier	True	50000.0	0	0				0
+chb_denovo	tree_truth	overall	False	1000.0	100	5	0.05	1.0	0.0	100
+chb_denovo	tree_truth	overall	False	4500.0	100	2	0.02	1.0	0.0	100
+chb_denovo	tree_truth	overall	False	10000.0	100	4	0.04	1.0	0.0	100
+chb_denovo	tree_truth	overall	False	20000.0	100	8	0.08	0.7029702970297029	0.02	100
+chb_denovo	tree_truth	overall	False	30000.0	100	3	0.03	0.46534653465346537	0.08	100
+chb_denovo	tree_truth	overall	False	40000.0	100	7	0.07	0.5544554455445545	0.19	100
+chb_denovo	tree_truth	overall	False	50000.0	100	11	0.11	0.43564356435643564	0.3	100
+chb_denovo	tree_truth	overall	True	1000.0	0	0				0
+chb_denovo	tree_truth	overall	True	4500.0	0	0				0
+chb_denovo	tree_truth	overall	True	10000.0	0	0				0
+chb_denovo	tree_truth	overall	True	20000.0	0	0				0
+chb_denovo	tree_truth	overall	True	30000.0	0	0				0
+chb_denovo	tree_truth	overall	True	40000.0	0	0				0
+chb_denovo	tree_truth	overall	True	50000.0	0	0				0

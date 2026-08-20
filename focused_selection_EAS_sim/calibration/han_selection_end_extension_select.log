@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "/mnt/c/Users/Lenovo/codex/gamma_smc_ts/scripts/calibrate_han_selection_end.py", line 7, in <module>
-    raise SystemExit(main())
-                     ^^^^^^
-  File "/mnt/c/Users/Lenovo/codex/gamma_smc_ts/python/gamma_smc_aou/focused_selection_calibration.py", line 3044, in main
-    combine_screen_and_extension(
-  File "/mnt/c/Users/Lenovo/codex/gamma_smc_ts/python/gamma_smc_aou/focused_selection_calibration.py", line 613, in combine_screen_and_extension
-    raise ValueError("at least one Han cell still fails the 20% endpoint gate")
-ValueError: at least one Han cell still fails the 20% endpoint gate

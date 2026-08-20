@@ -1,0 +1,295 @@
+arm_id	estimator	genotype_class	conditioned_on_presence	threshold_years	n_selected	n_significant	power	median_p_value	median_observed	n_null	arm_label
+chb_archaic_single_founder	gamma_smc_frac	overall	False	1000.0	100	0	0.0	1.0	0.0	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	False	4500.0	100	59	0.59	0.0396039603960396	0.03	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	False	10000.0	100	58	0.58	0.0297029702970297	0.14	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	False	20000.0	100	27	0.27	0.2079207920792079	0.27	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	False	30000.0	100	20	0.2	0.2871287128712871	0.345	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	False	40000.0	100	13	0.13	0.3415841584158415	0.375	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	False	50000.0	100	10	0.1	0.3762376237623762	0.41	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_frac	overall	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	1000.0	100	52	0.52	0.0445544554455445	0.022816667955	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	4500.0	100	47	0.47	0.0841584158415841	0.094274277585	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	10000.0	100	37	0.37	0.1386138613861386	0.17706795485	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	20000.0	100	23	0.23	0.2277227722772277	0.27851851885	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	30000.0	100	21	0.21	0.3316831683168317	0.3322367821	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	40000.0	100	15	0.15	0.4554455445544554	0.36977772345	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	False	50000.0	100	13	0.13	0.5148514851485149	0.3952669024499999	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	gamma_smc_meanp	overall	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	False	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	any_carrier	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	False	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	het	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	False	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_carrier	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	1000.0	93	2	0.021505376344086	1.0	0.0	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	4500.0	93	7	0.075268817204301	1.0	0.0	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	10000.0	93	6	0.064516129032258	1.0	0.0	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	20000.0	93	17	0.1827956989247312	0.7227722772277227	0.0138888888888888	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	30000.0	93	17	0.1827956989247312	0.4752475247524752	0.0721649484536082	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	40000.0	93	22	0.2365591397849462	0.4356435643564356	0.2083333333333333	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	False	50000.0	93	17	0.1827956989247312	0.396039603960396	0.296875	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	hom_noncarrier	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	1000.0	100	4	0.04	1.0	0.0	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	4500.0	100	6	0.06	1.0	0.0	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	10000.0	100	66	0.66	0.0099009900990099	0.04	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	20000.0	100	73	0.73	0.0099009900990099	0.13	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	30000.0	100	65	0.65	0.0099009900990099	0.23	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	40000.0	100	43	0.43	0.1237623762376237	0.305	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	False	50000.0	100	23	0.23	0.2376237623762376	0.36	100	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	1000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	4500.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	10000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	20000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	30000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	40000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_archaic_single_founder	tree_truth	overall	True	50000.0	0	0				0	CHB archaic, single founder (EPAS1-like)
+chb_denovo	gamma_smc_frac	overall	False	1000.0	100	0	0.0	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	False	4500.0	100	5	0.05	0.3861386138613861	0.01	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	False	10000.0	100	3	0.03	0.4851485148514851	0.05	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	False	20000.0	100	0	0.0	0.5643564356435643	0.16	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	False	30000.0	100	1	0.01	0.5099009900990099	0.275	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	False	40000.0	100	2	0.02	0.5247524752475248	0.33	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	False	50000.0	100	2	0.02	0.5148514851485149	0.38	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_frac	overall	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	1000.0	100	3	0.03	0.396039603960396	0.01323868944	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	4500.0	100	1	0.01	0.4851485148514851	0.057371314	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	10000.0	100	1	0.01	0.5099009900990099	0.12258249385	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	20000.0	100	1	0.01	0.5445544554455446	0.21777849955	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	30000.0	100	1	0.01	0.5396039603960396	0.2938606131	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	40000.0	100	2	0.02	0.5346534653465347	0.35792741715	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	False	50000.0	100	2	0.02	0.5148514851485149	0.4140945554	100	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	gamma_smc_meanp	overall	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	False	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	any_carrier	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	False	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	het	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	False	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_carrier	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	1000.0	100	5	0.05	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	4500.0	100	12	0.12	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	10000.0	100	11	0.11	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	20000.0	100	8	0.08	0.3762376237623762	0.0205133599831685	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	30000.0	100	5	0.05	0.3663366336633663	0.0806339254615116	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	40000.0	100	4	0.04	0.5544554455445545	0.18875	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	False	50000.0	100	8	0.08	0.4356435643564356	0.2961779448621554	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	hom_noncarrier	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	1000.0	100	5	0.05	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	4500.0	100	2	0.02	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	10000.0	100	4	0.04	1.0	0.0	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	20000.0	100	8	0.08	0.7029702970297029	0.02	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	30000.0	100	3	0.03	0.4653465346534653	0.08	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	40000.0	100	7	0.07	0.5544554455445545	0.19	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	False	50000.0	100	11	0.11	0.4356435643564356	0.3	100	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	1000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	4500.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	10000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	20000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	30000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	40000.0	0	0				0	CHB de novo hard sweep (positive control)
+chb_denovo	tree_truth	overall	True	50000.0	0	0				0	CHB de novo hard sweep (positive control)
+eas_denovo	gamma_smc_frac	overall	False	1000.0	100	0	0.0	1.0	0.0	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	False	4500.0	100	16	0.16	0.6039603960396039	0.01	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	False	10000.0	100	5	0.05	0.594059405940594	0.05	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	False	20000.0	100	2	0.02	0.6534653465346535	0.12	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	False	30000.0	100	2	0.02	0.5891089108910892	0.185	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	False	40000.0	100	2	0.02	0.5544554455445545	0.24	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	False	50000.0	100	2	0.02	0.5445544554455446	0.28	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_frac	overall	True	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	1000.0	100	7	0.07	0.5	0.0107740764399999	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	4500.0	100	3	0.03	0.5445544554455446	0.0470961606399999	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	10000.0	100	2	0.02	0.5297029702970297	0.096782147055	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	20000.0	100	2	0.02	0.5346534653465347	0.16481760205	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	30000.0	100	3	0.03	0.5643564356435643	0.2167330202	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	40000.0	100	2	0.02	0.5544554455445545	0.2579886663999999	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	False	50000.0	100	2	0.02	0.5544554455445545	0.2938555285999999	100	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	gamma_smc_meanp	overall	True	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	False	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	any_carrier	True	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	False	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	het	True	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	False	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_carrier	True	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	1000.0	100	4	0.04	1.0	0.0	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	4500.0	100	22	0.22	1.0	0.0	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	10000.0	100	4	0.04	0.198019801980198	0.0104166666666666	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	20000.0	100	6	0.06	0.6138613861386139	0.0375234521575985	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	30000.0	100	6	0.06	0.5643564356435644	0.0908621875716578	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	40000.0	100	10	0.1	0.6138613861386139	0.1358367829686576	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	False	50000.0	100	6	0.06	0.594059405940594	0.188001188001188	100	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	hom_noncarrier	True	50000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	1000.0	100	0	0.0	1.0	0.0	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	4500.0	100	5	0.05	1.0	0.0	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	10000.0	100	12	0.12	0.4851485148514851	0.01	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	20000.0	100	9	0.09	0.4851485148514851	0.05	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	30000.0	100	10	0.1	0.504950495049505	0.1	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	40000.0	100	9	0.09	0.4257425742574257	0.16	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	False	50000.0	100	10	0.1	0.594059405940594	0.19	100	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	1000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	4500.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	10000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	20000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	30000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	40000.0	0	0				0	EAS de novo hard sweep
+eas_denovo	tree_truth	overall	True	50000.0	0	0				0	EAS de novo hard sweep

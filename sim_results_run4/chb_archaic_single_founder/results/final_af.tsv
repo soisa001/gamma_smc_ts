@@ -1,0 +1,201 @@
+arm_id	mode	replicate_index	seed	placement_frequency	placement_carrier_genomes	census_af	census_state	sample_af	sample_carrier_diploids	sample_hom_carrier_diploids	allele_present	focal_mean_tmrca_generations	focal_median_tmrca_generations
+chb_archaic_single_founder	neutral	0	31260821					0.0	0	0	False	9365.881466039093	12227.5
+chb_archaic_single_founder	neutral	1	31260822					0.0	0	0	False	9424.4	9395.0
+chb_archaic_single_founder	neutral	2	31260823					0.0	0	0	False	14484.755858175073	21991.078507876697
+chb_archaic_single_founder	neutral	3	31260824					0.0	0	0	False	6990.6	6947.5
+chb_archaic_single_founder	neutral	4	31260825					0.0	0	0	False	9205.568178068495	1945.0
+chb_archaic_single_founder	neutral	5	31260826					0.0	0	0	False	7244.95	10735.0
+chb_archaic_single_founder	neutral	6	31260827					0.0	0	0	False	13585.573570066725	4400.0
+chb_archaic_single_founder	neutral	7	31260828					0.0	0	0	False	13679.757277409273	21000.013995017835
+chb_archaic_single_founder	neutral	8	31260829					0.0	0	0	False	18134.59012521079	19185.0
+chb_archaic_single_founder	neutral	9	31260830					0.0	0	0	False	11312.128333039293	15122.5
+chb_archaic_single_founder	neutral	10	31260831					0.0	0	0	False	8621.043874862686	2740.0
+chb_archaic_single_founder	neutral	11	31260832					0.0	0	0	False	16484.180128236363	22741.24387182254
+chb_archaic_single_founder	neutral	12	31260833					0.0	0	0	False	4215.75	1995.0
+chb_archaic_single_founder	neutral	13	31260834					0.0	0	0	False	18663.90173011364	29794.199518060068
+chb_archaic_single_founder	neutral	14	31260835					0.0	0	0	False	4696.65	1665.0
+chb_archaic_single_founder	neutral	15	31260836					0.0	0	0	False	11339.45	17450.0
+chb_archaic_single_founder	neutral	16	31260837					0.0	0	0	False	5750.115763414062	1935.0
+chb_archaic_single_founder	neutral	17	31260838					0.0	0	0	False	10377.75	13740.0
+chb_archaic_single_founder	neutral	18	31260839					0.0	0	0	False	22299.37938453841	35936.27398329522
+chb_archaic_single_founder	neutral	19	31260840					0.0	0	0	False	6762.632240413946	6480.0
+chb_archaic_single_founder	neutral	20	31260841					0.0	0	0	False	11175.16358790236	13995.0
+chb_archaic_single_founder	neutral	21	31260842					0.0	0	0	False	8718.527161278927	10515.0
+chb_archaic_single_founder	neutral	22	31260843					0.0	0	0	False	12322.65	18695.0
+chb_archaic_single_founder	neutral	23	31260844					0.0	0	0	False	16892.643645661363	6780.0
+chb_archaic_single_founder	neutral	24	31260845					0.0	0	0	False	9765.811594985948	1600.0
+chb_archaic_single_founder	neutral	25	31260846					0.0	0	0	False	12519.784704647514	8200.0
+chb_archaic_single_founder	neutral	26	31260847					0.0	0	0	False	8446.4	12295.0
+chb_archaic_single_founder	neutral	27	31260848					0.0	0	0	False	10330.290319756385	5935.0
+chb_archaic_single_founder	neutral	28	31260849					0.0	0	0	False	8439.6	12925.0
+chb_archaic_single_founder	neutral	29	31260850					0.0	0	0	False	11335.85	13460.0
+chb_archaic_single_founder	neutral	30	31260851					0.0	0	0	False	7656.05	8050.0
+chb_archaic_single_founder	neutral	31	31260852					0.0	0	0	False	8980.8	12150.0
+chb_archaic_single_founder	neutral	32	31260853					0.0	0	0	False	10652.637381327097	8625.0
+chb_archaic_single_founder	neutral	33	31260854					0.0	0	0	False	12659.644094909017	10000.0
+chb_archaic_single_founder	neutral	34	31260855					0.0	0	0	False	16298.00053572563	8680.0
+chb_archaic_single_founder	neutral	35	31260856					0.0	0	0	False	9177.5499975	11795.0
+chb_archaic_single_founder	neutral	36	31260857					0.0	0	0	False	13125.286316796308	12985.0
+chb_archaic_single_founder	neutral	37	31260858					0.0	0	0	False	9026.6	6840.0
+chb_archaic_single_founder	neutral	38	31260859					0.0	0	0	False	7991.396450048379	6255.0
+chb_archaic_single_founder	neutral	39	31260860					0.0	0	0	False	11095.801889893566	12740.0
+chb_archaic_single_founder	neutral	40	31260861					0.0	0	0	False	9416.4	14035.0
+chb_archaic_single_founder	neutral	41	31260862					0.0	0	0	False	11970.260308683757	1850.0
+chb_archaic_single_founder	neutral	42	31260863					0.0	0	0	False	7912.8	5605.0
+chb_archaic_single_founder	neutral	43	31260864					0.0	0	0	False	6233.3	5040.0
+chb_archaic_single_founder	neutral	44	31260865					0.0	0	0	False	8555.872541336048	1870.0
+chb_archaic_single_founder	neutral	45	31260866					0.0	0	0	False	8739.432242783862	1885.0
+chb_archaic_single_founder	neutral	46	31260867					0.0	0	0	False	13445.05	18460.0
+chb_archaic_single_founder	neutral	47	31260868					0.0	0	0	False	12203.023969200165	17310.0
+chb_archaic_single_founder	neutral	48	31260869					0.0	0	0	False	7831.24655914051	1470.0
+chb_archaic_single_founder	neutral	49	31260870					0.0	0	0	False	3317.35	2427.5
+chb_archaic_single_founder	neutral	50	31260871					0.0	0	0	False	9546.1	13575.0
+chb_archaic_single_founder	neutral	51	31260872					0.0	0	0	False	5098.0	1785.0
+chb_archaic_single_founder	neutral	52	31260873					0.0	0	0	False	10094.4	14505.0
+chb_archaic_single_founder	neutral	53	31260874					0.0	0	0	False	11049.056413519571	6620.0
+chb_archaic_single_founder	neutral	54	31260875					0.0	0	0	False	16172.142019389283	12730.0
+chb_archaic_single_founder	neutral	55	31260876					0.0	0	0	False	9178.515751688781	4030.0
+chb_archaic_single_founder	neutral	56	31260877					0.0	0	0	False	9650.643972770898	2085.0
+chb_archaic_single_founder	neutral	57	31260878					0.0	0	0	False	10666.9	15075.0
+chb_archaic_single_founder	neutral	58	31260879					0.0	0	0	False	5549.398558025539	1965.0
+chb_archaic_single_founder	neutral	59	31260880					0.0	0	0	False	5175.969592788035	1525.0
+chb_archaic_single_founder	neutral	60	31260881					0.0	0	0	False	5319.7	2050.0
+chb_archaic_single_founder	neutral	61	31260882					0.0	0	0	False	7642.3	11815.0
+chb_archaic_single_founder	neutral	62	31260883					0.0	0	0	False	9225.118444081301	8290.0
+chb_archaic_single_founder	neutral	63	31260884					0.0	0	0	False	19882.36426971923	10340.0
+chb_archaic_single_founder	neutral	64	31260885					0.0	0	0	False	18430.178496175922	27797.868542219225
+chb_archaic_single_founder	neutral	65	31260886					0.0	0	0	False	11669.904941332536	6230.0
+chb_archaic_single_founder	neutral	66	31260887					0.0	0	0	False	5345.75	3385.0
+chb_archaic_single_founder	neutral	67	31260888					0.0	0	0	False	3864.8	1750.0
+chb_archaic_single_founder	neutral	68	31260889					0.0	0	0	False	10893.155886094575	13580.0
+chb_archaic_single_founder	neutral	69	31260890					0.0	0	0	False	7783.6	4415.0
+chb_archaic_single_founder	neutral	70	31260891					0.0	0	0	False	10369.675321479397	6010.0
+chb_archaic_single_founder	neutral	71	31260892					0.0	0	0	False	5811.377198414602	5425.0
+chb_archaic_single_founder	neutral	72	31260893					0.0	0	0	False	7694.3	10470.0
+chb_archaic_single_founder	neutral	73	31260894					0.0	0	0	False	8742.95	10795.0
+chb_archaic_single_founder	neutral	74	31260895					0.0	0	0	False	4556.4	1530.0
+chb_archaic_single_founder	neutral	75	31260896					0.0	0	0	False	14593.836550033777	14075.0
+chb_archaic_single_founder	neutral	76	31260897					0.0	0	0	False	6282.5495773677985	7870.0
+chb_archaic_single_founder	neutral	77	31260898					0.0	0	0	False	6832.55	6600.0
+chb_archaic_single_founder	neutral	78	31260899					0.0	0	0	False	12512.240344433965	21840.537675803644
+chb_archaic_single_founder	neutral	79	31260900					0.0	0	0	False	13096.944307080752	15565.0
+chb_archaic_single_founder	neutral	80	31260901					0.0	0	0	False	4340.72455480227	1990.0
+chb_archaic_single_founder	neutral	81	31260902					0.0	0	0	False	9945.85	11335.0
+chb_archaic_single_founder	neutral	82	31260903					0.0	0	0	False	15075.268439236947	22236.793405994347
+chb_archaic_single_founder	neutral	83	31260904					0.0	0	0	False	15511.307262883987	19684.009235724207
+chb_archaic_single_founder	neutral	84	31260905					0.0	0	0	False	6108.299998999999	7260.0
+chb_archaic_single_founder	neutral	85	31260906					0.0	0	0	False	13933.723877429957	12275.0
+chb_archaic_single_founder	neutral	86	31260907					0.0	0	0	False	18345.476119737228	25350.74007376541
+chb_archaic_single_founder	neutral	87	31260908					0.0	0	0	False	10693.35	11225.0
+chb_archaic_single_founder	neutral	88	31260909					0.0	0	0	False	20619.398963396092	1655.0
+chb_archaic_single_founder	neutral	89	31260910					0.0	0	0	False	7942.4	3295.0
+chb_archaic_single_founder	neutral	90	31260911					0.0	0	0	False	13957.462057936003	14715.0
+chb_archaic_single_founder	neutral	91	31260912					0.0	0	0	False	7368.7	9825.0
+chb_archaic_single_founder	neutral	92	31260913					0.0	0	0	False	17683.867332572903	26944.167947255588
+chb_archaic_single_founder	neutral	93	31260914					0.0	0	0	False	10322.8999995	13470.0
+chb_archaic_single_founder	neutral	94	31260915					0.0	0	0	False	7279.2	5600.0
+chb_archaic_single_founder	neutral	95	31260916					0.0	0	0	False	10780.010725293996	12510.0
+chb_archaic_single_founder	neutral	96	31260917					0.0	0	0	False	7563.4	5165.0
+chb_archaic_single_founder	neutral	97	31260918					0.0	0	0	False	10715.65	16280.0
+chb_archaic_single_founder	neutral	98	31260919					0.0	0	0	False	7297.937579058289	3350.0
+chb_archaic_single_founder	neutral	99	31260920					0.0	0	0	False	27469.04306427827	12010.0
+chb_archaic_single_founder	selected	0	30260821	1.0	1440.0	0.24141796814597186	segregating_or_fixed	0.29	50	8	True	13683.105926944336	14710.0
+chb_archaic_single_founder	selected	1	30260822	1.0	1440.0	0.7556826967682079	segregating_or_fixed	0.725	89	56	True	11778.452488207258	875.0
+chb_archaic_single_founder	selected	2	30260823	1.0	1440.0	0.8430106695531158	segregating_or_fixed	0.85	97	73	True	5807.8813721297165	1105.0
+chb_archaic_single_founder	selected	3	30260824	1.0	1440.0	0.4921911241688573	segregating_or_fixed	0.535	81	26	True	14087.926418608651	23278.229852015735
+chb_archaic_single_founder	selected	4	30260825	1.0	1440.0	0.5512989021184475	segregating_or_fixed	0.535	78	29	True	18587.095415468673	26392.320336209224
+chb_archaic_single_founder	selected	5	30260826	1.0	1440.0	0.4445647131591155	segregating_or_fixed	0.415	63	20	True	14396.259136895016	19650.95111428014
+chb_archaic_single_founder	selected	6	30260827	1.0	1440.0	0.9439075305396629	segregating_or_fixed	0.96	100	92	True	4456.236486873771	4530.0
+chb_archaic_single_founder	selected	7	30260828	1.0	1440.0	0.6588835627029535	segregating_or_fixed	0.59	83	35	True	14687.482276086332	19500.0
+chb_archaic_single_founder	selected	8	30260829	1.0	1440.0	0.19777331065408998	segregating_or_fixed	0.19	36	2	True	11636.80579181955	3195.0
+chb_archaic_single_founder	selected	9	30260830	1.0	1440.0	0.4974485851244781	segregating_or_fixed	0.485	72	25	True	14600.763169827187	21422.718385977052
+chb_archaic_single_founder	selected	10	30260831	1.0	1440.0	0.21076233183856502	segregating_or_fixed	0.265	46	7	True	16827.056284615017	19555.0
+chb_archaic_single_founder	selected	11	30260832	1.0	1440.0	0.6555589918045461	segregating_or_fixed	0.615	88	35	True	17536.600936997533	27361.88856037271
+chb_archaic_single_founder	selected	12	30260833	1.0	1440.0	0.10534250811813824	segregating_or_fixed	0.08	13	3	True	15285.376265048533	19530.0
+chb_archaic_single_founder	selected	13	30260834	1.0	1440.0	0.5094325034792021	segregating_or_fixed	0.495	69	30	True	12587.841012655112	11100.0
+chb_archaic_single_founder	selected	14	30260835	1.0	1440.0	0.09444100819545384	segregating_or_fixed	0.135	24	3	True	10860.492811042472	13690.0
+chb_archaic_single_founder	selected	15	30260836	1.0	1440.0	0.4238441317457863	segregating_or_fixed	0.455	69	22	True	15322.498120347052	20002.118423927157
+chb_archaic_single_founder	selected	16	30260837	1.0	1440.0	0.6743466831606618	segregating_or_fixed	0.625	87	38	True	18739.572848780525	17380.0
+chb_archaic_single_founder	selected	17	30260838	1.0	1440.0	0.33651615896087833	segregating_or_fixed	0.34	55	13	True	13740.699876310166	16685.0
+chb_archaic_single_founder	selected	18	30260839	1.0	1440.0	0.5477810422143189	segregating_or_fixed	0.545	81	28	True	14420.317113472589	23653.522855608655
+chb_archaic_single_founder	selected	19	30260840	1.0	1440.0	0.434359053657028	segregating_or_fixed	0.42	65	19	True	13195.51111370409	16840.0
+chb_archaic_single_founder	selected	20	30260841	1.0	1440.0	0.9714318849543838	segregating_or_fixed	0.975	100	95	True	2241.095069777676	1090.0
+chb_archaic_single_founder	selected	21	30260842	1.0	1440.0	0.5990799443327663	segregating_or_fixed	0.58	81	35	True	17221.840734938167	9565.0
+chb_archaic_single_founder	selected	22	30260843	1.0	1440.0	0.5527292407607856	segregating_or_fixed	0.475	72	23	True	13051.059414831521	7510.0
+chb_archaic_single_founder	selected	23	30260844	1.0	1440.0	0.8708442863769909	segregating_or_fixed	0.86	98	74	True	5566.9434240416895	880.0
+chb_archaic_single_founder	selected	24	30260845	1.0	1440.0	0.7008659347456316	segregating_or_fixed	0.67	88	46	True	23479.202439785582	23403.116126449877
+chb_archaic_single_founder	selected	25	30260846	1.0	1440.0	0.354028142879233	segregating_or_fixed	0.38	65	11	True	20695.229822974154	34361.16633884103
+chb_archaic_single_founder	selected	26	30260847	1.0	1440.0	0.5915803309107778	segregating_or_fixed	0.655	93	38	True	17043.62148896975	29780.127658874557
+chb_archaic_single_founder	selected	27	30260848	1.0	1440.0	0.17593165300757693	segregating_or_fixed	0.21	36	6	True	13370.83526917295	16710.0
+chb_archaic_single_founder	selected	28	30260849	1.0	1440.0	0.03316839338178444	segregating_or_fixed	0.035	7	0	True	8098.438677765755	11715.0
+chb_archaic_single_founder	selected	29	30260850	1.0	1440.0	0.9664063708056285	segregating_or_fixed	0.965	99	94	True	2597.727981601205	1115.0
+chb_archaic_single_founder	selected	30	30260851	1.0	1440.0	0.032781815370341735	segregating_or_fixed	0.02	4	0	True	7647.791319222813	12190.0
+chb_archaic_single_founder	selected	31	30260852	1.0	1440.0	0.7601670017009432	segregating_or_fixed	0.765	92	61	True	8162.299872059597	840.0
+chb_archaic_single_founder	selected	32	30260853	1.0	1440.0	0.2930647904747178	segregating_or_fixed	0.26	45	7	True	17338.55125072135	17195.0
+chb_archaic_single_founder	selected	33	30260854	1.0	1440.0	0.061504561620535025	segregating_or_fixed	0.05	10	0	True	12364.460506567308	10665.0
+chb_archaic_single_founder	selected	34	30260855	1.0	1440.0	0.9002242152466368	segregating_or_fixed	0.885	99	78	True	7310.345701779396	715.0
+chb_archaic_single_founder	selected	35	30260856	1.0	1440.0	0.4303386423380238	segregating_or_fixed	0.435	75	12	True	23080.331003422605	23461.603269239
+chb_archaic_single_founder	selected	36	30260857	1.0	1440.0	0.9123627648059378	segregating_or_fixed	0.935	99	88	True	3069.7373327640803	1005.0
+chb_archaic_single_founder	selected	37	30260858	1.0	1440.0	0.662517396010515	segregating_or_fixed	0.665	89	44	True	14124.7479545211	16378.349940387607
+chb_archaic_single_founder	selected	38	30260859	1.0	1440.0	0.7412246791402505	segregating_or_fixed	0.775	94	61	True	8649.399056219847	550.0
+chb_archaic_single_founder	selected	39	30260860	1.0	1440.0	0.5850085047162518	segregating_or_fixed	0.575	81	34	True	11302.27382257559	10465.0
+chb_archaic_single_founder	selected	40	30260861	1.0	1440.0	0.01615896087830524	segregating_or_fixed	0.015	3	0	True	5960.442806841781	1780.0
+chb_archaic_single_founder	selected	41	30260862	1.0	1440.0	0.30875985773929177	segregating_or_fixed	0.29	48	10	True	15085.211718549464	21100.887569247938
+chb_archaic_single_founder	selected	42	30260863	1.0	1440.0	0.0006571826194526055	segregating_or_fixed	0.0	0	0	False	5136.15	4620.0
+chb_archaic_single_founder	selected	43	30260864	1.0	1440.0	0.856308953146745	segregating_or_fixed	0.855	99	72	True	7904.506785136461	670.0
+chb_archaic_single_founder	selected	44	30260865	1.0	1440.0	0.42867635688882016	segregating_or_fixed	0.375	62	13	True	23694.389823494552	23426.543058769537
+chb_archaic_single_founder	selected	45	30260866	1.0	1440.0	0.1494124014226071	segregating_or_fixed	0.1	19	1	True	12694.943832978466	17455.0
+chb_archaic_single_founder	selected	46	30260867	1.0	1440.0	0.02957321787536725	segregating_or_fixed	0.01	2	0	True	17333.184721305934	17305.0
+chb_archaic_single_founder	selected	47	30260868	1.0	1440.0	0.49288696458945414	segregating_or_fixed	0.475	74	21	True	13080.939218284422	20010.45135525363
+chb_archaic_single_founder	selected	48	30260869	1.0	1440.0	0.8245708984072986	segregating_or_fixed	0.85	96	74	True	10940.05240449347	665.0
+chb_archaic_single_founder	selected	49	30260870	1.0	1440.0	0.3473790010824184	segregating_or_fixed	0.305	51	10	True	13438.005249614716	13725.0
+chb_archaic_single_founder	selected	50	30260871	1.0	1440.0	0.5862068965517241	segregating_or_fixed	0.605	85	36	True	14063.207652372874	19550.0
+chb_archaic_single_founder	selected	51	30260872	1.0	1440.0	0.4207515076542446	segregating_or_fixed	0.415	65	18	True	14923.825975993379	13865.0
+chb_archaic_single_founder	selected	52	30260873	1.0	1440.0	0.026171331374671408	segregating_or_fixed	0.045	9	0	True	13505.573163324516	17575.0
+chb_archaic_single_founder	selected	53	30260874	1.0	1440.0	0.5626642956548632	segregating_or_fixed	0.61	87	35	True	14487.735865960876	21082.43476116558
+chb_archaic_single_founder	selected	54	30260875	1.0	1440.0	0.8970929333539508	segregating_or_fixed	0.875	97	78	True	6124.3555526826585	1040.0
+chb_archaic_single_founder	selected	55	30260876	1.0	1440.0	0.8963970929333539	segregating_or_fixed	0.885	98	79	True	8306.632239847977	985.0
+chb_archaic_single_founder	selected	56	30260877	1.0	1440.0	0.0703185402814288	segregating_or_fixed	0.08	16	0	True	11778.278459220075	11060.0
+chb_archaic_single_founder	selected	57	30260878	1.0	1440.0	0.9528374826039895	segregating_or_fixed	0.92	100	84	True	3941.8156122343703	915.0
+chb_archaic_single_founder	selected	58	30260879	1.0	1440.0	0.06757383640018556	segregating_or_fixed	0.08	14	2	True	9022.728863365333	7692.5
+chb_archaic_single_founder	selected	59	30260880	1.0	1440.0	0.17527447038812433	segregating_or_fixed	0.135	27	0	True	17369.35007861554	20599.857920938262
+chb_archaic_single_founder	selected	60	30260881	1.0	1440.0	0.09761094788928405	segregating_or_fixed	0.095	19	0	True	8364.549862724703	1545.0
+chb_archaic_single_founder	selected	61	30260882	1.0	1440.0	0.742152466367713	segregating_or_fixed	0.71	94	48	True	10788.719725405745	15260.0
+chb_archaic_single_founder	selected	62	30260883	1.0	1440.0	0.581336013607546	segregating_or_fixed	0.575	83	32	True	13999.632227240882	20802.023974982127
+chb_archaic_single_founder	selected	63	30260884	1.0	1440.0	0.8183083346219268	segregating_or_fixed	0.76	91	61	True	10264.30341137397	865.0
+chb_archaic_single_founder	selected	64	30260885	1.0	1440.0	0.8350085047162518	segregating_or_fixed	0.835	98	69	True	10729.28752119639	570.0
+chb_archaic_single_founder	selected	65	30260886	1.0	1440.0	0.4467295500231947	segregating_or_fixed	0.485	75	22	True	13941.923322175813	21661.459105992104
+chb_archaic_single_founder	selected	66	30260887	1.0	1440.0	0.9073759084583269	segregating_or_fixed	0.89	97	81	True	4011.5880888042243	910.0
+chb_archaic_single_founder	selected	67	30260888	1.0	1440.0	0.13108860368022268	segregating_or_fixed	0.115	22	1	True	21656.061724981355	21981.70172268918
+chb_archaic_single_founder	selected	68	30260889	1.0	1440.0	0.8209757229008814	segregating_or_fixed	0.845	100	69	True	16175.734256907403	695.0
+chb_archaic_single_founder	selected	69	30260890	1.0	1440.0	0.5066491417968146	segregating_or_fixed	0.505	77	24	True	18701.202312958965	30135.287382941442
+chb_archaic_single_founder	selected	70	30260891	1.0	1440.0	0.5074609556208443	segregating_or_fixed	0.47	75	19	True	19873.71388002472	30653.146137587093
+chb_archaic_single_founder	selected	71	30260892	1.0	1440.0	0.9818694912633369	segregating_or_fixed	0.99	100	98	True	2278.4814803884824	1515.0
+chb_archaic_single_founder	selected	72	30260893	1.0	1440.0	0.09575537343435905	segregating_or_fixed	0.095	18	1	True	15983.966598279841	3065.0
+chb_archaic_single_founder	selected	73	30260894	1.0	1440.0	0.2956162053502397	segregating_or_fixed	0.315	52	11	True	13914.906292971515	13545.0
+chb_archaic_single_founder	selected	74	30260895	1.0	1440.0	0.900688108860368	segregating_or_fixed	0.91	100	82	True	4701.6230418332925	1175.0
+chb_archaic_single_founder	selected	75	30260896	1.0	1440.0	0.09973712695221895	segregating_or_fixed	0.085	17	0	True	11787.66275937318	17685.0
+chb_archaic_single_founder	selected	76	30260897	1.0	1440.0	0.9606850162362764	segregating_or_fixed	0.965	100	93	True	3237.48811124451	1095.0
+chb_archaic_single_founder	selected	77	30260898	1.0	1440.0	0.6054198237204268	segregating_or_fixed	0.57	80	34	True	16696.097106777554	19653.404508803513
+chb_archaic_single_founder	selected	78	30260899	1.0	1440.0	0.7345368795422916	segregating_or_fixed	0.76	96	56	True	11399.263665524595	8140.0
+chb_archaic_single_founder	selected	79	30260900	1.0	1440.0	0.4950131436523891	segregating_or_fixed	0.48	75	21	True	11818.789774117527	19640.0
+chb_archaic_single_founder	selected	80	30260901	1.0	1440.0	0.5725220349466522	segregating_or_fixed	0.54	79	29	True	13131.170609796269	20397.428310324645
+chb_archaic_single_founder	selected	81	30260902	1.0	1440.0	0.327199628885109	segregating_or_fixed	0.315	50	13	True	15679.69300884281	20007.79691532059
+chb_archaic_single_founder	selected	82	30260903	1.0	1440.0	0.5058373279727849	segregating_or_fixed	0.545	77	32	True	17695.282162716852	11500.0
+chb_archaic_single_founder	selected	83	30260904	1.0	1440.0	0.534946652234421	segregating_or_fixed	0.565	82	31	True	12507.60764185563	19580.0
+chb_archaic_single_founder	selected	84	30260905	1.0	1440.0	0.1073913715787846	segregating_or_fixed	0.12	22	2	True	11763.968754323163	11495.0
+chb_archaic_single_founder	selected	85	30260906	1.0	1440.0	0.07120766970774703	segregating_or_fixed	0.075	15	0	True	12199.480325397564	8045.0
+chb_archaic_single_founder	selected	86	30260907	1.0	1440.0	0.48040049481985464	segregating_or_fixed	0.485	71	26	True	10933.036419354212	11345.0
+chb_archaic_single_founder	selected	87	30260908	1.0	1440.0	0.4730941704035874	segregating_or_fixed	0.515	80	23	True	15049.347752817672	21616.487285645046
+chb_archaic_single_founder	selected	88	30260909	1.0	1440.0	0.37010978815524975	segregating_or_fixed	0.375	64	11	True	17347.5889112137	24586.613290795576
+chb_archaic_single_founder	selected	89	30260910	1.0	1440.0	0.2798824802845214	segregating_or_fixed	0.295	51	8	True	11771.446087278517	16590.0
+chb_archaic_single_founder	selected	90	30260911	1.0	1440.0	0.23175351785990414	segregating_or_fixed	0.19	32	6	True	16197.831552960717	20431.869927222382
+chb_archaic_single_founder	selected	91	30260912	1.0	1440.0	0.29735580640173187	segregating_or_fixed	0.29	50	8	True	10585.150260703766	4490.0
+chb_archaic_single_founder	selected	92	30260913	1.0	1440.0	0.5849311891139632	segregating_or_fixed	0.635	88	39	True	13711.013024823937	7770.0
+chb_archaic_single_founder	selected	93	30260914	1.0	1440.0	0.7376295036338333	segregating_or_fixed	0.735	93	54	True	9178.274019273429	520.0
+chb_archaic_single_founder	selected	94	30260915	1.0	1440.0	0.026519251584969847	segregating_or_fixed	0.04	8	0	True	9441.18503212551	6585.0
+chb_archaic_single_founder	selected	95	30260916	1.0	1440.0	0.5820318540281428	segregating_or_fixed	0.58	84	32	True	11150.95	19470.0
+chb_archaic_single_founder	selected	96	30260917	1.0	1440.0	0.24686871810731406	segregating_or_fixed	0.22	41	3	True	17926.326843237443	22608.413640796847
+chb_archaic_single_founder	selected	97	30260918	1.0	1440.0	0.15436059996907375	segregating_or_fixed	0.145	28	1	True	14589.117340980603	18070.0
+chb_archaic_single_founder	selected	98	30260919	1.0	1440.0	0.788387196536261	segregating_or_fixed	0.76	95	57	True	11559.116274402986	610.0
+chb_archaic_single_founder	selected	99	30260920	1.0	1440.0	0.5403200865934745	segregating_or_fixed	0.57	82	32	True	13004.698021072581	20587.26481201407

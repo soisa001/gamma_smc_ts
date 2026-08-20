@@ -1,3 +1,0 @@
-invocation_index	recorded_at_utc	simulation_contract_sha256	status	elapsed_seconds	declared_timeout_seconds	effective_timeout_seconds	completed_external_sample_panel_draws	interrupted_internal_conditioned_trajectories	error_type	core_source_sha256	orchestrator_source_sha256
-1	2026-08-12T10:28:05.136442+00:00	275a0b6cc6a20b248cd3bbe184ff60f7b5b70e88e5faebb310b7551d4ca84b20	failed	106.92216070002178	300.0	300.0	0	0	PermissionError	legacy_unknown	legacy_unknown
-2	2026-08-12T12:10:43.065580+00:00	275a0b6cc6a20b248cd3bbe184ff60f7b5b70e88e5faebb310b7551d4ca84b20	complete	6.676022700034082	300.0	300.0	1	0		legacy_unknown	legacy_unknown

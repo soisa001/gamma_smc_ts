@@ -1,3 +1,0 @@
-schema	demography	statistic	tail	observed_selected	n_neutral	neutral_extreme_count	plus_one_simulation_p	neutral_mean	neutral_median	interpretation	inference_scope
-gamma-smc.cosi2-conditioned-gamma-workflow/v1	EAS	birth_generation	lower	1475	100	4	0.049504950495049507	22103.799999999999	15428	selected_younger_than_endpoint_matched_neutral	descriptive_simulation_reference_diagnostic
-gamma-smc.cosi2-conditioned-gamma-workflow/v1	Han	present_chb_population_af	upper	0.19513936356	100	0	0.0099009900990099011	0.017259664312295621	0.01321485532015	selected_endpoint_higher_than_surviving_neutral	descriptive_simulation_reference_diagnostic
