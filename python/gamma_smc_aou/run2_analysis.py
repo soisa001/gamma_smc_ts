@@ -173,8 +173,10 @@ def aggregate_spatial_profiles(study_root: str | Path, arm: Run2Arm) -> pd.DataF
                         "n_replicates": values.shape[0],
                         "mean": values.mean(axis=0),
                         "median": np.median(values, axis=0),
+                        "q025": np.quantile(values, 0.025, axis=0),
                         "q05": np.quantile(values, 0.05, axis=0),
                         "q95": np.quantile(values, 0.95, axis=0),
+                        "q975": np.quantile(values, 0.975, axis=0),
                     }
                 )
             )

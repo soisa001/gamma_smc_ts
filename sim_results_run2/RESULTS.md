@@ -56,34 +56,40 @@ traces overlap across the whole 10 Mb
 (`chb_ancient_eurasia/figures/spatial_profile.png`). The expected "visual spike"
 is absent at those thresholds because it does not exist there.
 
-## Per-replicate spatial traces
+## Selected replicate against the neutral distribution
 
-`<arm>/figures/representative_spatial_by_threshold.png` shows one typical
-selected replicate (restricted to ones where the allele fixed) and one typical
-neutral replicate along the whole 10 Mb, one panel per cutoff. Representatives
-are the replicates closest to their mode's median focal statistic at 50 ky:
-CHB selected rep001 / neutral rep000, EAS selected rep002 / neutral rep014.
+`<arm>/figures/selected_vs_neutral_band_by_threshold.png` puts one selected
+replicate against **all 100 neutral replicates** (median and 2.5-97.5% band),
+one panel per cutoff. A single neutral trace is unusable as a reference -- with
+100 diploid pairs it moves in steps of 0.01 -- so the null side is the whole
+distribution. The selected side stays a single replicate on purpose: averaging
+it would blend the sweep with the ~20% of replicates that lost the allele and
+are neutral by construction. Every curve including the band edges gets the same
+250 kb rolling mean, so the comparison is like for like.
 
-Two things are visible that the aggregates hide:
+Representatives are the replicates nearest their mode's median focal statistic
+at 50 ky, with the selected pick restricted to replicates in which the allele
+fixed: CHB rep001, EAS rep002.
 
-- **At every cutoff below 50 ky, neither arm shows anything at 5 Mb.** The two
-  traces wander over each other across the whole contig, and the largest
-  excursions are nowhere near the focal base. At 1,000 y the statistic is
-  essentially all zeros -- with 100 diploid pairs it can only move in steps of
-  0.01, and almost no pair coalesces that recently.
-- **At 50 ky the EAS replicate shows a sharp, well-localised spike** at exactly
-  5 Mb, rising to ~0.40 against a neutral background of ~0.17 and decaying
-  within a few hundred kb. The CHB replicate at the same cutoff reaches only
-  ~0.26 at the focal base, and comparable bumps appear elsewhere on the contig
-  (~0.33 near 7.8 Mb), so a single CHB replicate does not localise.
+- **Below 50 ky, neither arm leaves the neutral band at 5 Mb.** The selected
+  trace wanders inside the band across the whole contig. Where it does breach
+  the band -- CHB near 1.3 Mb at 10-30 ky, EAS near 0.6 and 2.5 Mb at 20-40 ky --
+  it is nowhere near the focal base. Those are the false positives a scan would
+  produce at these cutoffs.
+- **At 50 ky EAS shows a clean, localised breach at exactly 5 Mb**, rising to
+  ~0.40 against a neutral median of ~0.19 and a band top of ~0.38, and decaying
+  within a few hundred kb. It is the only decisive excursion on the contig.
+- **CHB at 50 ky does not localise.** It reaches ~0.26 at the focal base, only
+  touching the band edge, while an unrelated bump near 7.8 Mb (~0.33) breaches
+  it more clearly. A single CHB replicate would not be called at 5 Mb.
 
-That CHB is the weaker of the two per replicate is worth noting given CHB is the
-arm of interest. It is consistent with the arms' different starting structure:
-CHB carriers begin as ~15 complete archaic homozygotes whose own common ancestry
-is deep in the Neanderthal lineage, so fixing them leaves a genealogy with
-several old internal branches, whereas the EAS carriers are drawn from the
-resident population and coalesce more tightly. This is a hypothesis the current
-data do not settle.
+That CHB is the weaker arm per replicate matters, because CHB is the arm of
+interest. It is consistent with the arms' different starting structure: CHB
+carriers begin as ~15 complete archaic homozygotes whose own common ancestry is
+deep in the Neanderthal lineage, so fixing them leaves a genealogy with several
+old internal branches, whereas EAS carriers are drawn from the resident
+population and coalesce more tightly. The current data do not settle this --
+testing it needs the raw TMRCA distributions, which were not stored.
 
 ## The test machinery itself is sound
 

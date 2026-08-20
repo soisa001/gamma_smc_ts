@@ -374,7 +374,7 @@ def plot_arm(study_root: str | Path, arm: Run2Arm) -> dict[str, Any]:
         "pvalue_panels": plot_pvalue_panels(arm, results, figures),
         "spatial_profile": plot_spatial_profile(arm, results, figures),
         "by_genotype": plot_by_genotype(arm, results, figures),
-        "representative_spatial": plot_representative_spatial(root, arm, figures),
+        "selected_vs_neutral_band": plot_selected_vs_neutral_band(root, arm, figures),
     }
 
 
@@ -390,13 +390,13 @@ __all__ = [
     "plot_cross_arm",
     "plot_final_af",
     "plot_pvalue_panels",
-    "plot_representative_spatial",
+    "plot_selected_vs_neutral_band",
     "plot_spatial_profile",
     "plot_threshold_curves",
 ]
 
 
-def plot_representative_spatial(
+def plot_selected_vs_neutral_band(
     study_root: str | Path,
     arm: Run2Arm,
     figures: Path | None = None,
@@ -404,74 +404,105 @@ def plot_representative_spatial(
     thresholds: Sequence[float] = TMRCA_THRESHOLDS_YEARS,
     smooth_bp: int = 250_000,
 ) -> dict[str, Path]:
-    """One panel per threshold: two single replicates along the whole contig.
+    """One panel per cutoff: a single selected replicate against the whole null.
 
-    Aggregate profiles average a sweep signal away with the replicates that lost
-    the allele, so this shows one typical selected and one typical neutral
-    replicate instead.  The raw per-position trace is drawn faintly -- with 100
-    diploid pairs it can only take values in steps of 0.01 -- with a rolling mean
-    over ``smooth_bp`` on top so the shape is legible.
+    A single neutral replicate is far too noisy to read against -- with 100
+    diploid pairs its trace moves in steps of 0.01 -- so the neutral side is all
+    100 replicates summarised as a median and a 2.5-97.5% band.  The selected
+    side stays a single replicate on purpose: averaging the selected arm would
+    blend the sweep with the ~20% of replicates that lost the allele and are
+    neutral by construction.
+
+    Every curve, including the band edges, is smoothed with the same rolling
+    mean so the comparison is like for like.
     """
     root = Path(study_root)
     figures = figures if figures is not None else root / arm.arm_id / "figures"
     chosen = representative_replicates(root, arm)
-    missing = [m for m in ("selected", "neutral") if m not in chosen]
-    if missing:
-        raise RuntimeError(f"no representative replicate for: {', '.join(missing)}")
+    if "selected" not in chosen:
+        raise RuntimeError("no representative selected replicate is available")
+    record = chosen["selected"]
 
-    profiles = {}
-    for mode, record in chosen.items():
-        path = Path(record["spatial_profile"])
-        if not path.is_file():
-            raise FileNotFoundError(
-                f"per-replicate profile is missing: {path}. These live under "
-                "<arm>/<mode>/replicates/ and are gitignored, so this plot must "
-                "be produced where the study was run."
+    path = Path(record["spatial_profile"])
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"per-replicate profile is missing: {path}. These live under "
+            "<arm>/<mode>/replicates/ and are gitignored, so this plot must be "
+            "produced where the study was run."
+        )
+    selected = pd.read_csv(path, sep="\t").sort_values("position_0based")
+    aggregate = _read(root / arm.arm_id / "results", "spatial_profiles")
+    neutral = aggregate[aggregate["mode"] == "neutral"]
+    if neutral.empty:
+        raise RuntimeError("the aggregate spatial profile has no neutral rows")
+    for column in ("q025", "q975"):
+        if column not in neutral.columns:
+            raise RuntimeError(
+                "the aggregate spatial profile predates the 95% band; re-run "
+                "the analyze phase"
             )
-        profiles[mode] = pd.read_csv(path, sep="\t").sort_values("position_0based")
 
-    any_frame = next(iter(profiles.values()))
-    positions = any_frame["position_0based"].to_numpy(dtype=float)
+    positions = selected["position_0based"].to_numpy(dtype=float)
     step = float(np.median(np.diff(positions))) if len(positions) > 1 else 1.0
     window = max(1, int(round(smooth_bp / step)))
 
+    def smooth(values):
+        return (
+            pd.Series(np.asarray(values, dtype=float))
+            .rolling(window, center=True, min_periods=1)
+            .mean()
+            .to_numpy()
+        )
+
+    n_neutral = int(neutral["n_replicates"].iloc[0])
     fig, axes = plt.subplots(
         len(thresholds), 1, figsize=(11, 2.05 * len(thresholds)), sharex=True
     )
     axes = np.atleast_1d(axes)
     for ax, threshold in zip(axes, thresholds):
+        band = neutral[neutral["threshold_years"] == threshold].sort_values(
+            "position_0based"
+        )
+        x = band["position_0based"].to_numpy(dtype=float) / 1e6
+        ax.fill_between(
+            x,
+            smooth(band["q025"]),
+            smooth(band["q975"]),
+            color=_NEUTRAL_COLOUR,
+            alpha=0.25,
+            lw=0,
+            label=f"neutral 95% band (n = {n_neutral})",
+        )
+        ax.plot(
+            x, smooth(band["median"]), color=_NEUTRAL_COLOUR, lw=1.7, label="neutral median"
+        )
+
         column = f"p_lt_{int(threshold)}y"
-        for mode, colour in (
-            ("neutral", _NEUTRAL_COLOUR),
-            ("selected", _SELECTED_COLOUR),
-        ):
-            values = profiles[mode][column].to_numpy(dtype=float)
-            ax.plot(positions / 1e6, values, color=colour, lw=0.5, alpha=0.22)
-            rolled = (
-                pd.Series(values)
-                .rolling(window, center=True, min_periods=1)
-                .mean()
-                .to_numpy()
-            )
-            ax.plot(positions / 1e6, rolled, color=colour, lw=1.9, label=mode)
+        values = selected[column].to_numpy(dtype=float)
+        ax.plot(positions / 1e6, values, color=_SELECTED_COLOUR, lw=0.5, alpha=0.25)
+        ax.plot(
+            positions / 1e6,
+            smooth(values),
+            color=_SELECTED_COLOUR,
+            lw=2.0,
+            label="selected replicate",
+        )
         ax.axvline(5.0, color="black", ls=":", lw=1.1)
         ax.set_ylabel(f"P(TMRCA <\n{int(threshold):,} y)", fontsize=9)
         ax.tick_params(labelsize=8)
         ax.margins(x=0.005)
-    axes[0].legend(frameon=False, fontsize=9, ncol=2, loc="upper left")
+    axes[0].legend(frameon=False, fontsize=8.5, ncol=3, loc="upper left")
     axes[-1].set_xlabel(
         "Position (Mb); dotted line marks the focal base at 5 Mb", fontsize=10
     )
-
-    selected, neutral = chosen["selected"], chosen["neutral"]
     fig.suptitle(
-        f"{arm.label} — one representative replicate per mode\n"
-        f"selected rep{selected['replicate_index']:03d}"
-        f"{' (fixed)' if selected['restricted_to_fixed'] else ''}, "
-        f"neutral rep{neutral['replicate_index']:03d}; "
-        f"faint = raw 10 kb grid, bold = {smooth_bp // 1000} kb rolling mean",
+        f"{arm.label} — selected rep{record['replicate_index']:03d}"
+        f"{' (fixed)' if record['restricted_to_fixed'] else ''} "
+        f"against the neutral distribution\n"
+        f"all curves smoothed with a {smooth_bp // 1000} kb rolling mean; "
+        f"faint red = raw 10 kb grid",
         fontsize=11,
         y=0.997,
     )
     fig.tight_layout(rect=(0, 0, 1, 0.985))
-    return _save(fig, figures / "representative_spatial_by_threshold")
+    return _save(fig, figures / "selected_vs_neutral_band_by_threshold")
