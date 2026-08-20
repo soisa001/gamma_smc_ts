@@ -29,3 +29,8 @@ sim_results_run2/*/selected/replicates/
 sim_results_run2/*/neutral/replicates/
 sim_results_run2/logs/
 *.tmp.[0-9]*
+
+# run3: per-replicate intermediates (trees, raw TMRCA) are regenerable
+sim_results_run3/*/selected/replicates/
+sim_results_run3/*/neutral/replicates/
+sim_results_run3/logs/
