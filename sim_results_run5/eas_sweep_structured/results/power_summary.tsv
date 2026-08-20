@@ -1,0 +1,50 @@
+arm_id	estimator	genotype_class	conditioned_on_presence	threshold_years	n_selected	n_significant	power	median_p_value	median_observed	n_null
+eas_sweep_structured	gamma_smc_frac	overall	False	1000.0	100	4	0.04	0.40594059405940597	0.01	100
+eas_sweep_structured	gamma_smc_frac	overall	False	4500.0	100	20	0.2	0.18811881188118812	0.04	100
+eas_sweep_structured	gamma_smc_frac	overall	False	10000.0	100	46	0.46	0.09900990099009901	0.1	100
+eas_sweep_structured	gamma_smc_frac	overall	False	20000.0	100	70	0.7	0.0297029702970297	0.17	100
+eas_sweep_structured	gamma_smc_frac	overall	False	30000.0	100	62	0.62	0.0297029702970297	0.22	100
+eas_sweep_structured	gamma_smc_frac	overall	False	40000.0	100	46	0.46	0.0594059405940594	0.255	100
+eas_sweep_structured	gamma_smc_frac	overall	False	50000.0	100	43	0.43	0.06930693069306931	0.28	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	1000.0	100	28	0.28	0.12871287128712872	0.01903448587	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	4500.0	100	47	0.47	0.0594059405940594	0.067517719095	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	10000.0	100	59	0.59	0.0297029702970297	0.11868911339999999	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	20000.0	100	54	0.54	0.019801980198019802	0.18357368865	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	30000.0	100	55	0.55	0.039603960396039604	0.22721046475	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	40000.0	100	47	0.47	0.06930693069306931	0.26088267415	100
+eas_sweep_structured	gamma_smc_meanp	overall	False	50000.0	100	42	0.42	0.07920792079207921	0.2883755067	100
+eas_sweep_structured	tree_truth	any_carrier	False	1000.0	0	0				0
+eas_sweep_structured	tree_truth	any_carrier	False	4500.0	0	0				0
+eas_sweep_structured	tree_truth	any_carrier	False	10000.0	0	0				0
+eas_sweep_structured	tree_truth	any_carrier	False	20000.0	0	0				0
+eas_sweep_structured	tree_truth	any_carrier	False	30000.0	0	0				0
+eas_sweep_structured	tree_truth	any_carrier	False	40000.0	0	0				0
+eas_sweep_structured	tree_truth	any_carrier	False	50000.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	1000.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	4500.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	10000.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	20000.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	30000.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	40000.0	0	0				0
+eas_sweep_structured	tree_truth	het	False	50000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	1000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	4500.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	10000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	20000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	30000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	40000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_carrier	False	50000.0	0	0				0
+eas_sweep_structured	tree_truth	hom_noncarrier	False	1000.0	100	7	0.07	1.0	0.0	100
+eas_sweep_structured	tree_truth	hom_noncarrier	False	4500.0	100	4	0.04	0.45544554455445546	0.02	100
+eas_sweep_structured	tree_truth	hom_noncarrier	False	10000.0	100	14	0.14	0.33663366336633666	0.05	100
+eas_sweep_structured	tree_truth	hom_noncarrier	False	20000.0	100	72	0.72	0.009900990099009901	0.2	100
+eas_sweep_structured	tree_truth	hom_noncarrier	False	30000.0	100	85	0.85	0.009900990099009901	0.305	100
+eas_sweep_structured	tree_truth	hom_noncarrier	False	40000.0	100	77	0.77	0.009900990099009901	0.37	100
+eas_sweep_structured	tree_truth	hom_noncarrier	False	50000.0	100	66	0.66	0.039603960396039604	0.4	100
+eas_sweep_structured	tree_truth	overall	False	1000.0	100	7	0.07	1.0	0.0	100
+eas_sweep_structured	tree_truth	overall	False	4500.0	100	4	0.04	0.45544554455445546	0.02	100
+eas_sweep_structured	tree_truth	overall	False	10000.0	100	14	0.14	0.33663366336633666	0.05	100
+eas_sweep_structured	tree_truth	overall	False	20000.0	100	72	0.72	0.009900990099009901	0.2	100
+eas_sweep_structured	tree_truth	overall	False	30000.0	100	85	0.85	0.009900990099009901	0.305	100
+eas_sweep_structured	tree_truth	overall	False	40000.0	100	77	0.77	0.009900990099009901	0.37	100
+eas_sweep_structured	tree_truth	overall	False	50000.0	100	66	0.66	0.039603960396039604	0.4	100

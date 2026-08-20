@@ -92,7 +92,7 @@ def plot_power_by_estimator(arm: Run5Arm, results: Path, figures: Path) -> dict[
                     color=_COLOURS.get(estimator, None), label=estimator)
             n = int(group["n_selected"].iloc[0])
         ax.axhline(SIGNIFICANCE_LEVEL, color="grey", ls="--", lw=1)
-        ax.set(xlabel="Threshold x (years)", xscale="log", ylim=(0, 1.02),
+        ax.set(xlabel="Threshold x (years)", ylim=(0, 1.02),
                title=("conditional on the allele being present" if conditioned
                       else "all replicates"))
         ax.legend(frameon=False, fontsize=9)
@@ -194,7 +194,7 @@ def plot_cross_arm(study_root: str | Path) -> dict[str, Path]:
             ax.plot(group["threshold_years"], group["power"], marker="o", lw=2,
                     label=group["arm_label"].iloc[0])
         ax.axhline(SIGNIFICANCE_LEVEL, color="grey", ls="--", lw=1)
-        ax.set(xlabel="Threshold x (years)", xscale="log", ylim=(0, 1.02),
+        ax.set(xlabel="Threshold x (years)", ylim=(0, 1.02),
                title=("conditional on presence" if conditioned else "all replicates"))
         ax.legend(frameon=False, fontsize=9)
     axes[0].set_ylabel(f"Fraction with p <= {SIGNIFICANCE_LEVEL:g}")

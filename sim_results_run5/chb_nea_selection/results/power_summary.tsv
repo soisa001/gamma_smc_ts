@@ -1,0 +1,99 @@
+arm_id	estimator	genotype_class	conditioned_on_presence	threshold_years	n_selected	n_significant	power	median_p_value	median_observed	n_null
+chb_nea_selection	gamma_smc_frac	overall	False	1000.0	100	0	0.0	1.0	0.0	100
+chb_nea_selection	gamma_smc_frac	overall	False	4500.0	100	17	0.17	0.38613861386138615	0.01	100
+chb_nea_selection	gamma_smc_frac	overall	False	10000.0	100	51	0.51	0.04950495049504951	0.12	100
+chb_nea_selection	gamma_smc_frac	overall	False	20000.0	100	28	0.28	0.13366336633663367	0.295	100
+chb_nea_selection	gamma_smc_frac	overall	False	30000.0	100	21	0.21	0.2524752475247525	0.365	100
+chb_nea_selection	gamma_smc_frac	overall	False	40000.0	100	24	0.24	0.3564356435643564	0.41	100
+chb_nea_selection	gamma_smc_frac	overall	False	50000.0	100	18	0.18	0.32673267326732675	0.45	100
+chb_nea_selection	gamma_smc_frac	overall	True	1000.0	0	0				0
+chb_nea_selection	gamma_smc_frac	overall	True	4500.0	0	0				0
+chb_nea_selection	gamma_smc_frac	overall	True	10000.0	0	0				0
+chb_nea_selection	gamma_smc_frac	overall	True	20000.0	0	0				0
+chb_nea_selection	gamma_smc_frac	overall	True	30000.0	0	0				0
+chb_nea_selection	gamma_smc_frac	overall	True	40000.0	0	0				0
+chb_nea_selection	gamma_smc_frac	overall	True	50000.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	False	1000.0	100	30	0.3	0.1782178217821782	0.01795887994	100
+chb_nea_selection	gamma_smc_meanp	overall	False	4500.0	100	33	0.33	0.16831683168316833	0.08323167316999999	100
+chb_nea_selection	gamma_smc_meanp	overall	False	10000.0	100	34	0.34	0.1782178217821782	0.17262338425	100
+chb_nea_selection	gamma_smc_meanp	overall	False	20000.0	100	29	0.29	0.25742574257425743	0.2747081497	100
+chb_nea_selection	gamma_smc_meanp	overall	False	30000.0	100	26	0.26	0.31683168316831684	0.34687528285	100
+chb_nea_selection	gamma_smc_meanp	overall	False	40000.0	100	21	0.21	0.3712871287128713	0.39262043775	100
+chb_nea_selection	gamma_smc_meanp	overall	False	50000.0	100	18	0.18	0.4653465346534653	0.4245797211	100
+chb_nea_selection	gamma_smc_meanp	overall	True	1000.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	True	4500.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	True	10000.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	True	20000.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	True	30000.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	True	40000.0	0	0				0
+chb_nea_selection	gamma_smc_meanp	overall	True	50000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	1000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	4500.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	10000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	20000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	30000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	40000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	False	50000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	1000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	4500.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	10000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	20000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	30000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	40000.0	0	0				0
+chb_nea_selection	tree_truth	any_carrier	True	50000.0	0	0				0
+chb_nea_selection	tree_truth	het	False	1000.0	0	0				0
+chb_nea_selection	tree_truth	het	False	4500.0	0	0				0
+chb_nea_selection	tree_truth	het	False	10000.0	0	0				0
+chb_nea_selection	tree_truth	het	False	20000.0	0	0				0
+chb_nea_selection	tree_truth	het	False	30000.0	0	0				0
+chb_nea_selection	tree_truth	het	False	40000.0	0	0				0
+chb_nea_selection	tree_truth	het	False	50000.0	0	0				0
+chb_nea_selection	tree_truth	het	True	1000.0	0	0				0
+chb_nea_selection	tree_truth	het	True	4500.0	0	0				0
+chb_nea_selection	tree_truth	het	True	10000.0	0	0				0
+chb_nea_selection	tree_truth	het	True	20000.0	0	0				0
+chb_nea_selection	tree_truth	het	True	30000.0	0	0				0
+chb_nea_selection	tree_truth	het	True	40000.0	0	0				0
+chb_nea_selection	tree_truth	het	True	50000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	1000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	4500.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	10000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	20000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	30000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	40000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	False	50000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	1000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	4500.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	10000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	20000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	30000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	40000.0	0	0				0
+chb_nea_selection	tree_truth	hom_carrier	True	50000.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	False	1000.0	82	0	0.0	1.0	0.0	100
+chb_nea_selection	tree_truth	hom_noncarrier	False	4500.0	82	2	0.024390243902439025	1.0	0.0	100
+chb_nea_selection	tree_truth	hom_noncarrier	False	10000.0	82	8	0.0975609756097561	1.0	0.0	100
+chb_nea_selection	tree_truth	hom_noncarrier	False	20000.0	82	5	0.06097560975609756	1.0	0.0	100
+chb_nea_selection	tree_truth	hom_noncarrier	False	30000.0	82	7	0.08536585365853659	0.9702970297029703	0.02904040404040404	100
+chb_nea_selection	tree_truth	hom_noncarrier	False	40000.0	82	6	0.07317073170731707	0.5643564356435643	0.1846590909090909	100
+chb_nea_selection	tree_truth	hom_noncarrier	False	50000.0	82	12	0.14634146341463414	0.46534653465346537	0.2838827838827839	100
+chb_nea_selection	tree_truth	hom_noncarrier	True	1000.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	True	4500.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	True	10000.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	True	20000.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	True	30000.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	True	40000.0	0	0				0
+chb_nea_selection	tree_truth	hom_noncarrier	True	50000.0	0	0				0
+chb_nea_selection	tree_truth	overall	False	1000.0	100	4	0.04	1.0	0.0	100
+chb_nea_selection	tree_truth	overall	False	4500.0	100	1	0.01	1.0	0.0	100
+chb_nea_selection	tree_truth	overall	False	10000.0	100	2	0.02	0.32673267326732675	0.01	100
+chb_nea_selection	tree_truth	overall	False	20000.0	100	58	0.58	0.0297029702970297	0.06	100
+chb_nea_selection	tree_truth	overall	False	30000.0	100	82	0.82	0.009900990099009901	0.28500000000000003	100
+chb_nea_selection	tree_truth	overall	False	40000.0	100	55	0.55	0.01485148514851485	0.425	100
+chb_nea_selection	tree_truth	overall	False	50000.0	100	50	0.5	0.054455445544554455	0.46499999999999997	100
+chb_nea_selection	tree_truth	overall	True	1000.0	0	0				0
+chb_nea_selection	tree_truth	overall	True	4500.0	0	0				0
+chb_nea_selection	tree_truth	overall	True	10000.0	0	0				0
+chb_nea_selection	tree_truth	overall	True	20000.0	0	0				0
+chb_nea_selection	tree_truth	overall	True	30000.0	0	0				0
+chb_nea_selection	tree_truth	overall	True	40000.0	0	0				0
+chb_nea_selection	tree_truth	overall	True	50000.0	0	0				0

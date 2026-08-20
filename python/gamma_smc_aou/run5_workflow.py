@@ -36,7 +36,7 @@ from .run5_models import (
 )
 from .run5_simulate import build_tasks, check_environment, run_tasks
 
-DEFAULT_STUDY_DIRNAME = "sim_results_run4"
+DEFAULT_STUDY_DIRNAME = "sim_results_run5"
 PHASES = ("config", "validate", "simulate", "decode", "analyze", "plot", "all")
 
 

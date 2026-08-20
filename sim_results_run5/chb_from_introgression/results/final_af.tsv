@@ -1,0 +1,201 @@
+arm_id	mode	replicate_index	seed	placement_frequency	placement_carrier_genomes	census_af	census_state	sample_af	sample_carrier_diploids	sample_hom_carrier_diploids	allele_present	focal_mean_tmrca_generations	focal_median_tmrca_generations
+chb_from_introgression	neutral	0	31260822					0.0	0	0	False	9424.4	9395.0
+chb_from_introgression	neutral	1	31260823					0.0	0	0	False	14484.755858175073	21991.078507876697
+chb_from_introgression	neutral	2	31260824					0.0	0	0	False	6990.6	6947.5
+chb_from_introgression	neutral	3	31260825					0.0	0	0	False	9205.568178068495	1945.0
+chb_from_introgression	neutral	4	31260826					0.0	0	0	False	7244.95	10735.0
+chb_from_introgression	neutral	5	31260827					0.0	0	0	False	13585.573570066725	4400.0
+chb_from_introgression	neutral	6	31260828					0.0	0	0	False	13679.757277409273	21000.013995017835
+chb_from_introgression	neutral	7	31260829					0.0	0	0	False	18134.59012521079	19185.0
+chb_from_introgression	neutral	8	31260830					0.0	0	0	False	11312.128333039293	15122.5
+chb_from_introgression	neutral	9	31260831					0.0	0	0	False	8621.043874862686	2740.0
+chb_from_introgression	neutral	10	31260832					0.0	0	0	False	16484.180128236363	22741.24387182254
+chb_from_introgression	neutral	11	31260833					0.0	0	0	False	4215.75	1995.0
+chb_from_introgression	neutral	12	31260834					0.0	0	0	False	18663.90173011364	29794.199518060068
+chb_from_introgression	neutral	13	31260835					0.0	0	0	False	4696.65	1665.0
+chb_from_introgression	neutral	14	31260836					0.0	0	0	False	11339.45	17450.0
+chb_from_introgression	neutral	15	31260837					0.0	0	0	False	5750.115763414062	1935.0
+chb_from_introgression	neutral	16	31260838					0.0	0	0	False	10377.75	13740.0
+chb_from_introgression	neutral	17	31260839					0.0	0	0	False	22299.37938453841	35936.27398329522
+chb_from_introgression	neutral	18	31260840					0.0	0	0	False	6762.632240413946	6480.0
+chb_from_introgression	neutral	19	31260841					0.0	0	0	False	11175.16358790236	13995.0
+chb_from_introgression	neutral	20	31260842					0.0	0	0	False	8718.527161278927	10515.0
+chb_from_introgression	neutral	21	31260843					0.0	0	0	False	12322.65	18695.0
+chb_from_introgression	neutral	22	31260844					0.0	0	0	False	16892.643645661363	6780.0
+chb_from_introgression	neutral	23	31260845					0.0	0	0	False	9765.811594985948	1600.0
+chb_from_introgression	neutral	24	31260846					0.0	0	0	False	12519.784704647514	8200.0
+chb_from_introgression	neutral	25	31260847					0.0	0	0	False	8446.4	12295.0
+chb_from_introgression	neutral	26	31260848					0.0	0	0	False	10330.290319756385	5935.0
+chb_from_introgression	neutral	27	31260849					0.0	0	0	False	8439.6	12925.0
+chb_from_introgression	neutral	28	31260850					0.0	0	0	False	11335.85	13460.0
+chb_from_introgression	neutral	29	31260851					0.0	0	0	False	7656.05	8050.0
+chb_from_introgression	neutral	30	31260852					0.0	0	0	False	8980.8	12150.0
+chb_from_introgression	neutral	31	31260853					0.0	0	0	False	10652.637381327097	8625.0
+chb_from_introgression	neutral	32	31260854					0.0	0	0	False	12659.644094909017	10000.0
+chb_from_introgression	neutral	33	31260855					0.0	0	0	False	16298.00053572563	8680.0
+chb_from_introgression	neutral	34	31260856					0.0	0	0	False	9177.5499975	11795.0
+chb_from_introgression	neutral	35	31260857					0.0	0	0	False	13125.286316796308	12985.0
+chb_from_introgression	neutral	36	31260858					0.0	0	0	False	9026.6	6840.0
+chb_from_introgression	neutral	37	31260859					0.0	0	0	False	7991.396450048379	6255.0
+chb_from_introgression	neutral	38	31260860					0.0	0	0	False	11095.801889893566	12740.0
+chb_from_introgression	neutral	39	31260861					0.0	0	0	False	9416.4	14035.0
+chb_from_introgression	neutral	40	31260862					0.0	0	0	False	11970.260308683757	1850.0
+chb_from_introgression	neutral	41	31260863					0.0	0	0	False	7912.8	5605.0
+chb_from_introgression	neutral	42	31260864					0.0	0	0	False	6233.3	5040.0
+chb_from_introgression	neutral	43	31260865					0.0	0	0	False	8555.872541336048	1870.0
+chb_from_introgression	neutral	44	31260866					0.0	0	0	False	8739.432242783862	1885.0
+chb_from_introgression	neutral	45	31260867					0.0	0	0	False	13445.05	18460.0
+chb_from_introgression	neutral	46	31260868					0.0	0	0	False	12203.023969200165	17310.0
+chb_from_introgression	neutral	47	31260869					0.0	0	0	False	7831.24655914051	1470.0
+chb_from_introgression	neutral	48	31260870					0.0	0	0	False	3317.35	2427.5
+chb_from_introgression	neutral	49	31260871					0.0	0	0	False	9546.1	13575.0
+chb_from_introgression	neutral	50	31260872					0.0	0	0	False	5098.0	1785.0
+chb_from_introgression	neutral	51	31260873					0.0	0	0	False	10094.4	14505.0
+chb_from_introgression	neutral	52	31260874					0.0	0	0	False	11049.056413519571	6620.0
+chb_from_introgression	neutral	53	31260875					0.0	0	0	False	16172.142019389283	12730.0
+chb_from_introgression	neutral	54	31260876					0.0	0	0	False	9178.515751688781	4030.0
+chb_from_introgression	neutral	55	31260877					0.0	0	0	False	9650.643972770898	2085.0
+chb_from_introgression	neutral	56	31260878					0.0	0	0	False	10666.9	15075.0
+chb_from_introgression	neutral	57	31260879					0.0	0	0	False	5549.398558025539	1965.0
+chb_from_introgression	neutral	58	31260880					0.0	0	0	False	5175.969592788035	1525.0
+chb_from_introgression	neutral	59	31260881					0.0	0	0	False	5319.7	2050.0
+chb_from_introgression	neutral	60	31260882					0.0	0	0	False	7642.3	11815.0
+chb_from_introgression	neutral	61	31260883					0.0	0	0	False	9225.118444081301	8290.0
+chb_from_introgression	neutral	62	31260884					0.0	0	0	False	19882.36426971923	10340.0
+chb_from_introgression	neutral	63	31260885					0.0	0	0	False	18430.178496175922	27797.868542219225
+chb_from_introgression	neutral	64	31260886					0.0	0	0	False	11669.904941332536	6230.0
+chb_from_introgression	neutral	65	31260887					0.0	0	0	False	5345.75	3385.0
+chb_from_introgression	neutral	66	31260888					0.0	0	0	False	3864.8	1750.0
+chb_from_introgression	neutral	67	31260889					0.0	0	0	False	10893.155886094575	13580.0
+chb_from_introgression	neutral	68	31260890					0.0	0	0	False	7783.6	4415.0
+chb_from_introgression	neutral	69	31260891					0.0	0	0	False	10369.675321479397	6010.0
+chb_from_introgression	neutral	70	31260892					0.0	0	0	False	5811.377198414602	5425.0
+chb_from_introgression	neutral	71	31260893					0.0	0	0	False	7694.3	10470.0
+chb_from_introgression	neutral	72	31260894					0.0	0	0	False	8742.95	10795.0
+chb_from_introgression	neutral	73	31260895					0.0	0	0	False	4556.4	1530.0
+chb_from_introgression	neutral	74	31260896					0.0	0	0	False	14593.836550033777	14075.0
+chb_from_introgression	neutral	75	31260897					0.0	0	0	False	6282.5495773677985	7870.0
+chb_from_introgression	neutral	76	31260898					0.0	0	0	False	6832.55	6600.0
+chb_from_introgression	neutral	77	31260899					0.0	0	0	False	12512.240344433965	21840.537675803644
+chb_from_introgression	neutral	78	31260900					0.0	0	0	False	13096.944307080752	15565.0
+chb_from_introgression	neutral	79	31260901					0.0	0	0	False	4340.72455480227	1990.0
+chb_from_introgression	neutral	80	31260902					0.0	0	0	False	9945.85	11335.0
+chb_from_introgression	neutral	81	31260903					0.0	0	0	False	15075.268439236947	22236.793405994347
+chb_from_introgression	neutral	82	31260904					0.0	0	0	False	15511.307262883987	19684.009235724207
+chb_from_introgression	neutral	83	31260905					0.0	0	0	False	6108.299998999999	7260.0
+chb_from_introgression	neutral	84	31260906					0.0	0	0	False	13933.723877429957	12275.0
+chb_from_introgression	neutral	85	31260907					0.0	0	0	False	18345.476119737228	25350.74007376541
+chb_from_introgression	neutral	86	31260908					0.0	0	0	False	10693.35	11225.0
+chb_from_introgression	neutral	87	31260909					0.0	0	0	False	20619.398963396092	1655.0
+chb_from_introgression	neutral	88	31260910					0.0	0	0	False	7942.4	3295.0
+chb_from_introgression	neutral	89	31260911					0.0	0	0	False	13957.462057936003	14715.0
+chb_from_introgression	neutral	90	31260912					0.0	0	0	False	7368.7	9825.0
+chb_from_introgression	neutral	91	31260913					0.0	0	0	False	17683.867332572903	26944.167947255588
+chb_from_introgression	neutral	92	31260914					0.0	0	0	False	10322.8999995	13470.0
+chb_from_introgression	neutral	93	31260915					0.0	0	0	False	7279.2	5600.0
+chb_from_introgression	neutral	94	31260916					0.0	0	0	False	10780.010725293996	12510.0
+chb_from_introgression	neutral	95	31260917					0.0	0	0	False	7563.4	5165.0
+chb_from_introgression	neutral	96	31260918					0.0	0	0	False	10715.65	16280.0
+chb_from_introgression	neutral	97	31260919					0.0	0	0	False	7297.937579058289	3350.0
+chb_from_introgression	neutral	98	31260920					0.0	0	0	False	27469.04306427827	12010.0
+chb_from_introgression	neutral	99	31260921					0.0	0	0	False	10837.784117367419	13345.0
+chb_from_introgression	selected	0	30260822	1.0	1440.0	0.6305087366630586	segregating_or_fixed	0.63	84	42	True	17080.149425399784	8435.0
+chb_from_introgression	selected	1	30260823	1.0	1440.0	0.7457862996752744	segregating_or_fixed	0.77	97	57	True	14359.8336509002	945.0
+chb_from_introgression	selected	2	30260824	1.0	1440.0	0.5720967991340653	segregating_or_fixed	0.53	77	29	True	11818.36149042176	14855.0
+chb_from_introgression	selected	3	30260825	1.0	1440.0	0.5108628421215401	segregating_or_fixed	0.51	75	27	True	13108.747042496661	19540.0
+chb_from_introgression	selected	4	30260826	1.0	1440.0	0.47920210298438226	segregating_or_fixed	0.495	76	23	True	19566.198360174323	29899.648230849067
+chb_from_introgression	selected	5	30260827	1.0	1440.0	0.9889438688727386	segregating_or_fixed	1.0	100	100	True	1361.4	1390.0
+chb_from_introgression	selected	6	30260828	1.0	1440.0	0.6567960414411629	segregating_or_fixed	0.65	85	45	True	10038.1380768056	4375.0
+chb_from_introgression	selected	7	30260829	1.0	1440.0	0.6987010978815525	segregating_or_fixed	0.7	89	51	True	8675.373768840436	790.0
+chb_from_introgression	selected	8	30260830	1.0	1440.0	0.5709370650997371	segregating_or_fixed	0.525	70	35	True	9590.700846973261	1675.0
+chb_from_introgression	selected	9	30260831	1.0	1440.0	0.9344363692593165	segregating_or_fixed	0.89	99	79	True	4905.485739389413	1120.0
+chb_from_introgression	selected	10	30260832	1.0	1440.0	0.9527215092005566	segregating_or_fixed	0.935	100	87	True	6072.190983893024	1180.0
+chb_from_introgression	selected	11	30260833	1.0	1440.0	0.6778258852636462	segregating_or_fixed	0.705	91	50	True	9308.010060508792	2255.0
+chb_from_introgression	selected	12	30260834	1.0	1440.0	0.2763646203803928	segregating_or_fixed	0.24	44	4	True	18663.30435071948	29066.821443653982
+chb_from_introgression	selected	13	30260835	1.0	1440.0	0.4974485851244781	segregating_or_fixed	0.5	78	22	True	17925.33922100514	27588.868204352024
+chb_from_introgression	selected	14	30260836	1.0	1440.0	0.8605999690737591	segregating_or_fixed	0.84	95	73	True	7218.2525123676205	4535.0
+chb_from_introgression	selected	15	30260837	1.0	1440.0	0.9523349311891139	segregating_or_fixed	0.935	99	88	True	4634.818241182211	1250.0
+chb_from_introgression	selected	16	30260838	1.0	1440.0	0.9068733570434514	segregating_or_fixed	0.915	99	84	True	4831.105291551487	1635.0
+chb_from_introgression	selected	17	30260839	1.0	1440.0	0.0	segregating_or_fixed	0.0	0	0	False	11361.453042346835	4610.0
+chb_from_introgression	selected	18	30260840	1.0	1440.0	0.8775320859749497	segregating_or_fixed	0.855	96	75	True	5341.907350956308	1185.0
+chb_from_introgression	selected	19	30260841	1.0	1440.0	0.6810344827586207	segregating_or_fixed	0.71	91	51	True	9141.982396835912	1030.0
+chb_from_introgression	selected	20	30260842	1.0	1440.0	0.6482140095871347	segregating_or_fixed	0.655	90	41	True	17800.110498499216	25409.80565969014
+chb_from_introgression	selected	21	30260843	1.0	1440.0	0.9575923921447348	segregating_or_fixed	0.96	100	92	True	2916.8717825461663	1375.0
+chb_from_introgression	selected	22	30260844	1.0	1440.0	0.47282356579557755	segregating_or_fixed	0.455	72	19	True	20901.578424842624	32880.15190404295
+chb_from_introgression	selected	23	30260845	1.0	1440.0	0.8889361373125096	segregating_or_fixed	0.9	100	80	True	6573.15538743017	985.0
+chb_from_introgression	selected	24	30260846	1.0	1440.0	0.644116282665842	segregating_or_fixed	0.68	88	48	True	10711.258942422466	1152.5
+chb_from_introgression	selected	25	30260847	1.0	1440.0	0.9447580021648369	segregating_or_fixed	0.935	100	87	True	5097.836333628156	1045.0
+chb_from_introgression	selected	26	30260848	1.0	1440.0	0.5882557600123705	segregating_or_fixed	0.555	81	30	True	13823.439600816546	21793.048486134936
+chb_from_introgression	selected	27	30260849	1.0	1440.0	0.5456548631513839	segregating_or_fixed	0.485	77	20	True	16870.634111753287	27122.077389040853
+chb_from_introgression	selected	28	30260850	1.0	1440.0	0.6961883408071748	segregating_or_fixed	0.735	93	54	True	14605.839806958893	850.0
+chb_from_introgression	selected	29	30260851	1.0	1440.0	0.49145662594711614	segregating_or_fixed	0.49	73	25	True	12050.322467073509	18370.0
+chb_from_introgression	selected	30	30260852	1.0	1440.0	0.6042214318849544	segregating_or_fixed	0.62	85	39	True	11022.193310622668	8840.0
+chb_from_introgression	selected	31	30260853	1.0	1440.0	0.6789469614968301	segregating_or_fixed	0.74	92	56	True	13844.020400530237	835.0
+chb_from_introgression	selected	32	30260854	1.0	1440.0	0.40934745631668473	segregating_or_fixed	0.41	66	16	True	23097.773686829303	29980.82127492059
+chb_from_introgression	selected	33	30260855	1.0	1440.0	0.573913715787846	segregating_or_fixed	0.56	82	30	True	13190.521841147789	20681.489878218432
+chb_from_introgression	selected	34	30260856	1.0	1440.0	0.5273310654089995	segregating_or_fixed	0.57	77	37	True	11810.607902376556	12314.174197184153
+chb_from_introgression	selected	35	30260857	1.0	1440.0	0.7453997216638317	segregating_or_fixed	0.76	95	57	True	8935.325258215566	895.0
+chb_from_introgression	selected	36	30260858	1.0	1440.0	0.8253053966290398	segregating_or_fixed	0.83	99	67	True	8104.719139255613	1080.0
+chb_from_introgression	selected	37	30260859	1.0	1440.0	0.5152311736508427	segregating_or_fixed	0.51	78	24	True	20110.68867020444	19967.277733992178
+chb_from_introgression	selected	38	30260860	1.0	1440.0	0.931227771764342	segregating_or_fixed	0.92	100	84	True	4243.6680103663275	1110.0
+chb_from_introgression	selected	39	30260861	1.0	1440.0	0.8083732797278491	segregating_or_fixed	0.835	96	71	True	8606.719682887977	850.0
+chb_from_introgression	selected	40	30260862	1.0	1440.0	0.443211690119066	segregating_or_fixed	0.435	66	21	True	14077.889189209438	22818.953059692212
+chb_from_introgression	selected	41	30260863	1.0	1440.0	0.7173728158342354	segregating_or_fixed	0.785	97	60	True	10319.832271324825	945.0
+chb_from_introgression	selected	42	30260864	1.0	1440.0	0.9643575073449823	segregating_or_fixed	0.96	100	92	True	4019.1659428872226	1480.0
+chb_from_introgression	selected	43	30260865	1.0	1440.0	0.6289237668161435	segregating_or_fixed	0.635	85	42	True	11236.504843506955	3115.0
+chb_from_introgression	selected	44	30260866	1.0	1440.0	0.502280810267512	segregating_or_fixed	0.54	81	27	True	16860.98902074843	26887.201890274868
+chb_from_introgression	selected	45	30260867	1.0	1440.0	0.2314055976496057	segregating_or_fixed	0.26	47	5	True	14321.046621741736	14950.0
+chb_from_introgression	selected	46	30260868	1.0	1440.0	0.6752744703881243	segregating_or_fixed	0.645	86	43	True	11269.998975077959	1530.0
+chb_from_introgression	selected	47	30260869	1.0	1440.0	0.19823720426782124	segregating_or_fixed	0.18	36	0	True	16525.031926341606	14395.0
+chb_from_introgression	selected	48	30260870	1.0	1440.0	0.938495438379465	segregating_or_fixed	0.965	100	93	True	2604.49194502759	1060.0
+chb_from_introgression	selected	49	30260871	1.0	1440.0	0.942786454306479	segregating_or_fixed	0.97	100	94	True	2529.28079035835	1130.0
+chb_from_introgression	selected	50	30260872	1.0	1440.0	0.6109865470852018	segregating_or_fixed	0.625	88	37	True	12014.373729793726	20607.595548615154
+chb_from_introgression	selected	51	30260873	1.0	1440.0	0.8714628111952992	segregating_or_fixed	0.86	99	73	True	7218.985235445285	1110.0
+chb_from_introgression	selected	52	30260874	1.0	1440.0	0.6642956548631513	segregating_or_fixed	0.645	89	40	True	12889.84548022855	10625.0
+chb_from_introgression	selected	53	30260875	1.0	1440.0	0.6049945879078398	segregating_or_fixed	0.59	85	33	True	18830.206154091582	23731.392287543786
+chb_from_introgression	selected	54	30260876	1.0	1440.0	0.7622158651615896	segregating_or_fixed	0.78	97	59	True	10475.808976369011	910.0
+chb_from_introgression	selected	55	30260877	1.0	1440.0	0.4804778104221432	segregating_or_fixed	0.49	80	18	True	18008.609340158706	26267.434419610814
+chb_from_introgression	selected	56	30260878	1.0	1440.0	0.7330678830988093	segregating_or_fixed	0.765	94	59	True	12279.442237366238	770.0
+chb_from_introgression	selected	57	30260879	1.0	1440.0	0.10491727230555126	segregating_or_fixed	0.075	14	1	True	10160.97744500709	5032.5
+chb_from_introgression	selected	58	30260880	1.0	1440.0	0.9613421988557291	segregating_or_fixed	0.965	100	93	True	2743.2065236813028	1230.0
+chb_from_introgression	selected	59	30260881	1.0	1440.0	0.8805087366630586	segregating_or_fixed	0.93	100	86	True	5049.394585332249	925.0
+chb_from_introgression	selected	60	30260882	1.0	1440.0	0.5866707901654554	segregating_or_fixed	0.56	83	29	True	15799.181371868697	21563.95232888688
+chb_from_introgression	selected	61	30260883	1.0	1440.0	0.9167697541363847	segregating_or_fixed	0.895	100	79	True	4835.2	1035.0
+chb_from_introgression	selected	62	30260884	1.0	1440.0	0.8556131127261482	segregating_or_fixed	0.835	98	69	True	9500.092547191914	905.0
+chb_from_introgression	selected	63	30260885	1.0	1440.0	0.8561156641410237	segregating_or_fixed	0.865	97	76	True	6292.006580324796	955.0
+chb_from_introgression	selected	64	30260886	1.0	1440.0	0.8176511520024741	segregating_or_fixed	0.85	97	73	True	7337.811681609884	905.0
+chb_from_introgression	selected	65	30260887	1.0	1440.0	0.565486315138395	segregating_or_fixed	0.53	78	28	True	18179.32852901924	22490.678529019242
+chb_from_introgression	selected	66	30260888	1.0	1440.0	0.6412169475800217	segregating_or_fixed	0.665	90	43	True	14684.628963381057	12280.0
+chb_from_introgression	selected	67	30260889	1.0	1440.0	0.9548476882634915	segregating_or_fixed	0.945	99	90	True	3637.6560136873036	1090.0
+chb_from_introgression	selected	68	30260890	1.0	1440.0	0.62300912324107	segregating_or_fixed	0.67	91	43	True	11401.124357242821	15275.0
+chb_from_introgression	selected	69	30260891	1.0	1440.0	0.5185944023503943	segregating_or_fixed	0.505	80	21	True	21509.418679475184	28536.41082056433
+chb_from_introgression	selected	70	30260892	1.0	1440.0	0.9721277253749807	segregating_or_fixed	0.99	100	98	True	1921.1289559580466	1655.0
+chb_from_introgression	selected	71	30260893	1.0	1440.0	0.47572290088139785	segregating_or_fixed	0.44	67	21	True	19318.273066507005	19275.0
+chb_from_introgression	selected	72	30260894	1.0	1440.0	0.19758002164836863	segregating_or_fixed	0.185	33	4	True	14568.082695293808	15735.0
+chb_from_introgression	selected	73	30260895	1.0	1440.0	0.9191665378073295	segregating_or_fixed	0.945	99	90	True	4498.556451182026	1220.0
+chb_from_introgression	selected	74	30260896	1.0	1440.0	0.5122158651615896	segregating_or_fixed	0.495	73	26	True	15346.183598609678	18870.0
+chb_from_introgression	selected	75	30260897	1.0	1440.0	0.49725529611875674	segregating_or_fixed	0.505	79	22	True	15845.506175327853	20250.781444207387
+chb_from_introgression	selected	76	30260898	1.0	1440.0	0.8432426163599814	segregating_or_fixed	0.885	99	78	True	6068.071641912958	1020.0
+chb_from_introgression	selected	77	30260899	1.0	1440.0	0.9391139631977733	segregating_or_fixed	0.93	100	86	True	4843.69216241459	1295.0
+chb_from_introgression	selected	78	30260900	1.0	1440.0	0.9361373125096645	segregating_or_fixed	0.945	100	89	True	3499.610443579507	1125.0
+chb_from_introgression	selected	79	30260901	1.0	1440.0	0.9602984382248337	segregating_or_fixed	0.965	100	93	True	3002.0555425037096	1245.0
+chb_from_introgression	selected	80	30260902	1.0	1440.0	0.8876217720736045	segregating_or_fixed	0.92	99	85	True	4525.343885614632	1585.0
+chb_from_introgression	selected	81	30260903	1.0	1440.0	0.9152620998917581	segregating_or_fixed	0.905	99	82	True	8899.544213130506	1190.0
+chb_from_introgression	selected	82	30260904	1.0	1440.0	0.8385650224215246	segregating_or_fixed	0.85	98	72	True	6363.1702161329495	1090.0
+chb_from_introgression	selected	83	30260905	1.0	1440.0	0.9682232874594093	segregating_or_fixed	0.95	100	90	True	4043.6577926667883	1285.0
+chb_from_introgression	selected	84	30260906	1.0	1440.0	0.619723210143807	segregating_or_fixed	0.57	79	35	True	16053.791484462114	19430.0
+chb_from_introgression	selected	85	30260907	1.0	1440.0	0.9330446884181228	segregating_or_fixed	0.925	100	85	True	5831.873258271738	1370.0
+chb_from_introgression	selected	86	30260908	1.0	1440.0	0.9811349930415958	segregating_or_fixed	0.99	100	98	True	1804.8649320078343	1255.0
+chb_from_introgression	selected	87	30260909	1.0	1440.0	0.8849157259935055	segregating_or_fixed	0.92	99	85	True	4820.754988625917	965.0
+chb_from_introgression	selected	88	30260910	1.0	1440.0	0.9873975568269677	segregating_or_fixed	0.99	100	98	True	2033.7420738623437	1280.0
+chb_from_introgression	selected	89	30260911	1.0	1440.0	0.8131668470697386	segregating_or_fixed	0.825	98	67	True	12218.69187665486	1380.0
+chb_from_introgression	selected	90	30260912	1.0	1440.0	0.046196072367403744	segregating_or_fixed	0.025	5	0	True	8337.482844040831	5510.0
+chb_from_introgression	selected	91	30260913	1.0	1440.0	0.12258388742848307	segregating_or_fixed	0.12	21	3	True	11010.672112117305	11255.0
+chb_from_introgression	selected	92	30260914	1.0	1440.0	0.4766893459100046	segregating_or_fixed	0.475	70	25	True	12761.415375527093	13985.0
+chb_from_introgression	selected	93	30260915	1.0	1440.0	0.8787691356115664	segregating_or_fixed	0.845	99	70	True	6840.089743740817	1020.0
+chb_from_introgression	selected	94	30260916	1.0	1440.0	0.9348229472707592	segregating_or_fixed	0.92	99	85	True	3975.77675259062	1120.0
+chb_from_introgression	selected	95	30260917	1.0	1440.0	0.8425854337405289	segregating_or_fixed	0.89	98	80	True	8015.892143089808	920.0
+chb_from_introgression	selected	96	30260918	1.0	1440.0	0.9039740219576311	segregating_or_fixed	0.93	100	86	True	5838.9635228477555	1180.0
+chb_from_introgression	selected	97	30260919	1.0	1440.0	0.928367094479666	segregating_or_fixed	0.93	100	86	True	3981.5159568561335	1145.0
+chb_from_introgression	selected	98	30260920	1.0	1440.0	0.9116282665841967	segregating_or_fixed	0.9	100	80	True	5081.845181708641	1020.0
+chb_from_introgression	selected	99	30260921	1.0	1440.0	0.936214628111953	segregating_or_fixed	0.955	100	91	True	2981.315986085775	1240.0

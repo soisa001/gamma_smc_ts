@@ -1,0 +1,99 @@
+arm_id	estimator	genotype_class	conditioned_on_presence	threshold_years	n_selected	n_significant	power	median_p_value	median_observed	n_null
+chb_from_introgression	gamma_smc_frac	overall	False	1000.0	100	2	0.02	1.0	0.0	100
+chb_from_introgression	gamma_smc_frac	overall	False	4500.0	100	21	0.21	0.48514851485148514	0.01	100
+chb_from_introgression	gamma_smc_frac	overall	False	10000.0	100	49	0.49	0.0594059405940594	0.12	100
+chb_from_introgression	gamma_smc_frac	overall	False	20000.0	100	48	0.48	0.0594059405940594	0.36	100
+chb_from_introgression	gamma_smc_frac	overall	False	30000.0	100	40	0.4	0.07920792079207921	0.48	100
+chb_from_introgression	gamma_smc_frac	overall	False	40000.0	100	40	0.4	0.10396039603960397	0.555	100
+chb_from_introgression	gamma_smc_frac	overall	False	50000.0	100	36	0.36	0.12871287128712872	0.585	100
+chb_from_introgression	gamma_smc_frac	overall	True	1000.0	0	0				0
+chb_from_introgression	gamma_smc_frac	overall	True	4500.0	0	0				0
+chb_from_introgression	gamma_smc_frac	overall	True	10000.0	0	0				0
+chb_from_introgression	gamma_smc_frac	overall	True	20000.0	0	0				0
+chb_from_introgression	gamma_smc_frac	overall	True	30000.0	0	0				0
+chb_from_introgression	gamma_smc_frac	overall	True	40000.0	0	0				0
+chb_from_introgression	gamma_smc_frac	overall	True	50000.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	False	1000.0	100	58	0.58	0.0297029702970297	0.023960000715	100
+chb_from_introgression	gamma_smc_meanp	overall	False	4500.0	100	51	0.51	0.0297029702970297	0.1036213839	100
+chb_from_introgression	gamma_smc_meanp	overall	False	10000.0	100	49	0.49	0.08415841584158415	0.2027070099	100
+chb_from_introgression	gamma_smc_meanp	overall	False	20000.0	100	46	0.46	0.09900990099009901	0.35144589184999997	100
+chb_from_introgression	gamma_smc_meanp	overall	False	30000.0	100	42	0.42	0.10891089108910891	0.4502488643	100
+chb_from_introgression	gamma_smc_meanp	overall	False	40000.0	100	41	0.41	0.1485148514851485	0.5027082199	100
+chb_from_introgression	gamma_smc_meanp	overall	False	50000.0	100	37	0.37	0.1485148514851485	0.53378655495	100
+chb_from_introgression	gamma_smc_meanp	overall	True	1000.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	True	4500.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	True	10000.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	True	20000.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	True	30000.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	True	40000.0	0	0				0
+chb_from_introgression	gamma_smc_meanp	overall	True	50000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	1000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	4500.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	10000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	20000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	30000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	40000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	False	50000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	1000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	4500.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	10000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	20000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	30000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	40000.0	0	0				0
+chb_from_introgression	tree_truth	any_carrier	True	50000.0	0	0				0
+chb_from_introgression	tree_truth	het	False	1000.0	0	0				0
+chb_from_introgression	tree_truth	het	False	4500.0	0	0				0
+chb_from_introgression	tree_truth	het	False	10000.0	0	0				0
+chb_from_introgression	tree_truth	het	False	20000.0	0	0				0
+chb_from_introgression	tree_truth	het	False	30000.0	0	0				0
+chb_from_introgression	tree_truth	het	False	40000.0	0	0				0
+chb_from_introgression	tree_truth	het	False	50000.0	0	0				0
+chb_from_introgression	tree_truth	het	True	1000.0	0	0				0
+chb_from_introgression	tree_truth	het	True	4500.0	0	0				0
+chb_from_introgression	tree_truth	het	True	10000.0	0	0				0
+chb_from_introgression	tree_truth	het	True	20000.0	0	0				0
+chb_from_introgression	tree_truth	het	True	30000.0	0	0				0
+chb_from_introgression	tree_truth	het	True	40000.0	0	0				0
+chb_from_introgression	tree_truth	het	True	50000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	1000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	4500.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	10000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	20000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	30000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	40000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	False	50000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	1000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	4500.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	10000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	20000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	30000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	40000.0	0	0				0
+chb_from_introgression	tree_truth	hom_carrier	True	50000.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	False	1000.0	76	2	0.02631578947368421	1.0	0.0	100
+chb_from_introgression	tree_truth	hom_noncarrier	False	4500.0	76	4	0.05263157894736842	1.0	0.0	100
+chb_from_introgression	tree_truth	hom_noncarrier	False	10000.0	76	9	0.11842105263157894	1.0	0.0	100
+chb_from_introgression	tree_truth	hom_noncarrier	False	20000.0	76	16	0.21052631578947367	1.0	0.0	100
+chb_from_introgression	tree_truth	hom_noncarrier	False	30000.0	76	14	0.18421052631578946	0.6138613861386139	0.0649122807017544	100
+chb_from_introgression	tree_truth	hom_noncarrier	False	40000.0	76	16	0.21052631578947367	0.45544554455445546	0.19523809523809524	100
+chb_from_introgression	tree_truth	hom_noncarrier	False	50000.0	76	14	0.18421052631578946	0.3118811881188119	0.3294573643410853	100
+chb_from_introgression	tree_truth	hom_noncarrier	True	1000.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	True	4500.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	True	10000.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	True	20000.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	True	30000.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	True	40000.0	0	0				0
+chb_from_introgression	tree_truth	hom_noncarrier	True	50000.0	0	0				0
+chb_from_introgression	tree_truth	overall	False	1000.0	100	4	0.04	1.0	0.0	100
+chb_from_introgression	tree_truth	overall	False	4500.0	100	3	0.03	1.0	0.0	100
+chb_from_introgression	tree_truth	overall	False	10000.0	100	0	0.0	1.0	0.0	100
+chb_from_introgression	tree_truth	overall	False	20000.0	100	48	0.48	0.07920792079207921	0.05	100
+chb_from_introgression	tree_truth	overall	False	30000.0	100	81	0.81	0.009900990099009901	0.265	100
+chb_from_introgression	tree_truth	overall	False	40000.0	100	71	0.71	0.009900990099009901	0.485	100
+chb_from_introgression	tree_truth	overall	False	50000.0	100	52	0.52	0.04950495049504951	0.57	100
+chb_from_introgression	tree_truth	overall	True	1000.0	0	0				0
+chb_from_introgression	tree_truth	overall	True	4500.0	0	0				0
+chb_from_introgression	tree_truth	overall	True	10000.0	0	0				0
+chb_from_introgression	tree_truth	overall	True	20000.0	0	0				0
+chb_from_introgression	tree_truth	overall	True	30000.0	0	0				0
+chb_from_introgression	tree_truth	overall	True	40000.0	0	0				0
+chb_from_introgression	tree_truth	overall	True	50000.0	0	0				0
