@@ -1,0 +1,9 @@
+{
+  "schema": "gamma-smc.eas-sweep-external-draw-state/v1",
+  "simulation_contract_sha256": "320fd00deecf8a184cf9b154b6362d269b90cde1a5bad82f318b8a3a38e067e5",
+  "next_external_draw_zero_based": 1,
+  "completed_external_sample_panel_draws": 1,
+  "active_internal_conditioned_trajectory": null,
+  "accepted_tree_checkpoint": null,
+  "interrupted_internal_conditioned_trajectories": []
+}
