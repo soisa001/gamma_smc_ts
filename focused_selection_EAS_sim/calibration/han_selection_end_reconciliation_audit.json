@@ -1,0 +1,22 @@
+{
+  "artifacts": {
+    "han_selection_end_plan.tsv": "94fea8962e99c9fc04265855e575df01ab43839bf58dbfb17738db8d1567fcb1",
+    "han_selection_end_reconciliation_draws.tsv": "705d6db1fbafa8cf0030574c0f7db4bd106f0b109a11b07662f9682e7919dd6b",
+    "han_selection_end_reconciliation_plan.tsv": "49c86d8ae15ca2e92d5e986998fe7b7db26803264a88981a50ec4ef6609cd9ee",
+    "han_selection_end_screen_q5.log": "0d6ca16d1bc4daf6cf42625209e10e9622cd7dba15f1bce37c0ebe312260e691",
+    "han_selection_end_terminal_draws_reconciled.tsv": "9b9f610f150a1edbce6dce318cd3a376256b7ca1adf20360858aefd29eb288aa",
+    "han_selection_end_terminal_draws_screen_original.tsv": "6bedca6e6b814c2cc9e0af9b81fdd526bff7819779a3eb968ae27db42354571d"
+  },
+  "canonical_rows": 840,
+  "canonical_unique_ids": 840,
+  "mode": "same_seed_q5_focal_2bp_forward_only_no_recap_no_neutral_overlay",
+  "original_failure_trajectory_sha256": {
+    "han_calibration__s0.005000__af0.200000__m0.150000__q5__draw003": "b445cb59ad023679f823dc02d842a97372bfd0bf5028facfdd566277847c8d88",
+    "han_calibration__s0.005000__af0.300000__m0.500000__q5__draw002": "1f881279ec8cb4fbef6cb1538046396d725d6cc30d0542f03616c51c95e63427",
+    "han_calibration__s0.010000__af0.200000__m0.350000__q5__draw018": "e31b69fe6b1ce2ef8b396b0333a873a29dff6806200bc1e6c707b74b4b0394c1"
+  },
+  "original_screen_rows": 840,
+  "reconciled_rows": 3,
+  "schema": "gamma-smc.han-selection-end-calibration-reconciliation/v1",
+  "status": "complete"
+}

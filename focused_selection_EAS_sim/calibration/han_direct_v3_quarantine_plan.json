@@ -1,0 +1,13 @@
+{
+  "deletions_performed": 0,
+  "expected_stale_selected_directories": 0,
+  "moves_performed": 0,
+  "neutral_directories_touched": 0,
+  "observed_stale_selected_directories": 0,
+  "payload_sha256": "bfb4c94f29e55a9c1363f17bd232b9bb7591275b73a1f13586c1c5416f022063",
+  "proposed_destination_root": "focused_selection_EAS_sim/calibration/quarantine/han_direct_v3_stale_selected",
+  "rows": [],
+  "schema": "gamma-smc.han-direct-production-v3-quarantine-plan/v1",
+  "scope": "stale_han_selected_production_directories_only",
+  "status": "planning_only"
+}
