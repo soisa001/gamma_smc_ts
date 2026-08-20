@@ -11,9 +11,13 @@ TMRCA distribution alone?
 Two arms. **CHB** is `stdpopsim` `AncientEurasia_9K19`: the focal allele is placed
 on every genome arriving in the catalog's own 2.96% Neanderthal → Loschbour
 pulse, so it starts at exactly the pulse proportion on genuinely archaic
-haplotypes. **EAS** is the tracked PHLASH median curve with no archaic source at
-all: the allele is placed on a uniformly random 2.96% of genomes at the same
-tick. Both then get `s = 0.01`, `h = 0.5` continuously to the present, with **no
+haplotypes. Note that this pulse lands in the Han *ancestor*: Han is founded out
+of Loschbour 250 generations later, and the frequency entering Han is a measured
+outcome (~9% on average, `target_entry_af` in `final_af.tsv`), not 2.96%.
+**EAS** is the tracked PHLASH median curve with no archaic source at all: the
+allele is placed on a uniformly random 2.96% of genomes at the same tick.
+
+Both then get `s = 0.01`, `h = 0.5` continuously to the present, with **no
 allele-frequency conditioning anywhere** — the final frequency is a measured
 outcome, and replicates that lose the allele are kept. The null is 100 plain
 neutral replicates per arm: no mutation drawn, no fitness event, nothing
@@ -60,6 +64,7 @@ python scripts/run_run2.py simulate --slim-bin /path/to/slim --index 0 --index 1
 | The Han split tick is shared by the two fitness callbacks, so selection has no gap | G1 |
 | One drawn mutation and one fitness callback per carrying population in `selected`; none of either in `neutral` | — |
 | The CHB arm selects carriers by `inds.migrant`; the EAS arm places `0.0296` directly | G2 |
+| The CHB arm registers the entry recorder at the Han split tick, so the frequency the Han sweep starts from is measured | G2 |
 | The reserved-base guard removes exactly one base of mutational mass and is idempotent | G4 |
 | All 400 replicate seeds are unique | G5 |
 
@@ -99,4 +104,4 @@ Per-replicate directories are gitignored: they are regenerable from the seeds in
 | [`run2_workflow.py`](../python/gamma_smc_aou/run2_workflow.py) | phases and the validation gates |
 
 Tests: `tests/test_run2_models.py`, `tests/test_run2_analysis.py`,
-`tests/test_run2_simulate.py` (46 tests, none requiring SLiM).
+`tests/test_run2_simulate.py` (50 tests, none requiring SLiM).

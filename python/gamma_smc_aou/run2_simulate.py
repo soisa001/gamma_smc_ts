@@ -405,6 +405,15 @@ def run_replicate(task: ReplicateTask) -> dict[str, Any]:
                 ),
                 "realized_frequency": _scalar(block, "run2_standing_frequency"),
             },
+            # For the introgression arm the allele is placed in the Han
+            # *ancestor* and only reaches Han at the split, so the frequency the
+            # Han sweep actually starts from is a measured quantity, not 0.0296.
+            "target_entry": {
+                "tick": _scalar(block, "run2_entry_tick"),
+                "population_id": _scalar(block, "run2_entry_population_id"),
+                "total_genomes": _scalar(block, "run2_entry_total_genomes"),
+                "af": _scalar(block, "run2_entry_af"),
+            },
             "final_allele_frequency": {
                 "census_alt_count": census_alt,
                 "census_total_count": census_total,

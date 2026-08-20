@@ -144,6 +144,25 @@ def check_slim_script(arm: Run2Arm, mode: str, script: str) -> dict[str, Any]:
             raise AssertionError(
                 "the introgression arm must select carriers by migrant status"
             )
+        if arm.introgression:
+            # The allele is placed in the Han ancestor, so the frequency the Han
+            # sweep starts from must be measured at the split rather than assumed.
+            split_years = (
+                schedule["realized_generations_ago"]["han_split"]
+                * schedule["generation_time_years"]
+            )
+            expected_call = f"time_to_tick({split_years:.1f})"
+            if "run2_record_entry" not in script:
+                raise AssertionError("the entry recorder is not in the script")
+            if script.count(expected_call) != 2:
+                raise AssertionError(
+                    f"the entry recorder is not registered at {expected_call}"
+                )
+            checks["entry_recorder_years_ago"] = split_years
+        elif "run2_record_entry" in script:
+            raise AssertionError(
+                "the non-introgression arm has no founding event to record"
+            )
         if not arm.introgression and f"{STANDING_FREQUENCY:.10g}" not in script:
             raise AssertionError(
                 "the non-introgression arm must place the standing frequency directly"

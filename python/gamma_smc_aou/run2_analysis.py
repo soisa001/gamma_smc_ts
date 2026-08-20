@@ -90,6 +90,7 @@ def final_allele_frequencies(study_root: str | Path, arm: Run2Arm) -> pd.DataFra
             continue
         final = endpoint["final_allele_frequency"]
         standing = endpoint["standing_variation"]
+        entry = endpoint.get("target_entry", {})
         census_af = final.get("census_af")
         census_af = float(census_af) if census_af is not None else float("nan")
         rows.append(
@@ -101,6 +102,8 @@ def final_allele_frequencies(study_root: str | Path, arm: Run2Arm) -> pd.DataFra
                 "standing_carrier_genomes": standing.get("carrier_genomes"),
                 "standing_population_genomes": standing.get("population_genomes"),
                 "standing_realized_frequency": standing.get("realized_frequency"),
+                "target_entry_af": entry.get("af"),
+                "target_entry_total_genomes": entry.get("total_genomes"),
                 "census_alt_count": final.get("census_alt_count"),
                 "census_total_count": final.get("census_total_count"),
                 "census_af": census_af,

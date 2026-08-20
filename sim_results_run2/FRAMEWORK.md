@@ -6,7 +6,10 @@ directory yet contains results. See [`README.md`](README.md) for how to run it,
 and `validation_report.json` for the gates that already pass.
 
 Sections 2, 5 and 8 were revised once the model parameters were read out of
-`AncientEurasia_9K19` rather than estimated; the revisions are marked.
+`AncientEurasia_9K19` rather than estimated; the revisions are marked. §5 in
+particular is now backed by 20,000 Wright-Fisher replicates per arm rather than
+by closed-form approximations, and it corrects the claim that the CHB sweep
+starts at 2.96%.
 
 Question: **can we detect selection at an introgressed locus from the
 within-individual TMRCA distribution alone?**
@@ -33,8 +36,10 @@ for this pass.
 The reason the old runs are hard to read is that the allele-frequency
 conditioning is doing three jobs at once: it sets the sweep's starting point, it
 sets its endpoint, and it defines the null. run2 separates them. The starting
-frequency is fixed by construction (2.96%), the endpoint is a *measured
-outcome*, and the null is unconditioned.
+point is fixed by construction (2.96% at the pulse), the endpoint is a *measured
+outcome*, and the null is unconditioned. Note that for the CHB arm the pulse is
+in the Han *ancestor*, so the frequency Han itself starts from is measured too —
+see §5.
 
 **Inherited inconsistency to fix.** `introgression_EAS_sim/specifications.tsv`
 records `realized_han_split_generations = 2010`, while
@@ -62,7 +67,8 @@ and the presence of an archaic source.
   the focal allele is placed on *every* introgressing genome. This is exactly
   equivalent to the allele being fixed in the archaic source at the moment of
   the pulse, and it buys three things at once:
-  - post-pulse recipient allele frequency = **exactly 0.0296**;
+  - post-pulse recipient allele frequency = **exactly 0.0296** (in the Han
+    ancestor; the frequency entering Han itself is measured, §5);
   - carriers are **exactly the archaic haplotypes**, so the divergent
     introgressed background — the thing that makes this question interesting —
     is preserved;
@@ -81,7 +87,7 @@ and the presence of an archaic source.
   nominal / 2270 realized) the focal allele is placed on a uniformly random
   2.96% of genomes.
 - Consequence, stated plainly: **Arm B is not an introgression model.** It
-  matches Arm A on starting frequency, onset time, and selection coefficient,
+  matches Arm A on placement frequency, onset time, and selection coefficient,
   and differs in that carriers sit on ordinary EAS haplotypes rather than
   divergent archaic ones. That is the point of the contrast — it isolates how
   much of the detectable signal comes from the sweep itself versus from the
@@ -116,7 +122,7 @@ and the presence of an archaic source.
 | Selection coefficient | s = 0.01 |
 | Dominance | h = 0.5 (additive) |
 | Selection window | onset one tick after the pulse — realized **2265** generations ago, the tick at which the introgressed genomes first exist — continuously to the present (Arm A: in Loschbour 2265 → 2015, then in Han 2015 → 0; Arm B: one population throughout) |
-| Starting frequency | 0.0296 |
+| Frequency at placement | 0.0296 — in the Han ancestor for Arm A, in EAS for Arm B. Arm A's frequency *entering Han* is a measured outcome (§5), not 0.0296 |
 | Present-day AF conditioning | **none** |
 | Replicates | 100 selected + 100 neutral, per arm |
 | Sample | 100 diploids drawn uniformly from the present-day target population |
@@ -192,37 +198,65 @@ later expansions of the null can use the cheap engine.
 
 ## 5. Expected behaviour (pre-registered, so surprises are visible)
 
-Deterministic additive logistic growth from p₀ = 0.0296 at s = 0.01 needs
-roughly `(2/s)·Δlogit ≈ 200 × 8.1 ≈ 1,600` generations to reach 99%. There are
-2,270. **Most surviving replicates should be at or near fixation at the
-present.**
+The numbers below come from 20,000 Wright-Fisher replicates of each arm's
+demography, run before any SLiM simulation. They replace the first version's
+Kimura hand-estimates, which were wrong in both arms.
 
-Stochastic loss is not negligible. Kimura's diffusion result
-`u(p) = 1 − exp(−4·N_e·h·s·p)` gives, very roughly:
+### Where the sweep actually starts, and the Loschbour question
 
-- Arm A: the Ne that matters is **Loschbour's 2,340 at the onset**, not Han's
-  6,300 — the allele spends its first 250 generations in Loschbour and only then
-  enters Han. `4 × 2340 × 0.005 × 0.0296 ≈ 1.4` → **~25% lost**.
-- Arm B (EAS, Ne ≈ 3,950 at onset): `4 × 3950 × 0.005 × 0.0296 ≈ 2.3` → ~10% lost.
+In `AncientEurasia_9K19` the Han split is a proportion-1 mass migration from Han
+into Loschbour, so **forwards in time Han is founded out of Loschbour**: between
+the pulse (2270) and the split (2015), "Loschbour" *is* the Han ancestor, not a
+side branch. Selection there is selection on the Han lineage.
 
-*(Revised: the first version of this section used Han's present-day 6,300 for
-Arm A and predicted 2–3% loss. Reading the catalog model showed the allele is in
-Loschbour at onset, which roughly reverses the ordering — the introgression arm
-is now expected to lose the allele more often than the non-introgression one.)*
+The consequence is that **0.0296 is the frequency at the pulse, in the ancestor
+— not the frequency the Han sweep starts from.** Over the intervening 250
+generations at Ne = 2,340 the allele grows and drifts, and enters Han at:
 
-A second, purely computational source of variance: Q = 5 rescales Loschbour to
-468 diploids, so the number of introgressing individuals is a draw from
-`Binomial(468, 0.0296)` — about 14, with a standard deviation of 3.6. The
-starting frequency is therefore 0.0296 *in expectation* with roughly 26%
-relative spread, about √5 wider than the unscaled model would give. Gate G2
-records the realized value per replicate rather than asserting an exact 0.0296,
-and `results/final_af.tsv` carries it so the dependence can be checked directly.
+| | mean | quartiles | 5-95% | lost before Han exists |
+|---|---|---|---|---|
+| AF entering Han | 0.092 | 0.021 / 0.072 / 0.142 | [0.000, 0.261] | 14.3% |
 
-These are order-of-magnitude expectations against the bottlenecked Ne, not
-predictions; the actual loss fraction is a reported result. **Replicates that
-lose the allele are kept**, not resampled — they are the honest left tail of the
-final-AF distribution, and they contribute genuinely null-like TMRCA profiles,
-which is precisely why power is reported rather than a single p-value.
+This is measured per replicate by a SLiM event registered at the split tick and
+reported as `target_entry_af` in `results/final_af.tsv`. **Do not describe the
+CHB arm as starting at 2.96% in Han.**
+
+Two alternatives were considered and rejected:
+
+- *Drop the Loschbour fitness callback so selection is Han-only.* This is worse,
+  not better: the allele then drifts neutrally at Ne 2,340 for 250 generations
+  and **33% of replicates are lost before Han is founded**, 42% overall.
+- *Retime the pulse into Han so the AF is pinned at 0.0296.* Clean (2.4% loss),
+  but it moves archaic admixture from 56.8 kya to 50.2 kya, leaves the archaic
+  tracts unrecombined at sweep onset, and departs from the published model.
+
+The design keeps the published demography and reports the entry frequency
+instead. Revisit only if the entry-AF spread turns out to dominate the results.
+
+### Final outcomes
+
+Deterministic additive growth from p = 0.0296 at s = 0.01 needs roughly
+`(2/s)·Δlogit ≈ 1,600` generations to reach 99%, and there are 2,265, so
+surviving replicates should mostly be at or near fixation.
+
+| Arm | lost | fixed | median AF among survivors |
+|---|---|---|---|
+| CHB (Ne 2,340 → 6,300) | 18.4% | 71.7% | 1.00 |
+| EAS (Ne 3,947 → 37,637) | 11.2% | 65.6% | 1.00 |
+
+So roughly one CHB replicate in five and one EAS replicate in nine carries no
+signal at all. **Replicates that lose the allele are kept**, not resampled —
+they are the honest left tail of the final-AF distribution and they contribute
+genuinely null-like TMRCA profiles, which is exactly why the headline number is
+power rather than a single p-value.
+
+### A scaling artefact worth knowing
+
+Q = 5 rescales Loschbour to 468 diploids, so the number of introgressing
+individuals is a draw from `Binomial(468, 0.0296)` — about 14, with a standard
+deviation of 3.6. The placement frequency is therefore 0.0296 in expectation
+with roughly 26% relative spread, about √5 wider than the unscaled model would
+give. Gate G2 records the realized value rather than asserting an exact 0.0296.
 
 ---
 

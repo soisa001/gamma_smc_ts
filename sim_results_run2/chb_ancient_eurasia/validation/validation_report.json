@@ -156,12 +156,13 @@
           }
         }
       },
-      "script_characters": 30461,
+      "script_characters": 31500,
       "script_checks": {
         "arm_id": "chb_ancient_eurasia",
         "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
         "draw_years_ago": 56625.0,
         "drawn_mutation_rows": 1,
+        "entry_recorder_years_ago": 50375.0,
         "fitness_callback_rows": 2,
         "mode": "selected",
         "passed": true,

@@ -257,3 +257,41 @@ def test_model_record_is_serializable(repo_root):
             record = models.model_record(arm, mode, repo_root)
             assert record["conditioning_events"] == 0
             json.dumps(record)
+
+
+# ---------------------------------------------------------------------------
+# Entry recorder
+# ---------------------------------------------------------------------------
+
+
+def test_entry_recorder_is_registered_at_the_han_split(chb_selected_script):
+    # The allele is placed in the Han ancestor, so the frequency the Han sweep
+    # starts from must be measured rather than assumed to be 0.0296.
+    assert "run2_record_entry" in chb_selected_script
+    assert chb_selected_script.count("time_to_tick(50375.0)") == 2
+    assert "run2_entry_af" in chb_selected_script
+
+
+def test_eas_arm_has_no_entry_recorder(repo_root):
+    script = models.generate_slim_script(config.EAS_ARM, "selected", repo_root)
+    assert "run2_record_entry" not in script
+
+
+def test_slim_patch_restores_the_main_block():
+    from stdpopsim import slim_engine
+
+    original = slim_engine._slim_main
+    with models.scoped_slim_patch(config.CHB_ARM, "selected", 5) as record:
+        assert slim_engine._slim_main is not original
+        assert record["entry_recorder_installed"] is True
+    assert slim_engine._slim_main is original
+
+
+def test_slim_patch_leaves_the_main_block_alone_for_the_eas_arm():
+    from stdpopsim import slim_engine
+
+    original = slim_engine._slim_main
+    with models.scoped_slim_patch(config.EAS_ARM, "selected", 0) as record:
+        assert slim_engine._slim_main is original
+        assert record["entry_recorder_installed"] is False
+    assert slim_engine._slim_main is original

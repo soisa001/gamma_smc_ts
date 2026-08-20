@@ -430,6 +430,45 @@ function (void)end(void) {{
 }}"""
 
 
+_ENTRY_FUNCTION = """
+// run2: record the focal frequency at the tick the target population is founded.
+function (void)run2_record_entry(integer$ target_id) {
+    mt_id = metadata.getValue("run2_focal_mutation_type_id");
+    mt_matches = sim.mutationTypes[sim.mutationTypes.id == mt_id];
+    if (size(mt_matches) != 1)
+        err("run2: the focal mutation type is not unique at the entry tick");
+    pop_matches = sim.subpopulations[sim.subpopulations.id == target_id];
+    if (size(pop_matches) != 1)
+        err("run2: the target population does not exist at the entry tick");
+    pop = pop_matches[0];
+    metadata.setValue("run2_entry_tick", community.tick);
+    metadata.setValue("run2_entry_population_id", target_id);
+    metadata.setValue("run2_entry_total_genomes", size(pop.genomes));
+    metadata.setValue("run2_entry_af", af(mt_matches[0], pop));
+}
+"""
+
+_END_REGISTRATION = (
+    '    community.registerLateEvent(NULL, "{dbg(self.source); end();}", G_end, G_end);'
+)
+
+
+def _entry_registration(target_population_id: int, entry_generations: float) -> str:
+    """Register the entry recorder one step before stdpopsim's own end hook.
+
+    Registration order is execution order for same-tick late events, and the
+    split that founds the target population is registered earlier in the block,
+    so this observes the population as founded.
+    """
+    years = float(entry_generations) * GENERATION_TIME_YEARS
+    return (
+        "    // run2: record the focal frequency as the target population is founded.\n"
+        f'    community.registerLateEvent(NULL, "{{run2_record_entry({target_population_id});}}",\n'
+        f"        time_to_tick({years:.1f}), time_to_tick({years:.1f}));\n\n"
+        f"{_END_REGISTRATION}"
+    )
+
+
 def _replace_once(text: str, pattern: re.Pattern[str], replacement: str, label: str) -> str:
     matches = pattern.findall(text)
     if len(matches) != 1:
@@ -474,15 +513,46 @@ def scoped_slim_patch(
             "end_replaced": True,
             "add_mut_sha256": hashlib.sha256(add_mut.encode()).hexdigest(),
             "end_sha256": hashlib.sha256(end.encode()).hexdigest(),
-            "patched_sha256": hashlib.sha256(patched.encode()).hexdigest(),
             "target_population_id": target_population_id,
         }
     )
+
+    # Only the introgression arm has a founding event to observe: the EAS arm's
+    # entry frequency is the placement itself, already recorded by add_mut.
+    original_main_object = slim_engine._slim_main
+    original_main = str(original_main_object)
+    patched_main = original_main
+    if arm.introgression:
+        entry_generations = tick_schedule(arm)["realized_generations_ago"]["han_split"]
+        patched += _ENTRY_FUNCTION
+        if original_main.count(_END_REGISTRATION) != 1:
+            raise RuntimeError(
+                "stdpopsim end-hook registration contract changed; cannot place "
+                "the run2 entry recorder"
+            )
+        patched_main = original_main.replace(
+            _END_REGISTRATION,
+            _entry_registration(target_population_id, entry_generations),
+            1,
+        )
+        record.update(
+            {
+                "entry_recorder_installed": True,
+                "entry_generations_ago": entry_generations,
+                "patched_main_sha256": hashlib.sha256(patched_main.encode()).hexdigest(),
+            }
+        )
+    else:
+        record["entry_recorder_installed"] = False
+
+    record["patched_sha256"] = hashlib.sha256(patched.encode()).hexdigest()
     slim_engine._slim_functions = patched
+    slim_engine._slim_main = patched_main
     try:
         yield record
     finally:
         slim_engine._slim_functions = original_object
+        slim_engine._slim_main = original_main_object
 
 
 # ---------------------------------------------------------------------------
