@@ -1,0 +1,17 @@
+{
+  "schema": "gamma-smc.eas-sweep-external-draw-state/v1",
+  "simulation_contract_sha256": "d3544d77d8ebc6a1bd5a403ccc41098b8244fc96de916f132381ef8c3ab32b07",
+  "next_external_draw_zero_based": 6,
+  "completed_external_sample_panel_draws": 5,
+  "active_internal_conditioned_trajectory": null,
+  "accepted_tree_checkpoint": null,
+  "interrupted_internal_conditioned_trajectories": [
+    {
+      "external_draw_zero_based": 2,
+      "seed": 1821721589,
+      "stage": "stdpopsim_internal_conditioning",
+      "outcome": "interrupted_stdpopsim_internal_conditioned_trajectory",
+      "external_sample_panel_completed": false
+    }
+  ]
+}
