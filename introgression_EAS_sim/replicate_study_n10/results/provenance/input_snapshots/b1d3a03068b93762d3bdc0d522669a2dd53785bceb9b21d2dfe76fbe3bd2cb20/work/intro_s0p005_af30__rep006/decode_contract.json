@@ -1,0 +1,19 @@
+{
+  "schema": "gamma-smc.eas-sweep-study/v1",
+  "phase": "decode_bundle",
+  "specification_id": "intro_s0p005_af30__rep006",
+  "simulation_contract_sha256": "e2b320f0d33d3654be65a4d72d5869f24f4ca7f7274a62343c72b6157ae23ccb",
+  "simulation_completion_sha256": "ab6b5b5e49126d23a3ff36461871fe8c2938c4e03bbbda994919ab9d80f87a5c",
+  "class_decode_contract_sha256s": {
+    "overall": "6f46087e7a3628f246a2fe297c15bd13be8cc94c37d850c710e7424a2446afd7",
+    "hom_ref": "730bd747751736b8cba4538bfedf3c041c49f36fd4a604de2c2ea76aee25863a",
+    "heterozygous": "38993c32ff4050a1d478c8e47eb48b108954791e3894437e48e7dc20d8d484fa",
+    "hom_alt": "e02cd52de728090b2255a541997ad1c2b6d32974c278d46c5bc689734acc2807"
+  },
+  "class_decode_completion_sha256s": {
+    "overall": "bdcee1fc18dd4074460f65ef9c71091e6c2435384dd3bbcbe2f714a60ca49d70",
+    "hom_ref": "427826f2e37763e0ef7e49485d380365a575dff049e17e0fed0b954d617c5c92",
+    "heterozygous": "f01e8b97ad11df10cc946c06e9e9bdf43b1631032d994071c8c7764a0a00d5c4",
+    "hom_alt": "e8bad00d565c6630369b529eb40fface4d67a3d84cacc5e7b77bee8156e8d9ae"
+  }
+}
