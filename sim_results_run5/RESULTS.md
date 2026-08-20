@@ -74,6 +74,41 @@ contrast was 0.14 vs 0.06 under a fully constant Ne, and 0.47 vs 0.18 with the
 epochs retained. The deep history sets the neutral background, and the null
 distribution is what the test is measured against.
 
+## Can the sweep be chained across epochs instead of flattening the window?
+
+Tested directly, because it would be strictly better than holding the window
+flat. **Chaining works; it does not solve the problem.**
+
+| configuration | result |
+|---|---|
+| 3 chained `SweepGenicSelection` models, no demographic events | **OK** |
+| 3 chained sweeps, events only *older* than the whole sweep | **OK** |
+| 3 chained sweeps, events *on* the segment boundaries | fails |
+| 3 chained sweeps, boundary events + `duration` pinned per segment | fails |
+| 7 chained sweeps + a 2-generation neutral gap at each boundary to hold the event | fails |
+
+So `SweepGenicSelection` is **not** restricted to a single use -- msprime accepts
+a list of them and simulates the chain correctly -- and it does take a
+`duration` argument. The restriction that actually bites is narrower and
+unavoidable: *no demographic event may fall anywhere inside the span a sweep
+model occupies*. An event exactly on a segment boundary counts as inside, pinning
+`duration` does not change that, and inserting a short neutral phase to hold the
+event does not either. The realized span of a sweep is set by its stochastic
+trajectory, so there is no time point inside the sweep window that is reliably
+safe.
+
+The flat window is therefore the correct workaround rather than a shortcut. What
+it costs is worth stating precisely: over 0-1,500 generations the PHLASH median
+falls from 37,637 to about 3,300, and holding it at the harmonic mean of 4,884
+erases that recent expansion. **But the neutral arm uses the identical flattened
+window**, so the selected-versus-neutral contrast -- which is what the test
+measures -- stays internally valid. What is distorted is the realism of absolute
+TMRCA values inside the sweep window, in both arms equally.
+
+If the full PHLASH history is needed through the sweep window, the way to get it
+is SLiM rather than msprime: a forward simulation has no such restriction. That
+costs roughly 20 seconds per replicate instead of one.
+
 ## The truth/decoder crossover reproduces a third time
 
 Same pattern in all three arms, at the same place:
