@@ -1,0 +1,19 @@
+{
+  "admixture_proportion": 0.025,
+  "archaic_effective_size": 3600.0,
+  "base_model": "median",
+  "census_generations": 2273.0,
+  "generation_time_years": 25.0,
+  "provenance": {
+    "archaic_ne": "Ragsdale & Gravel 2019 (OutOfAfricaArchaicAdmixture_5R19)",
+    "proportion": "Prufer et al. 2014; Vernot & Akey 2015 (~2-3% in East Asia)",
+    "pulse": "Sankararaman et al. 2012; Fu et al. 2014 (47-65 ky)",
+    "split": "Prufer et al. 2014 (550-765 ky)"
+  },
+  "pulse_generations": 2272.0,
+  "pulse_years": 56800.0,
+  "purpose": "power simulation only; never used as a null",
+  "schema": "gamma-smc.run7-grafted-model/v1",
+  "split_generations": 27840.0,
+  "split_years": 696000.0
+}
