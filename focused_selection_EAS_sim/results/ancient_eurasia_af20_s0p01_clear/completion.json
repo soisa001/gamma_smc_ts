@@ -1,0 +1,981 @@
+{
+  "contract": {
+    "implementation": {
+      "software": {
+        "matplotlib": "3.11.1",
+        "numpy": "2.4.6",
+        "pandas": "3.0.3",
+        "python": "3.11.15"
+      },
+      "source_hashing": {
+        "encoding": "strict UTF-8",
+        "newline_canonicalization": "CRLF to LF",
+        "reject_bare_carriage_return": true,
+        "reject_bom": true,
+        "unicode_normalization": "none"
+      },
+      "sources": {
+        "ancient_eurasia_clear_results.py": {
+          "path": "python/gamma_smc_aou/ancient_eurasia_clear_results.py",
+          "sha256": "21f95f2aa692c1e0f6823f073ddac9f4d9c12f3122992302ecce36cf299069c0"
+        },
+        "run_ancient_eurasia_clear_results.py": {
+          "path": "scripts/run_ancient_eurasia_clear_results.py",
+          "sha256": "a1469267d28b2b5c1ad43b435d935dcf856c3d0d07a937caaf6bf08ac319715b"
+        }
+      }
+    },
+    "inputs": {
+      "analysis": {
+        "gamma_smc": {
+          "analysis_inputs": {
+            "class_summaries": {
+              "path": "focused_selection_EAS_sim/results/combined_class_summaries.tsv.gz",
+              "sha256": "de7fb92aec0718be1bced89c3b11c7fe10fc81e2acc47f09eaa7f97c482cfa93"
+            },
+            "empirical": null,
+            "pair_summaries": {
+              "path": "focused_selection_EAS_sim/results/combined_pair_summaries.tsv.gz",
+              "sha256": "87a36ca1e25863648d99fb4b462c9545da3fc3267e84923b08af6ea4c5dd085e"
+            },
+            "spatial_summaries": {
+              "path": "focused_selection_EAS_sim/results/aggregated_spatial_profiles.tsv.gz",
+              "sha256": "0951b450fc2464f7cc6f5873e615498887c4abecaea81d8ed6a75916156eb735"
+            }
+          },
+          "analysis_inputs_sha256": "ac490b732a481a29400563f1e1ed84658c7dcad4b142a33577ccc128d3adbf6a",
+          "completion": {
+            "path": "focused_selection_EAS_sim/results/analysis/analysis_completion.json",
+            "sha256": "2f2afb29dadf1d58fa9441260998cdcdddaa322fdd46f9df47fe2282ad16cd54",
+            "size_bytes": 38217
+          },
+          "contract_sha256": "8c92e92d92bad570f61a8fae0512a792f75f6df1f26bcb0df751aa472e5b5ac5",
+          "declared_output_count": 89,
+          "declared_outputs_sha256": "008600850cd6023ff3506b19e5b09ab072a63dc2af9b8f17d959cf2154126307",
+          "required_tables": {
+            "conditional_power": {
+              "columns": [
+                "demography_id",
+                "target_allele_frequency",
+                "selection_coefficient",
+                "statistic_scope",
+                "metric",
+                "statistic",
+                "threshold_years",
+                "alpha",
+                "n_selected",
+                "n_detected",
+                "conditional_power",
+                "wilson_ci95_low",
+                "wilson_ci95_high",
+                "n_detected_raw",
+                "conditional_power_raw",
+                "raw_wilson_ci95_low",
+                "raw_wilson_ci95_high",
+                "n_detected_bh_within_7",
+                "conditional_power_bh_within_7",
+                "bh_within_7_wilson_ci95_low",
+                "bh_within_7_wilson_ci95_high",
+                "bh_family_size",
+                "bh_family_definition",
+                "conditioning",
+                "neutral_bank_scope"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis/conditional_power_summary.tsv",
+              "rows": 984,
+              "sha256": "3e86c9c7eaae26867890921588471b2370a45ea52a9cab1df6f9f9afc72ad0bb",
+              "size_bytes": 354167
+            },
+            "primary_omnibus": {
+              "columns": [
+                "demography_id",
+                "target_allele_frequency",
+                "statistic_scope",
+                "simulation_class",
+                "selection_coefficient",
+                "unit_id",
+                "replicate_index",
+                "metric",
+                "statistic",
+                "n_null",
+                "n_thresholds",
+                "thresholds_years",
+                "observed_min_marginal_p_upper",
+                "most_extreme_threshold_years",
+                "observed_score_at_most_extreme_threshold",
+                "neutral_minp_exceedance_count",
+                "omnibus_p_upper",
+                "omnibus_method",
+                "correlation_handling",
+                "neutral_bank_scope"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis/primary_7_threshold_omnibus.tsv.gz",
+              "rows": 240,
+              "sha256": "a2e72925bb4e00660ab82f519c8b10638bd3f18e8dfb880f19be4871e450cbe0",
+              "size_bytes": 5989
+            },
+            "replicate_statistics": {
+              "columns": [
+                "unit_id",
+                "demography_id",
+                "simulation_class",
+                "selection_coefficient",
+                "target_allele_frequency",
+                "replicate_index",
+                "panel_n_diploid_samples",
+                "analysis_source",
+                "statistic_scope",
+                "metric",
+                "statistic",
+                "threshold_years",
+                "selection_score",
+                "raw_value",
+                "selection_direction"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis/replicate_statistics.tsv.gz",
+              "rows": 59040,
+              "sha256": "40d5de5aed54f9b1d98e9c91f1352e8fa6fe8486a5133c4840a7297ec5f876d7",
+              "size_bytes": 846659
+            },
+            "selected_pvalues": {
+              "columns": [
+                "unit_id",
+                "demography_id",
+                "simulation_class",
+                "selection_coefficient",
+                "target_allele_frequency",
+                "replicate_index",
+                "statistic_scope",
+                "metric",
+                "statistic",
+                "threshold_years",
+                "observed_selection_score",
+                "null_mean",
+                "null_median",
+                "null_sd",
+                "null_q025",
+                "null_q05",
+                "null_q95",
+                "null_q975",
+                "n_null",
+                "null_upper_exceedance_count",
+                "mc_p_upper",
+                "mc_p_lower",
+                "mc_p_two_sided",
+                "null_percentile_midrank",
+                "neutral_bank_scope",
+                "bh_q_upper",
+                "bh_q_two_sided"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis/selected_vs_neutral_pvalues.tsv.gz",
+              "rows": 9840,
+              "sha256": "8ea25db155ec11b8cc3089adebface0779d70934b190bf8cbcb6632617b3df19",
+              "size_bytes": 259306
+            }
+          },
+          "upstream_sources": {
+            "calibration.py": {
+              "path": "python/gamma_smc_aou/calibration.py",
+              "sha256": "65561810fa84c7d7ae18d5c70039a21a61a6338313f30a5f58c62e0e73646b64"
+            },
+            "eas_sweep_models.py": {
+              "path": "python/gamma_smc_aou/eas_sweep_models.py",
+              "sha256": "179d38774f50af26aa9528c1badd5c5506f05fee13912f875c16b8db250a7210"
+            },
+            "eas_sweep_study.py": {
+              "path": "python/gamma_smc_aou/eas_sweep_study.py",
+              "sha256": "1d85a57ba1040a1ec3bf1bd2dc7c3949c14e0bbe9e9a4eebe4c7a3f6bf087f6f"
+            },
+            "focused_selection_analysis.py": {
+              "path": "python/gamma_smc_aou/focused_selection_analysis.py",
+              "sha256": "ef7548c454dd3e6f7f924726aae2ab6499623b3bfffd783327e6e629f969759d"
+            },
+            "focused_selection_decode.py": {
+              "path": "python/gamma_smc_aou/focused_selection_decode.py",
+              "sha256": "7d5e64f3c56e7d18277ade91cbac9183044b72593681cec225da4ec6dad36b50"
+            }
+          }
+        },
+        "tree_truth": {
+          "analysis_inputs": {
+            "class_summaries": {
+              "path": "focused_selection_EAS_sim/results/combined_truth_class_summaries.tsv.gz",
+              "sha256": "438245ef3c503e513463670a41af15962f6f0c589ac6d8bdcf6a6e2eb3a61f6f"
+            },
+            "empirical": null,
+            "pair_summaries": null,
+            "spatial_summaries": {
+              "path": "focused_selection_EAS_sim/results/aggregated_truth_spatial_profiles.tsv.gz",
+              "sha256": "f68fe4378216ebbd9c14f063fc6911988e3f77a9cc3e28c1414d9a7afa758952"
+            }
+          },
+          "analysis_inputs_sha256": "5115853823efcf1bbc09df75fcacbd6f91ada6b4cab8eee904d5cec6a77d946b",
+          "completion": {
+            "path": "focused_selection_EAS_sim/results/analysis_tree_truth/analysis_completion.json",
+            "sha256": "604e8ab621b7b69b405ce8f1d3671c1e9439ee5efcd69ec3e91d631de61fbb8b",
+            "size_bytes": 37381
+          },
+          "contract_sha256": "322f21ec07fffa78f9ea5d9b6daa9dc43d07e49409bfd047d3592aed801b7285",
+          "declared_output_count": 89,
+          "declared_outputs_sha256": "bef3dfbc6d6fa3bac77b775141ae256354a95be8cbcd77ad894f3391fd5fd14c",
+          "required_tables": {
+            "conditional_power": {
+              "columns": [
+                "demography_id",
+                "target_allele_frequency",
+                "selection_coefficient",
+                "statistic_scope",
+                "metric",
+                "statistic",
+                "threshold_years",
+                "alpha",
+                "n_selected",
+                "n_detected",
+                "conditional_power",
+                "wilson_ci95_low",
+                "wilson_ci95_high",
+                "n_detected_raw",
+                "conditional_power_raw",
+                "raw_wilson_ci95_low",
+                "raw_wilson_ci95_high",
+                "n_detected_bh_within_7",
+                "conditional_power_bh_within_7",
+                "bh_within_7_wilson_ci95_low",
+                "bh_within_7_wilson_ci95_high",
+                "bh_family_size",
+                "bh_family_definition",
+                "conditioning",
+                "neutral_bank_scope"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis_tree_truth/conditional_power_summary.tsv",
+              "rows": 984,
+              "sha256": "880b9e869c8d1a64405c2072344ef36c696e1242b0fe6662a89f48480d001cd9",
+              "size_bytes": 350344
+            },
+            "primary_omnibus": {
+              "columns": [
+                "demography_id",
+                "target_allele_frequency",
+                "statistic_scope",
+                "simulation_class",
+                "selection_coefficient",
+                "unit_id",
+                "replicate_index",
+                "metric",
+                "statistic",
+                "n_null",
+                "n_thresholds",
+                "thresholds_years",
+                "observed_min_marginal_p_upper",
+                "most_extreme_threshold_years",
+                "observed_score_at_most_extreme_threshold",
+                "neutral_minp_exceedance_count",
+                "omnibus_p_upper",
+                "omnibus_method",
+                "correlation_handling",
+                "neutral_bank_scope"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis_tree_truth/primary_7_threshold_omnibus.tsv.gz",
+              "rows": 240,
+              "sha256": "7159380f8709e7eee25e0eeef7eb6aa00c590c1155c503172f565b0205ed7ae8",
+              "size_bytes": 5049
+            },
+            "replicate_statistics": {
+              "columns": [
+                "unit_id",
+                "demography_id",
+                "simulation_class",
+                "selection_coefficient",
+                "target_allele_frequency",
+                "replicate_index",
+                "panel_n_diploid_samples",
+                "analysis_source",
+                "statistic_scope",
+                "metric",
+                "statistic",
+                "threshold_years",
+                "selection_score",
+                "raw_value",
+                "selection_direction"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis_tree_truth/replicate_statistics.tsv.gz",
+              "rows": 59040,
+              "sha256": "72b3d8c6744037d1ec300dfc0e91f4236d3273379c781978b5c153ea1d452fc4",
+              "size_bytes": 513934
+            },
+            "selected_pvalues": {
+              "columns": [
+                "unit_id",
+                "demography_id",
+                "simulation_class",
+                "selection_coefficient",
+                "target_allele_frequency",
+                "replicate_index",
+                "statistic_scope",
+                "metric",
+                "statistic",
+                "threshold_years",
+                "observed_selection_score",
+                "null_mean",
+                "null_median",
+                "null_sd",
+                "null_q025",
+                "null_q05",
+                "null_q95",
+                "null_q975",
+                "n_null",
+                "null_upper_exceedance_count",
+                "mc_p_upper",
+                "mc_p_lower",
+                "mc_p_two_sided",
+                "null_percentile_midrank",
+                "neutral_bank_scope",
+                "bh_q_upper",
+                "bh_q_two_sided"
+              ],
+              "path": "focused_selection_EAS_sim/results/analysis_tree_truth/selected_vs_neutral_pvalues.tsv.gz",
+              "rows": 9840,
+              "sha256": "fdf1c9509d24020eaa9fa340fdd5b933ba9f322fa269dad4cc4a7e0e0f7a66a2",
+              "size_bytes": 187076
+            }
+          },
+          "upstream_sources": {
+            "calibration.py": {
+              "path": "python/gamma_smc_aou/calibration.py",
+              "sha256": "65561810fa84c7d7ae18d5c70039a21a61a6338313f30a5f58c62e0e73646b64"
+            },
+            "eas_sweep_models.py": {
+              "path": "python/gamma_smc_aou/eas_sweep_models.py",
+              "sha256": "179d38774f50af26aa9528c1badd5c5506f05fee13912f875c16b8db250a7210"
+            },
+            "eas_sweep_study.py": {
+              "path": "python/gamma_smc_aou/eas_sweep_study.py",
+              "sha256": "1d85a57ba1040a1ec3bf1bd2dc7c3949c14e0bbe9e9a4eebe4c7a3f6bf087f6f"
+            },
+            "focused_selection_analysis.py": {
+              "path": "python/gamma_smc_aou/focused_selection_analysis.py",
+              "sha256": "ef7548c454dd3e6f7f924726aae2ab6499623b3bfffd783327e6e629f969759d"
+            },
+            "focused_selection_decode.py": {
+              "path": "python/gamma_smc_aou/focused_selection_decode.py",
+              "sha256": "7d5e64f3c56e7d18277ade91cbac9183044b72593681cec225da4ec6dad36b50"
+            }
+          }
+        }
+      },
+      "campaign_root": "focused_selection_EAS_sim",
+      "existing_selected_and_matched_af": {
+        "execution_units": {
+          "path": "focused_selection_EAS_sim/execution_units.tsv",
+          "sha256": "8ea5d2a930e755f5e588bd0a824c3ac03cd9d66ac252c8344d20099356ee07e9",
+          "size_bytes": 172024
+        },
+        "filtered_execution_rows_sha256": "10b46514b80dcd29cc341f5e0d45b08553ead47ed37e376700ad8f283ff9f873",
+        "matched_af_neutral_unit_count": 100,
+        "selected_unit_count": 10,
+        "study_design": {
+          "path": "focused_selection_EAS_sim/study_design.json",
+          "sha256": "8cc071a4628e93eb8dccaf00256097221e3d49fbbb2d0f49de7f9003bdc92ca8",
+          "size_bytes": 6404
+        },
+        "unit_ids": [
+          "ancient_eurasia_han_introgression__af20__neutral__rep001",
+          "ancient_eurasia_han_introgression__af20__neutral__rep002",
+          "ancient_eurasia_han_introgression__af20__neutral__rep003",
+          "ancient_eurasia_han_introgression__af20__neutral__rep004",
+          "ancient_eurasia_han_introgression__af20__neutral__rep005",
+          "ancient_eurasia_han_introgression__af20__neutral__rep006",
+          "ancient_eurasia_han_introgression__af20__neutral__rep007",
+          "ancient_eurasia_han_introgression__af20__neutral__rep008",
+          "ancient_eurasia_han_introgression__af20__neutral__rep009",
+          "ancient_eurasia_han_introgression__af20__neutral__rep010",
+          "ancient_eurasia_han_introgression__af20__neutral__rep011",
+          "ancient_eurasia_han_introgression__af20__neutral__rep012",
+          "ancient_eurasia_han_introgression__af20__neutral__rep013",
+          "ancient_eurasia_han_introgression__af20__neutral__rep014",
+          "ancient_eurasia_han_introgression__af20__neutral__rep015",
+          "ancient_eurasia_han_introgression__af20__neutral__rep016",
+          "ancient_eurasia_han_introgression__af20__neutral__rep017",
+          "ancient_eurasia_han_introgression__af20__neutral__rep018",
+          "ancient_eurasia_han_introgression__af20__neutral__rep019",
+          "ancient_eurasia_han_introgression__af20__neutral__rep020",
+          "ancient_eurasia_han_introgression__af20__neutral__rep021",
+          "ancient_eurasia_han_introgression__af20__neutral__rep022",
+          "ancient_eurasia_han_introgression__af20__neutral__rep023",
+          "ancient_eurasia_han_introgression__af20__neutral__rep024",
+          "ancient_eurasia_han_introgression__af20__neutral__rep025",
+          "ancient_eurasia_han_introgression__af20__neutral__rep026",
+          "ancient_eurasia_han_introgression__af20__neutral__rep027",
+          "ancient_eurasia_han_introgression__af20__neutral__rep028",
+          "ancient_eurasia_han_introgression__af20__neutral__rep029",
+          "ancient_eurasia_han_introgression__af20__neutral__rep030",
+          "ancient_eurasia_han_introgression__af20__neutral__rep031",
+          "ancient_eurasia_han_introgression__af20__neutral__rep032",
+          "ancient_eurasia_han_introgression__af20__neutral__rep033",
+          "ancient_eurasia_han_introgression__af20__neutral__rep034",
+          "ancient_eurasia_han_introgression__af20__neutral__rep035",
+          "ancient_eurasia_han_introgression__af20__neutral__rep036",
+          "ancient_eurasia_han_introgression__af20__neutral__rep037",
+          "ancient_eurasia_han_introgression__af20__neutral__rep038",
+          "ancient_eurasia_han_introgression__af20__neutral__rep039",
+          "ancient_eurasia_han_introgression__af20__neutral__rep040",
+          "ancient_eurasia_han_introgression__af20__neutral__rep041",
+          "ancient_eurasia_han_introgression__af20__neutral__rep042",
+          "ancient_eurasia_han_introgression__af20__neutral__rep043",
+          "ancient_eurasia_han_introgression__af20__neutral__rep044",
+          "ancient_eurasia_han_introgression__af20__neutral__rep045",
+          "ancient_eurasia_han_introgression__af20__neutral__rep046",
+          "ancient_eurasia_han_introgression__af20__neutral__rep047",
+          "ancient_eurasia_han_introgression__af20__neutral__rep048",
+          "ancient_eurasia_han_introgression__af20__neutral__rep049",
+          "ancient_eurasia_han_introgression__af20__neutral__rep050",
+          "ancient_eurasia_han_introgression__af20__neutral__rep051",
+          "ancient_eurasia_han_introgression__af20__neutral__rep052",
+          "ancient_eurasia_han_introgression__af20__neutral__rep053",
+          "ancient_eurasia_han_introgression__af20__neutral__rep054",
+          "ancient_eurasia_han_introgression__af20__neutral__rep055",
+          "ancient_eurasia_han_introgression__af20__neutral__rep056",
+          "ancient_eurasia_han_introgression__af20__neutral__rep057",
+          "ancient_eurasia_han_introgression__af20__neutral__rep058",
+          "ancient_eurasia_han_introgression__af20__neutral__rep059",
+          "ancient_eurasia_han_introgression__af20__neutral__rep060",
+          "ancient_eurasia_han_introgression__af20__neutral__rep061",
+          "ancient_eurasia_han_introgression__af20__neutral__rep062",
+          "ancient_eurasia_han_introgression__af20__neutral__rep063",
+          "ancient_eurasia_han_introgression__af20__neutral__rep064",
+          "ancient_eurasia_han_introgression__af20__neutral__rep065",
+          "ancient_eurasia_han_introgression__af20__neutral__rep066",
+          "ancient_eurasia_han_introgression__af20__neutral__rep067",
+          "ancient_eurasia_han_introgression__af20__neutral__rep068",
+          "ancient_eurasia_han_introgression__af20__neutral__rep069",
+          "ancient_eurasia_han_introgression__af20__neutral__rep070",
+          "ancient_eurasia_han_introgression__af20__neutral__rep071",
+          "ancient_eurasia_han_introgression__af20__neutral__rep072",
+          "ancient_eurasia_han_introgression__af20__neutral__rep073",
+          "ancient_eurasia_han_introgression__af20__neutral__rep074",
+          "ancient_eurasia_han_introgression__af20__neutral__rep075",
+          "ancient_eurasia_han_introgression__af20__neutral__rep076",
+          "ancient_eurasia_han_introgression__af20__neutral__rep077",
+          "ancient_eurasia_han_introgression__af20__neutral__rep078",
+          "ancient_eurasia_han_introgression__af20__neutral__rep079",
+          "ancient_eurasia_han_introgression__af20__neutral__rep080",
+          "ancient_eurasia_han_introgression__af20__neutral__rep081",
+          "ancient_eurasia_han_introgression__af20__neutral__rep082",
+          "ancient_eurasia_han_introgression__af20__neutral__rep083",
+          "ancient_eurasia_han_introgression__af20__neutral__rep084",
+          "ancient_eurasia_han_introgression__af20__neutral__rep085",
+          "ancient_eurasia_han_introgression__af20__neutral__rep086",
+          "ancient_eurasia_han_introgression__af20__neutral__rep087",
+          "ancient_eurasia_han_introgression__af20__neutral__rep088",
+          "ancient_eurasia_han_introgression__af20__neutral__rep089",
+          "ancient_eurasia_han_introgression__af20__neutral__rep090",
+          "ancient_eurasia_han_introgression__af20__neutral__rep091",
+          "ancient_eurasia_han_introgression__af20__neutral__rep092",
+          "ancient_eurasia_han_introgression__af20__neutral__rep093",
+          "ancient_eurasia_han_introgression__af20__neutral__rep094",
+          "ancient_eurasia_han_introgression__af20__neutral__rep095",
+          "ancient_eurasia_han_introgression__af20__neutral__rep096",
+          "ancient_eurasia_han_introgression__af20__neutral__rep097",
+          "ancient_eurasia_han_introgression__af20__neutral__rep098",
+          "ancient_eurasia_han_introgression__af20__neutral__rep099",
+          "ancient_eurasia_han_introgression__af20__neutral__rep100",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep001",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep002",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep003",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep004",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep005",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep006",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep007",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep008",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep009",
+          "ancient_eurasia_han_introgression__af20__selected_s0p010__rep010"
+        ],
+        "unit_receipt_inventory_sha256": "21112486805dcd3b375a0a24f1e0ef1f8c0cb8953e7fff8f5e7b8cf393f40b6e"
+      },
+      "focused_unit_to_analysis_lineage": {
+        "gamma_smc": {
+          "aggregate_class_summaries_sha256": "de7fb92aec0718be1bced89c3b11c7fe10fc81e2acc47f09eaa7f97c482cfa93",
+          "direct_unit_class_rows": 3080,
+          "direct_unit_scores_sha256": "5f5e63125bfb159535ea64a887900f79201376476562fad73c580a3030b0ab5a",
+          "legacy_replicate_statistics_crosscheck": "matched"
+        },
+        "tree_truth": {
+          "aggregate_class_summaries_sha256": "438245ef3c503e513463670a41af15962f6f0c589ac6d8bdcf6a6e2eb3a61f6f",
+          "direct_unit_class_rows": 3080,
+          "direct_unit_scores_sha256": "3398245f5ef35525d608a8a27dee6468fb759babda0f89128694183c20da5b65",
+          "legacy_replicate_statistics_crosscheck": "matched"
+        }
+      },
+      "survival_neutral": {
+        "completion": {
+          "path": "focused_selection_EAS_sim/ancient_eurasia_single_origin_survival_v2/results/RESULTS_COMPLETION.json",
+          "sha256": "ba5ff0fcb7a6a8ee7a0a582f01e13fd2840ce44bbd84fbf60c332be453daa6a8",
+          "size_bytes": 65602
+        },
+        "conditioning": "strict complete simulated Q=5 present Han census segregation (unscaled Ne=6300; scaled census=1260 diploids/2520 genomes); no terminal AF target/band, pool-frequency, selected-AF matching, or sample-detection gate; uniform pool and panel endpoints are observational",
+        "contract_sha256": "32cc9b0b69a2f03087f628e4f9ce7e0d6d67a8911bba4daa005e9c97fe793dcf",
+        "declared_output_count": 4,
+        "declared_outputs_sha256": "eecb8d6ee361e6588d2e3640cdcfb58a4587b710c37517bca4c450ff8d4c5036",
+        "endpoint_summary": {
+          "path": "focused_selection_EAS_sim/ancient_eurasia_single_origin_survival_v2/results/endpoint_summary.tsv",
+          "sha256": "a6fddd2fac7b05241f149203227366e3ff5562d8e8eb839e730ef8feaf804131",
+          "size_bytes": 23374
+        },
+        "execution_units": {
+          "path": "focused_selection_EAS_sim/ancient_eurasia_single_origin_survival_v2/plan/execution_units.tsv",
+          "sha256": "e4cc0726fc0fd8ef8d900288df22718a271907d9e55e767051dcc08aa4ef1709",
+          "size_bytes": 22079
+        },
+        "plan_contract_sha256": "a01027c0cef37fa055b3824f1b72089adcc470934905ee629328376cfd536733",
+        "replicate_scores": {
+          "path": "focused_selection_EAS_sim/ancient_eurasia_single_origin_survival_v2/results/replicate_scores.tsv",
+          "sha256": "d4a72bd457baddc86a86779e6b7ad109edbad3abde035513632d3c1f08004143",
+          "size_bytes": 176843
+        },
+        "study_plan": {
+          "path": "focused_selection_EAS_sim/ancient_eurasia_single_origin_survival_v2/plan/study_plan.json",
+          "sha256": "cbf01bb0abefa67aef419c07608987edc0d192aa51c6269afaa3178d5be67b32",
+          "size_bytes": 13033
+        },
+        "unit_count": 100,
+        "unit_ids": [
+          "ancient_eurasia_single_origin_survival__neutral__rep000",
+          "ancient_eurasia_single_origin_survival__neutral__rep001",
+          "ancient_eurasia_single_origin_survival__neutral__rep002",
+          "ancient_eurasia_single_origin_survival__neutral__rep003",
+          "ancient_eurasia_single_origin_survival__neutral__rep004",
+          "ancient_eurasia_single_origin_survival__neutral__rep005",
+          "ancient_eurasia_single_origin_survival__neutral__rep006",
+          "ancient_eurasia_single_origin_survival__neutral__rep007",
+          "ancient_eurasia_single_origin_survival__neutral__rep008",
+          "ancient_eurasia_single_origin_survival__neutral__rep009",
+          "ancient_eurasia_single_origin_survival__neutral__rep010",
+          "ancient_eurasia_single_origin_survival__neutral__rep011",
+          "ancient_eurasia_single_origin_survival__neutral__rep012",
+          "ancient_eurasia_single_origin_survival__neutral__rep013",
+          "ancient_eurasia_single_origin_survival__neutral__rep014",
+          "ancient_eurasia_single_origin_survival__neutral__rep015",
+          "ancient_eurasia_single_origin_survival__neutral__rep016",
+          "ancient_eurasia_single_origin_survival__neutral__rep017",
+          "ancient_eurasia_single_origin_survival__neutral__rep018",
+          "ancient_eurasia_single_origin_survival__neutral__rep019",
+          "ancient_eurasia_single_origin_survival__neutral__rep020",
+          "ancient_eurasia_single_origin_survival__neutral__rep021",
+          "ancient_eurasia_single_origin_survival__neutral__rep022",
+          "ancient_eurasia_single_origin_survival__neutral__rep023",
+          "ancient_eurasia_single_origin_survival__neutral__rep024",
+          "ancient_eurasia_single_origin_survival__neutral__rep025",
+          "ancient_eurasia_single_origin_survival__neutral__rep026",
+          "ancient_eurasia_single_origin_survival__neutral__rep027",
+          "ancient_eurasia_single_origin_survival__neutral__rep028",
+          "ancient_eurasia_single_origin_survival__neutral__rep029",
+          "ancient_eurasia_single_origin_survival__neutral__rep030",
+          "ancient_eurasia_single_origin_survival__neutral__rep031",
+          "ancient_eurasia_single_origin_survival__neutral__rep032",
+          "ancient_eurasia_single_origin_survival__neutral__rep033",
+          "ancient_eurasia_single_origin_survival__neutral__rep034",
+          "ancient_eurasia_single_origin_survival__neutral__rep035",
+          "ancient_eurasia_single_origin_survival__neutral__rep036",
+          "ancient_eurasia_single_origin_survival__neutral__rep037",
+          "ancient_eurasia_single_origin_survival__neutral__rep038",
+          "ancient_eurasia_single_origin_survival__neutral__rep039",
+          "ancient_eurasia_single_origin_survival__neutral__rep040",
+          "ancient_eurasia_single_origin_survival__neutral__rep041",
+          "ancient_eurasia_single_origin_survival__neutral__rep042",
+          "ancient_eurasia_single_origin_survival__neutral__rep043",
+          "ancient_eurasia_single_origin_survival__neutral__rep044",
+          "ancient_eurasia_single_origin_survival__neutral__rep045",
+          "ancient_eurasia_single_origin_survival__neutral__rep046",
+          "ancient_eurasia_single_origin_survival__neutral__rep047",
+          "ancient_eurasia_single_origin_survival__neutral__rep048",
+          "ancient_eurasia_single_origin_survival__neutral__rep049",
+          "ancient_eurasia_single_origin_survival__neutral__rep050",
+          "ancient_eurasia_single_origin_survival__neutral__rep051",
+          "ancient_eurasia_single_origin_survival__neutral__rep052",
+          "ancient_eurasia_single_origin_survival__neutral__rep053",
+          "ancient_eurasia_single_origin_survival__neutral__rep054",
+          "ancient_eurasia_single_origin_survival__neutral__rep055",
+          "ancient_eurasia_single_origin_survival__neutral__rep056",
+          "ancient_eurasia_single_origin_survival__neutral__rep057",
+          "ancient_eurasia_single_origin_survival__neutral__rep058",
+          "ancient_eurasia_single_origin_survival__neutral__rep059",
+          "ancient_eurasia_single_origin_survival__neutral__rep060",
+          "ancient_eurasia_single_origin_survival__neutral__rep061",
+          "ancient_eurasia_single_origin_survival__neutral__rep062",
+          "ancient_eurasia_single_origin_survival__neutral__rep063",
+          "ancient_eurasia_single_origin_survival__neutral__rep064",
+          "ancient_eurasia_single_origin_survival__neutral__rep065",
+          "ancient_eurasia_single_origin_survival__neutral__rep066",
+          "ancient_eurasia_single_origin_survival__neutral__rep067",
+          "ancient_eurasia_single_origin_survival__neutral__rep068",
+          "ancient_eurasia_single_origin_survival__neutral__rep069",
+          "ancient_eurasia_single_origin_survival__neutral__rep070",
+          "ancient_eurasia_single_origin_survival__neutral__rep071",
+          "ancient_eurasia_single_origin_survival__neutral__rep072",
+          "ancient_eurasia_single_origin_survival__neutral__rep073",
+          "ancient_eurasia_single_origin_survival__neutral__rep074",
+          "ancient_eurasia_single_origin_survival__neutral__rep075",
+          "ancient_eurasia_single_origin_survival__neutral__rep076",
+          "ancient_eurasia_single_origin_survival__neutral__rep077",
+          "ancient_eurasia_single_origin_survival__neutral__rep078",
+          "ancient_eurasia_single_origin_survival__neutral__rep079",
+          "ancient_eurasia_single_origin_survival__neutral__rep080",
+          "ancient_eurasia_single_origin_survival__neutral__rep081",
+          "ancient_eurasia_single_origin_survival__neutral__rep082",
+          "ancient_eurasia_single_origin_survival__neutral__rep083",
+          "ancient_eurasia_single_origin_survival__neutral__rep084",
+          "ancient_eurasia_single_origin_survival__neutral__rep085",
+          "ancient_eurasia_single_origin_survival__neutral__rep086",
+          "ancient_eurasia_single_origin_survival__neutral__rep087",
+          "ancient_eurasia_single_origin_survival__neutral__rep088",
+          "ancient_eurasia_single_origin_survival__neutral__rep089",
+          "ancient_eurasia_single_origin_survival__neutral__rep090",
+          "ancient_eurasia_single_origin_survival__neutral__rep091",
+          "ancient_eurasia_single_origin_survival__neutral__rep092",
+          "ancient_eurasia_single_origin_survival__neutral__rep093",
+          "ancient_eurasia_single_origin_survival__neutral__rep094",
+          "ancient_eurasia_single_origin_survival__neutral__rep095",
+          "ancient_eurasia_single_origin_survival__neutral__rep096",
+          "ancient_eurasia_single_origin_survival__neutral__rep097",
+          "ancient_eurasia_single_origin_survival__neutral__rep098",
+          "ancient_eurasia_single_origin_survival__neutral__rep099"
+        ],
+        "unit_receipt_inventory_sha256": "6fadb995df52d1b3f74781da752b562ff4270beff5db24b33afc50aad0369233"
+      },
+      "two_epoch_comparator": {
+        "gamma_metrics": {
+          "path": "sim_results/gamma_smc_container_stride1000/decoded_study_metrics.json",
+          "sha256": "80db3dc40bcd5bb338b40526d046913662aeee4a7cea106743b5ef3a4c495615",
+          "size_bytes": 16835
+        },
+        "gamma_results": {
+          "path": "sim_results/gamma_smc_container_stride1000/RESULTS.md",
+          "sha256": "71d12e1142665fa6529bb93087c62ea3cd840ba57901f28318036a121811eeba",
+          "size_bytes": 4530
+        },
+        "relationship": "same linked low-AF selected genealogy, but not the same mutation layer: truth folder mu=1.29e-9 versus corresponding official v0.2 container decode mu=1.25e-8",
+        "truth_metrics": {
+          "path": "sim_results/two_epoch_growth_s0p05_n2000_mu1p29e9/metrics.json",
+          "sha256": "52672e4e818963bca175b7a6279d318578960dc4a1f97fcdc817d2f41ee0db1c",
+          "size_bytes": 2718
+        }
+      }
+    },
+    "parameters": {
+      "demography_id": "ancient_eurasia_han_introgression",
+      "display_threshold_role": "pulse-aligned display only",
+      "display_threshold_years": 50000,
+      "figure_size_inches": [
+        11,
+        8.5
+      ],
+      "generation_time_years": 25.0,
+      "introgression_pulse_generations": 2272.0,
+      "matched_af_sensitivity_replicates": 100,
+      "mutation_origin_generations": 2400.0,
+      "p_value": "one-sided upper-tail simulation-reference with +1 correction",
+      "pdf_media_box_points": [
+        0,
+        0,
+        792,
+        612
+      ],
+      "png_dpi": 300,
+      "present_han_scaled_census_diploids": 1260,
+      "present_han_scaled_census_genomes": 2520,
+      "present_han_unscaled_ne": 6300,
+      "primary_estimand": "survival_only_overall_vs_overall",
+      "primary_reference_interpretation": "selection plus endpoint-AF enrichment relative to survival-only neutral; not an exchangeability-valid selection-only p-value",
+      "primary_simulation_reference_omnibus": "seven-threshold dependence-preserving simulation-reference minP",
+      "realized_selected_frequency_trajectory_persisted": false,
+      "sample_diploids": 100,
+      "selected_replicates": 10,
+      "selection_coefficient": 0.01,
+      "selection_end_generations": 1780.0,
+      "sensitivity_estimand": "final_af_matched_alt_alt_minus_ref_ref",
+      "source_model": "stdpopsim AncientEurasia_9K19",
+      "survival_neutral_replicates": 100,
+      "target_selected_sample_af": 0.2,
+      "thresholds_years": [
+        1000,
+        4500,
+        10000,
+        20000,
+        30000,
+        40000,
+        50000
+      ],
+      "workers": 20
+    },
+    "schema": "gamma-smc.ancient-eurasia-clear-results/v1"
+  },
+  "contract_sha256": "2825e57d348e75a4a08b975f9bcef072d2ca435de8613a0ba81864eb177abde0",
+  "interpretation": {
+    "display_threshold": "50 kya is pulse-aligned display only",
+    "primary": "overall selected versus overall single-origin census-survival neutral simulation-reference tails; combines selection and endpoint-AF enrichment",
+    "primary_omnibus": "dependence-preserving seven-threshold simulation-reference minP",
+    "sensitivity": "final-AF-matched alt/alt-minus-ref/ref selection-isolating contrast",
+    "trajectory": "timing schematic and endpoints only; no stored path"
+  },
+  "outputs": {
+    "RUN_RESULTS.md": {
+      "path": "RUN_RESULTS.md",
+      "sha256": "17c30cafbc05af5531e0c197ea2d8b6e0b3c3ccb3a1951cc1229877167d70659",
+      "size_bytes": 2948
+    },
+    "comparison_design.tsv": {
+      "columns": [
+        "comparison_id",
+        "model",
+        "source",
+        "relationship_group",
+        "same_selected_genealogy_within_group",
+        "selection_coefficient",
+        "selected_origin_years",
+        "introgression_pulse_years",
+        "selection_end_years",
+        "selected_replicates",
+        "neutral_replicates",
+        "sample_diploids",
+        "within_diploid_pairs",
+        "selected_endpoint_conditioning",
+        "neutral_endpoint_conditioning",
+        "mutation_rate",
+        "output_stride_bp",
+        "display_threshold_years",
+        "statistic",
+        "selected_score",
+        "neutral_score",
+        "neutral_exceedances",
+        "reference_p_upper",
+        "reference_detection_fraction",
+        "interpretation",
+        "mutation_layer_relationship",
+        "decoder_backend"
+      ],
+      "path": "comparison_design.tsv",
+      "rows": 5,
+      "sha256": "55affb0472487269ee0a775a473a53bcbb630b896ed3c909090cdd1ab4f01e93",
+      "size_bytes": 2927
+    },
+    "endpoint_af.tsv": {
+      "columns": [
+        "unit_id",
+        "bank_role",
+        "simulation_class",
+        "replicate_index",
+        "seed",
+        "selection_coefficient",
+        "present_conditioning",
+        "simulation_completion_sha256",
+        "final_census_alt_count",
+        "final_census_total_count",
+        "final_census_af",
+        "final_census_segregating",
+        "pool_diploids",
+        "final_pool_alt_count",
+        "final_pool_total_count",
+        "final_pool_af",
+        "pool_detected",
+        "pool_fixed",
+        "sample_diploids",
+        "sample_alt_count",
+        "sample_total_count",
+        "sample_af",
+        "sample_detected",
+        "sample_fixed",
+        "panel_seed",
+        "hom_ref_diploids",
+        "heterozygous_diploids",
+        "hom_alt_diploids",
+        "mutation_origin_generations",
+        "introgression_pulse_generations",
+        "selection_end_generations",
+        "realized_frequency_trajectory_persisted"
+      ],
+      "path": "endpoint_af.tsv",
+      "rows": 210,
+      "sha256": "307edec77abe4b86981c6db40b4930e8d01608141a0c7544aa1dbd48085c9f7e",
+      "size_bytes": 69165
+    },
+    "gamma_smc_pulse_aligned_null.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "gamma_smc_pulse_aligned_null.pdf",
+      "sha256": "37829f4758023351907702be93f8aed8d7f38eb3766cd6e69c16a88cf87cbf9a",
+      "size_bytes": 25884,
+      "width_points": 792.0
+    },
+    "gamma_smc_pulse_aligned_null.png": {
+      "height_px": 2550,
+      "path": "gamma_smc_pulse_aligned_null.png",
+      "sha256": "3e2f2e9cea2902953f5b38c8519f71c79c39eb56d2665cd0a82c309a5cf2a631",
+      "size_bytes": 457379,
+      "width_px": 3300
+    },
+    "input_cache_audit.tsv": {
+      "columns": [
+        "scope",
+        "source",
+        "unit_id",
+        "stage",
+        "record_key",
+        "path",
+        "declared_sha256",
+        "observed_sha256",
+        "declared_size_bytes",
+        "observed_size_bytes",
+        "status"
+      ],
+      "path": "input_cache_audit.tsv",
+      "rows": 4089,
+      "sha256": "eaf1f00008ec9da77856bce21513ce30369348bc1cf3956de6abdbdecbbc3ee3",
+      "size_bytes": 1664724
+    },
+    "power_summary.tsv": {
+      "columns": [
+        "source",
+        "estimand",
+        "statistic",
+        "threshold_years",
+        "alpha",
+        "n_selected",
+        "n_detected_raw",
+        "conditional_power_raw",
+        "raw_wilson_ci95_low",
+        "raw_wilson_ci95_high",
+        "n_detected_bh_within_7",
+        "conditional_power_bh_within_7",
+        "bh_within_7_wilson_ci95_low",
+        "bh_within_7_wilson_ci95_high",
+        "bh_family_size",
+        "interpretation"
+      ],
+      "path": "power_summary.tsv",
+      "rows": 28,
+      "sha256": "de572d03649af0d4dd68369c78ce043e114dcd356503e6cebee1422e61638df8",
+      "size_bytes": 5305
+    },
+    "selected_minp.tsv": {
+      "columns": [
+        "source",
+        "estimand",
+        "unit_id",
+        "replicate_index",
+        "statistic",
+        "n_null",
+        "n_thresholds",
+        "thresholds_years",
+        "observed_min_marginal_p_upper",
+        "most_extreme_threshold_years",
+        "observed_score_at_most_extreme_threshold",
+        "neutral_minp_exceedance_count",
+        "omnibus_p_upper",
+        "omnibus_method",
+        "correlation_handling",
+        "inference_scope"
+      ],
+      "path": "selected_minp.tsv",
+      "rows": 40,
+      "sha256": "b7f1091ac1ca41297c08aaacad9af3ab1598756a5555f71cbb7744d9457091e2",
+      "size_bytes": 16777
+    },
+    "selected_pointwise_pvalues.tsv": {
+      "columns": [
+        "source",
+        "estimand",
+        "unit_id",
+        "replicate_index",
+        "threshold_years",
+        "statistic",
+        "observed_selection_score",
+        "n_null",
+        "null_mean",
+        "null_median",
+        "null_sd",
+        "null_q025",
+        "null_q05",
+        "null_q95",
+        "null_q975",
+        "null_upper_exceedance_count",
+        "mc_p_upper",
+        "neutral_bank_scope",
+        "inference_scope",
+        "bh_q_upper"
+      ],
+      "path": "selected_pointwise_pvalues.tsv",
+      "rows": 280,
+      "sha256": "04673feb2dea8a23d8c96d03d842bee79a9ec8533ea26b44805b703251923023",
+      "size_bytes": 112598
+    },
+    "threshold_scores_pvalues_power.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "threshold_scores_pvalues_power.pdf",
+      "sha256": "093546ff715fbb3a12761e868349c1fbe17a88769a0c13de0b5bc389cf690f62",
+      "size_bytes": 26986,
+      "width_points": 792.0
+    },
+    "threshold_scores_pvalues_power.png": {
+      "height_px": 2550,
+      "path": "threshold_scores_pvalues_power.png",
+      "sha256": "642597b8dc9141a09e8b0d5bead7f6822264114cd987979a1319044c0b6cd175",
+      "size_bytes": 657917,
+      "width_px": 3300
+    },
+    "timing_endpoints_two_epoch_diagnostic.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "timing_endpoints_two_epoch_diagnostic.pdf",
+      "sha256": "a5c888782f306ebf56e6c59e3cb2ec130e333b8b5be9dfd54b25f5ad284cdf01",
+      "size_bytes": 31014,
+      "width_points": 792.0
+    },
+    "timing_endpoints_two_epoch_diagnostic.png": {
+      "height_px": 2550,
+      "path": "timing_endpoints_two_epoch_diagnostic.png",
+      "sha256": "805e29a3cb6c8f179faa67d8f441dc82542e7e759296f845ae31c4f0c0d4f7a1",
+      "size_bytes": 585946,
+      "width_px": 3300
+    },
+    "tree_truth_pulse_aligned_null.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "tree_truth_pulse_aligned_null.pdf",
+      "sha256": "f4a3d7cc13ac46aa30285104a98a134367d98d416f41c533371ca289ecc7ad3f",
+      "size_bytes": 26018,
+      "width_points": 792.0
+    },
+    "tree_truth_pulse_aligned_null.png": {
+      "height_px": 2550,
+      "path": "tree_truth_pulse_aligned_null.png",
+      "sha256": "792563501fcb7f545362ffc71b3cc2a2696c09a3ec3da3bae7e79b9c85d33fc9",
+      "size_bytes": 456863,
+      "width_px": 3300
+    },
+    "unit_scores.tsv": {
+      "columns": [
+        "source",
+        "unit_id",
+        "simulation_class",
+        "selection_coefficient",
+        "target_allele_frequency",
+        "replicate_index",
+        "panel_n_diploid_samples",
+        "threshold_years",
+        "p_overall",
+        "p_hom_ref",
+        "p_hom_alt",
+        "p_hom_alt_minus_hom_ref",
+        "bank_role",
+        "score_scope"
+      ],
+      "path": "unit_scores.tsv",
+      "rows": 2940,
+      "sha256": "77ea0953aa3f84cd76f5f1274a5ce893e56c44c1bbeb759cd1919067d7e2a53d",
+      "size_bytes": 512185
+    }
+  },
+  "schema": "gamma-smc.ancient-eurasia-clear-results/v1",
+  "status": "complete"
+}
