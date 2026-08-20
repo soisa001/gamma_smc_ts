@@ -1,0 +1,885 @@
+{
+  "contract": {
+    "implementation": {
+      "path_identity": "repo-relative POSIX for in-repository paths",
+      "software": {
+        "matplotlib": "3.11.1",
+        "numpy": "2.4.6",
+        "pandas": "3.0.3",
+        "python": "3.11.15",
+        "scipy": "1.17.1"
+      },
+      "source_hashing": {
+        "encoding": "strict UTF-8",
+        "newline_canonicalization": "CRLF to LF",
+        "reject_bare_carriage_return": true,
+        "reject_bom": true,
+        "unicode_normalization": "none"
+      },
+      "sources": {
+        "calibration.py": {
+          "path": "python/gamma_smc_aou/calibration.py",
+          "sha256": "65561810fa84c7d7ae18d5c70039a21a61a6338313f30a5f58c62e0e73646b64"
+        },
+        "eas_sweep_models.py": {
+          "path": "python/gamma_smc_aou/eas_sweep_models.py",
+          "sha256": "179d38774f50af26aa9528c1badd5c5506f05fee13912f875c16b8db250a7210"
+        },
+        "eas_sweep_study.py": {
+          "path": "python/gamma_smc_aou/eas_sweep_study.py",
+          "sha256": "1d85a57ba1040a1ec3bf1bd2dc7c3949c14e0bbe9e9a4eebe4c7a3f6bf087f6f"
+        },
+        "focused_selection_analysis.py": {
+          "path": "python/gamma_smc_aou/focused_selection_analysis.py",
+          "sha256": "ef7548c454dd3e6f7f924726aae2ab6499623b3bfffd783327e6e629f969759d"
+        },
+        "focused_selection_decode.py": {
+          "path": "python/gamma_smc_aou/focused_selection_decode.py",
+          "sha256": "7d5e64f3c56e7d18277ade91cbac9183044b72593681cec225da4ec6dad36b50"
+        }
+      }
+    },
+    "inputs": {
+      "class_summaries_path": "focused_selection_EAS_sim/results/combined_truth_class_summaries.tsv.gz",
+      "class_summaries_sha256": "438245ef3c503e513463670a41af15962f6f0c589ac6d8bdcf6a6e2eb3a61f6f",
+      "empirical_path": null,
+      "empirical_sha256": null,
+      "pair_summaries_path": null,
+      "pair_summaries_sha256": null,
+      "spatial_summaries_path": "focused_selection_EAS_sim/results/aggregated_truth_spatial_profiles.tsv.gz",
+      "spatial_summaries_sha256": "f68fe4378216ebbd9c14f063fc6911988e3f77a9cc3e28c1414d9a7afa758952"
+    },
+    "parameters": {
+      "base_seed": 20240523,
+      "bh_family": "seven thresholds within cell/scope/metric/statistic",
+      "bootstrap_draws": 2000,
+      "make_plots": true,
+      "minimum_neutral_per_cell": 100,
+      "minimum_selected_per_cell": 10,
+      "monte_carlo_pvalue": "one-sided upper-tail with +1 correction",
+      "neutral_calibration": "deterministic 5-fold held-out units",
+      "neutral_crossfit_folds": 5,
+      "primary_omnibus": "pooled leave-one-out minP retaining whole unit threshold vectors",
+      "primary_statistic": "p_hom_alt_minus_hom_ref",
+      "thresholds_years": [
+        1000,
+        4500,
+        10000,
+        20000,
+        30000,
+        40000,
+        50000
+      ],
+      "unit_label_permutation_draws": 9999
+    },
+    "schema": "gamma-smc.focused-selection-analysis/v3"
+  },
+  "contract_sha256": "322f21ec07fffa78f9ea5d9b6daa9dc43d07e49409bfd047d3592aed801b7285",
+  "interpretation": {
+    "empirical_status": "template_only",
+    "minimum_attainable_empirical_p": 0.009900990099009901,
+    "neutral_calibration_primary": "deterministic_5_fold_crossfit",
+    "neutral_loo_role": "descriptive_only",
+    "normalized_cdf_area_is_roc_auc": false,
+    "primary_score": "P(T<x | hom_alt) minus P(T<x | hom_ref), matched to the same contrast in neutral simulations",
+    "roc_auc": "probability that a randomly drawn selected replicate has a larger selection-directed score than a randomly drawn neutral replicate",
+    "spatial_profiles": "provided",
+    "threshold_omnibus": "correlation-aware pooled leave-one-out minP across seven thresholds",
+    "within_unit_pair_tests": "not_run_pair_summaries_not_supplied"
+  },
+  "outputs": {
+    "cell_comparisons": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "selection_coefficient",
+        "n_selected",
+        "n_neutral",
+        "mean_selected_score",
+        "mean_neutral_score",
+        "mean_selected_minus_neutral",
+        "mean_difference_ci95_low",
+        "mean_difference_ci95_high",
+        "roc_auc",
+        "roc_auc_ci95_low",
+        "roc_auc_ci95_high",
+        "bootstrap_draws",
+        "bootstrap_seed",
+        "difference_bootstrap_seed",
+        "mann_whitney_u",
+        "mann_whitney_p_upper",
+        "mean_unit_label_permutation_p_upper",
+        "auc_unit_label_permutation_p_upper",
+        "unit_label_permutation_draws",
+        "unit_label_permutation_seed",
+        "mean_unit_label_permutation_exceedances",
+        "auc_unit_label_permutation_exceedances",
+        "unit_label_permutation_method",
+        "unit_label_permutation_family",
+        "neutral_bank_scope",
+        "mann_whitney_bh_q_upper",
+        "mann_whitney_global_bh_q_upper",
+        "mean_unit_label_permutation_bh_q_upper",
+        "mean_unit_label_permutation_global_bh_q_upper",
+        "auc_unit_label_permutation_bh_q_upper",
+        "auc_unit_label_permutation_global_bh_q_upper"
+      ],
+      "path": "cell_roc_auc.tsv",
+      "rows": 984,
+      "sha256": "8585de1bd41223da160757e744c2929a9a207bf457202fb64d0fdbc394f00f28",
+      "size_bytes": 491274
+    },
+    "conditional_power": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "selection_coefficient",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "alpha",
+        "n_selected",
+        "n_detected",
+        "conditional_power",
+        "wilson_ci95_low",
+        "wilson_ci95_high",
+        "n_detected_raw",
+        "conditional_power_raw",
+        "raw_wilson_ci95_low",
+        "raw_wilson_ci95_high",
+        "n_detected_bh_within_7",
+        "conditional_power_bh_within_7",
+        "bh_within_7_wilson_ci95_low",
+        "bh_within_7_wilson_ci95_high",
+        "bh_family_size",
+        "bh_family_definition",
+        "conditioning",
+        "neutral_bank_scope"
+      ],
+      "path": "conditional_power_summary.tsv",
+      "rows": 984,
+      "sha256": "880b9e869c8d1a64405c2072344ef36c696e1242b0fe6662a89f48480d001cd9",
+      "size_bytes": 350344
+    },
+    "empirical_pvalues": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "threshold_generations",
+        "observed_p_overall",
+        "observed_p_hom_ref",
+        "observed_p_heterozygous",
+        "observed_p_hom_alt",
+        "observed_value",
+        "empirical_id",
+        "variant_id",
+        "source_label",
+        "source_data_sha256",
+        "sample_manifest_sha256",
+        "pair_table_sha256",
+        "demography_assignment",
+        "population",
+        "observed_allele_frequency",
+        "af_match_tolerance",
+        "n_diploid_samples",
+        "n_overall_pairs",
+        "n_hom_ref_pairs",
+        "n_heterozygous_pairs",
+        "n_hom_alt_pairs",
+        "alt_allele_count",
+        "pairing_scheme",
+        "decoder_name",
+        "decoder_version",
+        "reference_decoder_binary_sha256",
+        "empirical_decoder_binary_sha256",
+        "reference_decoder_parameters_sha256",
+        "empirical_decoder_parameters_sha256",
+        "reference_ne_history_sha256",
+        "empirical_ne_history_sha256",
+        "generation_time_years",
+        "mutation_rate_per_bp_per_generation",
+        "sequence_length_bp",
+        "genome_build",
+        "contig",
+        "position_1based",
+        "ref_allele",
+        "alt_allele",
+        "region_start_0based",
+        "region_end_0based",
+        "focal_position_0based",
+        "mask_manifest_sha256",
+        "qc_status",
+        "n_null",
+        "null_mean",
+        "null_sd",
+        "mc_p_upper",
+        "mc_p_lower",
+        "mc_p_two_sided",
+        "bh_q_upper",
+        "bh_q_two_sided",
+        "panel_n_diploid_samples",
+        "analysis_source",
+        "af_absolute_difference",
+        "genotype_derived_alt_count",
+        "provenance_qc_status"
+      ],
+      "path": "empirical_pvalues.tsv",
+      "rows": 0,
+      "sha256": "ad3f62aba3298d7b2a043ad675e9e259761132b3236cb04d808b12b6f11a2fa0",
+      "size_bytes": 1145
+    },
+    "empirical_template": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "threshold_generations",
+        "observed_p_overall",
+        "observed_p_hom_ref",
+        "observed_p_heterozygous",
+        "observed_p_hom_alt",
+        "observed_value",
+        "empirical_id",
+        "variant_id",
+        "source_label",
+        "source_data_sha256",
+        "sample_manifest_sha256",
+        "pair_table_sha256",
+        "demography_assignment",
+        "population",
+        "observed_allele_frequency",
+        "af_match_tolerance",
+        "n_diploid_samples",
+        "n_overall_pairs",
+        "n_hom_ref_pairs",
+        "n_heterozygous_pairs",
+        "n_hom_alt_pairs",
+        "alt_allele_count",
+        "pairing_scheme",
+        "decoder_name",
+        "decoder_version",
+        "reference_decoder_binary_sha256",
+        "empirical_decoder_binary_sha256",
+        "reference_decoder_parameters_sha256",
+        "empirical_decoder_parameters_sha256",
+        "reference_ne_history_sha256",
+        "empirical_ne_history_sha256",
+        "generation_time_years",
+        "mutation_rate_per_bp_per_generation",
+        "sequence_length_bp",
+        "genome_build",
+        "contig",
+        "position_1based",
+        "ref_allele",
+        "alt_allele",
+        "region_start_0based",
+        "region_end_0based",
+        "focal_position_0based",
+        "mask_manifest_sha256",
+        "qc_status"
+      ],
+      "path": "empirical_input_template.tsv",
+      "rows": 420,
+      "sha256": "3eab5944d4e5494a8cf57fb40ed2ec6e0369019bec78d1fa8ccba07799be248e",
+      "size_bytes": 283942
+    },
+    "figure_00_probability_curves_ancient_eurasia_han_introgression_s0p005_png": {
+      "path": "figures/probability_curves_ancient_eurasia_han_introgression_s0p005.png",
+      "sha256": "8ad50336967d66d308c98712226eba8b0e2946e8aeb6e7e987334680d312be07",
+      "size_bytes": 503229
+    },
+    "figure_01_probability_curves_ancient_eurasia_han_introgression_s0p005_pdf": {
+      "path": "figures/probability_curves_ancient_eurasia_han_introgression_s0p005.pdf",
+      "sha256": "0b2b9515a51032a1844f492b806d87a541e505222827d3fcae26495d2a7dbbfc",
+      "size_bytes": 21825
+    },
+    "figure_02_probability_curves_ancient_eurasia_han_introgression_s0p01_png": {
+      "path": "figures/probability_curves_ancient_eurasia_han_introgression_s0p01.png",
+      "sha256": "e44790448df14ef2196dd86a57e757f745fc2e80cef29254f24dc7dc701cfc49",
+      "size_bytes": 498528
+    },
+    "figure_03_probability_curves_ancient_eurasia_han_introgression_s0p01_pdf": {
+      "path": "figures/probability_curves_ancient_eurasia_han_introgression_s0p01.pdf",
+      "sha256": "f2afa15d1388542c2348fd88257c1da0f20b948d358029509406a54eb037926c",
+      "size_bytes": 21464
+    },
+    "figure_04_probability_curves_eas_phlash_median_s0p005_png": {
+      "path": "figures/probability_curves_eas_phlash_median_s0p005.png",
+      "sha256": "e7da85fa4cdd16552288c9d1bac50d694fc7177917dbe24c913713a9f7ae6b69",
+      "size_bytes": 511214
+    },
+    "figure_05_probability_curves_eas_phlash_median_s0p005_pdf": {
+      "path": "figures/probability_curves_eas_phlash_median_s0p005.pdf",
+      "sha256": "8b2f1463b16cd075bd73013d3f9e352b11193b70e93f3e2cf1954556c567b3e2",
+      "size_bytes": 21508
+    },
+    "figure_06_probability_curves_eas_phlash_median_s0p01_png": {
+      "path": "figures/probability_curves_eas_phlash_median_s0p01.png",
+      "sha256": "c242587275fa601b223f8475278c1f9962303df22b539b1db574d2444d58fd1a",
+      "size_bytes": 527571
+    },
+    "figure_07_probability_curves_eas_phlash_median_s0p01_pdf": {
+      "path": "figures/probability_curves_eas_phlash_median_s0p01.pdf",
+      "sha256": "8129bde4821b24cf09046bc734364282e4486552860604c8a4a40f2fd657ee97",
+      "size_bytes": 21198
+    },
+    "figure_08_spatial_probability_ancient_eurasia_han_introgression_s0p005_t1000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t1000.png",
+      "sha256": "9486465cb6b995f9c4400ef1a473b3072939345072498748b88857f77af3f98a",
+      "size_bytes": 406822
+    },
+    "figure_09_spatial_probability_ancient_eurasia_han_introgression_s0p005_t1000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t1000.pdf",
+      "sha256": "dd46ec4c07b5a598e36ba78e4169e9d863022802788ec3c5d20394096e049902",
+      "size_bytes": 261009
+    },
+    "figure_10_spatial_probability_ancient_eurasia_han_introgression_s0p005_t4500_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t4500.png",
+      "sha256": "1fff4211f2323ef9f4cd734e3c6fa8ef07981c30e637cc84627b778395b6d8cd",
+      "size_bytes": 624526
+    },
+    "figure_11_spatial_probability_ancient_eurasia_han_introgression_s0p005_t4500_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t4500.pdf",
+      "sha256": "f7cf94bea0faaa1d2d1a0b37505321659c1384284efc7036c093797aa9692fbd",
+      "size_bytes": 391307
+    },
+    "figure_12_spatial_probability_ancient_eurasia_han_introgression_s0p005_t10000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t10000.png",
+      "sha256": "33d9dfaf9910aaec59ee69367102b947dc39414a1b211fbabbce97d07789fec6",
+      "size_bytes": 681388
+    },
+    "figure_13_spatial_probability_ancient_eurasia_han_introgression_s0p005_t10000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t10000.pdf",
+      "sha256": "1fd25287c9ac5ef14003f18f7af3b4588e7ab8d311f7ed4c777328f13ff0060a",
+      "size_bytes": 480749
+    },
+    "figure_14_spatial_probability_ancient_eurasia_han_introgression_s0p005_t20000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t20000.png",
+      "sha256": "6c5986408b43544c7940f4f6cedbffd5801dc4df48c8f64a1a269815da829031",
+      "size_bytes": 687689
+    },
+    "figure_15_spatial_probability_ancient_eurasia_han_introgression_s0p005_t20000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t20000.pdf",
+      "sha256": "487e295414e2ef9ad5bb067bcb80dec8f9f76430eb2aae2cd2f4ba665c4b348f",
+      "size_bytes": 533532
+    },
+    "figure_16_spatial_probability_ancient_eurasia_han_introgression_s0p005_t30000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t30000.png",
+      "sha256": "4a66b7435dc496867c52d299e7ce49161d5a8bc37f63f39753bf05881c763489",
+      "size_bytes": 673661
+    },
+    "figure_17_spatial_probability_ancient_eurasia_han_introgression_s0p005_t30000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t30000.pdf",
+      "sha256": "4558405b76a4a7ea8c81a75412f26c1af0fe13c65bdceaa4a432ac2264e02bc8",
+      "size_bytes": 552894
+    },
+    "figure_18_spatial_probability_ancient_eurasia_han_introgression_s0p005_t40000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t40000.png",
+      "sha256": "75a5b48f9156a40c35741a4ce0efa76af6ba6d132b11cbaf00284dc05112909b",
+      "size_bytes": 685929
+    },
+    "figure_19_spatial_probability_ancient_eurasia_han_introgression_s0p005_t40000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t40000.pdf",
+      "sha256": "cb18a3a15c75d02778645b7f4d3819a47285e5cbc3731f390eb853545dc48b7d",
+      "size_bytes": 565980
+    },
+    "figure_20_spatial_probability_ancient_eurasia_han_introgression_s0p005_t50000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t50000.png",
+      "sha256": "f49bacb5ea6649e1ed7b3de028dcf5e89d021b5d0eeb055f0a597fa3087b1866",
+      "size_bytes": 703646
+    },
+    "figure_21_spatial_probability_ancient_eurasia_han_introgression_s0p005_t50000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p005_t50000.pdf",
+      "sha256": "f8d805ec1661b2ba1c0be579d85e01fa1d6d213fc8b283469dd9b86d8ddcb579",
+      "size_bytes": 574120
+    },
+    "figure_22_spatial_probability_ancient_eurasia_han_introgression_s0p01_t1000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t1000.png",
+      "sha256": "051d97bdce79fd6793cd8e24c394cc3d581bf6fddf909a3a12bd852ad1f2b9f9",
+      "size_bytes": 409058
+    },
+    "figure_23_spatial_probability_ancient_eurasia_han_introgression_s0p01_t1000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t1000.pdf",
+      "sha256": "1fa34a954261f5954404351b00253d37a4192fc7fe99bae837796445103faafd",
+      "size_bytes": 262033
+    },
+    "figure_24_spatial_probability_ancient_eurasia_han_introgression_s0p01_t4500_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t4500.png",
+      "sha256": "3b6e056841d2cdb6258eaaa48210d7d38ed22f5f04a1e4561406e7be562da4de",
+      "size_bytes": 616202
+    },
+    "figure_25_spatial_probability_ancient_eurasia_han_introgression_s0p01_t4500_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t4500.pdf",
+      "sha256": "495c7f70ca8aca4790d10aefd30fff4e4455066d522413fcd45258ecb10c2ca8",
+      "size_bytes": 390094
+    },
+    "figure_26_spatial_probability_ancient_eurasia_han_introgression_s0p01_t10000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t10000.png",
+      "sha256": "be03b7c85f6dd09dbe0eb96a635307850dd55a35925fb9791523bd3a767bd1c3",
+      "size_bytes": 663745
+    },
+    "figure_27_spatial_probability_ancient_eurasia_han_introgression_s0p01_t10000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t10000.pdf",
+      "sha256": "89e8f8af55d47bd1b14bca484193ff64bb1acfd274af40f2476db481591b2e95",
+      "size_bytes": 477940
+    },
+    "figure_28_spatial_probability_ancient_eurasia_han_introgression_s0p01_t20000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t20000.png",
+      "sha256": "20d3da590915ee8d08958be56e8117909e0da3853eb3b494ed95ec362add5c1d",
+      "size_bytes": 716035
+    },
+    "figure_29_spatial_probability_ancient_eurasia_han_introgression_s0p01_t20000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t20000.pdf",
+      "sha256": "3d44c5df1295ebf30a72e2485fa233f05aa10089ab44918099029065be916692",
+      "size_bytes": 535528
+    },
+    "figure_30_spatial_probability_ancient_eurasia_han_introgression_s0p01_t30000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t30000.png",
+      "sha256": "44fb924597655d8dcdf0488493a24952721f27894afe734b5c7f639236ee7e70",
+      "size_bytes": 718471
+    },
+    "figure_31_spatial_probability_ancient_eurasia_han_introgression_s0p01_t30000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t30000.pdf",
+      "sha256": "e9d58f01327d73abeebd43d1719066f41fba43a5f5892c2cea17d90835a870c3",
+      "size_bytes": 557183
+    },
+    "figure_32_spatial_probability_ancient_eurasia_han_introgression_s0p01_t40000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t40000.png",
+      "sha256": "dfd7dc3815e44b1455d7abe2cadc55ece35896084bf7114c620b818cc036cceb",
+      "size_bytes": 706641
+    },
+    "figure_33_spatial_probability_ancient_eurasia_han_introgression_s0p01_t40000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t40000.pdf",
+      "sha256": "01d293888e018a2f6e07b3b6fc4174bb452ce8306bf5ec22c4e277a51045ffd6",
+      "size_bytes": 567427
+    },
+    "figure_34_spatial_probability_ancient_eurasia_han_introgression_s0p01_t50000_png": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t50000.png",
+      "sha256": "553c33e032f3d21d51eec14d82775f3d2243425a11e9e22644d15dc50ac2d478",
+      "size_bytes": 722564
+    },
+    "figure_35_spatial_probability_ancient_eurasia_han_introgression_s0p01_t50000_pdf": {
+      "path": "figures/spatial_probability_ancient_eurasia_han_introgression_s0p01_t50000.pdf",
+      "sha256": "d0cefebb963cba57d0f2801cdf62553d2a87a65a792f0dbb0d94ab361f416605",
+      "size_bytes": 574751
+    },
+    "figure_36_spatial_probability_eas_phlash_median_s0p005_t1000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t1000.png",
+      "sha256": "1b3f31c3062970547e6dc99e15055fdfb638785fa0cca3e6a21db7edd2be7277",
+      "size_bytes": 292496
+    },
+    "figure_37_spatial_probability_eas_phlash_median_s0p005_t1000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t1000.pdf",
+      "sha256": "4c7b57cba3db66fd8b73898c34a212da41af6f4b00100f8e212066ae4678e843",
+      "size_bytes": 238057
+    },
+    "figure_38_spatial_probability_eas_phlash_median_s0p005_t4500_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t4500.png",
+      "sha256": "71898ae1b35cb363b82cc40069b42485e17a65a1be5e1c8f0982477c743575d3",
+      "size_bytes": 442615
+    },
+    "figure_39_spatial_probability_eas_phlash_median_s0p005_t4500_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t4500.pdf",
+      "sha256": "00e33a9a9014be3941f994e33107fab538868cf8c1eb809b007d7e009d92b10c",
+      "size_bytes": 296177
+    },
+    "figure_40_spatial_probability_eas_phlash_median_s0p005_t10000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t10000.png",
+      "sha256": "38dbd1d2e370c11b2bfbf2cc07527ea5005bdb0ef667ced6c36c7f146c320c15",
+      "size_bytes": 514019
+    },
+    "figure_41_spatial_probability_eas_phlash_median_s0p005_t10000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t10000.pdf",
+      "sha256": "f93d7be69b94e95680102dfd881d953007407d54cf98790c169a0f9019f172f1",
+      "size_bytes": 395276
+    },
+    "figure_42_spatial_probability_eas_phlash_median_s0p005_t20000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t20000.png",
+      "sha256": "5d62989e1b9aa0a48533f9d0251055cfafc11c8fdfdb5332b069a70d9513f04c",
+      "size_bytes": 593275
+    },
+    "figure_43_spatial_probability_eas_phlash_median_s0p005_t20000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t20000.pdf",
+      "sha256": "f4aed2b36fe7642e9fefea9dfeb3e84516b0eed262a79449c6a87028852d65ea",
+      "size_bytes": 526094
+    },
+    "figure_44_spatial_probability_eas_phlash_median_s0p005_t30000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t30000.png",
+      "sha256": "c7fdf83de4532d7d1c9e018d62b55afe955fb000ea4f13b5f13edf0059b11762",
+      "size_bytes": 657849
+    },
+    "figure_45_spatial_probability_eas_phlash_median_s0p005_t30000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t30000.pdf",
+      "sha256": "9c143dd02f8bf5e6ed740b4c75e63a77af5603595321f6befa8994e86564533d",
+      "size_bytes": 556902
+    },
+    "figure_46_spatial_probability_eas_phlash_median_s0p005_t40000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t40000.png",
+      "sha256": "2f7dc5021e3373d78127ace1fcd92d8449b88af21df22de8fa3155f9ef350842",
+      "size_bytes": 711088
+    },
+    "figure_47_spatial_probability_eas_phlash_median_s0p005_t40000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t40000.pdf",
+      "sha256": "70c5e6f77e15422f026d655db5d8c43374418383b7a1652e1c7227fc99da00bb",
+      "size_bytes": 572176
+    },
+    "figure_48_spatial_probability_eas_phlash_median_s0p005_t50000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t50000.png",
+      "sha256": "584a94a05108a351b78322e87c21a62279f56a50688c023de2a92efb151667f8",
+      "size_bytes": 748948
+    },
+    "figure_49_spatial_probability_eas_phlash_median_s0p005_t50000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p005_t50000.pdf",
+      "sha256": "bec1e29889a079547c72488139ecb7d1effb7261accf5a92be412dafdfa63981",
+      "size_bytes": 579553
+    },
+    "figure_50_spatial_probability_eas_phlash_median_s0p01_t1000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t1000.png",
+      "sha256": "4cf3a9fbffe2e736586e11ad4b32b84a46745b0494d0659f66106d9d68b4f9df",
+      "size_bytes": 290687
+    },
+    "figure_51_spatial_probability_eas_phlash_median_s0p01_t1000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t1000.pdf",
+      "sha256": "4685af2e69444197a21b3fc001aba17599abaa325df36b9ab4994239d3c52529",
+      "size_bytes": 239070
+    },
+    "figure_52_spatial_probability_eas_phlash_median_s0p01_t4500_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t4500.png",
+      "sha256": "3a092ad55e3d95aa372cc51a34cd5e18d1e0394f85838a885b0bbbd8565ce6fb",
+      "size_bytes": 369059
+    },
+    "figure_53_spatial_probability_eas_phlash_median_s0p01_t4500_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t4500.pdf",
+      "sha256": "c365635c27f7b9546390f9d1d4c33e4404c6bdc02c962c027c828cf29ef72c56",
+      "size_bytes": 292192
+    },
+    "figure_54_spatial_probability_eas_phlash_median_s0p01_t10000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t10000.png",
+      "sha256": "9908a6137aecfccb87d5823ce991332c92f97d4567e5c19a08d2a3a677b517b1",
+      "size_bytes": 472393
+    },
+    "figure_55_spatial_probability_eas_phlash_median_s0p01_t10000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t10000.pdf",
+      "sha256": "ed70becec9ec82e0e393bd15142ba530a5465dfe415ad3ceeb59a93197c4e419",
+      "size_bytes": 390930
+    },
+    "figure_56_spatial_probability_eas_phlash_median_s0p01_t20000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t20000.png",
+      "sha256": "64c0efdc1c8dcc6992eec675999b5a7222a3ef494218c011b9da466d854a57d5",
+      "size_bytes": 586954
+    },
+    "figure_57_spatial_probability_eas_phlash_median_s0p01_t20000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t20000.pdf",
+      "sha256": "7a3c97143edeca2f58b365962738e494cc828a074b0fee3edaa82b43d317cf2b",
+      "size_bytes": 523242
+    },
+    "figure_58_spatial_probability_eas_phlash_median_s0p01_t30000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t30000.png",
+      "sha256": "d39a923ba07eacd58dd44ca7a4965e457a1587c2fa9ee75571b5fe8a4836925c",
+      "size_bytes": 669859
+    },
+    "figure_59_spatial_probability_eas_phlash_median_s0p01_t30000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t30000.pdf",
+      "sha256": "ddcb4ff07d053c18dd6ff9d475cd08d4282cdd073ad8897c9d137445f4d3aa3a",
+      "size_bytes": 552557
+    },
+    "figure_60_spatial_probability_eas_phlash_median_s0p01_t40000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t40000.png",
+      "sha256": "a4974d5c7e5d717c5718c6ee39cf49520e6f9d50f71fdeb4149f636ea60d522f",
+      "size_bytes": 721851
+    },
+    "figure_61_spatial_probability_eas_phlash_median_s0p01_t40000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t40000.pdf",
+      "sha256": "e0d28f4ddecf6f205209f0bf1fdb342c7393813a84af741bebe5388c1861f483",
+      "size_bytes": 567976
+    },
+    "figure_62_spatial_probability_eas_phlash_median_s0p01_t50000_png": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t50000.png",
+      "sha256": "11d148b994c933e8b9af22a453b57e88f9a181f9cc791539f68438f5c332dc08",
+      "size_bytes": 759886
+    },
+    "figure_63_spatial_probability_eas_phlash_median_s0p01_t50000_pdf": {
+      "path": "figures/spatial_probability_eas_phlash_median_s0p01_t50000.pdf",
+      "sha256": "f7ab8bc9ecf2027e659acdcacafdd01150bf050a42dd11b25eb66393077233bd",
+      "size_bytes": 576547
+    },
+    "figure_64_primary_contrast_curves_ancient_eurasia_han_introgression_s0p005_png": {
+      "path": "figures/primary_contrast_curves_ancient_eurasia_han_introgression_s0p005.png",
+      "sha256": "b8a05142758740683ef51b74d2028cd419ac341a2c1d9ce85b9fbb3f00e2aaad",
+      "size_bytes": 510240
+    },
+    "figure_65_primary_contrast_curves_ancient_eurasia_han_introgression_s0p005_pdf": {
+      "path": "figures/primary_contrast_curves_ancient_eurasia_han_introgression_s0p005.pdf",
+      "sha256": "cf9d49a7d3529e84737f93e3ce861302866973791bfa2035c8927007f14e4afe",
+      "size_bytes": 21499
+    },
+    "figure_66_primary_contrast_curves_ancient_eurasia_han_introgression_s0p01_png": {
+      "path": "figures/primary_contrast_curves_ancient_eurasia_han_introgression_s0p01.png",
+      "sha256": "60ff69218ac03fffba57f0f87636bcf7024d8cca3d46eef499e50894655c909c",
+      "size_bytes": 518347
+    },
+    "figure_67_primary_contrast_curves_ancient_eurasia_han_introgression_s0p01_pdf": {
+      "path": "figures/primary_contrast_curves_ancient_eurasia_han_introgression_s0p01.pdf",
+      "sha256": "004bb7dddfd6fd223a91cec3727a1399d68f405f08881a99e0e85cf85ac862bd",
+      "size_bytes": 21142
+    },
+    "figure_68_primary_contrast_curves_eas_phlash_median_s0p005_png": {
+      "path": "figures/primary_contrast_curves_eas_phlash_median_s0p005.png",
+      "sha256": "85224860ed941c6e582113bbfbb5a1c182b09bbd6951b134a877e8487435833c",
+      "size_bytes": 531154
+    },
+    "figure_69_primary_contrast_curves_eas_phlash_median_s0p005_pdf": {
+      "path": "figures/primary_contrast_curves_eas_phlash_median_s0p005.pdf",
+      "sha256": "f05fd18cd3c3dafaf5b38c7da0a6b8c7a1c28f15deb660759ccfe0b6265159c5",
+      "size_bytes": 21551
+    },
+    "figure_70_primary_contrast_curves_eas_phlash_median_s0p01_png": {
+      "path": "figures/primary_contrast_curves_eas_phlash_median_s0p01.png",
+      "sha256": "aa5349e807202c8ffa76868f6d75f3a799b5f5a89e100bf5bfa1c955c603003d",
+      "size_bytes": 532607
+    },
+    "figure_71_primary_contrast_curves_eas_phlash_median_s0p01_pdf": {
+      "path": "figures/primary_contrast_curves_eas_phlash_median_s0p01.pdf",
+      "sha256": "51a9bc22c2592a623c54290bfee080730eb18575da788b7a48c88ce696418182",
+      "size_bytes": 21210
+    },
+    "figure_72_primary_contrast_roc_auc_png": {
+      "path": "figures/primary_contrast_roc_auc.png",
+      "sha256": "9421dd307e13a89ddf716ff4c6302966eedecd0e68a45b4cee2d4b009a3e8d5e",
+      "size_bytes": 605520
+    },
+    "figure_73_primary_contrast_roc_auc_pdf": {
+      "path": "figures/primary_contrast_roc_auc.pdf",
+      "sha256": "cd8c98893d36020777d7c7d69f988cc3933cbb0373b0aa2658a97cd5dd99c082",
+      "size_bytes": 24153
+    },
+    "figure_74_primary_contrast_pvalues_png": {
+      "path": "figures/primary_contrast_pvalues.png",
+      "sha256": "c9b9b7c2e992f58716651a8b6e803ef2dc40521aaa148fc385c413d00b8cfafe",
+      "size_bytes": 577503
+    },
+    "figure_75_primary_contrast_pvalues_pdf": {
+      "path": "figures/primary_contrast_pvalues.pdf",
+      "sha256": "98720989220cf87fe37a9709c952c9c06f2cdd65446ecf81f78989cff2e7a30c",
+      "size_bytes": 24951
+    },
+    "neutral_calibration": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "n_neutral",
+        "mean_loo_p",
+        "fraction_loo_p_lt_0_05",
+        "ks_uniform_p",
+        "calibration_note"
+      ],
+      "path": "neutral_loo_descriptive_calibration.tsv",
+      "rows": 492,
+      "sha256": "c4b5cce439729dcc26bb8912cc4ee2b1d6e3c15c6972d2062e072388c8a87a20",
+      "size_bytes": 96286
+    },
+    "neutral_crossfit": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "unit_id",
+        "crossfit_fold",
+        "crossfit_assignment_seed",
+        "observed_selection_score",
+        "n_training_null",
+        "crossfit_mc_p_upper",
+        "crossfit_mc_p_lower",
+        "crossfit_mc_p_two_sided",
+        "calibration_role"
+      ],
+      "path": "neutral_crossfit_pvalues.tsv.gz",
+      "rows": 49200,
+      "sha256": "552cf26c8bfeb115de2c757d6d591614c0cdd476c89c8a07aa30a82832174c1e",
+      "size_bytes": 505214
+    },
+    "neutral_crossfit_calibration": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "n_neutral",
+        "n_folds",
+        "fold_sizes",
+        "minimum_training_null",
+        "maximum_training_null",
+        "mean_crossfit_p",
+        "fraction_crossfit_p_le_0_05",
+        "ks_uniform_p",
+        "calibration_note"
+      ],
+      "path": "neutral_crossfit_calibration.tsv",
+      "rows": 492,
+      "sha256": "280049e7cbb8491a0714c90a829f93b76fe2dbf941639e2bc2e7249c9c500cc9",
+      "size_bytes": 148941
+    },
+    "neutral_loo": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "unit_id",
+        "observed_selection_score",
+        "n_loo_null",
+        "loo_mc_p_upper",
+        "diagnostic_role"
+      ],
+      "path": "neutral_loo_pvalues.tsv.gz",
+      "rows": 49200,
+      "sha256": "1f6577848666a128629f0fda9b3d8ffe8be5b766b1f367908a2ac146a7f87d1a",
+      "size_bytes": 386819
+    },
+    "primary_omnibus": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "statistic_scope",
+        "simulation_class",
+        "selection_coefficient",
+        "unit_id",
+        "replicate_index",
+        "metric",
+        "statistic",
+        "n_null",
+        "n_thresholds",
+        "thresholds_years",
+        "observed_min_marginal_p_upper",
+        "most_extreme_threshold_years",
+        "observed_score_at_most_extreme_threshold",
+        "neutral_minp_exceedance_count",
+        "omnibus_p_upper",
+        "omnibus_method",
+        "correlation_handling",
+        "neutral_bank_scope"
+      ],
+      "path": "primary_7_threshold_omnibus.tsv.gz",
+      "rows": 240,
+      "sha256": "7159380f8709e7eee25e0eeef7eb6aa00c590c1155c503172f565b0205ed7ae8",
+      "size_bytes": 5049
+    },
+    "replicate_statistics": {
+      "columns": [
+        "unit_id",
+        "demography_id",
+        "simulation_class",
+        "selection_coefficient",
+        "target_allele_frequency",
+        "replicate_index",
+        "panel_n_diploid_samples",
+        "analysis_source",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "selection_score",
+        "raw_value",
+        "selection_direction"
+      ],
+      "path": "replicate_statistics.tsv.gz",
+      "rows": 59040,
+      "sha256": "72b3d8c6744037d1ec300dfc0e91f4236d3273379c781978b5c153ea1d452fc4",
+      "size_bytes": 513934
+    },
+    "selected_pvalues": {
+      "columns": [
+        "unit_id",
+        "demography_id",
+        "simulation_class",
+        "selection_coefficient",
+        "target_allele_frequency",
+        "replicate_index",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "observed_selection_score",
+        "null_mean",
+        "null_median",
+        "null_sd",
+        "null_q025",
+        "null_q05",
+        "null_q95",
+        "null_q975",
+        "n_null",
+        "null_upper_exceedance_count",
+        "mc_p_upper",
+        "mc_p_lower",
+        "mc_p_two_sided",
+        "null_percentile_midrank",
+        "neutral_bank_scope",
+        "bh_q_upper",
+        "bh_q_two_sided"
+      ],
+      "path": "selected_vs_neutral_pvalues.tsv.gz",
+      "rows": 9840,
+      "sha256": "fdf1c9509d24020eaa9fa340fdd5b933ba9f322fa269dad4cc4a7e0e0f7a66a2",
+      "size_bytes": 187076
+    },
+    "unit_pair_tests": {
+      "columns": [],
+      "path": "within_selected_unit_pair_tests.tsv.gz",
+      "rows": 0,
+      "sha256": "02b110e440c041c668052194ab8dad9a73c9e28a2ae71f41a46c97432b05af24",
+      "size_bytes": 74
+    },
+    "within_selected": {
+      "columns": [
+        "demography_id",
+        "target_allele_frequency",
+        "selection_coefficient",
+        "statistic_scope",
+        "metric",
+        "statistic",
+        "threshold_years",
+        "n_selected",
+        "mean_within_selection_score",
+        "median_within_selection_score",
+        "sd_within_selection_score",
+        "mean_ci95_low",
+        "mean_ci95_high",
+        "n_nonzero",
+        "n_positive",
+        "sign_test_p_upper",
+        "bootstrap_draws",
+        "bootstrap_seed",
+        "sign_test_bh_q_upper"
+      ],
+      "path": "within_selected_summary.tsv",
+      "rows": 216,
+      "sha256": "f5fe31961a25ec526fa4a04cfe2d9fdbd5b5ac53ef12a1f97237b97bf0eee779",
+      "size_bytes": 47544
+    }
+  },
+  "schema": "gamma-smc.focused-selection-analysis/v3",
+  "status": "complete"
+}
