@@ -17,7 +17,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from .run2_analysis import RESULT_OUTPUTS, TEST_CLASS, cross_arm_comparison
+from .run2_analysis import (
+    RESULT_OUTPUTS,
+    TEST_CLASS,
+    cross_arm_comparison,
+    representative_replicates,
+)
 from .run2_config import (
     ARMS,
     SIGNIFICANCE_LEVEL,
@@ -369,6 +374,7 @@ def plot_arm(study_root: str | Path, arm: Run2Arm) -> dict[str, Any]:
         "pvalue_panels": plot_pvalue_panels(arm, results, figures),
         "spatial_profile": plot_spatial_profile(arm, results, figures),
         "by_genotype": plot_by_genotype(arm, results, figures),
+        "representative_spatial": plot_representative_spatial(root, arm, figures),
     }
 
 
@@ -384,6 +390,88 @@ __all__ = [
     "plot_cross_arm",
     "plot_final_af",
     "plot_pvalue_panels",
+    "plot_representative_spatial",
     "plot_spatial_profile",
     "plot_threshold_curves",
 ]
+
+
+def plot_representative_spatial(
+    study_root: str | Path,
+    arm: Run2Arm,
+    figures: Path | None = None,
+    *,
+    thresholds: Sequence[float] = TMRCA_THRESHOLDS_YEARS,
+    smooth_bp: int = 250_000,
+) -> dict[str, Path]:
+    """One panel per threshold: two single replicates along the whole contig.
+
+    Aggregate profiles average a sweep signal away with the replicates that lost
+    the allele, so this shows one typical selected and one typical neutral
+    replicate instead.  The raw per-position trace is drawn faintly -- with 100
+    diploid pairs it can only take values in steps of 0.01 -- with a rolling mean
+    over ``smooth_bp`` on top so the shape is legible.
+    """
+    root = Path(study_root)
+    figures = figures if figures is not None else root / arm.arm_id / "figures"
+    chosen = representative_replicates(root, arm)
+    missing = [m for m in ("selected", "neutral") if m not in chosen]
+    if missing:
+        raise RuntimeError(f"no representative replicate for: {', '.join(missing)}")
+
+    profiles = {}
+    for mode, record in chosen.items():
+        path = Path(record["spatial_profile"])
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"per-replicate profile is missing: {path}. These live under "
+                "<arm>/<mode>/replicates/ and are gitignored, so this plot must "
+                "be produced where the study was run."
+            )
+        profiles[mode] = pd.read_csv(path, sep="\t").sort_values("position_0based")
+
+    any_frame = next(iter(profiles.values()))
+    positions = any_frame["position_0based"].to_numpy(dtype=float)
+    step = float(np.median(np.diff(positions))) if len(positions) > 1 else 1.0
+    window = max(1, int(round(smooth_bp / step)))
+
+    fig, axes = plt.subplots(
+        len(thresholds), 1, figsize=(11, 2.05 * len(thresholds)), sharex=True
+    )
+    axes = np.atleast_1d(axes)
+    for ax, threshold in zip(axes, thresholds):
+        column = f"p_lt_{int(threshold)}y"
+        for mode, colour in (
+            ("neutral", _NEUTRAL_COLOUR),
+            ("selected", _SELECTED_COLOUR),
+        ):
+            values = profiles[mode][column].to_numpy(dtype=float)
+            ax.plot(positions / 1e6, values, color=colour, lw=0.5, alpha=0.22)
+            rolled = (
+                pd.Series(values)
+                .rolling(window, center=True, min_periods=1)
+                .mean()
+                .to_numpy()
+            )
+            ax.plot(positions / 1e6, rolled, color=colour, lw=1.9, label=mode)
+        ax.axvline(5.0, color="black", ls=":", lw=1.1)
+        ax.set_ylabel(f"P(TMRCA <\n{int(threshold):,} y)", fontsize=9)
+        ax.tick_params(labelsize=8)
+        ax.margins(x=0.005)
+    axes[0].legend(frameon=False, fontsize=9, ncol=2, loc="upper left")
+    axes[-1].set_xlabel(
+        "Position (Mb); dotted line marks the focal base at 5 Mb", fontsize=10
+    )
+
+    selected, neutral = chosen["selected"], chosen["neutral"]
+    fig.suptitle(
+        f"{arm.label} — one representative replicate per mode\n"
+        f"selected rep{selected['replicate_index']:03d}"
+        f"{' (fixed)' if selected['restricted_to_fixed'] else ''}, "
+        f"neutral rep{neutral['replicate_index']:03d}; "
+        f"faint = raw 10 kb grid, bold = {smooth_bp // 1000} kb rolling mean",
+        fontsize=11,
+        y=0.997,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.985))
+    return _save(fig, figures / "representative_spatial_by_threshold")

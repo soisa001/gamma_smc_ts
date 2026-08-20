@@ -56,6 +56,35 @@ traces overlap across the whole 10 Mb
 (`chb_ancient_eurasia/figures/spatial_profile.png`). The expected "visual spike"
 is absent at those thresholds because it does not exist there.
 
+## Per-replicate spatial traces
+
+`<arm>/figures/representative_spatial_by_threshold.png` shows one typical
+selected replicate (restricted to ones where the allele fixed) and one typical
+neutral replicate along the whole 10 Mb, one panel per cutoff. Representatives
+are the replicates closest to their mode's median focal statistic at 50 ky:
+CHB selected rep001 / neutral rep000, EAS selected rep002 / neutral rep014.
+
+Two things are visible that the aggregates hide:
+
+- **At every cutoff below 50 ky, neither arm shows anything at 5 Mb.** The two
+  traces wander over each other across the whole contig, and the largest
+  excursions are nowhere near the focal base. At 1,000 y the statistic is
+  essentially all zeros -- with 100 diploid pairs it can only move in steps of
+  0.01, and almost no pair coalesces that recently.
+- **At 50 ky the EAS replicate shows a sharp, well-localised spike** at exactly
+  5 Mb, rising to ~0.40 against a neutral background of ~0.17 and decaying
+  within a few hundred kb. The CHB replicate at the same cutoff reaches only
+  ~0.26 at the focal base, and comparable bumps appear elsewhere on the contig
+  (~0.33 near 7.8 Mb), so a single CHB replicate does not localise.
+
+That CHB is the weaker of the two per replicate is worth noting given CHB is the
+arm of interest. It is consistent with the arms' different starting structure:
+CHB carriers begin as ~15 complete archaic homozygotes whose own common ancestry
+is deep in the Neanderthal lineage, so fixing them leaves a genealogy with
+several old internal branches, whereas the EAS carriers are drawn from the
+resident population and coalesce more tightly. This is a hypothesis the current
+data do not settle.
+
 ## The test machinery itself is sound
 
 Leave-one-out false-positive rate of the null against itself

@@ -387,5 +387,64 @@ __all__ = [
     "power_summary",
     "pvalues",
     "replicate_status",
+    "representative_replicates",
     "upper_tail_pvalue",
 ]
+
+
+def representative_replicates(
+    study_root: str | Path,
+    arm: Run2Arm,
+    *,
+    threshold_years: float = 50_000.0,
+) -> dict[str, dict[str, Any]]:
+    """Pick one typical replicate per mode for per-replicate illustration.
+
+    "Typical" means closest to that mode's median focal statistic at
+    ``threshold_years``.  The selected mode is restricted to replicates in which
+    the allele actually fixed, because a replicate that lost it is by
+    construction a neutral trace and would misrepresent the selected arm.
+    """
+    statistics = observed_statistics(study_root, arm)
+    if statistics.empty:
+        raise RuntimeError(f"no completed replicates found for arm {arm.arm_id}")
+
+    fixed: set[int] = set()
+    frame = final_allele_frequencies(study_root, arm)
+    if not frame.empty:
+        fixed = set(frame.loc[frame["fixed"], "replicate_index"].astype(int))
+
+    chosen: dict[str, dict[str, Any]] = {}
+    for mode in MODES:
+        values = _test_values(statistics, mode)
+        values = values[values["threshold_years"] == threshold_years]
+        values = values[np.isfinite(values["p_tmrca_lt_threshold"])]
+        if values.empty:
+            continue
+        pool = values
+        restricted = False
+        if mode == "selected" and fixed:
+            candidate = values[values["replicate_index"].isin(fixed)]
+            if not candidate.empty:
+                pool, restricted = candidate, True
+        median = float(pool["p_tmrca_lt_threshold"].median())
+        index = (pool["p_tmrca_lt_threshold"] - median).abs().idxmin()
+        record = pool.loc[index]
+        replicate_index = int(record["replicate_index"])
+        chosen[mode] = {
+            "replicate_index": replicate_index,
+            "unit_id": str(record["unit_id"]),
+            "statistic": float(record["p_tmrca_lt_threshold"]),
+            "group_median": median,
+            "restricted_to_fixed": restricted,
+            "n_candidates": int(len(pool)),
+            "spatial_profile": str(
+                Path(study_root)
+                / arm.arm_id
+                / mode
+                / "replicates"
+                / f"rep{replicate_index:03d}"
+                / "spatial_profile.tsv.gz"
+            ),
+        }
+    return chosen
