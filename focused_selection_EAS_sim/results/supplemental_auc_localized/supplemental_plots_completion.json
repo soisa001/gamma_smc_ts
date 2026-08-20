@@ -1,0 +1,191 @@
+{
+  "contract": {
+    "implementation": {
+      "path_identity": "repo-relative POSIX for in-repository paths",
+      "software": {
+        "matplotlib": "3.11.1",
+        "numpy": "2.4.6",
+        "pandas": "3.0.3",
+        "python": "3.11.15"
+      },
+      "source_hashing": {
+        "encoding": "strict UTF-8",
+        "newline_canonicalization": "CRLF to LF",
+        "reject_bare_carriage_return": true,
+        "reject_bom": true,
+        "unicode_normalization": "none"
+      },
+      "sources": {
+        "focused_selection_supplemental_plots.py": {
+          "path": "python/gamma_smc_aou/focused_selection_supplemental_plots.py",
+          "sha256": "addd7ae238d53a4819b81c007e966f798f0dd3b69e0002e02c71bda6ac7c7783"
+        },
+        "run_focused_selection_supplemental_plots.py": {
+          "path": "scripts/run_focused_selection_supplemental_plots.py",
+          "sha256": "7c23d3f33906e5fe2e71cf392de29ef4c8d4e1bdd475e9d2a1bca926383f9e07"
+        }
+      }
+    },
+    "inputs": {
+      "gamma_smc": {
+        "analysis_completion": {
+          "contract_sha256": "8c92e92d92bad570f61a8fae0512a792f75f6df1f26bcb0df751aa472e5b5ac5",
+          "path": "focused_selection_EAS_sim/results/analysis/analysis_completion.json",
+          "sha256": "2f2afb29dadf1d58fa9441260998cdcdddaa322fdd46f9df47fe2282ad16cd54",
+          "size_bytes": 38217
+        },
+        "auc_table": {
+          "path": "focused_selection_EAS_sim/results/analysis/cell_roc_auc.tsv",
+          "sha256": "fc432f308ece2482383780c7cae16215f194013857abfdc16f23f4dd95f47e4a",
+          "size_bytes": 507534
+        },
+        "spatial_table": {
+          "path": "focused_selection_EAS_sim/results/aggregated_spatial_profiles.tsv.gz",
+          "sha256": "0951b450fc2464f7cc6f5873e615498887c4abecaea81d8ed6a75916156eb735",
+          "size_bytes": 23153583
+        }
+      },
+      "tree_truth": {
+        "analysis_completion": {
+          "contract_sha256": "322f21ec07fffa78f9ea5d9b6daa9dc43d07e49409bfd047d3592aed801b7285",
+          "path": "focused_selection_EAS_sim/results/analysis_tree_truth/analysis_completion.json",
+          "sha256": "604e8ab621b7b69b405ce8f1d3671c1e9439ee5efcd69ec3e91d631de61fbb8b",
+          "size_bytes": 37381
+        },
+        "auc_table": {
+          "path": "focused_selection_EAS_sim/results/analysis_tree_truth/cell_roc_auc.tsv",
+          "sha256": "8585de1bd41223da160757e744c2929a9a207bf457202fb64d0fdbc394f00f28",
+          "size_bytes": 491274
+        },
+        "spatial_table": {
+          "path": "focused_selection_EAS_sim/results/aggregated_truth_spatial_profiles.tsv.gz",
+          "sha256": "f68fe4378216ebbd9c14f063fc6911988e3f77a9cc3e28c1414d9a7afa758952",
+          "size_bytes": 18219338
+        }
+      }
+    },
+    "parameters": {
+      "auc_intervals": "existing pointwise bootstrap 95% intervals",
+      "auc_metric": "p_tmrca_lt_threshold",
+      "auc_scope": "focal_nearest",
+      "auc_statistic": "p_hom_alt_minus_hom_ref",
+      "figure_size_inches": [
+        11,
+        8.5
+      ],
+      "focal_half_window_bp": 100000,
+      "focal_position_0based": 5000000,
+      "localized_threshold_years": 10000,
+      "pdf_bbox_inches": null,
+      "png_dpi": 300,
+      "randomness": "none; published estimates and intervals are reused",
+      "spatial_grid_step_bp": 10000,
+      "spatial_interval": "mean +/- 1.96 * SEM, clipped to [0, 1]"
+    },
+    "schema": "gamma-smc.focused-selection-supplemental-plots/v1"
+  },
+  "contract_sha256": "42fff2bbccee7af710ad972270f17ed2c96201461be3f78de37c78b26634c222",
+  "interpretation": {
+    "auc": "selected-versus-matched-neutral discrimination of the focal alt/alt-minus-ref/ref score; not empirical prediction",
+    "localized_profiles": "published aggregate means and marginal SEMs on the existing 10-kb grid; not position-specific AUC"
+  },
+  "outputs": {
+    "README.md": {
+      "path": "README.md",
+      "sha256": "7d1562fa7c1cb5d3c8d413f024955b8eb8070073e451d4bfe7ab813845842598",
+      "size_bytes": 843
+    },
+    "gamma_smc/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "gamma_smc/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.pdf",
+      "sha256": "8ad8680323d29bf3f820b3d23c9731dd1e853590bd744cda6f18a89183090cd8",
+      "size_bytes": 45524,
+      "width_points": 792.0
+    },
+    "gamma_smc/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.png": {
+      "height_px": 2550,
+      "path": "gamma_smc/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.png",
+      "sha256": "b6cec1ec0228e5fda5e7243743c1fb3b0c6220b758a980a2f166342897da52ee",
+      "size_bytes": 659795,
+      "width_px": 3300
+    },
+    "gamma_smc/localized_spatial_eas_phlash_median_t10000_window100kb.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "gamma_smc/localized_spatial_eas_phlash_median_t10000_window100kb.pdf",
+      "sha256": "78403b23b31faf4d6b7329bd73448f096dc810f4d1fc7bae8dac02a5ad925adc",
+      "size_bytes": 45721,
+      "width_points": 792.0
+    },
+    "gamma_smc/localized_spatial_eas_phlash_median_t10000_window100kb.png": {
+      "height_px": 2550,
+      "path": "gamma_smc/localized_spatial_eas_phlash_median_t10000_window100kb.png",
+      "sha256": "b64aea72d811fa1f01c3b567610cab5e539d81d651ebe40cb4dd1a7c6f765c93",
+      "size_bytes": 877889,
+      "width_px": 3300
+    },
+    "gamma_smc/primary_auc_profiles.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "gamma_smc/primary_auc_profiles.pdf",
+      "sha256": "c5b20ca2ea41d68f5fa5be19f2e39333a08985f5c59a57820c19914e6f22b3b0",
+      "size_bytes": 26419,
+      "width_points": 792.0
+    },
+    "gamma_smc/primary_auc_profiles.png": {
+      "height_px": 2550,
+      "path": "gamma_smc/primary_auc_profiles.png",
+      "sha256": "9d9a997d6d699c8b2dbd19832c3ac2a9928c058bbf64afaf38842565f56d4955",
+      "size_bytes": 445786,
+      "width_px": 3300
+    },
+    "tree_truth/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "tree_truth/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.pdf",
+      "sha256": "8f108e0c2b4e8b9665a5b215c5639ba67da8463ddb811663be7439a9a0670b0b",
+      "size_bytes": 41696,
+      "width_points": 792.0
+    },
+    "tree_truth/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.png": {
+      "height_px": 2550,
+      "path": "tree_truth/localized_spatial_ancient_eurasia_han_introgression_t10000_window100kb.png",
+      "sha256": "0524134ba45312763b75b0705b8b9c488dc17dcdd785d8991607598ceb9d2f2f",
+      "size_bytes": 527608,
+      "width_px": 3300
+    },
+    "tree_truth/localized_spatial_eas_phlash_median_t10000_window100kb.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "tree_truth/localized_spatial_eas_phlash_median_t10000_window100kb.pdf",
+      "sha256": "88d4da924fac473d9d378c973e861a1cc4afb38ed1cfd100b0cef2e9a24331d2",
+      "size_bytes": 37260,
+      "width_points": 792.0
+    },
+    "tree_truth/localized_spatial_eas_phlash_median_t10000_window100kb.png": {
+      "height_px": 2550,
+      "path": "tree_truth/localized_spatial_eas_phlash_median_t10000_window100kb.png",
+      "sha256": "8a58908ef6fdc334cfbae7b677c0d3a076e8441abe62528d230a06b0eb3c2fc8",
+      "size_bytes": 429250,
+      "width_px": 3300
+    },
+    "tree_truth/primary_auc_profiles.pdf": {
+      "height_points": 612.0,
+      "page_count": 1,
+      "path": "tree_truth/primary_auc_profiles.pdf",
+      "sha256": "e75e99c2b6d3bd981be7c81d1925e43d68f584badc0fcf7b691f948715208e89",
+      "size_bytes": 26277,
+      "width_points": 792.0
+    },
+    "tree_truth/primary_auc_profiles.png": {
+      "height_px": 2550,
+      "path": "tree_truth/primary_auc_profiles.png",
+      "sha256": "03ab9773c72d68f7df688652740360abdcafbfc2e49b769c8a87eae32283b0c6",
+      "size_bytes": 626640,
+      "width_px": 3300
+    }
+  },
+  "schema": "gamma-smc.focused-selection-supplemental-plots/v1",
+  "status": "complete"
+}

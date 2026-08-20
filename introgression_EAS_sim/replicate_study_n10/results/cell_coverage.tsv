@@ -1,0 +1,28 @@
+base_specification_id	selection_coefficient	target_allele_frequency	target_replicates	accepted_replicates	decoded_replicates	accepted_fraction_of_target	decoded_fraction_of_accepted	attempted_replicates	timed_out_replicates	exhausted_replicates	failed_replicates	completed_external_draws	launched_external_draws	interrupted_internal_conditioned_trajectories	cumulative_elapsed_seconds	simulation_status_counts_json	conditioning_missingness
+intro_s0p010_af10	0.01	0.1	10	3	3	0.3	1.0	10	2	5	0	10	62	45	15964.778426899826	"{""complete"":3,""exhausted"":5,""timed_out"":2}"	nonrandom
+intro_s0p010_af20	0.01	0.2	10	3	3	0.3	1.0	10	1	6	0	10	58	41	14603.30021160004	"{""complete"":3,""exhausted"":6,""timed_out"":1}"	nonrandom
+intro_s0p010_af30	0.01	0.3	10	5	5	0.5	1.0	10	0	5	0	8	41	28	10691.852727400143	"{""complete"":5,""exhausted"":5}"	nonrandom
+intro_s0p010_af40	0.01	0.4	10	4	4	0.4	1.0	10	0	6	0	10	57	41	14768.08327199992	"{""complete"":4,""exhausted"":6}"	nonrandom
+intro_s0p010_af50	0.01	0.5	10	1	1	0.1	1.0	10	1	8	0	9	60	43	17381.687664900015	"{""complete"":1,""exhausted"":8,""timed_out"":1}"	nonrandom
+intro_s0p010_af60	0.01	0.6	10	3	3	0.3	1.0	10	1	6	0	12	58	39	14191.042122799965	"{""complete"":3,""exhausted"":6,""timed_out"":1}"	nonrandom
+intro_s0p010_af70	0.01	0.7	10	2	2	0.2	1.0	10	1	7	0	9	62	45	15997.985790799907	"{""complete"":2,""exhausted"":7,""timed_out"":1}"	nonrandom
+intro_s0p010_af80	0.01	0.8	10	2	2	0.2	1.0	10	0	8	0	9	60	43	15623.035306999835	"{""complete"":2,""exhausted"":8}"	nonrandom
+intro_s0p010_af90	0.01	0.9	10	0	0	0.0		10	1	9	0	4	65	51	18003.143027199923	"{""exhausted"":9,""timed_out"":1}"	nonrandom
+intro_s0p005_af10	0.005	0.1	10	10	10	1.0	1.0	10	0	0	0	14	15	1	1166.6354045000626	"{""complete"":10}"	nonrandom
+intro_s0p005_af20	0.005	0.2	10	10	10	1.0	1.0	10	0	0	0	13	13	0	1065.7697970999288	"{""complete"":10}"	nonrandom
+intro_s0p005_af30	0.005	0.3	10	10	10	1.0	1.0	10	0	0	0	16	17	1	1348.4066212000325	"{""complete"":10}"	nonrandom
+intro_s0p005_af40	0.005	0.4	10	10	10	1.0	1.0	10	0	0	0	16	16	0	1185.4248910999158	"{""complete"":10}"	nonrandom
+intro_s0p005_af50	0.005	0.5	10	10	10	1.0	1.0	10	0	0	0	17	17	0	1398.3533733999939	"{""complete"":10}"	nonrandom
+intro_s0p005_af60	0.005	0.6	10	10	10	1.0	1.0	10	0	0	0	19	21	2	1580.6747881000629	"{""complete"":10}"	nonrandom
+intro_s0p005_af70	0.005	0.7	10	10	10	1.0	1.0	10	0	0	0	23	26	3	2086.9121900999453	"{""complete"":10}"	nonrandom
+intro_s0p005_af80	0.005	0.8	10	10	10	1.0	1.0	10	0	0	0	29	38	9	4322.135237000097	"{""complete"":10}"	nonrandom
+intro_s0p005_af90	0.005	0.9	10	4	4	0.4	1.0	10	0	6	0	46	87	35	13067.501700500037	"{""complete"":4,""exhausted"":6}"	nonrandom
+intro_s0p001_af10	0.001	0.1	10	10	10	1.0	1.0	10	0	0	0	10	10	0	1214.58455579984	"{""complete"":10}"	nonrandom
+intro_s0p001_af20	0.001	0.2	10	10	10	1.0	1.0	10	0	0	0	11	12	1	1877.898084699933	"{""complete"":10}"	nonrandom
+intro_s0p001_af30	0.001	0.3	10	10	10	1.0	1.0	10	0	0	0	11	17	6	3319.549253900037	"{""complete"":10}"	nonrandom
+intro_s0p001_af40	0.001	0.4	10	8	8	0.8	1.0	10	0	2	0	11	35	22	8761.415541299915	"{""complete"":8,""exhausted"":2}"	nonrandom
+intro_s0p001_af50	0.001	0.5	10	5	5	0.5	1.0	10	0	5	0	5	39	29	10991.497350300033	"{""complete"":5,""exhausted"":5}"	nonrandom
+intro_s0p001_af60	0.001	0.6	10	4	4	0.4	1.0	10	0	6	0	5	53	42	15237.922735899749	"{""complete"":4,""exhausted"":6}"	nonrandom
+intro_s0p001_af70	0.001	0.7	10	0	0	0.0		10	2	8	0	0	62	52	18002.409752899875	"{""exhausted"":8,""timed_out"":2}"	nonrandom
+intro_s0p001_af80	0.001	0.8	10	1	1	0.1	1.0	10	1	8	0	1	61	51	17876.669139899983	"{""complete"":1,""exhausted"":8,""timed_out"":1}"	nonrandom
+intro_s0p001_af90	0.001	0.9	10	0	0	0.0		10	1	9	0	0	61	51	18007.921926999996	"{""exhausted"":9,""timed_out"":1}"	nonrandom
