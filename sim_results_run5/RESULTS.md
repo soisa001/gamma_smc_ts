@@ -127,6 +127,89 @@ signal. Across run3, run4 and run5 this has now held in five independent arms.
 nothing genuinely coalesces, so it should not be read as threshold-specific
 detection.
 
+## How power is computed, and what AUC adds
+
+For each selected replicate *i* at cutoff *x*, the statistic is
+`T_i = P(TMRCA < x)` at the focal base over the 100 within-individual pairs
+(`overall` class). The null is the 100 neutral replicates' `T` at the same
+cutoff, and
+
+```
+p_i = (1 + #{null_j >= T_i}) / (1 + n_null)
+power(x) = fraction of selected replicates with p_i <= 0.05
+```
+
+It is a one-sided upper-tail permutation p-value, ties counted as exceedances
+(conservative). So **power is a per-replicate detection rate**: how often a
+single locus of this kind would be called in a scan. Two consequences: the floor
+is `1/101 = 0.0099`, and a replicate must beat at least 96 of the 100 nulls to
+reach 0.05, so power is bounded by how large the null is.
+
+**AUC** removes both limitations. It is the probability a random selected
+replicate scores above a random neutral one, ties split, computed as the mean of
+each replicate's percentile against the null. Threshold-free and floor-free:
+
+| cutoff | CHB from introgression | | CHB with Nea selection | | EAS reference | |
+|---|---|---|---|---|---|---|
+| | AUC | power | AUC | power | AUC | power |
+| 10,000 | 0.52 | 0.00 | 0.61 | 0.02 | 0.69 | 0.14 |
+| 20,000 | 0.83 | 0.48 | 0.86 | 0.58 | 0.96 | 0.72 |
+| **30,000** | **0.95** | 0.81 | **0.94** | 0.82 | **0.98** | 0.85 |
+| 40,000 | 0.89 | 0.71 | 0.83 | 0.55 | 0.96 | 0.77 |
+| 50,000 | 0.83 | 0.52 | 0.75 | 0.50 | 0.90 | 0.66 |
+
+Discrimination is near-perfect at 30 ky (AUC 0.94-0.98) while power is 0.81-0.85.
+The gap is the cost of a 100-replicate null, not a property of the statistic.
+
+## AUC against final allele frequency
+
+The clearest result in run5. Per-replicate percentile against the null *is* the
+AUC contribution, so binning it by final frequency gives AUC restricted to that
+band. `chb_from_introgression`, tree truth:
+
+| cutoff | AF < 0.4 (n=8) | AF 0.4-0.7 (n=41) | AF >= 0.7 (n=51) |
+|---|---|---|---|
+| 20,000 | 0.68 | **0.95** | 0.76 |
+| 30,000 | 0.53 | **0.99** | 0.97 |
+| 40,000 | 0.41 | 0.85 | **0.99** |
+| 50,000 | 0.49 | 0.69 | **0.99** |
+
+Two things follow.
+
+**Detection is essentially a function of final allele frequency.** Replicates
+ending below 0.4 are indistinguishable from neutral at every cutoff (AUC 0.41 to
+0.68, straddling chance). Replicates above 0.7 are almost perfectly separable
+(0.97-0.99) provided the cutoff is deep enough.
+
+**The best cutoff shifts deeper as the frequency rises.** Near-complete sweeps
+peak at 40-50 ky, mid-frequency ones at 20-30 ky. That is mechanistically what
+should happen: once the allele is near fixation the whole sample coalesces back
+at the sweep onset (~1,240 generations, 36 ky), so the signal sits at deep
+cutoffs; a partial sweep leaves a mixture of swept and unswept lineages, and the
+swept subset shows up at shallower ones.
+
+Practically: a scan using a single cutoff is mis-specified for part of the
+frequency range, and 30 ky is the best single compromise here.
+
+## The p-value distribution exposes a discreteness problem
+
+`figures/pvalue_distribution_tree_truth.png` plots selected p-values against the
+leave-one-out null, one panel per cutoff.
+
+At 30-50 ky the picture is textbook: the null is close to uniform and the
+selected replicates pile at the floor. But **at 1,000 to 10,000 years both
+distributions collapse onto p = 1.0**. With 100 diploid pairs the statistic only
+takes values in steps of 0.01, and at those cutoffs nearly every replicate scores
+exactly zero, so ties dominate, `#{null >= T}` is the whole null, and the p-value
+is 1 by construction for almost everything.
+
+So at recent cutoffs the test is not merely underpowered, it is *degenerate* --
+and the null is not uniform there but a point mass at 1. The reported
+false-positive rates near zero at those cutoffs reflect that conservatism, not
+good calibration. AUC agrees there is genuinely nothing to find (0.52 at 10 ky),
+so the conclusion is unchanged, but the p-value machinery should not be read as
+calibrated in that range. Raising the pair count would relieve the discreteness.
+
 ## Null calibration
 
 Leave-one-out false-positive rates against the null itself, averaged over
