@@ -1,0 +1,10 @@
+external_draw_zero_based	seed	elapsed_seconds	accepted	achieved_allele_frequency	achieved_allele_frequency_scope	population_frequency_condition_lower	population_frequency_condition_upper	n_sample_diploids	n_hom_ref	n_heterozygous	n_hom_alt	focal_site_id	focal_mutation_count	focal_mutation_node_population	focal_mutation_declared_origin_population	focal_mutation_node_population_is_origin_evidence	focal_mutation_origin_evidence	n_segregating_nucleotide_snps	vcf_allele_encoding
+0	1751524929	123.2559796999558	False	0.965	sample_estimate	0.9	0.95	100	0	7	93	17183	1	Neanderthal	Neanderthal	False	serialized_forward_event_contract	34109	single_nucleotide_ACGT
+1	173841078	59.931562899961136	False	0.915	sample_estimate	0.9	0.95	100	0	17	83	16586	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	32849	single_nucleotide_ACGT
+2	748933307	69.389294099994	False	0.935	sample_estimate	0.9	0.95	100	0	13	87	16116	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	33339	single_nucleotide_ACGT
+4	70936919	67.0227581000072	False	0.915	sample_estimate	0.9	0.95	100	1	15	84	16108	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	31019	single_nucleotide_ACGT
+5	1932212304	158.59228340000843	False	0.945	sample_estimate	0.9	0.95	100	1	9	90	16333	1	Neanderthal	Neanderthal	False	serialized_forward_event_contract	32505	single_nucleotide_ACGT
+7	511539269	69.29604350000227	False	0.925	sample_estimate	0.9	0.95	100	0	15	85	17250	1	Neanderthal	Neanderthal	False	serialized_forward_event_contract	35549	single_nucleotide_ACGT
+10	1852875957	126.89910809999856	False	0.94	sample_estimate	0.9	0.95	100	1	10	89	14466	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	30803	single_nucleotide_ACGT
+11	1794250453	123.43478969999704	False	0.925	sample_estimate	0.9	0.95	100	0	15	85	15415	1	Neanderthal	Neanderthal	False	serialized_forward_event_contract	29540	single_nucleotide_ACGT
+13	2064200927	209.56806449999567	False	0.87	sample_estimate	0.9	0.95	100	2	22	76	16009	1	Loschbour	Neanderthal	False	serialized_forward_event_contract	31952	single_nucleotide_ACGT
