@@ -123,6 +123,94 @@ placement AF 0.0296 ± 0.0078 (observed 0.0298 ± 0.0081), entry AF mean 0.0924
 two-way cross-check: neither the tick schedule, the migrant-based placement, nor
 the fitness callbacks are silently wrong.
 
+## Why the signal sits where it does: the admixture floor
+
+Zhang et al., *Recovering signatures of archaic hominin introgression using
+ancestral recombination graphs*, Science (2026), doi:10.1126/science.aef8874,
+makes the governing point explicit. Their method (TRACE) detects introgression
+because "introgression from a deeply divergent population introduces lineages
+that coalesce much further back in time than nonintrogressed lineages... branches
+with deep coalescence times that span the interval between the divergence time
+of the archaic and modern lineages (T_archaic) and the time of the admixture
+event (T_admix)". They run it with `t = 15,000 generations` (420 ky at 28 y/gen)
+as the branch-length cutoff.
+
+So the published, validated signature of introgression is **deep** coalescence in
+`[T_admix, T_archaic]`. run2's `P(TMRCA < x)` looks for **shallow** coalescence.
+Those are opposite ends of the same tree, and in an adaptively introgressed
+region they are in direct tension.
+
+Expected TMRCAs under `AncientEurasia_9K19` itself (msprime, 4,000 replicates):
+
+| Pair | mean | median |
+|---|---|---|
+| archaic at the pulse vs present-day Han | 62,722 gen (1.57 My) | 52,433 gen |
+| two archaic lineages at the pulse | 18,533 gen (463 ky) | 2,796 gen (69.9 ky) |
+| two present-day Han lineages, neutral | 29,772 gen (744 ky) | 14,584 gen (365 ky) |
+
+The Neanderthal Ne trajectory explains the enormous skew in the second row: it is
+192 at the pulse, so archaic lineages coalesce fast if they coalesce at all, but
+it balloons to 18,200 by 3,832 generations, so the ones that miss wait hundreds
+of thousands of years.
+
+**There is therefore a hard floor.** Every carrier of a fixed introgressed allele
+traces back through the pulse, so a pair either coalesces *after* the pulse
+(< 2,270 gen = 56.8 ky, only possible because of the sweep) or *before* it, at a
+median of ~70 ky and a mean of ~463 ky. **No cutoff below 56.8 ky can capture
+anything except sweep-driven, post-pulse coalescence.** All seven requested
+cutoffs are below the floor.
+
+That makes the shape of the result inevitable, and the pile-up is extreme:
+
+| Arm | P(TMRCA < 50 ky) | median TMRCA | mass between 50 ky and the median | width of that window |
+|---|---|---|---|---|
+| CHB | 0.235 | 2,182 gen (54.6 ky) | **0.265** | 182 generations |
+| EAS | 0.365 | 2,158 gen (53.9 ky) | **0.135** | 158 generations |
+
+A quarter of all CHB pairs coalesce in the 182 generations between the largest
+requested cutoff and the median. Moving the cutoff from 50 ky to ~57 ky — the
+floor itself — should take the CHB statistic from 0.235 to above 0.50. That is a
+concrete prediction the extended grid would test.
+
+It also explains why CHB detects worse than EAS per replicate despite nearly
+identical medians. The two arms differ in their *tails*, not their centres: a CHB
+pair that misses the sweep falls back into the archaic lineage (median 70 ky,
+mean 463 ky), whereas an EAS pair falls back into the EAS population (neutral
+median 10,522 gen vs 22,515 for CHB). Near the floor, EAS has more mass just
+above the cutoff, so it crosses first.
+
+## Does fixing the allele in the archaic source distort the truth?
+
+Short answer: **no, and the choice is conservative — but the number of founding
+haplotypes does matter, and that is the real modelling commitment.**
+
+1. **Conditional on fixation, the origin time is irrelevant.** If the allele is
+   fixed in Neanderthal at the pulse, every archaic haplotype carries it, so the
+   carrier genealogy simply *is* the archaic population genealogy. Whether
+   fixation happened 3,000 or 20,000 generations ago changes nothing about the
+   transmitted material's ancestry. The concern that fixation "could plausibly
+   have occurred anytime between the split and introgression" does not bias the
+   TMRCA truth.
+2. **Fixation is the conservative assumption, not an optimistic one.** Carriers
+   of a segregating derived allele form a clade in the gene tree at that locus,
+   so their MRCA is at most the population MRCA. Fixation is the limiting case in
+   which the clade is the entire population, which gives the *deepest possible*
+   carrier genealogy. Assuming a segregating source frequency would push carrier
+   TMRCA down and make detection easier, not harder.
+3. **The real artifact is that this is a very soft sweep.** Marking every
+   introgressing genome starts the sweep from ~30 distinct archaic haplotypes
+   whose mutual coalescence is set by the archaic Ne. Real adaptive introgression
+   usually means one favoured allele on one archaic haplotype background — a hard
+   sweep, in which every carrier coalesces at or after the pulse and TMRCA is
+   strictly below the floor. run2 sits at the soft extreme, and a single-founder
+   variant would produce a far shallower, far more detectable signal. The two
+   bracket the real case, and only the soft end has been simulated.
+
+Nothing here is a bug in the implementation; these are properties of the model
+that was specified. But they mean run2 as run measures how well a *soft*
+introgressed sweep is detected by a *shallow-coalescence* statistic evaluated
+*below the admixture floor* — three choices that each work against detection.
+
 ## What should change
 
 1. **Extend the threshold grid past the sweep onset.** Add 60, 75, 100 and
