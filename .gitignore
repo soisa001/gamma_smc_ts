@@ -34,3 +34,7 @@ sim_results_run2/logs/
 sim_results_run3/*/selected/replicates/
 sim_results_run3/*/neutral/replicates/
 sim_results_run3/logs/
+
+sim_results_run4/*/selected/replicates/
+sim_results_run4/*/neutral/replicates/
+sim_results_run4/logs/

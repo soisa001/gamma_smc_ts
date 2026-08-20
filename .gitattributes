@@ -34,3 +34,4 @@ sim_results_run2/run.sh -text
 
 scripts/bootstrap_run3.sh -text
 sim_results_run3/run.sh -text
+sim_results_run4/run.sh -text

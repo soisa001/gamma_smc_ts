@@ -1,0 +1,168 @@
+{
+  "generation_time_years": 29.0,
+  "label": "CHB de novo hard sweep (positive control)",
+  "modes": {
+    "neutral": {
+      "model": {
+        "arm_id": "chb_denovo",
+        "conditioned_on_survival": false,
+        "demographic_model_id": "OutOfAfricaArchaicAdmixture_5R19",
+        "extended_events": [],
+        "generation_time_years": 29.0,
+        "mode": "neutral",
+        "origin": "denovo",
+        "schema": "gamma-smc.run4-model/v1",
+        "selection_coefficient": 0.0,
+        "selection_onset_generations": 205.0,
+        "stdpopsim_version": "0.3.0",
+        "target_population": "CHB",
+        "target_population_id": 2,
+        "tick_schedule": {
+          "generation_time_years": 29.0,
+          "realized_generations_ago": {
+            "present": 0.0,
+            "selection_onset": 205.0
+          },
+          "realized_years_ago": {
+            "present": 0.0,
+            "selection_onset": 5945.0
+          },
+          "scaling_factor": 5.0,
+          "selection_intervals_generations_ago": [
+            {
+              "end": 0.0,
+              "population": "CHB",
+              "start": 205.0
+            }
+          ],
+          "tick_offsets_before_final_tick": {
+            "present": 0,
+            "selection_onset": 41
+          }
+        }
+      },
+      "script_checks": {
+        "arm_id": "chb_denovo",
+        "conditioned_on_survival": false,
+        "drawn_mutation_rows": 0,
+        "fitness_callback_rows": 0,
+        "mode": "neutral",
+        "passed": true
+      },
+      "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\chb_denovo\\validation\\neutral.slim"
+    },
+    "selected": {
+      "model": {
+        "arm_id": "chb_denovo",
+        "conditioned_on_survival": true,
+        "demographic_model_id": "OutOfAfricaArchaicAdmixture_5R19",
+        "extended_events": [
+          {
+            "event_type": "DrawMutation",
+            "population": "CHB",
+            "single_site_id": "run4_focal_site",
+            "time": {
+              "generations_ago": 205.0,
+              "semantics": "exact_generation"
+            }
+          },
+          {
+            "dominance_coefficient": 0.5,
+            "end_time": {
+              "generations_ago": 0.0,
+              "semantics": "exact_generation"
+            },
+            "event_type": "ChangeMutationFitness",
+            "population": "CHB",
+            "selection_coefficient": 0.05,
+            "single_site_id": "run4_focal_site",
+            "start_time": {
+              "generations_ago": 205.0,
+              "semantics": "exact_generation"
+            }
+          },
+          {
+            "allele_frequency": 0.0,
+            "end_time": {
+              "generations_ago": 0.0,
+              "semantics": "exact_generation"
+            },
+            "event_type": "ConditionOnAlleleFrequency",
+            "operator": ">",
+            "population": "CHB",
+            "single_site_id": "run4_focal_site",
+            "start_time": {
+              "generations_ago": 205.0,
+              "semantics": "generation_after_in_forward_time"
+            }
+          }
+        ],
+        "generation_time_years": 29.0,
+        "mode": "selected",
+        "origin": "denovo",
+        "schema": "gamma-smc.run4-model/v1",
+        "selection_coefficient": 0.05,
+        "selection_onset_generations": 205.0,
+        "stdpopsim_version": "0.3.0",
+        "target_population": "CHB",
+        "target_population_id": 2,
+        "tick_schedule": {
+          "generation_time_years": 29.0,
+          "realized_generations_ago": {
+            "present": 0.0,
+            "selection_onset": 205.0
+          },
+          "realized_years_ago": {
+            "present": 0.0,
+            "selection_onset": 5945.0
+          },
+          "scaling_factor": 5.0,
+          "selection_intervals_generations_ago": [
+            {
+              "end": 0.0,
+              "population": "CHB",
+              "start": 205.0
+            }
+          ],
+          "tick_offsets_before_final_tick": {
+            "present": 0,
+            "selection_onset": 41
+          }
+        }
+      },
+      "script_checks": {
+        "arm_id": "chb_denovo",
+        "conditioned_on_survival": true,
+        "drawn_mutation_rows": 1,
+        "fitness_callback_rows": 1,
+        "mode": "selected",
+        "passed": true,
+        "selection_onset_offset": 41
+      },
+      "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\chb_denovo\\validation\\selected.slim"
+    }
+  },
+  "tick_schedule": {
+    "generation_time_years": 29.0,
+    "realized_generations_ago": {
+      "present": 0.0,
+      "selection_onset": 205.0
+    },
+    "realized_years_ago": {
+      "present": 0.0,
+      "selection_onset": 5945.0
+    },
+    "scaling_factor": 5.0,
+    "selection_intervals_generations_ago": [
+      {
+        "end": 0.0,
+        "population": "CHB",
+        "start": 205.0
+      }
+    ],
+    "tick_offsets_before_final_tick": {
+      "present": 0,
+      "selection_onset": 41
+    }
+  }
+}

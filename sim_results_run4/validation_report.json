@@ -1,0 +1,593 @@
+{
+  "arms": {
+    "chb_archaic_single_founder": {
+      "generation_time_years": 29.0,
+      "label": "CHB archaic, single founder (EPAS1-like)",
+      "modes": {
+        "neutral": {
+          "model": {
+            "arm_id": "chb_archaic_single_founder",
+            "conditioned_on_survival": false,
+            "demographic_model_id": "OutOfAfricaArchaicAdmixture_5R19",
+            "extended_events": [],
+            "generation_time_years": 29.0,
+            "mode": "neutral",
+            "origin": "archaic_single_founder",
+            "schema": "gamma-smc.run4-model/v1",
+            "selection_coefficient": 0.0,
+            "selection_onset_generations": 205.0,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "CHB",
+            "target_population_id": 2,
+            "tick_schedule": {
+              "generation_time_years": 29.0,
+              "realized_generations_ago": {
+                "archaic_fixation": 19270.0,
+                "archaic_migration_end": 640.0,
+                "archaic_split": 19275.0,
+                "chb_founding": 1240.0,
+                "present": 0.0,
+                "selection_onset": 205.0
+              },
+              "realized_years_ago": {
+                "archaic_fixation": 558830.0,
+                "archaic_migration_end": 18560.0,
+                "archaic_split": 558975.0,
+                "chb_founding": 35960.0,
+                "present": 0.0,
+                "selection_onset": 5945.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "CHB",
+                  "start": 205.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "archaic_fixation": 3854,
+                "archaic_migration_end": 128,
+                "archaic_split": 3855,
+                "chb_founding": 248,
+                "present": 0,
+                "selection_onset": 41
+              }
+            }
+          },
+          "script_checks": {
+            "arm_id": "chb_archaic_single_founder",
+            "conditioned_on_survival": false,
+            "drawn_mutation_rows": 0,
+            "fitness_callback_rows": 0,
+            "mode": "neutral",
+            "passed": true
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\chb_archaic_single_founder\\validation\\neutral.slim"
+        },
+        "selected": {
+          "model": {
+            "arm_id": "chb_archaic_single_founder",
+            "conditioned_on_survival": true,
+            "demographic_model_id": "OutOfAfricaArchaicAdmixture_5R19",
+            "extended_events": [
+              {
+                "event_type": "DrawMutation",
+                "population": "Neanderthal",
+                "single_site_id": "run4_focal_site",
+                "time": {
+                  "generations_ago": 19275.86217652958,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              },
+              {
+                "dominance_coefficient": 0.5,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ChangeMutationFitness",
+                "population": "CHB",
+                "selection_coefficient": 0.05,
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 205.0,
+                  "semantics": "exact_generation"
+                }
+              },
+              {
+                "allele_frequency": 0.0,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ConditionOnAlleleFrequency",
+                "operator": ">",
+                "population": "CHB",
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 205.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              }
+            ],
+            "generation_time_years": 29.0,
+            "mode": "selected",
+            "origin": "archaic_single_founder",
+            "schema": "gamma-smc.run4-model/v1",
+            "selection_coefficient": 0.05,
+            "selection_onset_generations": 205.0,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "CHB",
+            "target_population_id": 2,
+            "tick_schedule": {
+              "generation_time_years": 29.0,
+              "realized_generations_ago": {
+                "archaic_fixation": 19270.0,
+                "archaic_migration_end": 640.0,
+                "archaic_split": 19275.0,
+                "chb_founding": 1240.0,
+                "present": 0.0,
+                "selection_onset": 205.0
+              },
+              "realized_years_ago": {
+                "archaic_fixation": 558830.0,
+                "archaic_migration_end": 18560.0,
+                "archaic_split": 558975.0,
+                "chb_founding": 35960.0,
+                "present": 0.0,
+                "selection_onset": 5945.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "CHB",
+                  "start": 205.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "archaic_fixation": 3854,
+                "archaic_migration_end": 128,
+                "archaic_split": 3855,
+                "chb_founding": 248,
+                "present": 0,
+                "selection_onset": 41
+              }
+            }
+          },
+          "script_checks": {
+            "archaic_split_offset": 3855,
+            "arm_id": "chb_archaic_single_founder",
+            "conditioned_on_survival": true,
+            "drawn_mutation_rows": 1,
+            "fitness_callback_rows": 1,
+            "mode": "selected",
+            "passed": true,
+            "selection_onset_offset": 41
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\chb_archaic_single_founder\\validation\\selected.slim"
+        }
+      },
+      "tick_schedule": {
+        "generation_time_years": 29.0,
+        "realized_generations_ago": {
+          "archaic_fixation": 19270.0,
+          "archaic_migration_end": 640.0,
+          "archaic_split": 19275.0,
+          "chb_founding": 1240.0,
+          "present": 0.0,
+          "selection_onset": 205.0
+        },
+        "realized_years_ago": {
+          "archaic_fixation": 558830.0,
+          "archaic_migration_end": 18560.0,
+          "archaic_split": 558975.0,
+          "chb_founding": 35960.0,
+          "present": 0.0,
+          "selection_onset": 5945.0
+        },
+        "scaling_factor": 5.0,
+        "selection_intervals_generations_ago": [
+          {
+            "end": 0.0,
+            "population": "CHB",
+            "start": 205.0
+          }
+        ],
+        "tick_offsets_before_final_tick": {
+          "archaic_fixation": 3854,
+          "archaic_migration_end": 128,
+          "archaic_split": 3855,
+          "chb_founding": 248,
+          "present": 0,
+          "selection_onset": 41
+        }
+      }
+    },
+    "chb_denovo": {
+      "generation_time_years": 29.0,
+      "label": "CHB de novo hard sweep (positive control)",
+      "modes": {
+        "neutral": {
+          "model": {
+            "arm_id": "chb_denovo",
+            "conditioned_on_survival": false,
+            "demographic_model_id": "OutOfAfricaArchaicAdmixture_5R19",
+            "extended_events": [],
+            "generation_time_years": 29.0,
+            "mode": "neutral",
+            "origin": "denovo",
+            "schema": "gamma-smc.run4-model/v1",
+            "selection_coefficient": 0.0,
+            "selection_onset_generations": 205.0,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "CHB",
+            "target_population_id": 2,
+            "tick_schedule": {
+              "generation_time_years": 29.0,
+              "realized_generations_ago": {
+                "present": 0.0,
+                "selection_onset": 205.0
+              },
+              "realized_years_ago": {
+                "present": 0.0,
+                "selection_onset": 5945.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "CHB",
+                  "start": 205.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "present": 0,
+                "selection_onset": 41
+              }
+            }
+          },
+          "script_checks": {
+            "arm_id": "chb_denovo",
+            "conditioned_on_survival": false,
+            "drawn_mutation_rows": 0,
+            "fitness_callback_rows": 0,
+            "mode": "neutral",
+            "passed": true
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\chb_denovo\\validation\\neutral.slim"
+        },
+        "selected": {
+          "model": {
+            "arm_id": "chb_denovo",
+            "conditioned_on_survival": true,
+            "demographic_model_id": "OutOfAfricaArchaicAdmixture_5R19",
+            "extended_events": [
+              {
+                "event_type": "DrawMutation",
+                "population": "CHB",
+                "single_site_id": "run4_focal_site",
+                "time": {
+                  "generations_ago": 205.0,
+                  "semantics": "exact_generation"
+                }
+              },
+              {
+                "dominance_coefficient": 0.5,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ChangeMutationFitness",
+                "population": "CHB",
+                "selection_coefficient": 0.05,
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 205.0,
+                  "semantics": "exact_generation"
+                }
+              },
+              {
+                "allele_frequency": 0.0,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ConditionOnAlleleFrequency",
+                "operator": ">",
+                "population": "CHB",
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 205.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              }
+            ],
+            "generation_time_years": 29.0,
+            "mode": "selected",
+            "origin": "denovo",
+            "schema": "gamma-smc.run4-model/v1",
+            "selection_coefficient": 0.05,
+            "selection_onset_generations": 205.0,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "CHB",
+            "target_population_id": 2,
+            "tick_schedule": {
+              "generation_time_years": 29.0,
+              "realized_generations_ago": {
+                "present": 0.0,
+                "selection_onset": 205.0
+              },
+              "realized_years_ago": {
+                "present": 0.0,
+                "selection_onset": 5945.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "CHB",
+                  "start": 205.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "present": 0,
+                "selection_onset": 41
+              }
+            }
+          },
+          "script_checks": {
+            "arm_id": "chb_denovo",
+            "conditioned_on_survival": true,
+            "drawn_mutation_rows": 1,
+            "fitness_callback_rows": 1,
+            "mode": "selected",
+            "passed": true,
+            "selection_onset_offset": 41
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\chb_denovo\\validation\\selected.slim"
+        }
+      },
+      "tick_schedule": {
+        "generation_time_years": 29.0,
+        "realized_generations_ago": {
+          "present": 0.0,
+          "selection_onset": 205.0
+        },
+        "realized_years_ago": {
+          "present": 0.0,
+          "selection_onset": 5945.0
+        },
+        "scaling_factor": 5.0,
+        "selection_intervals_generations_ago": [
+          {
+            "end": 0.0,
+            "population": "CHB",
+            "start": 205.0
+          }
+        ],
+        "tick_offsets_before_final_tick": {
+          "present": 0,
+          "selection_onset": 41
+        }
+      }
+    },
+    "eas_denovo": {
+      "generation_time_years": 25.0,
+      "label": "EAS de novo hard sweep",
+      "modes": {
+        "neutral": {
+          "model": {
+            "arm_id": "eas_denovo",
+            "conditioned_on_survival": false,
+            "demographic_model_id": "PhlashEASMedian",
+            "extended_events": [],
+            "generation_time_years": 25.0,
+            "mode": "neutral",
+            "origin": "denovo",
+            "schema": "gamma-smc.run4-model/v1",
+            "selection_coefficient": 0.0,
+            "selection_onset_generations": 240.0,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "EAS",
+            "target_population_id": 0,
+            "tick_schedule": {
+              "generation_time_years": 25.0,
+              "realized_generations_ago": {
+                "present": 0.0,
+                "selection_onset": 240.0
+              },
+              "realized_years_ago": {
+                "present": 0.0,
+                "selection_onset": 6000.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "EAS",
+                  "start": 240.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "present": 0,
+                "selection_onset": 48
+              }
+            }
+          },
+          "script_checks": {
+            "arm_id": "eas_denovo",
+            "conditioned_on_survival": false,
+            "drawn_mutation_rows": 0,
+            "fitness_callback_rows": 0,
+            "mode": "neutral",
+            "passed": true
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\eas_denovo\\validation\\neutral.slim"
+        },
+        "selected": {
+          "model": {
+            "arm_id": "eas_denovo",
+            "conditioned_on_survival": true,
+            "demographic_model_id": "PhlashEASMedian",
+            "extended_events": [
+              {
+                "event_type": "DrawMutation",
+                "population": "EAS",
+                "single_site_id": "run4_focal_site",
+                "time": {
+                  "generations_ago": 240.0,
+                  "semantics": "exact_generation"
+                }
+              },
+              {
+                "dominance_coefficient": 0.5,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ChangeMutationFitness",
+                "population": "EAS",
+                "selection_coefficient": 0.05,
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 240.0,
+                  "semantics": "exact_generation"
+                }
+              },
+              {
+                "allele_frequency": 0.0,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ConditionOnAlleleFrequency",
+                "operator": ">",
+                "population": "EAS",
+                "single_site_id": "run4_focal_site",
+                "start_time": {
+                  "generations_ago": 240.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              }
+            ],
+            "generation_time_years": 25.0,
+            "mode": "selected",
+            "origin": "denovo",
+            "schema": "gamma-smc.run4-model/v1",
+            "selection_coefficient": 0.05,
+            "selection_onset_generations": 240.0,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "EAS",
+            "target_population_id": 0,
+            "tick_schedule": {
+              "generation_time_years": 25.0,
+              "realized_generations_ago": {
+                "present": 0.0,
+                "selection_onset": 240.0
+              },
+              "realized_years_ago": {
+                "present": 0.0,
+                "selection_onset": 6000.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "EAS",
+                  "start": 240.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "present": 0,
+                "selection_onset": 48
+              }
+            }
+          },
+          "script_checks": {
+            "arm_id": "eas_denovo",
+            "conditioned_on_survival": true,
+            "drawn_mutation_rows": 1,
+            "fitness_callback_rows": 1,
+            "mode": "selected",
+            "passed": true,
+            "selection_onset_offset": 48
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run4\\eas_denovo\\validation\\selected.slim"
+        }
+      },
+      "tick_schedule": {
+        "generation_time_years": 25.0,
+        "realized_generations_ago": {
+          "present": 0.0,
+          "selection_onset": 240.0
+        },
+        "realized_years_ago": {
+          "present": 0.0,
+          "selection_onset": 6000.0
+        },
+        "scaling_factor": 5.0,
+        "selection_intervals_generations_ago": [
+          {
+            "end": 0.0,
+            "population": "EAS",
+            "start": 240.0
+          }
+        ],
+        "tick_offsets_before_final_tick": {
+          "present": 0,
+          "selection_onset": 48
+        }
+      }
+    }
+  },
+  "elapsed_seconds": 11.405900300014764,
+  "environment": {
+    "slim_checked": false
+  },
+  "passed": true,
+  "schema": "gamma-smc.run4-validation/v1",
+  "seeds": {
+    "n_seeds": 600,
+    "passed": true,
+    "unique": true
+  },
+  "shared_parameters": {
+    "allele_survival_conditioning": null,
+    "calibration_target": "EPAS1",
+    "dominance_coefficient": 0.5,
+    "focal_position_0based": 5000000,
+    "mutation_rate_per_bp_per_generation": 1.25e-08,
+    "n_replicates_per_mode": 100,
+    "neutral_contains_focal_allele": false,
+    "p_value_floor": 0.009900990099009901,
+    "p_value_rule": "(1 + #{null >= observed}) / (1 + n_null), one-sided upper tail",
+    "present_day_af_conditioning": null,
+    "profile_stride_bp": 10000,
+    "raw_tmrca_stored": true,
+    "recombination_rate_per_bp_per_generation": 1e-08,
+    "sample_diploids": 100,
+    "seed_base": 20260821,
+    "selection_coefficient": 0.05,
+    "selection_onset_years": 6000.0,
+    "sequence_length_bp": 10000000,
+    "significance_level": 0.05,
+    "slim_burn_in": 0.1,
+    "slim_scaling_factor": 5.0,
+    "sources": [
+      "tree_truth",
+      "gamma_smc"
+    ],
+    "statistic": "overall within-individual P(TMRCA < x) at the focal position, over all sampled diploids",
+    "tmrca_thresholds_years": [
+      1000.0,
+      4500.0,
+      10000.0,
+      20000.0,
+      30000.0,
+      40000.0,
+      50000.0
+    ]
+  }
+}
