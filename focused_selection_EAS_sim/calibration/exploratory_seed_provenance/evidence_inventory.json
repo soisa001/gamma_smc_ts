@@ -1,0 +1,156 @@
+{
+  "canonical_reservation": {
+    "path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/exploratory_seed_reservation.tsv",
+    "rows": 344,
+    "sha256": "8b67cda45d5bf9f37d753be5c80240bbc25b5a757d7a2e9d2ba09c9dd1b2fab7",
+    "unique_seed_count": 344,
+    "unique_seed_sha256": "22e28351535828559093f24461439c5ce406855657a904aca86599a764e45eb1"
+  },
+  "canonicalization": {
+    "obsolete_completion_panel_seed": 618918501,
+    "one_row_per_unique_rng_seed": true,
+    "pilot_refine_missing_labels": [
+      "pilot__recipient_nonloss__s0.010__af0.10__m0.250__draw009",
+      "pilot__recipient_nonloss__s0.010__af0.10__m0.250__draw010"
+    ],
+    "pilot_refine_observed_results": 22,
+    "pilot_refine_submitted_grid": "mode=recipient_nonloss;s=0.010;af=0.10;m in {0.200,0.250};draw=000..011;base_seed=20260813;sha256_stable_seed",
+    "pilot_refine_submitted_results": 24
+  },
+  "categories": [
+    {
+      "direct_seed_count": 160,
+      "direct_seed_sha256": "b6f0a959128bee34b17ef5650378ecc7f3ce21769d65c8831708e8255aa307ca",
+      "previously_omitted_seed_count": 80,
+      "previously_omitted_seed_sha256": "ef502cf539f26d5ad953bee99bc3b5865202318585a45436a4b955ce06049c52",
+      "source_group": "fixed_partial"
+    },
+    {
+      "direct_seed_count": 88,
+      "direct_seed_sha256": "9dcc9b7022247cf8154ac3ead5aa53a44211f0e9e7c25c3b012e1cc5305ae43f",
+      "previously_omitted_seed_count": 88,
+      "previously_omitted_seed_sha256": "9dcc9b7022247cf8154ac3ead5aa53a44211f0e9e7c25c3b012e1cc5305ae43f",
+      "source_group": "pilots_union"
+    },
+    {
+      "direct_seed_count": 93,
+      "direct_seed_sha256": "4db393fdd7f794bc1facc4ad6f82f0968fa1b142c5641d668069cd399aabd8c7",
+      "previously_omitted_seed_count": 43,
+      "previously_omitted_seed_sha256": "be50a27f9ae8aeff2a3da39919275dad59bb65409ae4f077f890d6c49fdf893d",
+      "source_group": "obsolete_selected_including_panel"
+    },
+    {
+      "direct_seed_count": 3,
+      "direct_seed_sha256": "8af5f7983079f25a76c39edd123d40d258734a2da45e186345a079c2414629d1",
+      "previously_omitted_seed_count": 1,
+      "previously_omitted_seed_sha256": "8a5da7b3ada3448098dcff020d86d4b0de5c00fa429f63d4291018aad93deb33",
+      "source_group": "neutral_smoke"
+    }
+  ],
+  "endpoint_rule_changed_after_exploratory_screen": true,
+  "evidence": [
+    {
+      "archive_bytes": 55983,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/fixed_cessation_q5_not_frozen/terminal_draws_partial.tsv",
+      "archive_sha256": "fcef66f73a260262034a4f1b97b1f24d9c6c738223fe82a62d6b4f9ae6f178d7",
+      "canonical_direct_seed_count": 160,
+      "canonical_direct_seed_sha256": "b6f0a959128bee34b17ef5650378ecc7f3ce21769d65c8831708e8255aa307ca",
+      "evidence_id": "fixed_partial_terminal_draws",
+      "original_path": "focused_selection_EAS_sim/calibration/fixed_cessation_q5_not_frozen/terminal_draws_partial.tsv",
+      "original_sha256": "fcef66f73a260262034a4f1b97b1f24d9c6c738223fe82a62d6b4f9ae6f178d7",
+      "original_status": "partial_fixed_cessation_draw_ledger_160_rows"
+    },
+    {
+      "archive_bytes": 9011,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/calibration_pilots/successful_transfer_s001_af010_n8.tsv",
+      "archive_sha256": "b6bb0d63d08f376c2cc1c3398f06f88d4e08d91e15c2718953cdf09fd6fd9977",
+      "canonical_direct_seed_count": 32,
+      "canonical_direct_seed_sha256": "ede9e68e358942d235382e4e4295d0833a0649b33e09470f9ba3b7cddeb47686",
+      "evidence_id": "pilot_successful_transfer_n8",
+      "original_path": "tmp/calibration_pilots/successful_transfer_s001_af010_n8.tsv",
+      "original_sha256": "b6bb0d63d08f376c2cc1c3398f06f88d4e08d91e15c2718953cdf09fd6fd9977",
+      "original_status": "complete_32_of_32_rows"
+    },
+    {
+      "archive_bytes": 41803,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/calibration_pilots/recipient_nonloss_s001_af010_n8.tsv",
+      "archive_sha256": "55010cead211ae4e61f47e06b5f079769605bb18a083243235d383b6c36ddcda",
+      "canonical_direct_seed_count": 40,
+      "canonical_direct_seed_sha256": "a202b899f46be93f8f3d55aeed81ebb70554848c8e395f6989840ed445edb4bf",
+      "evidence_id": "pilot_recipient_nonloss_n8",
+      "original_path": "tmp/calibration_pilots/recipient_nonloss_s001_af010_n8.tsv",
+      "original_sha256": "55010cead211ae4e61f47e06b5f079769605bb18a083243235d383b6c36ddcda",
+      "original_status": "complete_40_of_40_rows"
+    },
+    {
+      "archive_bytes": 68076,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/calibration_pilots/recipient_nonloss_s001_af010_refine_n12.log",
+      "archive_sha256": "bf20a252dd83abc9afdd3a19f1cff371b9a3da251c0b647186a5f50e2aef6345",
+      "canonical_direct_seed_count": 24,
+      "canonical_direct_seed_sha256": "5a78351e6c68d707a2b8de4dac958b3a4fdf297f4837005213518e094f295062",
+      "evidence_id": "pilot_recipient_nonloss_refine_n12_log",
+      "original_path": "tmp/calibration_pilots/recipient_nonloss_s001_af010_refine_n12.log",
+      "original_sha256": "bf20a252dd83abc9afdd3a19f1cff371b9a3da251c0b647186a5f50e2aef6345",
+      "original_status": "partial_22_of_24_submitted_results_observed_two_deterministic_labels_reserved"
+    },
+    {
+      "archive_bytes": 11326,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/calibration_pilots/han_calibration_pilot.py",
+      "archive_sha256": "0d471762cd932798398f82426e8ac8ad31759fb3929d9442b084da7772331129",
+      "canonical_direct_seed_count": 0,
+      "canonical_direct_seed_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_id": "pilot_source",
+      "original_path": "tmp/han_calibration_pilot.py",
+      "original_sha256": "0d471762cd932798398f82426e8ac8ad31759fb3929d9442b084da7772331129",
+      "original_status": "exploratory_source_snapshot"
+    },
+    {
+      "archive_bytes": 9222,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/obsolete_selected_rep008/attempts.tsv",
+      "archive_sha256": "e1e314ff464a43e0ac180ec65e6c093885ad17de4f0512de1d0d1d688effe54d",
+      "canonical_direct_seed_count": 92,
+      "canonical_direct_seed_sha256": "6a1c5d2b5abec462f50a9f73dfc224763d1606fdfd79252298b67d471343ada0",
+      "evidence_id": "obsolete_selected_rep008_attempts",
+      "original_path": "focused_selection_EAS_sim/work/_obsolete_han_pool_af_mismatch_20260813_0345/ancient_eurasia_han_introgression__af20__selected_s0p005__rep008/attempts.tsv",
+      "original_sha256": "e1e314ff464a43e0ac180ec65e6c093885ad17de4f0512de1d0d1d688effe54d",
+      "original_status": "obsolete_long_selected_attempt_ledger_92_rows"
+    },
+    {
+      "archive_bytes": 10785,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/obsolete_selected_rep008/simulation_complete.json",
+      "archive_sha256": "11fa599514596ef5dab240c5834dd847bfdd770206c151367c08a1a3e02e2007",
+      "canonical_direct_seed_count": 1,
+      "canonical_direct_seed_sha256": "763f852128a237f653040c4e7a283438288b6d90b9cdd892c68fdff06e132a33",
+      "evidence_id": "obsolete_selected_rep008_completion",
+      "original_path": "focused_selection_EAS_sim/work/_obsolete_han_pool_af_mismatch_20260813_0345/ancient_eurasia_han_introgression__af20__selected_s0p005__rep008/simulation_complete.json",
+      "original_sha256": "11fa599514596ef5dab240c5834dd847bfdd770206c151367c08a1a3e02e2007",
+      "original_status": "obsolete_selected_accepted_completion_panel_seed"
+    },
+    {
+      "archive_bytes": 211,
+      "archive_path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/evidence/neutral_smoke_intro/attempts.tsv",
+      "archive_sha256": "35deb80315beb88d0e1765b8b06f84d4cc2cfbebd39bf8d9ba0f1f9855b7512d",
+      "canonical_direct_seed_count": 3,
+      "canonical_direct_seed_sha256": "8af5f7983079f25a76c39edd123d40d258734a2da45e186345a079c2414629d1",
+      "evidence_id": "neutral_smoke_intro_attempts",
+      "original_path": "focused_selection_EAS_sim/work/smoke_intro_neutral/attempts.tsv",
+      "original_sha256": "35deb80315beb88d0e1765b8b06f84d4cc2cfbebd39bf8d9ba0f1f9855b7512d",
+      "original_status": "neutral_smoke_accepted_attempt"
+    }
+  ],
+  "inference_use": false,
+  "prearchive_v2_overlap": {
+    "unique_seed_count": 132,
+    "unique_seed_sha256": "5cdf89651a104131d1034cf48bb345cbb2333df7810aedc9de5e05f12729cc31"
+  },
+  "previously_omitted_reservation": {
+    "path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/previously_omitted_seed_reservation.tsv",
+    "rows": 212,
+    "sha256": "78fd150ff52ddcc83ea7b4b27c1fecbdfdcff7813f63bc96a5a9c0c96eed37e5",
+    "unique_seed_count": 212,
+    "unique_seed_sha256": "3373a7db6c2ef5dc5d8d6e1036a8039f6b65d256db75129d66703ef926296f9d"
+  },
+  "purpose": "Reserve every RNG seed observed or deterministically submitted in exploratory, partial, obsolete, and smoke Han work before fresh fixed-v2 inference.",
+  "schema": "gamma-smc.han-fixed-cessation-v2-exploratory-seed-provenance/v1",
+  "status": "canonical_immutable_seed_evidence"
+}

@@ -1,0 +1,2 @@
+attempt_zero_based	ancestry_seed	candidate_seed	mutation_seed	n_eligible_branch_rectangles	n_trees	n_migrations	elapsed_seconds	accepted
+0	167646950	623335483	1639712130	114	43146	9134	4.5869791000004625	True

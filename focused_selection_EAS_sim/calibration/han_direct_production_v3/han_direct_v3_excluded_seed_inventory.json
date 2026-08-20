@@ -1,0 +1,216 @@
+{
+  "canonical_allowlist": [
+    "focused_selection_EAS_sim/execution_units.tsv",
+    "focused_selection_EAS_sim/calibration/eas_selected/screen20_plan.tsv",
+    "focused_selection_EAS_sim/calibration/eas_selected/confirm100_plan.tsv",
+    "focused_selection_EAS_sim/calibration/eas_selected/sensitivity10mb20_plan.tsv",
+    "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/exploratory_seed_reservation.tsv",
+    "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/previously_omitted_seed_reservation.tsv",
+    "focused_selection_EAS_sim/calibration/han_fixed_cessation_v2/han_fixed_v2_all_phase_plan.tsv",
+    "focused_selection_EAS_sim/calibration/han_frequency_conditioned_all_phase_plan.tsv",
+    "focused_selection_EAS_sim/calibration/han_selection_end_plan.tsv",
+    "focused_selection_EAS_sim/calibration/han_selection_end_extension_plan.tsv",
+    "focused_selection_EAS_sim/calibration/han_selection_end_reconciliation_plan.tsv",
+    "focused_selection_EAS_sim/calibration/han_selection_end_terminal_draws_reconciled.tsv",
+    "focused_selection_EAS_sim/calibration/han_fixed_v2_retry_quarantine/20260813T113900-0500_panel_seed_result_contract/planning_bundle/han_fixed_v2_all_phase_plan.tsv"
+  ],
+  "canonical_allowlist_source": "python/gamma_smc_aou/focused_han_direct_v3.py",
+  "canonical_artifacts": [
+    {
+      "category": "eas",
+      "direct_seed_sha256": "bff64af0550e7fc5a1170794ed456d7d8f3bc7c6fa82d99fd5657fb72504a2a0",
+      "direct_unique_count": 1200,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/eas_selected/confirm100_plan.tsv",
+      "reserved_seed_sha256": "bff64af0550e7fc5a1170794ed456d7d8f3bc7c6fa82d99fd5657fb72504a2a0",
+      "reserved_unique_count": 1200,
+      "rows": 600,
+      "seed_columns": [
+        "seed",
+        "panel_seed"
+      ],
+      "sha256": "29e10fe083d1f130fba6333fa02b74fd035cb8b25f7996a0183db8cb864d7710"
+    },
+    {
+      "category": "eas",
+      "direct_seed_sha256": "4a2753809f9342513986d1669dd00b431ac955eb50759d01309bcd8361dbc90c",
+      "direct_unique_count": 240,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/eas_selected/screen20_plan.tsv",
+      "reserved_seed_sha256": "4a2753809f9342513986d1669dd00b431ac955eb50759d01309bcd8361dbc90c",
+      "reserved_unique_count": 240,
+      "rows": 120,
+      "seed_columns": [
+        "seed",
+        "panel_seed"
+      ],
+      "sha256": "8644b88256f6adb53d3a0c2965b2ef334f05428c5c35f0b03b70b3cb855c323b"
+    },
+    {
+      "category": "eas",
+      "direct_seed_sha256": "9b146c463615f1d2d14bf849c38746f42340fb1f57061b76d8b2ac8c99613506",
+      "direct_unique_count": 240,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/eas_selected/sensitivity10mb20_plan.tsv",
+      "reserved_seed_sha256": "9b146c463615f1d2d14bf849c38746f42340fb1f57061b76d8b2ac8c99613506",
+      "reserved_unique_count": 240,
+      "rows": 120,
+      "seed_columns": [
+        "seed",
+        "panel_seed"
+      ],
+      "sha256": "de613ef6e51dc517b9d96ea843e5e460b44d1a73d0581bb9366fd47d1d4bd8ab"
+    },
+    {
+      "category": "exploratory",
+      "direct_seed_sha256": "22e28351535828559093f24461439c5ce406855657a904aca86599a764e45eb1",
+      "direct_unique_count": 344,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/exploratory_seed_reservation.tsv",
+      "reserved_seed_sha256": "22e28351535828559093f24461439c5ce406855657a904aca86599a764e45eb1",
+      "reserved_unique_count": 344,
+      "rows": 344,
+      "seed_columns": [
+        "seed"
+      ],
+      "sha256": "8b67cda45d5bf9f37d753be5c80240bbc25b5a757d7a2e9d2ba09c9dd1b2fab7"
+    },
+    {
+      "category": "exploratory",
+      "direct_seed_sha256": "3373a7db6c2ef5dc5d8d6e1036a8039f6b65d256db75129d66703ef926296f9d",
+      "direct_unique_count": 212,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/exploratory_seed_provenance/previously_omitted_seed_reservation.tsv",
+      "reserved_seed_sha256": "3373a7db6c2ef5dc5d8d6e1036a8039f6b65d256db75129d66703ef926296f9d",
+      "reserved_unique_count": 212,
+      "rows": 212,
+      "seed_columns": [
+        "seed"
+      ],
+      "sha256": "78fd150ff52ddcc83ea7b4b27c1fecbdfdcff7813f63bc96a5a9c0c96eed37e5"
+    },
+    {
+      "category": "v2",
+      "direct_seed_sha256": "4d8f15a7ff8e62196e32cd41c2002045fcb02259d04c80f34ed6d7c6c6dd5a53",
+      "direct_unique_count": 1440,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/han_fixed_cessation_v2/han_fixed_v2_all_phase_plan.tsv",
+      "reserved_seed_sha256": "4d8f15a7ff8e62196e32cd41c2002045fcb02259d04c80f34ed6d7c6c6dd5a53",
+      "reserved_unique_count": 1440,
+      "rows": 720,
+      "seed_columns": [
+        "seed",
+        "panel_seed"
+      ],
+      "sha256": "d5891b622fdeb5153deb6ea3d7d19b58a14836bf64a504b71f74b6a4f14c5e7c"
+    },
+    {
+      "category": "v2",
+      "direct_seed_sha256": "4d8f15a7ff8e62196e32cd41c2002045fcb02259d04c80f34ed6d7c6c6dd5a53",
+      "direct_unique_count": 1440,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/han_fixed_v2_retry_quarantine/20260813T113900-0500_panel_seed_result_contract/planning_bundle/han_fixed_v2_all_phase_plan.tsv",
+      "reserved_seed_sha256": "4d8f15a7ff8e62196e32cd41c2002045fcb02259d04c80f34ed6d7c6c6dd5a53",
+      "reserved_unique_count": 1440,
+      "rows": 720,
+      "seed_columns": [
+        "seed",
+        "panel_seed"
+      ],
+      "sha256": "d5891b622fdeb5153deb6ea3d7d19b58a14836bf64a504b71f74b6a4f14c5e7c"
+    },
+    {
+      "category": "v1",
+      "direct_seed_sha256": "8e4586e299a32f325e7a8e4d703194f547d3fe3b26977603fa31fd91495fef56",
+      "direct_unique_count": 1680,
+      "expansion": "explicit_seed_columns",
+      "path": "focused_selection_EAS_sim/calibration/han_frequency_conditioned_all_phase_plan.tsv",
+      "reserved_seed_sha256": "8e4586e299a32f325e7a8e4d703194f547d3fe3b26977603fa31fd91495fef56",
+      "reserved_unique_count": 1680,
+      "rows": 840,
+      "seed_columns": [
+        "seed",
+        "panel_seed"
+      ],
+      "sha256": "7b19b6e077093a89cd23f96e8dc89468cf249bf44cbaed82aef28979e0b5cf15"
+    },
+    {
+      "category": "v1",
+      "direct_seed_sha256": "d3ba06e10a1cd7adbfa3548a7fce9a0e685eea09706d2ef1e75451f266e8efbf",
+      "direct_unique_count": 240,
+      "expansion": "explicit_seed_columns+legacy_sensitivity_panel_derivation",
+      "path": "focused_selection_EAS_sim/calibration/han_selection_end_extension_plan.tsv",
+      "reserved_seed_sha256": "0cc62f799f199117170eca70afc08768b4c167ec796827f21bf9e28701ca86d4",
+      "reserved_unique_count": 480,
+      "rows": 240,
+      "seed_columns": [
+        "seed",
+        "seed_namespace"
+      ],
+      "sha256": "bffe67b1b2324583b4be1418350694ace74909f39336b99222acdb77d089689b"
+    },
+    {
+      "category": "v1",
+      "direct_seed_sha256": "ecb99067cbf34725db62228bee9e6a6fc478e26b191b9d30528b3977efdf6a44",
+      "direct_unique_count": 840,
+      "expansion": "explicit_seed_columns+legacy_sensitivity_panel_derivation",
+      "path": "focused_selection_EAS_sim/calibration/han_selection_end_plan.tsv",
+      "reserved_seed_sha256": "b406afa1d25174523dd694004d7beeca2112c0cd9505b69466e99d571471aeed",
+      "reserved_unique_count": 1680,
+      "rows": 840,
+      "seed_columns": [
+        "seed"
+      ],
+      "sha256": "94fea8962e99c9fc04265855e575df01ab43839bf58dbfb17738db8d1567fcb1"
+    },
+    {
+      "category": "v1",
+      "direct_seed_sha256": "b38c30dcf6f5705752284a5e62436014e4464ca9aa9efaf7a8ad1de4c41f4472",
+      "direct_unique_count": 3,
+      "expansion": "explicit_seed_columns+legacy_sensitivity_panel_derivation",
+      "path": "focused_selection_EAS_sim/calibration/han_selection_end_reconciliation_plan.tsv",
+      "reserved_seed_sha256": "6e85cf5991c6fc3024a306a5ded717a91c6b92db12207007cf512207fba4a259",
+      "reserved_unique_count": 6,
+      "rows": 3,
+      "seed_columns": [
+        "seed"
+      ],
+      "sha256": "49c86d8ae15ca2e92d5e986998fe7b7db26803264a88981a50ec4ef6609cd9ee"
+    },
+    {
+      "category": "v1",
+      "direct_seed_sha256": "ecb99067cbf34725db62228bee9e6a6fc478e26b191b9d30528b3977efdf6a44",
+      "direct_unique_count": 840,
+      "expansion": "explicit_seed_columns+legacy_sensitivity_panel_derivation",
+      "path": "focused_selection_EAS_sim/calibration/han_selection_end_terminal_draws_reconciled.tsv",
+      "reserved_seed_sha256": "b406afa1d25174523dd694004d7beeca2112c0cd9505b69466e99d571471aeed",
+      "reserved_unique_count": 1680,
+      "rows": 840,
+      "seed_columns": [
+        "seed"
+      ],
+      "sha256": "9b9f610f150a1edbce6dce318cd3a376256b7ca1adf20360858aefd29eb288aa"
+    },
+    {
+      "category": "production",
+      "direct_seed_sha256": "3b09e1588bc1524945c664b150b346bfb1055e8191c0c51d782a24abed812ca3",
+      "direct_unique_count": 720,
+      "expansion": "production_bases_plus_300_draw_selected_fallback_namespace",
+      "path": "focused_selection_EAS_sim/execution_units.tsv",
+      "reserved_seed_sha256": "6f54de2e078ae460c3bc4bd6b8491c7d48a64e3116409ef270ce3977115f4dea",
+      "reserved_unique_count": 267706,
+      "rows": 720,
+      "seed_columns": [
+        "seed"
+      ],
+      "sha256": "8ea5d2a930e755f5e588bd0a824c3ac03cd9d66ac252c8344d20099356ee07e9"
+    }
+  ],
+  "excluded_union_count": 274834,
+  "excluded_union_sha256": "2a03904161517b08992173037bfb8a277b45e86b4811c7223af32fe2bd4dd3dc",
+  "local_evidence_planning_authority": false,
+  "local_subset_evidence": [],
+  "payload_sha256": "3e98337afffe02de3333de3fd198f58d9ae5747e194ff1cf6601d4531a1458dd",
+  "schema": "gamma-smc.han-direct-production-v3-excluded-seed-inventory/v1",
+  "status": "frozen_at_atomic_plan_publication"
+}

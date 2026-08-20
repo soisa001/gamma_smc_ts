@@ -1,0 +1,306 @@
+{
+  "attempts_completed": 92,
+  "contract": {
+    "implementation": {
+      "eas_resource_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+      "slim": {
+        "path": ".native-stdpopsim/bin/slim",
+        "sha256": "67409ff190808c2967c949cae6697bf235010dbe832389cb4976d9089b5f5e1d"
+      },
+      "sources": {
+        "python/gamma_smc_aou/eas_sweep_analysis.py": "e8f30519c986416daf4d4bb825aef459d226b8ade90606286d96bed603d4abe6",
+        "python/gamma_smc_aou/eas_sweep_models.py": "365854b146d4512b6443d8dc28abaae4e53d7ee0ad5403d03536e06e8b016ae6",
+        "python/gamma_smc_aou/focused_selection_simulation.py": "f2f6a7a5e563a38c8b18300285d04d4216c1eb8f0b93330f1b452f7b5650cf9a"
+      }
+    },
+    "parameters": {
+      "introgression_mutation_age_generations": 2400.0,
+      "introgression_source_presence_epsilon": 1e-09,
+      "neutral_ancestry_batch_size": 4,
+      "selected_pool_diploids": 500,
+      "slim_burn_in": 0.1,
+      "slim_scaling_factor": 10.0
+    },
+    "schema": "gamma-smc.focused-selection-simulation/v2",
+    "software": {
+      "msprime": "1.4.2",
+      "numpy": "2.4.6",
+      "pandas": "3.0.3",
+      "pyslim": "1.1.1",
+      "python": "3.11.15",
+      "stdpopsim": "0.3.0",
+      "tskit": "1.0.3"
+    },
+    "unit": {
+      "demography_id": "ancient_eurasia_han_introgression",
+      "demography_kind": "introgression",
+      "exact_sample_alt_count": 40,
+      "focal_position_bp": 5000000,
+      "population": "Han",
+      "population_af_lower": 0.175,
+      "population_af_upper": 0.225,
+      "replicate_index": 8,
+      "sample_diploids": 100,
+      "seed": 918664286,
+      "selection_coefficient": 0.005,
+      "selection_origin": "archaic_specific_introgressed_standing_variation",
+      "sequence_length_bp": 10000000,
+      "simulation_class": "selected",
+      "source_model": "stdpopsim AncientEurasia_9K19",
+      "target_allele_frequency": 0.2,
+      "unit_id": "ancient_eurasia_han_introgression__af20__selected_s0p005__rep008"
+    }
+  },
+  "contract_sha256": "5ce620886c587b5be86e45b4cd284eece5ed471d6910a207964284c0025f02a7",
+  "elapsed_seconds": 772.4155384950001,
+  "genotype_counts": {
+    "heterozygous": 30,
+    "hom_alt": 5,
+    "hom_ref": 65
+  },
+  "outputs": {
+    "overall_pairs": {
+      "path": "pairs/overall.pairs.tsv",
+      "sha256": "b4f8594c24d7ed924ffd44c90d22de68a7af13aba2d3264464a298e41e9444bd"
+    },
+    "pair_table": {
+      "path": "sample_manifest.tsv",
+      "sha256": "b60c841ac6d18df38a8e26c4d840d2f8e5690b7eb5b7d487e7b3b915732cb2fb"
+    },
+    "tree": {
+      "path": "simulation.trees",
+      "sha256": "c0322654fa12fd8bdbd2909dd3650d1fea7a9e91bd19e899f0fadf1e368f9855"
+    },
+    "truth_class_summaries": {
+      "path": "truth_class_summaries.tsv",
+      "sha256": "9939dc39f18b7de88fd7069c706c914a7a0ae86bc38af37f87276db34ec14581"
+    },
+    "truth_profiles": {
+      "path": "truth_profiles.tsv.gz",
+      "sha256": "7be78990108b18c1219f0a9f1d04e9ccb53e2db669dce877a125ec43cf1a3d23"
+    }
+  },
+  "provenance": {
+    "accepted_draw_zero_based": 91,
+    "accepted_seed": 1266213069,
+    "cumulative_timeout_seconds": 5400.0,
+    "draw_timeout_seconds": 300.0,
+    "engine": "stdpopsim_slim",
+    "pyslim_version": "1.1.1",
+    "sample_panel": {
+      "candidate_pool_diploids": 500,
+      "candidate_pool_genotype_counts": {
+        "heterozygous": 237,
+        "hom_alt": 153,
+        "hom_ref": 110
+      },
+      "chosen_sample_genotype_counts": {
+        "heterozygous": 30,
+        "hom_alt": 5,
+        "hom_ref": 65
+      },
+      "eligible_genotype_count_triples": 18,
+      "panel_seed": 618918501,
+      "selection_method": "uniform_over_all_size_N_exact_alt_count_subsets_passing_genotype_qc"
+    },
+    "selection_duration_derivation": {
+      "effective_logistic_rate_per_generation": 0.0025,
+      "expected_post_pulse_initial_frequency": 0.00185,
+      "selection_duration_generations": 1961.7694261634153,
+      "selection_end_generations_ago": 310.23057383658465
+    },
+    "slim_burn_in": 0.1,
+    "slim_path": "/mnt/c/Users/Lenovo/codex/gamma_smc_ts/.native-stdpopsim/bin/slim",
+    "slim_scaling_factor": 10.0,
+    "slim_sha256": "67409ff190808c2967c949cae6697bf235010dbe832389cb4976d9089b5f5e1d",
+    "stdpopsim_version": "0.3.0",
+    "sweep": {
+      "contig": {
+        "focal_interval_zero_based_half_open": [
+          5000000,
+          5000001
+        ],
+        "focal_mutation_draw_count": 1,
+        "mutation_rate_per_bp_per_generation": 1.25e-08,
+        "ordinary_mutation_overlay_at_focal_base": false,
+        "recombination_rate_per_bp_per_generation": 1e-08,
+        "recurrence_at_focal_base": false,
+        "sequence_length_bp": 10000000,
+        "single_site_api": "stdpopsim.Contig.add_single_site",
+        "single_site_id": "eas_selected_site"
+      },
+      "demographic_model": "AncientEurasia_9K19",
+      "extended_events": [
+        {
+          "event_type": "DrawMutation",
+          "population": "Neanderthal",
+          "single_site_id": "eas_selected_site",
+          "time": {
+            "generations_ago": 2400.0,
+            "semantics": "exact_generation"
+          }
+        },
+        {
+          "allele_frequency": 0.0,
+          "end_time": {
+            "generations_ago": 2273.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": ">",
+          "population": "Neanderthal",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2400.0,
+            "semantics": "generation_after_in_forward_time"
+          }
+        },
+        {
+          "allele_frequency": 1e-09,
+          "end_time": {
+            "generations_ago": 2273.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ConditionOnAlleleFrequency",
+          "operator": ">=",
+          "population": "Neanderthal",
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2273.0,
+            "semantics": "exact_generation"
+          }
+        },
+        {
+          "dominance_coefficient": 0.5,
+          "end_time": {
+            "generations_ago": 2010.0,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ChangeMutationFitness",
+          "population": "Loschbour",
+          "selection_coefficient": 0.005,
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2272.0,
+            "semantics": "exact_generation"
+          }
+        },
+        {
+          "dominance_coefficient": 0.5,
+          "end_time": {
+            "generations_ago": 310.23057383658465,
+            "semantics": "exact_generation"
+          },
+          "event_type": "ChangeMutationFitness",
+          "population": "Han",
+          "selection_coefficient": 0.005,
+          "single_site_id": "eas_selected_site",
+          "start_time": {
+            "generations_ago": 2010.0,
+            "semantics": "exact_generation"
+          }
+        }
+      ],
+      "focused_sample_endpoint_ascertainment": {
+        "candidate_pool_diploids": 500,
+        "exact_sample_alt_count": 40,
+        "inference_conditioning": "selected results are conditional on exact sampled AF and genotype QC; they are not conditioned on a present-day population-AF band",
+        "minimum_heterozygous_diploids": 1,
+        "minimum_hom_alt_diploids": 2,
+        "minimum_hom_ref_diploids": 2,
+        "panel_sampling": "uniform_over_all_size_N_exact_alt_count_subsets_passing_genotype_qc",
+        "population": "Han",
+        "population_frequency_conditioning_in_slim": false,
+        "sample_diploids": 100,
+        "target_sample_allele_frequency": 0.2
+      },
+      "generation_time_years": 25.0,
+      "introgression": {
+        "pulse_generations_ago": 2272.0,
+        "pulse_proportion": 0.0296,
+        "recipient_population": "Loschbour"
+      },
+      "mutation_origin": {
+        "after_human_neanderthal_split": true,
+        "age_generations": 2400.0,
+        "age_years": 60000.0,
+        "archaic_specific_no_ils_by_construction": true,
+        "before_introgression_pulse": true,
+        "population": "Neanderthal"
+      },
+      "present_han_frequency": {
+        "endpoint_ascertainment": "exact_sample_panel_after_completed_trajectory",
+        "population_conditioning_in_slim": false,
+        "removed_terminal_condition_count": 2,
+        "requested_population_interval_not_applied": {
+          "maximum_inclusive": 0.225,
+          "minimum_inclusive": 0.175
+        }
+      },
+      "scenario": "neanderthal_introgression_standing_variation",
+      "schema": "gamma-smc.introgression-sweep-spec/v1",
+      "selection": {
+        "cessation": {
+          "derivation_is_prespecified_not_realized_trajectory_fitting": true,
+          "dominance_coefficient": 0.5,
+          "effective_logistic_rate_per_generation": 0.0025,
+          "expected_post_pulse_initial_frequency": 0.00185,
+          "expected_scaled_archaic_diploids_at_pulse": 8,
+          "frequency_after_cessation": "neutral_drift_to_present",
+          "pulse_proportion": 0.0296,
+          "selection_duration_generations": 1961.7694261634153,
+          "selection_end_generations_ago": 310.23057383658465
+        },
+        "dominance_coefficient": 0.5,
+        "han_interval_generations_ago": [
+          2010.0,
+          310.23057383658465
+        ],
+        "loschbour_interval_generations_ago": [
+          2272.0,
+          2010.0
+        ],
+        "mode": "standing_variation_at_introgression_onset_finite_logistic_episode",
+        "realized_han_split_generations_ago": 2010.0,
+        "requested_han_split_generations_ago": 2016.0,
+        "selection_coefficient": 0.005,
+        "split_time_semantics": "requested catalog time and caller-supplied realized simulation tick are recorded separately"
+      },
+      "source_frequency_condition": {
+        "minimum_inclusive": 1e-09,
+        "population": "Neanderthal",
+        "time_generations": 2273.0,
+        "timing": "one_generation_before_introgression_pulse"
+      },
+      "stdpopsim_version": "0.3.0",
+      "tmrca_thresholds_generations": [
+        40.0,
+        180.0,
+        400.0,
+        800.0,
+        1200.0,
+        1600.0,
+        2000.0
+      ],
+      "tmrca_thresholds_years": [
+        1000,
+        4500,
+        10000,
+        20000,
+        30000,
+        40000,
+        50000
+      ]
+    }
+  },
+  "sample_af": 0.2,
+  "sample_alt_count": 40,
+  "schema": "gamma-smc.focused-selection-simulation/v2",
+  "search_budget": {
+    "neutral_max_attempts": 100,
+    "selected_cumulative_timeout_seconds": 5400.0,
+    "selected_draw_timeout_seconds": 300.0,
+    "selected_max_draws": 250
+  },
+  "status": "complete"
+}

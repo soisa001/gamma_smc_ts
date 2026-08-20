@@ -1,0 +1,65 @@
+{
+  "adapter_sources": {
+    "python/gamma_smc_aou/focused_selected_postdecode.py": "e8029583b85c8dd1525e8454254fadab9c7ede0986cd8399056c8e4a25f2361d",
+    "scripts/run_focused_selected_postdecode.py": "5dc4b0ffc6096e38b16d130b13d211e3269e1251c6968c0983ce7ead2485bf8b"
+  },
+  "authorization_actions": [
+    "authorize"
+  ],
+  "decode_route_present": false,
+  "eas_per_unit_validation": {
+    "aggregate_and_analyze_require_exactly_60_unique_units": true,
+    "base_validator_called_against_stored_contract": true,
+    "current_contract_bound_to_exact_attestation_row": true,
+    "non_eas_delegated_unchanged": true,
+    "patch_target": "focused_selection_simulation._validate_completion",
+    "report_requires_per_unit_coverage": false,
+    "scope": "eas_phlash_median selected units only",
+    "stored_contract_and_outputs_bound_to_exact_attestation_row": true
+  },
+  "global_patches_restored_on_all_exits": true,
+  "only_preauthorization_write": "focused_selection_EAS_sim/calibration/focused_selected_production/postdecode_authorization.json",
+  "outer_contexts": [
+    "focused_han_direct_v3_recovery_audit.patched_recovery_audit_aggregation",
+    "focused_selected_postproduction.patched_eas_contract_attestation_validation"
+  ],
+  "payload_sha256": "7fa597d853f7cd1f056f3e6f1f94d032e1d63e0f1f58f17ac4474c8b72954734",
+  "postdecode_routes": [
+    "aggregate",
+    "analyze",
+    "report"
+  ],
+  "recovery_route_present": false,
+  "route_binding": {
+    "aggregate_readiness_payload_sha256": "65bfcd4a12b98ad1ceea6da6c3e9d796aba4c8bf4c682ef19e1298c4e71a9f6e",
+    "decode_route_present": false,
+    "eas_attested_units": 60,
+    "eas_contract_attestation_payload_sha256": "a3f067a117dbf3ce3a1dc40edb3cdf561e528f95deff363897e013273088676e",
+    "han_nan_normalization_context": true,
+    "postproduction_authorization_payload_sha256": "d41bb07f10322da415a60fe590f527235553a562de0e0516efdd704462ce4e39",
+    "simulation_route_present": false
+  },
+  "schema": "gamma-smc.focused-selected-postdecode-authorization/v1",
+  "simulation_route_present": false,
+  "status": "authorized",
+  "upstream_artifacts": {
+    "aggregate_readiness": {
+      "path": "focused_selection_EAS_sim/calibration/focused_selected_production/aggregate_readiness.json",
+      "payload_sha256": "65bfcd4a12b98ad1ceea6da6c3e9d796aba4c8bf4c682ef19e1298c4e71a9f6e",
+      "sha256": "8b904995729303b92e3476b5d76f9ebd6c94cdf3bfb0eedab64fbebe3ff6be40",
+      "size_bytes": 258084
+    },
+    "eas_contract_attestation": {
+      "path": "focused_selection_EAS_sim/calibration/focused_selected_production/eas_contract_attestation.json",
+      "payload_sha256": "a3f067a117dbf3ce3a1dc40edb3cdf561e528f95deff363897e013273088676e",
+      "sha256": "31ab5fb0ee5b1d06584ba765d6f69ef03fd8aaf9b186b808ee2197a3ff3eee6f",
+      "size_bytes": 248149
+    },
+    "postproduction_authorization": {
+      "path": "focused_selection_EAS_sim/calibration/focused_selected_production/postproduction_authorization.json",
+      "payload_sha256": "d41bb07f10322da415a60fe590f527235553a562de0e0516efdd704462ce4e39",
+      "sha256": "67f7969ee97dd7e2fd50f04b11bde3afaa73e96a95d315681ca9981a1c3bef92",
+      "size_bytes": 6337
+    }
+  }
+}

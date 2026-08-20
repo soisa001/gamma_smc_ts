@@ -1,0 +1,488 @@
+{
+  "artifacts": {
+    "focused_selection_EAS_sim/calibration/eas_selected/confirm100_completion_checksums.tsv": "03bea93af1826fa194bac47ea2e1931079e0c7ee9f189b941b4622dd14729fdf",
+    "focused_selection_EAS_sim/calibration/eas_selected/confirm100_ledger.tsv": "a94f7dbb62c3df93941b2f023884bea61b2e2388f68169503326c0bf6102c23a",
+    "focused_selection_EAS_sim/calibration/eas_selected/confirm100_plan.tsv": "29e10fe083d1f130fba6333fa02b74fd035cb8b25f7996a0183db8cb864d7710",
+    "focused_selection_EAS_sim/calibration/eas_selected/confirm100_summary.tsv": "766af80eefc4939f28ebce77c1eb571e6daee86d3832c26e4086295e048f73e3",
+    "focused_selection_EAS_sim/calibration/eas_selected/eas_selected_calibration_plan.json": "cd9adc95aa2fce46f68ea201daf1cd2841f4da25cfcac081d3a68c182d6454fb",
+    "focused_selection_EAS_sim/calibration/eas_selected/screen20_completion_checksums.tsv": "cb3132c9309739b1e871a22e50ba3be184f3784659dc923588cfa8ea39a25595",
+    "focused_selection_EAS_sim/calibration/eas_selected/screen20_ledger.tsv": "707ac881b485410eb977750905a5fbac5b31615d85bef6c2b3ed73813773ba9b",
+    "focused_selection_EAS_sim/calibration/eas_selected/screen20_plan.tsv": "8644b88256f6adb53d3a0c2965b2ef334f05428c5c35f0b03b70b3cb855c323b",
+    "focused_selection_EAS_sim/calibration/eas_selected/screen20_summary.tsv": "bceca787eec6fe45d0f02451d3750c557ca238fc66bbd2900a51694e4f2efff8",
+    "focused_selection_EAS_sim/calibration/eas_selected/sensitivity10mb20_completion_checksums.tsv": "8c4031c959be62ec0bec59e0ab4cd78249073f6348e9d903dceb13a64d335de4",
+    "focused_selection_EAS_sim/calibration/eas_selected/sensitivity10mb20_ledger.tsv": "62f0d68ce926294c0f6c1ad839f03af8c842e28971aed00751c6ed8c58310f55",
+    "focused_selection_EAS_sim/calibration/eas_selected/sensitivity10mb20_plan.tsv": "de613ef6e51dc517b9d96ea843e5e460b44d1a73d0581bb9366fd47d1d4bd8ab",
+    "focused_selection_EAS_sim/calibration/eas_selected/sensitivity10mb20_summary.tsv": "4ef8c8701e0e626ff0412af4bb405b3f78ccb2cfd390d8654bb3c1be673c3add",
+    "focused_selection_EAS_sim/execution_units.tsv": "8ea5d2a930e755f5e588bd0a824c3ac03cd9d66ac252c8344d20099356ee07e9"
+  },
+  "cell_authorizations": {
+    "s=0.005000|af=0.100000": {
+      "cell_contract_sha256": "ba87e582a0f5e3344341e04e9da204fbc0e4db85b2616e759ce7daae055caec5",
+      "event_contract_sha256": "1675660457129bcf37325eb1e8a2adccdea1644cefb0b68e792389375e226225",
+      "origin_age_generations": 2038.0,
+      "origin_contract_sha256": "0c428837bc8d1f349067c6dd5a4c3c09125e96875485b44ae851b95343bc2feb",
+      "phase_hit_rates": {
+        "confirm100": 0.82,
+        "screen20": 0.7,
+        "sensitivity10mb20": 0.9
+      },
+      "selection_coefficient": 0.005,
+      "target_allele_frequency": 0.1
+    },
+    "s=0.005000|af=0.200000": {
+      "cell_contract_sha256": "d78b9e0c6f7d1a77484af3b4d4a0a046503fa48624b0957ef590ab8ea5ca6eae",
+      "event_contract_sha256": "1a99e6eede61e5c3ddfeb9ddc0e21b1cee234393fc5d12b3c668b93d9424abac",
+      "origin_age_generations": 2409.0,
+      "origin_contract_sha256": "6bfc1e42438244d3e75a20747cd4028e31c628d61d05e247084f7662de0314c2",
+      "phase_hit_rates": {
+        "confirm100": 0.81,
+        "screen20": 0.8,
+        "sensitivity10mb20": 0.9
+      },
+      "selection_coefficient": 0.005,
+      "target_allele_frequency": 0.2
+    },
+    "s=0.005000|af=0.300000": {
+      "cell_contract_sha256": "51600aaee32b97b010036789ecbcc1c03681cb8e11310b67b18021e917106650",
+      "event_contract_sha256": "9de44d14c4d4fcf1d637714e54627e5539d86da79377566f8dcc825ebf0e347e",
+      "origin_age_generations": 2657.0,
+      "origin_contract_sha256": "86f74ed1e8d6fea0b14478b50ba281ff4f67e1fbb3ad110ee3a25790704f38ce",
+      "phase_hit_rates": {
+        "confirm100": 0.81,
+        "screen20": 0.75,
+        "sensitivity10mb20": 0.7
+      },
+      "selection_coefficient": 0.005,
+      "target_allele_frequency": 0.3
+    },
+    "s=0.010000|af=0.100000": {
+      "cell_contract_sha256": "a1736619482bc1798b40e9cbba175da8e3610d6fa7bb554776babd30f16ef30b",
+      "event_contract_sha256": "b8d07f8c4b5806e65ff47687e2f9be3db988beab960581d2809cf76e33b9f49d",
+      "origin_age_generations": 999.0,
+      "origin_contract_sha256": "b1db82958255b8c5c4f2e0a17f5d200b5d1b756e06400731ae9ef5ef8f4bdfb8",
+      "phase_hit_rates": {
+        "confirm100": 0.88,
+        "screen20": 0.9,
+        "sensitivity10mb20": 0.8
+      },
+      "selection_coefficient": 0.01,
+      "target_allele_frequency": 0.1
+    },
+    "s=0.010000|af=0.200000": {
+      "cell_contract_sha256": "c593c6cb03f6145a0058f3602d1ada7b5f3d930e76d5c5a97849676f5eab8831",
+      "event_contract_sha256": "c3b66bbac06ec9012ecc12581469a36c1edd8dd20de5bc27a3c4fdae49a5c026",
+      "origin_age_generations": 1152.0,
+      "origin_contract_sha256": "4cfa2c17f60941a05b793e8bc9840fafe1d1ff3d1f54a04998aab0d0de32394f",
+      "phase_hit_rates": {
+        "confirm100": 0.8,
+        "screen20": 1.0,
+        "sensitivity10mb20": 0.75
+      },
+      "selection_coefficient": 0.01,
+      "target_allele_frequency": 0.2
+    },
+    "s=0.010000|af=0.300000": {
+      "cell_contract_sha256": "b2ff2b052e207c1fe9f479665db6ece313c068e369f2eb11630c45665d8dac25",
+      "event_contract_sha256": "7e3fbbb5d9b6782e689e56f3dfe7344378b54b992cfa3375779fc2ed40220edf",
+      "origin_age_generations": 1258.0,
+      "origin_contract_sha256": "3bc0b4353f9cb11b8d34742ad46ccf6ed94a9745db985e17867fe8a3c0d99e5a",
+      "phase_hit_rates": {
+        "confirm100": 0.76,
+        "screen20": 0.75,
+        "sensitivity10mb20": 0.85
+      },
+      "selection_coefficient": 0.01,
+      "target_allele_frequency": 0.3
+    }
+  },
+  "eas_resource": {
+    "path": "no_introgression_EAS_sim/resources/EAS.npz",
+    "sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+  },
+  "execution_units": {
+    "eas_selected_cells": 6,
+    "path": "focused_selection_EAS_sim/execution_units.tsv",
+    "production_seed_digest": "3b09e1588bc1524945c664b150b346bfb1055e8191c0c51d782a24abed812ca3",
+    "sha256": "8ea5d2a930e755f5e588bd0a824c3ac03cd9d66ac252c8344d20099356ee07e9"
+  },
+  "gamma_smc_statistics_used": false,
+  "minimum_pool_band_and_panel_hit_rate": 0.2,
+  "payload_sha256": "89c77e08ec7103432057d8c4d44f03184907b8f8d16434d6e3932c3142c9250a",
+  "phases": {
+    "confirm100": {
+      "all_six_cells_passed": true,
+      "draws_per_cell": 100,
+      "minimum_hit_rate": 0.2,
+      "processing_mode": "focal_2bp_forward_only_no_recap_no_neutral_overlay",
+      "summary": [
+        {
+          "cell_contract_sha256": "a1736619482bc1798b40e9cbba175da8e3610d6fa7bb554776babd30f16ef30b",
+          "event_contract_sha256": "b8d07f8c4b5806e65ff47687e2f9be3db988beab960581d2809cf76e33b9f49d",
+          "median_candidate_pool_af": 0.098,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 100,
+          "n_planned": 100,
+          "n_pool_band_and_panel_hits": 88,
+          "origin_contract_sha256": "b1db82958255b8c5c4f2e0a17f5d200b5d1b756e06400731ae9ef5ef8f4bdfb8",
+          "passed": true,
+          "phase": "confirm100",
+          "pool_band_and_panel_hit_rate": 0.88,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.1,
+          "total_elapsed_seconds": 6694.510716557999
+        },
+        {
+          "cell_contract_sha256": "c593c6cb03f6145a0058f3602d1ada7b5f3d930e76d5c5a97849676f5eab8831",
+          "event_contract_sha256": "c3b66bbac06ec9012ecc12581469a36c1edd8dd20de5bc27a3c4fdae49a5c026",
+          "median_candidate_pool_af": 0.201,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 100,
+          "n_planned": 100,
+          "n_pool_band_and_panel_hits": 80,
+          "origin_contract_sha256": "4cfa2c17f60941a05b793e8bc9840fafe1d1ff3d1f54a04998aab0d0de32394f",
+          "passed": true,
+          "phase": "confirm100",
+          "pool_band_and_panel_hit_rate": 0.8,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.2,
+          "total_elapsed_seconds": 7998.257639510999
+        },
+        {
+          "cell_contract_sha256": "b2ff2b052e207c1fe9f479665db6ece313c068e369f2eb11630c45665d8dac25",
+          "event_contract_sha256": "7e3fbbb5d9b6782e689e56f3dfe7344378b54b992cfa3375779fc2ed40220edf",
+          "median_candidate_pool_af": 0.3,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 100,
+          "n_planned": 100,
+          "n_pool_band_and_panel_hits": 76,
+          "origin_contract_sha256": "3bc0b4353f9cb11b8d34742ad46ccf6ed94a9745db985e17867fe8a3c0d99e5a",
+          "passed": true,
+          "phase": "confirm100",
+          "pool_band_and_panel_hit_rate": 0.76,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.3,
+          "total_elapsed_seconds": 12559.733895712001
+        },
+        {
+          "cell_contract_sha256": "ba87e582a0f5e3344341e04e9da204fbc0e4db85b2616e759ce7daae055caec5",
+          "event_contract_sha256": "1675660457129bcf37325eb1e8a2adccdea1644cefb0b68e792389375e226225",
+          "median_candidate_pool_af": 0.0985,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 100,
+          "n_planned": 100,
+          "n_pool_band_and_panel_hits": 82,
+          "origin_contract_sha256": "0c428837bc8d1f349067c6dd5a4c3c09125e96875485b44ae851b95343bc2feb",
+          "passed": true,
+          "phase": "confirm100",
+          "pool_band_and_panel_hit_rate": 0.82,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.1,
+          "total_elapsed_seconds": 18304.863294407
+        },
+        {
+          "cell_contract_sha256": "d78b9e0c6f7d1a77484af3b4d4a0a046503fa48624b0957ef590ab8ea5ca6eae",
+          "event_contract_sha256": "1a99e6eede61e5c3ddfeb9ddc0e21b1cee234393fc5d12b3c668b93d9424abac",
+          "median_candidate_pool_af": 0.1975,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 100,
+          "n_planned": 100,
+          "n_pool_band_and_panel_hits": 81,
+          "origin_contract_sha256": "6bfc1e42438244d3e75a20747cd4028e31c628d61d05e247084f7662de0314c2",
+          "passed": true,
+          "phase": "confirm100",
+          "pool_band_and_panel_hit_rate": 0.81,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.2,
+          "total_elapsed_seconds": 32363.303744881
+        },
+        {
+          "cell_contract_sha256": "51600aaee32b97b010036789ecbcc1c03681cb8e11310b67b18021e917106650",
+          "event_contract_sha256": "9de44d14c4d4fcf1d637714e54627e5539d86da79377566f8dcc825ebf0e347e",
+          "median_candidate_pool_af": 0.304,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 100,
+          "n_planned": 100,
+          "n_pool_band_and_panel_hits": 81,
+          "origin_contract_sha256": "86f74ed1e8d6fea0b14478b50ba281ff4f67e1fbb3ad110ee3a25790704f38ce",
+          "passed": true,
+          "phase": "confirm100",
+          "pool_band_and_panel_hit_rate": 0.81,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.3,
+          "total_elapsed_seconds": 34394.387252229
+        }
+      ],
+      "total_draws": 600
+    },
+    "screen20": {
+      "all_six_cells_passed": true,
+      "draws_per_cell": 20,
+      "minimum_hit_rate": 0.2,
+      "processing_mode": "focal_2bp_forward_only_no_recap_no_neutral_overlay",
+      "summary": [
+        {
+          "cell_contract_sha256": "a1736619482bc1798b40e9cbba175da8e3610d6fa7bb554776babd30f16ef30b",
+          "event_contract_sha256": "b8d07f8c4b5806e65ff47687e2f9be3db988beab960581d2809cf76e33b9f49d",
+          "median_candidate_pool_af": 0.101,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 18,
+          "origin_contract_sha256": "b1db82958255b8c5c4f2e0a17f5d200b5d1b756e06400731ae9ef5ef8f4bdfb8",
+          "passed": true,
+          "phase": "screen20",
+          "pool_band_and_panel_hit_rate": 0.9,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.1,
+          "total_elapsed_seconds": 1287.6748043630014
+        },
+        {
+          "cell_contract_sha256": "c593c6cb03f6145a0058f3602d1ada7b5f3d930e76d5c5a97849676f5eab8831",
+          "event_contract_sha256": "c3b66bbac06ec9012ecc12581469a36c1edd8dd20de5bc27a3c4fdae49a5c026",
+          "median_candidate_pool_af": 0.201,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 20,
+          "origin_contract_sha256": "4cfa2c17f60941a05b793e8bc9840fafe1d1ff3d1f54a04998aab0d0de32394f",
+          "passed": true,
+          "phase": "screen20",
+          "pool_band_and_panel_hit_rate": 1.0,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.2,
+          "total_elapsed_seconds": 2485.6692109430005
+        },
+        {
+          "cell_contract_sha256": "b2ff2b052e207c1fe9f479665db6ece313c068e369f2eb11630c45665d8dac25",
+          "event_contract_sha256": "7e3fbbb5d9b6782e689e56f3dfe7344378b54b992cfa3375779fc2ed40220edf",
+          "median_candidate_pool_af": 0.298,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 15,
+          "origin_contract_sha256": "3bc0b4353f9cb11b8d34742ad46ccf6ed94a9745db985e17867fe8a3c0d99e5a",
+          "passed": true,
+          "phase": "screen20",
+          "pool_band_and_panel_hit_rate": 0.75,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.3,
+          "total_elapsed_seconds": 2249.2202640430023
+        },
+        {
+          "cell_contract_sha256": "ba87e582a0f5e3344341e04e9da204fbc0e4db85b2616e759ce7daae055caec5",
+          "event_contract_sha256": "1675660457129bcf37325eb1e8a2adccdea1644cefb0b68e792389375e226225",
+          "median_candidate_pool_af": 0.094,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 14,
+          "origin_contract_sha256": "0c428837bc8d1f349067c6dd5a4c3c09125e96875485b44ae851b95343bc2feb",
+          "passed": true,
+          "phase": "screen20",
+          "pool_band_and_panel_hit_rate": 0.7,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.1,
+          "total_elapsed_seconds": 3917.038258022003
+        },
+        {
+          "cell_contract_sha256": "d78b9e0c6f7d1a77484af3b4d4a0a046503fa48624b0957ef590ab8ea5ca6eae",
+          "event_contract_sha256": "1a99e6eede61e5c3ddfeb9ddc0e21b1cee234393fc5d12b3c668b93d9424abac",
+          "median_candidate_pool_af": 0.1975,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 16,
+          "origin_contract_sha256": "6bfc1e42438244d3e75a20747cd4028e31c628d61d05e247084f7662de0314c2",
+          "passed": true,
+          "phase": "screen20",
+          "pool_band_and_panel_hit_rate": 0.8,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.2,
+          "total_elapsed_seconds": 6340.344958198997
+        },
+        {
+          "cell_contract_sha256": "51600aaee32b97b010036789ecbcc1c03681cb8e11310b67b18021e917106650",
+          "event_contract_sha256": "9de44d14c4d4fcf1d637714e54627e5539d86da79377566f8dcc825ebf0e347e",
+          "median_candidate_pool_af": 0.2935,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 15,
+          "origin_contract_sha256": "86f74ed1e8d6fea0b14478b50ba281ff4f67e1fbb3ad110ee3a25790704f38ce",
+          "passed": true,
+          "phase": "screen20",
+          "pool_band_and_panel_hit_rate": 0.75,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.3,
+          "total_elapsed_seconds": 6487.186014384999
+        }
+      ],
+      "total_draws": 120
+    },
+    "sensitivity10mb20": {
+      "all_six_cells_passed": true,
+      "draws_per_cell": 20,
+      "minimum_hit_rate": 0.2,
+      "processing_mode": "full_10mb_normal_stdpopsim_processing_exact_panel",
+      "summary": [
+        {
+          "cell_contract_sha256": "a1736619482bc1798b40e9cbba175da8e3610d6fa7bb554776babd30f16ef30b",
+          "event_contract_sha256": "b8d07f8c4b5806e65ff47687e2f9be3db988beab960581d2809cf76e33b9f49d",
+          "median_candidate_pool_af": 0.103,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 16,
+          "origin_contract_sha256": "b1db82958255b8c5c4f2e0a17f5d200b5d1b756e06400731ae9ef5ef8f4bdfb8",
+          "passed": true,
+          "phase": "sensitivity10mb20",
+          "pool_band_and_panel_hit_rate": 0.8,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.1,
+          "total_elapsed_seconds": 1770.3727886449997
+        },
+        {
+          "cell_contract_sha256": "c593c6cb03f6145a0058f3602d1ada7b5f3d930e76d5c5a97849676f5eab8831",
+          "event_contract_sha256": "c3b66bbac06ec9012ecc12581469a36c1edd8dd20de5bc27a3c4fdae49a5c026",
+          "median_candidate_pool_af": 0.1935,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 15,
+          "origin_contract_sha256": "4cfa2c17f60941a05b793e8bc9840fafe1d1ff3d1f54a04998aab0d0de32394f",
+          "passed": true,
+          "phase": "sensitivity10mb20",
+          "pool_band_and_panel_hit_rate": 0.75,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.2,
+          "total_elapsed_seconds": 4740.785162065
+        },
+        {
+          "cell_contract_sha256": "b2ff2b052e207c1fe9f479665db6ece313c068e369f2eb11630c45665d8dac25",
+          "event_contract_sha256": "7e3fbbb5d9b6782e689e56f3dfe7344378b54b992cfa3375779fc2ed40220edf",
+          "median_candidate_pool_af": 0.3025,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 17,
+          "origin_contract_sha256": "3bc0b4353f9cb11b8d34742ad46ccf6ed94a9745db985e17867fe8a3c0d99e5a",
+          "passed": true,
+          "phase": "sensitivity10mb20",
+          "pool_band_and_panel_hit_rate": 0.85,
+          "selection_coefficient": 0.01,
+          "target_allele_frequency": 0.3,
+          "total_elapsed_seconds": 5569.110160038
+        },
+        {
+          "cell_contract_sha256": "ba87e582a0f5e3344341e04e9da204fbc0e4db85b2616e759ce7daae055caec5",
+          "event_contract_sha256": "1675660457129bcf37325eb1e8a2adccdea1644cefb0b68e792389375e226225",
+          "median_candidate_pool_af": 0.0955,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 18,
+          "origin_contract_sha256": "0c428837bc8d1f349067c6dd5a4c3c09125e96875485b44ae851b95343bc2feb",
+          "passed": true,
+          "phase": "sensitivity10mb20",
+          "pool_band_and_panel_hit_rate": 0.9,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.1,
+          "total_elapsed_seconds": 6998.969884199001
+        },
+        {
+          "cell_contract_sha256": "d78b9e0c6f7d1a77484af3b4d4a0a046503fa48624b0957ef590ab8ea5ca6eae",
+          "event_contract_sha256": "1a99e6eede61e5c3ddfeb9ddc0e21b1cee234393fc5d12b3c668b93d9424abac",
+          "median_candidate_pool_af": 0.1945,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 18,
+          "origin_contract_sha256": "6bfc1e42438244d3e75a20747cd4028e31c628d61d05e247084f7662de0314c2",
+          "passed": true,
+          "phase": "sensitivity10mb20",
+          "pool_band_and_panel_hit_rate": 0.9,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.2,
+          "total_elapsed_seconds": 11366.973465984998
+        },
+        {
+          "cell_contract_sha256": "51600aaee32b97b010036789ecbcc1c03681cb8e11310b67b18021e917106650",
+          "event_contract_sha256": "9de44d14c4d4fcf1d637714e54627e5539d86da79377566f8dcc825ebf0e347e",
+          "median_candidate_pool_af": 0.3,
+          "minimum_required_hit_rate": 0.2,
+          "n_evaluable": 20,
+          "n_planned": 20,
+          "n_pool_band_and_panel_hits": 14,
+          "origin_contract_sha256": "86f74ed1e8d6fea0b14478b50ba281ff4f67e1fbb3ad110ee3a25790704f38ce",
+          "passed": true,
+          "phase": "sensitivity10mb20",
+          "pool_band_and_panel_hit_rate": 0.7,
+          "selection_coefficient": 0.005,
+          "target_allele_frequency": 0.3,
+          "total_elapsed_seconds": 12682.947824706
+        }
+      ],
+      "total_draws": 120
+    }
+  },
+  "plan_manifest_contract_sha256": "152c09efc9270fbb183439addace608236becaf74577a3a8af620055c410b1a2",
+  "production_contract": {
+    "authorization_scope": "eas_phlash_median_selected_only",
+    "candidate_pool_diploids": 500,
+    "exact_k_sample_panel_retained": true,
+    "external_candidate_pool_af_gate_retained": true,
+    "focal_only_tree_production_use_permitted": false,
+    "genotype_qc": {
+      "minimum_het": 1,
+      "minimum_hom_alt": 2,
+      "minimum_hom_ref": 2
+    },
+    "integration_status": "not_wired_into_campaign_executor",
+    "sample_diploids": 100,
+    "selection_episode": "continuous_from_origin_to_present",
+    "selection_origin": "de_novo_at_prespecified_Q5_origin_age",
+    "source_paths_permitted_to_change_only_for_explicit_integration": [
+      "python/gamma_smc_aou/focused_selection_simulation.py"
+    ],
+    "ten_mb_sensitivity_passed": true,
+    "ten_mb_sensitivity_required": true,
+    "terminal_conditions": "lower_and_upper_inclusive_target_plus_minus_0.025",
+    "terminal_population_af_conditioning_in_slim": true
+  },
+  "schema": "gamma-smc.eas-selected-production-authorization/v2",
+  "scientific_caveat": "Terminal lower and upper population-AF conditions make these explicitly conditional selected trajectories; focal-only phases are acceptance proxies, not production genealogies.",
+  "seed_disjointness_at_freeze": {
+    "disjoint": true,
+    "eas_calibration_n_unique": 1680,
+    "eas_calibration_sha256": "90cdf53447a3a46405dfefa986771a2c3761f4fbb2d7065b3a4e65894be4aeef",
+    "eas_panel_n_unique": 840,
+    "eas_panel_sha256": "9f9dbede1d608946819e495efb79cd2c5b6b0946eebfb9df6503dd84fcb1fbc7",
+    "eas_simulation_n_unique": 840,
+    "eas_simulation_sha256": "30368f2b2f99c98eb88175e379fd6b77fd96c9521653b85398c1b3042cb8eccf",
+    "sources": {
+      "han": {
+        "n_unique": 2760,
+        "sha256": "390575c1116c5a0d9e055995cedf833905ee0c7d1fa08452d09b303b685c2e65"
+      },
+      "production": {
+        "n_unique": 720,
+        "sha256": "3b09e1588bc1524945c664b150b346bfb1055e8191c0c51d782a24abed812ca3"
+      }
+    },
+    "union_n_unique": 3480,
+    "union_sha256": "47fa76cac39c6448b663138e737e07d3e7cf0ff6619b63fa28a9c3089a724366"
+  },
+  "slim": {
+    "sha256": "67409ff190808c2967c949cae6697bf235010dbe832389cb4976d9089b5f5e1d",
+    "slim_burn_in": 0.1,
+    "slim_scaling_factor": 5.0
+  },
+  "source_sha256": {
+    "python/gamma_smc_aou/eas_sweep_analysis.py": "e8f30519c986416daf4d4bb825aef459d226b8ade90606286d96bed603d4abe6",
+    "python/gamma_smc_aou/eas_sweep_models.py": "365854b146d4512b6443d8dc28abaae4e53d7ee0ad5403d03536e06e8b016ae6",
+    "python/gamma_smc_aou/eas_sweep_study.py": "caab1f7d682d5d70b39fd39196330bb2aff025b6a974f23d8b1f31b2157e7530",
+    "python/gamma_smc_aou/focused_eas_selected_calibration.py": "34eebaf4e3293454e7552366a52996ffa217c8dae4d1ddddfc898709bfc3da70",
+    "python/gamma_smc_aou/focused_selection_simulation.py": "29b52d52adb76d2aa195fb0900baef829f92f1ed0b7b3edbff93cadce0f26448"
+  },
+  "status": "frozen"
+}
