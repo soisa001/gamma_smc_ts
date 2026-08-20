@@ -1,5 +1,5 @@
-from concurrent.futures import Future
 import os
+from concurrent.futures import Future
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -8,6 +8,22 @@ import pandas as pd
 import pytest
 from gamma_smc_aou import cosi2_conditioned_gamma_workflow as workflow
 from gamma_smc_aou import cosi2_gamma_analysis as analysis
+
+HAN_TRAJECTORY_FIXTURE_ROOT = (
+    Path(__file__).resolve().parent / "fixtures" / "cosi2_han_trajectories"
+)
+HAN_TRAJECTORY_FIXTURES = {
+    "han_candidate_0005": {
+        "unit_id": "han_introgressed_neutral_g645_gate_r000",
+        "seed": 2_026_082_605,
+        "sha256": "e13b046d75c10b34d6da8337f8a9af735aa23604e6c7a1223e1cb37d76fe1ab9",
+    },
+    "han_candidate_0140": {
+        "unit_id": "han_introgressed_neutral_g645_gate_r005",
+        "seed": 2_026_084_640,
+        "sha256": "42264211c2a0b8bd4143dc69823735192a544de7cb01b6aaae4c2fb9f3a8aa56",
+    },
+}
 
 
 def _synthetic_base_manifest() -> dict:
@@ -1939,19 +1955,19 @@ def test_real_cosi2_han_screen_resolves_plan_cwd_map_and_cache_binding(tmp_path)
 
 
 def _accepted_han_unit(repo_root: Path, candidate_id: str) -> dict:
-    accepted = pd.read_csv(
-        repo_root
-        / workflow.DEFAULT_WORK_RELATIVE
-        / workflow.HAN_SCREEN_DIRNAME
-        / workflow.HAN_ACCEPTED_FILENAME,
-        sep="\t",
-    )
-    matches = accepted[accepted["candidate_id"].astype(str) == candidate_id]
-    assert len(matches) == 1
-    unit = matches.iloc[0].to_dict()
-    unit["demography"] = "Han"
-    unit["model_id"] = workflow.conditioned.HAN_MODEL_ID
-    return unit
+    del repo_root
+    record = HAN_TRAJECTORY_FIXTURES[candidate_id]
+    trajectory = HAN_TRAJECTORY_FIXTURE_ROOT / f"{candidate_id}.tsv"
+    assert workflow.sha256_file(trajectory) == record["sha256"]
+    return {
+        "unit_id": record["unit_id"],
+        "candidate_id": candidate_id,
+        "demography": "Han",
+        "model_id": workflow.conditioned.HAN_MODEL_ID,
+        "seed": record["seed"],
+        "trajectory_path": str(trajectory.resolve()),
+        "trajectory_sha256": record["sha256"],
+    }
 
 
 def test_han_loader_projection_is_exact_lexical_12_to_7_and_tamper_closed(tmp_path):
@@ -1992,7 +2008,8 @@ def test_han_loader_projection_is_exact_lexical_12_to_7_and_tamper_closed(tmp_pa
 
 def test_v7_failed_han_replay_retains_atomic_diagnostics(monkeypatch, tmp_path):
     repo_root = Path(__file__).resolve().parents[1]
-    binary = repo_root / workflow.DEFAULT_COSI2_BINARY_RELATIVE
+    binary = tmp_path / "coalescent"
+    binary.write_bytes(b"synthetic CoSi2 binary")
     plan_root = _write_minimal_v7_han_replay_plan(repo_root, tmp_path / "plan")
     unit = _accepted_han_unit(repo_root, "han_candidate_0005")
     run_root = tmp_path / workflow.SIMULATION_DIRNAME

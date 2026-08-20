@@ -27,6 +27,8 @@ scripts/bootstrap_uv.sh -text
 tests/test_focused_han_direct_v3.py -text
 focused_selection_EAS_sim/execution_units.tsv -text -diff
 focused_selection_EAS_sim/calibration/** -text -diff
+focused_selection_EAS_sim/cosi2_framework/** -text -diff
+tests/fixtures/cosi2_han_trajectories/** -text -diff
 
 # run2 shell entry points must stay LF for WSL and Linux execution.
 scripts/bootstrap_run2.sh -text

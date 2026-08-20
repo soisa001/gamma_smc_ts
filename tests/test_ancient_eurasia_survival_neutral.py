@@ -18,6 +18,30 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 _MUTATION_CALLS: list[dict] = []
 
 
+@pytest.fixture(autouse=True)
+def _bind_decoder_contract_to_current_test_build(monkeypatch) -> None:
+    """Keep test plans strict without assuming compiler-identical binaries."""
+
+    decoder = REPO_ROOT / "bin/gamma_smc"
+    if decoder.is_file():
+        monkeypatch.setattr(
+            workflow, "EXPECTED_DECODER_SHA256", workflow._sha256_file(decoder)
+        )
+
+
+def test_binary_record_requires_the_exact_supplied_digest(tmp_path: Path) -> None:
+    binary = tmp_path / "gamma_smc"
+    binary.write_bytes(b"test binary")
+    observed = workflow._sha256_file(binary)
+    with pytest.raises(ValueError, match="binary SHA-256 differs"):
+        workflow._binary_record(
+            binary, tmp_path, expected_sha256="0" * 64, label="test"
+        )
+    assert workflow._binary_record(
+        binary, tmp_path, expected_sha256=observed, label="test"
+    )["sha256"] == observed
+
+
 def _fake_sim_mutations(
     tree_sequence,
     rate=None,

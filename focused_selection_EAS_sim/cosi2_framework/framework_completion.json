@@ -1,0 +1,142 @@
+{
+  "contract": {
+    "cosi2": {
+      "commit": "5da717cb8bf7324fb961e772a0c9042385de381a",
+      "repository": "https://github.com/broadinstitute/cosi2.git",
+      "tag": "v2.4.0",
+      "version_command_is_stale_in_tag": true,
+      "version_label": "2.4.0"
+    },
+    "inputs": {
+      "no_introgression_EAS_sim/resources/EAS.npz": {
+        "expected_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+        "sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+      },
+      "stdpopsim_catalog_model": "OutOfAfricaArchaicAdmixture_5R19",
+      "stdpopsim_version": "0.3.0"
+    },
+    "plan": {
+      "base_seed": 20240523,
+      "eas_generation_time_years": 25.0,
+      "focal_relative_position": 0.5,
+      "han_generation_time_years": 29.0,
+      "han_mutation_birth_generations": 2400,
+      "han_selection_start_af_target": 0.012,
+      "han_selection_start_af_tolerance": 0.001,
+      "mutation_rate": 1.25e-08,
+      "present_af": 0.2,
+      "present_af_tolerance": 0.005,
+      "recombination_rate": 1e-08,
+      "sample_haploids": 200,
+      "selection_coefficients": [
+        0.01
+      ],
+      "sequence_length_bp": 10000000
+    },
+    "runtime": {
+      "matplotlib": "3.11.1",
+      "numpy": "2.4.6",
+      "pandas": "3.0.3",
+      "python": "3.11.15"
+    },
+    "schema": "gamma-smc.cosi2-framework/v2",
+    "semantics": {
+      "bundle_mutability": "immutable_exact_inventory",
+      "catalog_to_cosi2_time_policy": "nearest_integer_half_up_with_catalog_and_rounding_delta_recorded",
+      "dominance": "CoSi2_hardcoded_additive_h_0.5",
+      "han_catalog_generation_time_years": 29.0,
+      "han_catalog_mutation_rate": null,
+      "han_introgression": "5R19_continuous_symmetric_Neanderthal_migration; paper_1.2pct_is_genomewide_ancestry_estimate; operational_CHB_AF_screen_validated_posthoc_at_integer_generation_645",
+      "han_operational_allele_af_screen": {
+        "generation": 645,
+        "is_catalog_parameter": false,
+        "lower": 0.011,
+        "target": 0.012,
+        "tolerance": 0.001,
+        "upper": 0.013000000000000001
+      },
+      "han_population_sampling_requests": "explicit_zero_for_unsampled_5R19_populations_required_by_CoSi2_MSweep",
+      "han_symmetric_contact_ancestry_expectation": 0.011806644972302105,
+      "population_sizes": "explicit_half_up_integer_rounding",
+      "present_af": "population_frequency_interval_not_sample_AF",
+      "recombination_map_coverage": "first_rate_applies_from_region_start_through_sequence_end",
+      "recombination_map_first_position_bp": 1,
+      "run_artifact_root_relative_to_bundle": "../cosi2_framework_runs",
+      "selection_duration": "one_population_from_onset_to_present",
+      "study_mutation_rate_override": 1.25e-08,
+      "study_recombination_map_override": 1e-08,
+      "time_axis_orientation": "present_generation_0_on_left"
+    },
+    "source_hashing": "strict_UTF8_canonical_LF",
+    "sources": {
+      "python/gamma_smc_aou/cosi2_framework.py": "c50f8c91280f0256fa95202bb8bb5c2754854a7e1dbce0133a4cbb857064bb40",
+      "scripts/run_cosi2_framework.py": "ee6c051d9aa73ebae4e49fb5808a5592f3f3b6669d7a09b03c9859c094597667"
+    }
+  },
+  "contract_sha256": "006e586b4d2772532bca6bcdf043419c7eb768c5483ceec57313072c9e62abbf",
+  "output_count": 12,
+  "outputs": {
+    "README.md": {
+      "bytes": 5588,
+      "path": "README.md",
+      "sha256": "439ac98f1b14fc51eeeeb59c06068eae7280f7c1b9b4a12daab02eceb6842f73"
+    },
+    "allele_age_response.tsv": {
+      "bytes": 87342,
+      "path": "allele_age_response.tsv",
+      "sha256": "fbb22b4deefa8cf22fad4417389615b947e3905c2f8b2667964749dd70d273f5"
+    },
+    "configs/eas_s0p01.par": {
+      "bytes": 277277,
+      "path": "configs/eas_s0p01.par",
+      "sha256": "e414b8e9e909344243449f61c8b9286e0cc10d9bb7da3ad7ef4e544d0139bde7"
+    },
+    "configs/han_introgressed_s0p01.par": {
+      "bytes": 2228,
+      "path": "configs/han_introgressed_s0p01.par",
+      "sha256": "b5339c59788361e300da569136deaf0e2d99290facd698c4e21337f003a201dc"
+    },
+    "demography_events.tsv": {
+      "bytes": 898961,
+      "path": "demography_events.tsv",
+      "sha256": "af3f686b963fad8162d62bdf56a259a3537008494b5b14bc1a0509ae40a75080"
+    },
+    "eas_phlash_integer_history.tsv": {
+      "bytes": 569423,
+      "path": "eas_phlash_integer_history.tsv",
+      "sha256": "6428da6785e622be8ce82718fc338d1c806e8864f5f270a5b2aaa7130361867a"
+    },
+    "figures/cosi2_demography_specification.pdf": {
+      "bytes": 44901,
+      "path": "figures/cosi2_demography_specification.pdf",
+      "sha256": "fe743f2e36f6a14f968661ab2e7c7a768fdd45cac8b9e64256699c7bc36b2ff0"
+    },
+    "figures/cosi2_demography_specification.png": {
+      "bytes": 670167,
+      "path": "figures/cosi2_demography_specification.png",
+      "sha256": "b20cd37a8b6c5681cdfb55630ffb75d2996b1a0511e3e38c0d21b1ff175e854e"
+    },
+    "framework_plan.json": {
+      "bytes": 6548,
+      "path": "framework_plan.json",
+      "sha256": "e90f7e94695dd2c1934bb84f1b48d8464787e44b04ba815475b81b18a8fd9efe"
+    },
+    "model_cells.tsv": {
+      "bytes": 1253,
+      "path": "model_cells.tsv",
+      "sha256": "ea08f12e97532297dd92b73da742b459b3bd9fe15015031fe4fa8587bfb0a930"
+    },
+    "recombination_map.tsv": {
+      "bytes": 8,
+      "path": "recombination_map.tsv",
+      "sha256": "a1411e5610b5d40ce39fa2b6cd2cc63d1199dab0b6cd85a7c83ac859171953eb"
+    },
+    "run_commands.sh": {
+      "bytes": 1375,
+      "path": "run_commands.sh",
+      "sha256": "507ed4e503779587f9af822668a40c683a5dbb28f7f2262930159caee845ad50"
+    }
+  },
+  "schema": "gamma-smc.cosi2-framework-completion/v2",
+  "status": "complete"
+}

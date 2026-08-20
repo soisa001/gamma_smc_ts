@@ -1,0 +1,50 @@
+# Generated CoSi2 v2.4.0 5R19 Han/CHB model; do not hand-edit.
+# CoSi2 commit: 5da717cb8bf7324fb961e772a0c9042385de381a
+# stdpopsim model: OutOfAfricaArchaicAdmixture_5R19 (v0.3.0).
+# 5R19 uses continuous symmetric migration, not an admixture pulse.
+# The operational CHB allele-AF gate at generation 645 is 0.011-0.013 and is applied post hoc.
+# Mutation/recombination values below are study overrides; 5R19 mutation_rate=None.
+length 10000000
+mutation_rate 1.25e-08
+recomb_file recombination_map.tsv
+gene_conversion_relative_rate 0
+infinite_sites yes
+pop_define 1 YRI
+pop_size 1 13900
+sample_size 1 0
+pop_define 2 CEU_OOA
+pop_size 2 10855
+sample_size 2 0
+pop_define 3 Han_CHB
+pop_size 3 65835
+sample_size 3 200
+pop_define 4 Neanderthal
+pop_size 4 3600
+sample_size 4 0
+pop_define 5 ArchaicAFR
+pop_size 5 3600
+sample_size 5 0
+pop_event migration_rate "CEU_CHB_recent_a" 2 3 0 0.000113
+pop_event migration_rate "CEU_CHB_recent_b" 3 2 0 0.000113
+pop_event exp_change_size "CEU_growth" 2 0 1241 10855 2300
+pop_event exp_change_size "CHB_growth" 3 0 1241 65835 650
+pop_event migration_rate "YRI_CEU_recent_a" 1 2 0 2.48e-05
+pop_event migration_rate "YRI_CEU_recent_b" 2 1 0 2.48e-05
+pop_event migration_rate "CEU_Neanderthal_contact_a" 2 4 645 8.25e-06
+pop_event migration_rate "CEU_Neanderthal_contact_b" 4 2 645 8.25e-06
+pop_event migration_rate "CHB_Neanderthal_contact_a" 3 4 645 8.25e-06
+pop_event migration_rate "CHB_Neanderthal_contact_b" 4 3 645 8.25e-06
+pop_event migration_rate "YRI_ArchaicAFR_contact_a" 1 5 645 1.98e-05
+pop_event migration_rate "YRI_ArchaicAFR_contact_b" 5 1 645 1.98e-05
+pop_event split "CHB_from_CEU_OOA" 2 3 1241
+pop_event change_size "OOA_bottleneck" 2 1241 880
+pop_event migration_rate "YRI_OOA_a" 1 2 1241 0.000522
+pop_event migration_rate "YRI_OOA_b" 2 1 1241 0.000522
+pop_event split "OOA_from_YRI" 1 2 2093
+pop_event migration_rate "YRI_ArchaicAFR_off_a" 1 5 4310 0
+pop_event migration_rate "YRI_ArchaicAFR_off_b" 5 1 4310 0
+pop_event change_size "ancestral_modern_N" 1 10345 3600
+pop_event split "ArchaicAFR_from_modern" 1 5 17207
+pop_event split "Neanderthal_from_modern" 1 4 19276
+pop_event sweep_mult_standing "han_introgressed_s0p01" 4 2400 0.01 0.5 0.195-0.205 3 645
+random_seed 20240624

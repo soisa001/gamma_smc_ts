@@ -1,0 +1,155 @@
+{
+  "cells": [
+    {
+      "archaic_migration_end_generations_ago": null,
+      "archaic_migration_rate_per_generation": null,
+      "archaic_migration_start_generations_ago": null,
+      "birth_population": "EAS",
+      "cell_id": "eas_s0p01",
+      "demography_id": "eas_phlash_median",
+      "deterministic_present_af_from_gate_center": 0.2,
+      "dominance_coefficient": 0.5,
+      "initial_af_timing_assumption": 0.00015639662183296842,
+      "introgressed_allele_af_lower": null,
+      "introgressed_allele_af_target": null,
+      "introgressed_allele_af_upper": null,
+      "introgression_ancestry_fraction": null,
+      "introgression_enforcement": "not_applicable",
+      "mutation_birth_generations_ago": 1475,
+      "native_cosi2_status": "native_endpoint_conditioned",
+      "present_af_lower": 0.195,
+      "present_af_target": 0.2,
+      "present_af_upper": 0.20500000000000002,
+      "sample_population": "EAS",
+      "seed": 20240524,
+      "selection_coefficient": 0.01,
+      "selection_onset_generations_ago": 1475,
+      "selection_onset_kya": 36.875,
+      "selection_population": "EAS",
+      "source_generation_time_years": 25.0,
+      "target_bridge_duration_generations": 1475
+    },
+    {
+      "archaic_migration_end_generations_ago": 645.0,
+      "archaic_migration_rate_per_generation": 8.25e-06,
+      "archaic_migration_start_generations_ago": 2093.0,
+      "birth_population": "Neanderthal",
+      "cell_id": "han_introgressed_s0p01",
+      "demography_id": "out_of_africa_archaic_admixture_5r19_chb",
+      "deterministic_present_af_from_gate_center": 0.23401523723581902,
+      "dominance_coefficient": 0.5,
+      "initial_af_timing_assumption": 0.012,
+      "introgressed_allele_af_lower": 0.011,
+      "introgressed_allele_af_target": 0.012,
+      "introgressed_allele_af_upper": 0.013000000000000001,
+      "introgression_ancestry_fraction": 0.012,
+      "introgression_enforcement": "posthoc_COSI_SAVE_TRAJ_CHB_AF_gate_at_migration_end",
+      "mutation_birth_generations_ago": 2400,
+      "native_cosi2_status": "native_donor_origin_continuous_migration_and_endpoint; migration_end_AF_requires_gate",
+      "present_af_lower": 0.195,
+      "present_af_target": 0.2,
+      "present_af_upper": 0.20500000000000002,
+      "sample_population": "Han",
+      "seed": 20240624,
+      "selection_coefficient": 0.01,
+      "selection_onset_generations_ago": 645,
+      "selection_onset_kya": 18.705,
+      "selection_population": "CHB",
+      "source_generation_time_years": 29.0,
+      "target_bridge_duration_generations": 605
+    }
+  ],
+  "contract": {
+    "cosi2": {
+      "commit": "5da717cb8bf7324fb961e772a0c9042385de381a",
+      "repository": "https://github.com/broadinstitute/cosi2.git",
+      "tag": "v2.4.0",
+      "version_command_is_stale_in_tag": true,
+      "version_label": "2.4.0"
+    },
+    "inputs": {
+      "no_introgression_EAS_sim/resources/EAS.npz": {
+        "expected_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+        "sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+      },
+      "stdpopsim_catalog_model": "OutOfAfricaArchaicAdmixture_5R19",
+      "stdpopsim_version": "0.3.0"
+    },
+    "plan": {
+      "base_seed": 20240523,
+      "eas_generation_time_years": 25.0,
+      "focal_relative_position": 0.5,
+      "han_generation_time_years": 29.0,
+      "han_mutation_birth_generations": 2400,
+      "han_selection_start_af_target": 0.012,
+      "han_selection_start_af_tolerance": 0.001,
+      "mutation_rate": 1.25e-08,
+      "present_af": 0.2,
+      "present_af_tolerance": 0.005,
+      "recombination_rate": 1e-08,
+      "sample_haploids": 200,
+      "selection_coefficients": [
+        0.01
+      ],
+      "sequence_length_bp": 10000000
+    },
+    "runtime": {
+      "matplotlib": "3.11.1",
+      "numpy": "2.4.6",
+      "pandas": "3.0.3",
+      "python": "3.11.15"
+    },
+    "schema": "gamma-smc.cosi2-framework/v2",
+    "semantics": {
+      "bundle_mutability": "immutable_exact_inventory",
+      "catalog_to_cosi2_time_policy": "nearest_integer_half_up_with_catalog_and_rounding_delta_recorded",
+      "dominance": "CoSi2_hardcoded_additive_h_0.5",
+      "han_catalog_generation_time_years": 29.0,
+      "han_catalog_mutation_rate": null,
+      "han_introgression": "5R19_continuous_symmetric_Neanderthal_migration; paper_1.2pct_is_genomewide_ancestry_estimate; operational_CHB_AF_screen_validated_posthoc_at_integer_generation_645",
+      "han_operational_allele_af_screen": {
+        "generation": 645,
+        "is_catalog_parameter": false,
+        "lower": 0.011,
+        "target": 0.012,
+        "tolerance": 0.001,
+        "upper": 0.013000000000000001
+      },
+      "han_population_sampling_requests": "explicit_zero_for_unsampled_5R19_populations_required_by_CoSi2_MSweep",
+      "han_symmetric_contact_ancestry_expectation": 0.011806644972302105,
+      "population_sizes": "explicit_half_up_integer_rounding",
+      "present_af": "population_frequency_interval_not_sample_AF",
+      "recombination_map_coverage": "first_rate_applies_from_region_start_through_sequence_end",
+      "recombination_map_first_position_bp": 1,
+      "run_artifact_root_relative_to_bundle": "../cosi2_framework_runs",
+      "selection_duration": "one_population_from_onset_to_present",
+      "study_mutation_rate_override": 1.25e-08,
+      "study_recombination_map_override": 1e-08,
+      "time_axis_orientation": "present_generation_0_on_left"
+    },
+    "source_hashing": "strict_UTF8_canonical_LF",
+    "sources": {
+      "python/gamma_smc_aou/cosi2_framework.py": "c50f8c91280f0256fa95202bb8bb5c2754854a7e1dbce0133a4cbb857064bb40",
+      "scripts/run_cosi2_framework.py": "ee6c051d9aa73ebae4e49fb5808a5592f3f3b6669d7a09b03c9859c094597667"
+    }
+  },
+  "contract_sha256": "006e586b4d2772532bca6bcdf043419c7eb768c5483ceec57313072c9e62abbf",
+  "eas_history": {
+    "ancient_terminal_integer_ne": 13138,
+    "change_size_directives": 4666,
+    "integer_rle_states": 4667,
+    "present_integer_ne": 37637,
+    "raw_rows": 10001
+  },
+  "han_5r19": {
+    "generation_time_years": 29.0,
+    "migration_end_catalog_generations": 644.8275862068965,
+    "migration_end_cosi2_generation": 645,
+    "model_id": "OutOfAfricaArchaicAdmixture_5R19",
+    "neanderthal_migration_rate_per_generation": 8.25e-06,
+    "operational_allele_gate_is_user_ascertainment": true,
+    "paper_genomewide_ancestry_estimate": 0.012,
+    "paper_genomewide_ancestry_uncertainty": 0.006,
+    "symmetric_contact_ancestry_expectation": 0.011806644972302105
+  }
+}
