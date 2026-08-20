@@ -1,8 +1,12 @@
 # run2 — framework sketch
 
-**Status: design only. No simulation code has been written or run.**
-This document is the pre-registration for `sim_results_run2/`. Nothing in this
-directory yet contains results.
+**Status: code written and pre-flight validated. No simulations have been run.**
+This document is the pre-registration for `sim_results_run2/`; nothing in this
+directory yet contains results. See [`README.md`](README.md) for how to run it,
+and `validation_report.json` for the gates that already pass.
+
+Sections 2, 5 and 8 were revised once the model parameters were read out of
+`AncientEurasia_9K19` rather than estimated; the revisions are marked.
 
 Question: **can we detect selection at an introgressed locus from the
 within-individual TMRCA distribution alone?**
@@ -82,6 +86,15 @@ and the presence of an archaic source.
   divergent archaic ones. That is the point of the contrast — it isolates how
   much of the detectable signal comes from the sweep itself versus from the
   archaic haplotype background.
+- *(Added after implementation.)* The two arms also differ in **initial genotype
+  structure**, unavoidably. A pulse migrant in a WF model has both parents in
+  the source, so every Arm A carrier starts as a complete archaic homozygote:
+  ~1.5% homozygotes, no heterozygotes. Arm B's random-genome placement gives
+  Hardy–Weinberg proportions, so almost every carrier is a heterozygote. This is
+  not a modelling slip — it is what an introgression pulse actually does — but
+  it means the A-vs-B contrast bundles "archaic haplotype background" together
+  with "carriers start homozygous", and the two cannot be separated within this
+  design.
 - Relevant Ne along the trajectory (median curve, diploids):
 
   | gen ago | 100 | 500 | 1000 | 2016 | 2272 | 5000 | 10000 | 40000 |
@@ -102,7 +115,7 @@ and the presence of an archaic source.
 | Generation time | 25 years |
 | Selection coefficient | s = 0.01 |
 | Dominance | h = 0.5 (additive) |
-| Selection window | onset at the pulse tick, continuously to the present (Arm A: in Loschbour 2270 → 2015, then in Han 2015 → 0; Arm B: one population throughout) |
+| Selection window | onset one tick after the pulse — realized **2265** generations ago, the tick at which the introgressed genomes first exist — continuously to the present (Arm A: in Loschbour 2265 → 2015, then in Han 2015 → 0; Arm B: one population throughout) |
 | Starting frequency | 0.0296 |
 | Present-day AF conditioning | **none** |
 | Replicates | 100 selected + 100 neutral, per arm |
@@ -187,8 +200,23 @@ present.**
 Stochastic loss is not negligible. Kimura's diffusion result
 `u(p) = 1 − exp(−4·N_e·h·s·p)` gives, very roughly:
 
-- Arm A (Han, Ne ≈ 6,300): `4 × 6300 × 0.005 × 0.0296 ≈ 3.7` → ~2–3% lost.
+- Arm A: the Ne that matters is **Loschbour's 2,340 at the onset**, not Han's
+  6,300 — the allele spends its first 250 generations in Loschbour and only then
+  enters Han. `4 × 2340 × 0.005 × 0.0296 ≈ 1.4` → **~25% lost**.
 - Arm B (EAS, Ne ≈ 3,950 at onset): `4 × 3950 × 0.005 × 0.0296 ≈ 2.3` → ~10% lost.
+
+*(Revised: the first version of this section used Han's present-day 6,300 for
+Arm A and predicted 2–3% loss. Reading the catalog model showed the allele is in
+Loschbour at onset, which roughly reverses the ordering — the introgression arm
+is now expected to lose the allele more often than the non-introgression one.)*
+
+A second, purely computational source of variance: Q = 5 rescales Loschbour to
+468 diploids, so the number of introgressing individuals is a draw from
+`Binomial(468, 0.0296)` — about 14, with a standard deviation of 3.6. The
+starting frequency is therefore 0.0296 *in expectation* with roughly 26%
+relative spread, about √5 wider than the unscaled model would give. Gate G2
+records the realized value per replicate rather than asserting an exact 0.0296,
+and `results/final_af.tsv` carries it so the dependence can be checked directly.
 
 These are order-of-magnitude expectations against the bottlenecked Ne, not
 predictions; the actual loss fraction is a reported result. **Replicates that
@@ -209,7 +237,14 @@ which is precisely why power is reported rather than a single p-value.
 | `results/observed_statistics.tsv` | T(x) at the focal position, one row per replicate |
 | `results/null_distribution.tsv` | the 100 neutral T(x) values per threshold, with quantiles |
 | `results/pvalues.tsv` | per selected replicate per threshold: T, p, and the power summary |
-| `results/run_manifest.json` | seeds, realized event times, software versions, binary hashes, gate outcomes |
+| `results/null_calibration.tsv` | leave-one-out false-positive rate of the null against itself (gate G6) |
+| `results/replicate_status.tsv` | one row per attempted replicate: seed, status, wall time, error |
+| `validation_report.json` | realized event times, software versions, gate outcomes (written by the `validate` phase) |
+
+Per-replicate intermediates live under `<arm>/<mode>/replicates/` and are
+gitignored: they are regenerable from the seeds in `config/`, which are a pure
+function of `(arm, mode, index)`. Tree sequences are not written unless
+`--save-trees` is passed.
 
 ### Figures (PNG + PDF, per arm)
 
@@ -266,30 +301,49 @@ was run under. There is no separate ledger / adapter / recovery layer.
 
 ## 8. Validation gates
 
-Each gate must pass before the next stage runs; outcomes land in
-`results/run_manifest.json`.
+Each gate must pass before the next stage runs. G1, G2 (static half), G4 and G5
+are already implemented and passing in `validation_report.json`, produced by
+`python scripts/run_run2.py validate` — which needs stdpopsim but not the SLiM
+binary, and so can gate the design before anything is launched.
 
 - **G0 — environment and timing.** SLiM 4.2.2 and `stdpopsim == 0.3.0` present
   and version-checked. Run 3 replicates per arm and extrapolate wall time before
-  committing to 400 runs.
-- **G1 — realized times.** Assert the Q = 5 floored ticks are 2270 (pulse /
-  selection onset) and 2015 (Han split), and record nominal and realized values
-  for every event. Resolves the 2010-vs-2015 inconsistency noted in §1.
-- **G2 — starting frequency.** Immediately after the pulse tick, assert the
-  recipient allele frequency equals 0.0296 to within the binomial noise implied
-  by the Q-scaled census. This is the single assumption the whole design rests
-  on.
+  committing to 400 runs. *Needs SLiM.*
+- **G1 — realized times. PASSING.** The Q = 5 grid puts the pulse at 2270
+  generations ago, the standing-variation placement one tick later at 2265, and
+  the Han split at 2015, with the two fitness callbacks meeting exactly on the
+  split tick so selection has no gap. Nominal and realized values are recorded
+  side by side for every event, resolving the 2010-vs-2015 inconsistency in §1.
+- **G2 — starting frequency.** Static half **PASSING**: the generated script is
+  asserted to select carriers by `inds.migrant` (Arm A) or to place 0.0296
+  directly (Arm B), and the placement tick is asserted to be pulse + 1. Dynamic
+  half needs SLiM: the patched `add_mut` records the realized post-pulse
+  frequency into tree-sequence metadata and raises if no introgressing
+  individuals are present, so a wrong `migrant` assumption fails loudly on the
+  first replicate rather than silently. Because Q = 5 leaves only ~14 migrants
+  (§5), this gate records the realized frequency rather than asserting an exact
+  0.0296.
+- **G2b — no rejection sampling. PASSING.** `condition_on_allele_frequency` is
+  asserted empty in all four generated scripts. The accept rate is 1 by
+  construction, which is the single biggest simplification over the earlier runs.
 - **G3 — engine agreement.** 20 msprime coalescent neutral replicates per arm;
   compare the null T(x) distribution to the SLiM null (two-sample KS).
   Disagreement means the SLiM null stays primary and the discrepancy gets
   investigated.
-- **G4 — focal base reserved.** Confirm the neutral mutation overlay masks
-  `[5000000, 5000001)`, so the focal site carries only the selected mutation.
-  The repo already has this mechanism (`_scoped_focal_overlay_patch`); run2
-  re-asserts it rather than assuming it.
-- **G5 — sampling.** Every sampled individual has exactly 2 sample nodes, and
-  the 100 diploids are drawn without replacement from the present-day target
-  population only.
+- **G4 — focal base reserved. PASSING.** The guard masks `[5000000, 5000001)` in
+  every intercepted overlay rate map, is asserted to preserve the integrated
+  rate over the other 9,999,999 bases exactly, and is idempotent. stdpopsim
+  already excludes a referenced single-site DFE from the *background* overlay,
+  but its recapitation DFE spans the whole contig and would otherwise drop
+  neutral mutations on the reserved base. Each replicate additionally fails if
+  the guard never fired.
+- **G5 — sampling. PASSING (static).** All 400 seeds are asserted unique. At
+  runtime, every sampled individual must have exactly 2 sample nodes and the
+  sample nodes must partition cleanly into the 100 diploids.
+- **G6 — null calibration.** Leave-one-out p-values of the null against itself
+  must sit near the nominal 0.05. This is the only check that distinguishes "the
+  test works" from "the test always fires", and it costs nothing:
+  `results/null_calibration.tsv`.
 
 ---
 
@@ -327,10 +381,12 @@ guessing.
 
 ## 11. Sequence of work
 
-1. Freeze `config/run2_chb.json` and `config/run2_eas.json`.
-2. Stand up the Linux environment; run G0.
-3. Implement the pulse-tick allele placement (one scoped SLiM script patch per
-   arm) and verify with G2 on 3 replicates.
+1. ~~Freeze `config/run2_chb.json` and `config/run2_eas.json`.~~ **Done.**
+2. ~~Implement the pulse-tick allele placement and assert the schedule.~~
+   **Done** — `validate` passes; the generated scripts are committed under
+   `<arm>/validation/` for review.
+3. Stand up the Linux environment; run G0 and the dynamic half of G2 on 3
+   replicates per arm (`--index 0 --index 1 --index 2`).
 4. 100 selected replicates per arm → `final_af.tsv`, figure 1.
 5. 100 neutral replicates per arm; G3.
 6. Profiles, p-values, figures 2–5.

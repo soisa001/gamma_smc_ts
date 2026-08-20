@@ -1,0 +1,439 @@
+{
+  "arms": {
+    "chb_ancient_eurasia": {
+      "label": "CHB (Han, AncientEurasia_9K19)",
+      "modes": {
+        "neutral": {
+          "model": {
+            "arm_id": "chb_ancient_eurasia",
+            "conditioning_events": 0,
+            "demographic_model_id": "AncientEurasia_9K19",
+            "dominance_coefficient": null,
+            "extended_events": [],
+            "mode": "neutral",
+            "origin_population": "Loschbour",
+            "schema": "gamma-smc.run2-model/v1",
+            "selection_coefficient": 0.0,
+            "standing_frequency": null,
+            "standing_variation_placement": null,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "Han",
+            "target_population_id": 5,
+            "tick_schedule": {
+              "generation_time_years": 25.0,
+              "nominal_generations_ago": {
+                "han_split": 2016.0,
+                "present": 0.0,
+                "pulse": 2272.0,
+                "standing_variation": 2272.0
+              },
+              "realized_generations_ago": {
+                "han_split": 2015.0,
+                "present": 0.0,
+                "pulse": 2270.0,
+                "standing_variation": 2265.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 2015.0,
+                  "population": "Loschbour",
+                  "start": 2265.0
+                },
+                {
+                  "end": 0.0,
+                  "population": "Han",
+                  "start": 2015.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "han_split": 403,
+                "present": 0,
+                "pulse": 454,
+                "standing_variation": 453
+              }
+            }
+          },
+          "script_characters": 27572,
+          "script_checks": {
+            "arm_id": "chb_ancient_eurasia",
+            "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
+            "drawn_mutation_rows": 0,
+            "fitness_callback_rows": 0,
+            "mode": "neutral",
+            "passed": true,
+            "rejection_sampling": false,
+            "standing_variation_tick_offset": null
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\chb_ancient_eurasia\\validation\\neutral.slim"
+        },
+        "selected": {
+          "model": {
+            "arm_id": "chb_ancient_eurasia",
+            "conditioning_events": 0,
+            "demographic_model_id": "AncientEurasia_9K19",
+            "dominance_coefficient": 0.5,
+            "extended_events": [
+              {
+                "event_type": "DrawMutation",
+                "population": "Loschbour",
+                "single_site_id": "run2_focal_site",
+                "time": {
+                  "generations_ago": 2272.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              },
+              {
+                "dominance_coefficient": 0.5,
+                "end_time": {
+                  "generations_ago": 2016.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ChangeMutationFitness",
+                "population": "Loschbour",
+                "selection_coefficient": 0.01,
+                "single_site_id": "run2_focal_site",
+                "start_time": {
+                  "generations_ago": 2272.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              },
+              {
+                "dominance_coefficient": 0.5,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ChangeMutationFitness",
+                "population": "Han",
+                "selection_coefficient": 0.01,
+                "single_site_id": "run2_focal_site",
+                "start_time": {
+                  "generations_ago": 2016.0,
+                  "semantics": "exact_generation"
+                }
+              }
+            ],
+            "mode": "selected",
+            "origin_population": "Loschbour",
+            "schema": "gamma-smc.run2-model/v1",
+            "selection_coefficient": 0.01,
+            "standing_frequency": 0.0296,
+            "standing_variation_placement": "all_introgressing_genomes",
+            "stdpopsim_version": "0.3.0",
+            "target_population": "Han",
+            "target_population_id": 5,
+            "tick_schedule": {
+              "generation_time_years": 25.0,
+              "nominal_generations_ago": {
+                "han_split": 2016.0,
+                "present": 0.0,
+                "pulse": 2272.0,
+                "standing_variation": 2272.0
+              },
+              "realized_generations_ago": {
+                "han_split": 2015.0,
+                "present": 0.0,
+                "pulse": 2270.0,
+                "standing_variation": 2265.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 2015.0,
+                  "population": "Loschbour",
+                  "start": 2265.0
+                },
+                {
+                  "end": 0.0,
+                  "population": "Han",
+                  "start": 2015.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "han_split": 403,
+                "present": 0,
+                "pulse": 454,
+                "standing_variation": 453
+              }
+            }
+          },
+          "script_characters": 30461,
+          "script_checks": {
+            "arm_id": "chb_ancient_eurasia",
+            "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
+            "draw_years_ago": 56625.0,
+            "drawn_mutation_rows": 1,
+            "fitness_callback_rows": 2,
+            "mode": "selected",
+            "passed": true,
+            "pulse_tick_offset": 454,
+            "rejection_sampling": false,
+            "standing_variation_tick_offset": 453
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\chb_ancient_eurasia\\validation\\selected.slim"
+        }
+      },
+      "tick_schedule": {
+        "generation_time_years": 25.0,
+        "nominal_generations_ago": {
+          "han_split": 2016.0,
+          "present": 0.0,
+          "pulse": 2272.0,
+          "standing_variation": 2272.0
+        },
+        "realized_generations_ago": {
+          "han_split": 2015.0,
+          "present": 0.0,
+          "pulse": 2270.0,
+          "standing_variation": 2265.0
+        },
+        "scaling_factor": 5.0,
+        "selection_intervals_generations_ago": [
+          {
+            "end": 2015.0,
+            "population": "Loschbour",
+            "start": 2265.0
+          },
+          {
+            "end": 0.0,
+            "population": "Han",
+            "start": 2015.0
+          }
+        ],
+        "tick_offsets_before_final_tick": {
+          "han_split": 403,
+          "present": 0,
+          "pulse": 454,
+          "standing_variation": 453
+        }
+      }
+    },
+    "eas_phlash": {
+      "label": "EAS (PHLASH median, custom demography)",
+      "modes": {
+        "neutral": {
+          "model": {
+            "arm_id": "eas_phlash",
+            "conditioning_events": 0,
+            "demographic_model_id": "PhlashEASMedian",
+            "dominance_coefficient": null,
+            "extended_events": [],
+            "mode": "neutral",
+            "origin_population": "EAS",
+            "schema": "gamma-smc.run2-model/v1",
+            "selection_coefficient": 0.0,
+            "standing_frequency": null,
+            "standing_variation_placement": null,
+            "stdpopsim_version": "0.3.0",
+            "target_population": "EAS",
+            "target_population_id": 0,
+            "tick_schedule": {
+              "generation_time_years": 25.0,
+              "nominal_generations_ago": {
+                "present": 0.0,
+                "pulse": 2272.0,
+                "standing_variation": 2272.0
+              },
+              "realized_generations_ago": {
+                "present": 0.0,
+                "pulse": 2270.0,
+                "standing_variation": 2265.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "EAS",
+                  "start": 2265.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "present": 0,
+                "pulse": 454,
+                "standing_variation": 453
+              }
+            }
+          },
+          "script_characters": 841904,
+          "script_checks": {
+            "arm_id": "eas_phlash",
+            "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
+            "drawn_mutation_rows": 0,
+            "fitness_callback_rows": 0,
+            "mode": "neutral",
+            "passed": true,
+            "rejection_sampling": false,
+            "standing_variation_tick_offset": null
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\eas_phlash\\validation\\neutral.slim"
+        },
+        "selected": {
+          "model": {
+            "arm_id": "eas_phlash",
+            "conditioning_events": 0,
+            "demographic_model_id": "PhlashEASMedian",
+            "dominance_coefficient": 0.5,
+            "extended_events": [
+              {
+                "event_type": "DrawMutation",
+                "population": "EAS",
+                "single_site_id": "run2_focal_site",
+                "time": {
+                  "generations_ago": 2272.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              },
+              {
+                "dominance_coefficient": 0.5,
+                "end_time": {
+                  "generations_ago": 0.0,
+                  "semantics": "exact_generation"
+                },
+                "event_type": "ChangeMutationFitness",
+                "population": "EAS",
+                "selection_coefficient": 0.01,
+                "single_site_id": "run2_focal_site",
+                "start_time": {
+                  "generations_ago": 2272.0,
+                  "semantics": "generation_after_in_forward_time"
+                }
+              }
+            ],
+            "mode": "selected",
+            "origin_population": "EAS",
+            "schema": "gamma-smc.run2-model/v1",
+            "selection_coefficient": 0.01,
+            "standing_frequency": 0.0296,
+            "standing_variation_placement": "uniform_random_genomes",
+            "stdpopsim_version": "0.3.0",
+            "target_population": "EAS",
+            "target_population_id": 0,
+            "tick_schedule": {
+              "generation_time_years": 25.0,
+              "nominal_generations_ago": {
+                "present": 0.0,
+                "pulse": 2272.0,
+                "standing_variation": 2272.0
+              },
+              "realized_generations_ago": {
+                "present": 0.0,
+                "pulse": 2270.0,
+                "standing_variation": 2265.0
+              },
+              "scaling_factor": 5.0,
+              "selection_intervals_generations_ago": [
+                {
+                  "end": 0.0,
+                  "population": "EAS",
+                  "start": 2265.0
+                }
+              ],
+              "tick_offsets_before_final_tick": {
+                "present": 0,
+                "pulse": 454,
+                "standing_variation": 453
+              }
+            }
+          },
+          "script_characters": 844809,
+          "script_checks": {
+            "arm_id": "eas_phlash",
+            "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
+            "draw_years_ago": 56625.0,
+            "drawn_mutation_rows": 1,
+            "fitness_callback_rows": 1,
+            "mode": "selected",
+            "passed": true,
+            "pulse_tick_offset": 454,
+            "rejection_sampling": false,
+            "standing_variation_tick_offset": 453
+          },
+          "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\eas_phlash\\validation\\selected.slim"
+        }
+      },
+      "tick_schedule": {
+        "generation_time_years": 25.0,
+        "nominal_generations_ago": {
+          "present": 0.0,
+          "pulse": 2272.0,
+          "standing_variation": 2272.0
+        },
+        "realized_generations_ago": {
+          "present": 0.0,
+          "pulse": 2270.0,
+          "standing_variation": 2265.0
+        },
+        "scaling_factor": 5.0,
+        "selection_intervals_generations_ago": [
+          {
+            "end": 0.0,
+            "population": "EAS",
+            "start": 2265.0
+          }
+        ],
+        "tick_offsets_before_final_tick": {
+          "present": 0,
+          "pulse": 454,
+          "standing_variation": 453
+        }
+      }
+    }
+  },
+  "elapsed_seconds": 7.436180599965155,
+  "environment": {
+    "note": "SLiM was not checked; pass --slim-bin to run gate G0",
+    "slim_checked": false
+  },
+  "focal_mask": {
+    "expected_integrated_rate": 0.12499998749999999,
+    "focal_base_mass": 0.0,
+    "idempotent": true,
+    "integrated_rate_after_mask": 0.12499998749999999,
+    "passed": true
+  },
+  "passed": true,
+  "schema": "gamma-smc.run2-validation/v1",
+  "seeds": {
+    "n_seeds": 400,
+    "passed": true,
+    "unique": true
+  },
+  "shared_parameters": {
+    "allele_survival_conditioning": null,
+    "dominance_coefficient": 0.5,
+    "focal_position_0based": 5000000,
+    "focal_site_id": "run2_focal_site",
+    "generation_time_years": 25.0,
+    "han_split_generations_ago_nominal": 2016.0,
+    "mutation_rate_per_bp_per_generation": 1.25e-08,
+    "n_replicates_per_mode": 100,
+    "null_conditioning": null,
+    "p_value_floor": 0.009900990099009901,
+    "p_value_rule": "(1 + #{null >= observed}) / (1 + n_null), one-sided upper tail",
+    "present_day_af_conditioning": null,
+    "profile_stride_bp": 10000,
+    "recombination_rate_per_bp_per_generation": 1e-08,
+    "required_slim_version": "4.2.2",
+    "required_stdpopsim_version": "0.3.0",
+    "sample_diploids": 100,
+    "seed_base": 20260819,
+    "selection_coefficient": 0.01,
+    "sequence_length_bp": 10000000,
+    "significance_level": 0.05,
+    "slim_burn_in": 0.1,
+    "slim_scaling_factor": 5.0,
+    "standing_frequency": 0.0296,
+    "standing_variation_generations_ago_nominal": 2272.0,
+    "statistic": "overall within-individual P(TMRCA < x) at the focal position, over all sampled diploids",
+    "tmrca_thresholds_years": [
+      1000.0,
+      4500.0,
+      10000.0,
+      20000.0,
+      30000.0,
+      40000.0,
+      50000.0
+    ]
+  }
+}

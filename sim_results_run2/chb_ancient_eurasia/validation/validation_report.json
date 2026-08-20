@@ -1,0 +1,209 @@
+{
+  "label": "CHB (Han, AncientEurasia_9K19)",
+  "modes": {
+    "neutral": {
+      "model": {
+        "arm_id": "chb_ancient_eurasia",
+        "conditioning_events": 0,
+        "demographic_model_id": "AncientEurasia_9K19",
+        "dominance_coefficient": null,
+        "extended_events": [],
+        "mode": "neutral",
+        "origin_population": "Loschbour",
+        "schema": "gamma-smc.run2-model/v1",
+        "selection_coefficient": 0.0,
+        "standing_frequency": null,
+        "standing_variation_placement": null,
+        "stdpopsim_version": "0.3.0",
+        "target_population": "Han",
+        "target_population_id": 5,
+        "tick_schedule": {
+          "generation_time_years": 25.0,
+          "nominal_generations_ago": {
+            "han_split": 2016.0,
+            "present": 0.0,
+            "pulse": 2272.0,
+            "standing_variation": 2272.0
+          },
+          "realized_generations_ago": {
+            "han_split": 2015.0,
+            "present": 0.0,
+            "pulse": 2270.0,
+            "standing_variation": 2265.0
+          },
+          "scaling_factor": 5.0,
+          "selection_intervals_generations_ago": [
+            {
+              "end": 2015.0,
+              "population": "Loschbour",
+              "start": 2265.0
+            },
+            {
+              "end": 0.0,
+              "population": "Han",
+              "start": 2015.0
+            }
+          ],
+          "tick_offsets_before_final_tick": {
+            "han_split": 403,
+            "present": 0,
+            "pulse": 454,
+            "standing_variation": 453
+          }
+        }
+      },
+      "script_characters": 27572,
+      "script_checks": {
+        "arm_id": "chb_ancient_eurasia",
+        "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
+        "drawn_mutation_rows": 0,
+        "fitness_callback_rows": 0,
+        "mode": "neutral",
+        "passed": true,
+        "rejection_sampling": false,
+        "standing_variation_tick_offset": null
+      },
+      "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\chb_ancient_eurasia\\validation\\neutral.slim"
+    },
+    "selected": {
+      "model": {
+        "arm_id": "chb_ancient_eurasia",
+        "conditioning_events": 0,
+        "demographic_model_id": "AncientEurasia_9K19",
+        "dominance_coefficient": 0.5,
+        "extended_events": [
+          {
+            "event_type": "DrawMutation",
+            "population": "Loschbour",
+            "single_site_id": "run2_focal_site",
+            "time": {
+              "generations_ago": 2272.0,
+              "semantics": "generation_after_in_forward_time"
+            }
+          },
+          {
+            "dominance_coefficient": 0.5,
+            "end_time": {
+              "generations_ago": 2016.0,
+              "semantics": "exact_generation"
+            },
+            "event_type": "ChangeMutationFitness",
+            "population": "Loschbour",
+            "selection_coefficient": 0.01,
+            "single_site_id": "run2_focal_site",
+            "start_time": {
+              "generations_ago": 2272.0,
+              "semantics": "generation_after_in_forward_time"
+            }
+          },
+          {
+            "dominance_coefficient": 0.5,
+            "end_time": {
+              "generations_ago": 0.0,
+              "semantics": "exact_generation"
+            },
+            "event_type": "ChangeMutationFitness",
+            "population": "Han",
+            "selection_coefficient": 0.01,
+            "single_site_id": "run2_focal_site",
+            "start_time": {
+              "generations_ago": 2016.0,
+              "semantics": "exact_generation"
+            }
+          }
+        ],
+        "mode": "selected",
+        "origin_population": "Loschbour",
+        "schema": "gamma-smc.run2-model/v1",
+        "selection_coefficient": 0.01,
+        "standing_frequency": 0.0296,
+        "standing_variation_placement": "all_introgressing_genomes",
+        "stdpopsim_version": "0.3.0",
+        "target_population": "Han",
+        "target_population_id": 5,
+        "tick_schedule": {
+          "generation_time_years": 25.0,
+          "nominal_generations_ago": {
+            "han_split": 2016.0,
+            "present": 0.0,
+            "pulse": 2272.0,
+            "standing_variation": 2272.0
+          },
+          "realized_generations_ago": {
+            "han_split": 2015.0,
+            "present": 0.0,
+            "pulse": 2270.0,
+            "standing_variation": 2265.0
+          },
+          "scaling_factor": 5.0,
+          "selection_intervals_generations_ago": [
+            {
+              "end": 2015.0,
+              "population": "Loschbour",
+              "start": 2265.0
+            },
+            {
+              "end": 0.0,
+              "population": "Han",
+              "start": 2015.0
+            }
+          ],
+          "tick_offsets_before_final_tick": {
+            "han_split": 403,
+            "present": 0,
+            "pulse": 454,
+            "standing_variation": 453
+          }
+        }
+      },
+      "script_characters": 30461,
+      "script_checks": {
+        "arm_id": "chb_ancient_eurasia",
+        "conditioning_block": "defineConstant(\"condition_on_allele_frequency\", c())",
+        "draw_years_ago": 56625.0,
+        "drawn_mutation_rows": 1,
+        "fitness_callback_rows": 2,
+        "mode": "selected",
+        "passed": true,
+        "pulse_tick_offset": 454,
+        "rejection_sampling": false,
+        "standing_variation_tick_offset": 453
+      },
+      "script_path": "C:\\Users\\Lenovo\\AllOfUs_Phase2\\gamma_smc_ts\\sim_results_run2\\chb_ancient_eurasia\\validation\\selected.slim"
+    }
+  },
+  "tick_schedule": {
+    "generation_time_years": 25.0,
+    "nominal_generations_ago": {
+      "han_split": 2016.0,
+      "present": 0.0,
+      "pulse": 2272.0,
+      "standing_variation": 2272.0
+    },
+    "realized_generations_ago": {
+      "han_split": 2015.0,
+      "present": 0.0,
+      "pulse": 2270.0,
+      "standing_variation": 2265.0
+    },
+    "scaling_factor": 5.0,
+    "selection_intervals_generations_ago": [
+      {
+        "end": 2015.0,
+        "population": "Loschbour",
+        "start": 2265.0
+      },
+      {
+        "end": 0.0,
+        "population": "Han",
+        "start": 2015.0
+      }
+    ],
+    "tick_offsets_before_final_tick": {
+      "han_split": 403,
+      "present": 0,
+      "pulse": 454,
+      "standing_variation": 453
+    }
+  }
+}
