@@ -211,6 +211,75 @@ that was specified. But they mean run2 as run measures how well a *soft*
 introgressed sweep is detected by a *shallow-coalescence* statistic evaluated
 *below the admixture floor* — three choices that each work against detection.
 
+## Would Gamma-SMC have more power than tree truth?
+
+Tested directly, and the answer is no — but the reasoning is worth recording
+because the intuition behind the question is sound.
+
+**The intuition is right about the data.** Archaic haplotypes are similar to each
+other (Neanderthal Ne is 192 at the pulse), so once the introgressed allele
+fixes, heterozygosity at the focal base collapses: 1 het per 18 kb in the
+selected arm against 1 per 1.8 kb neutral, a 10x contrast that is glaring in
+sequence data. Gamma-SMC will certainly see it.
+
+**But that recency is already in the truth.** The archaic-archaic median TMRCA is
+2,796 generations (69.9 ky), which is genuinely recent against the 22,515
+generation (563 ky) background. Gamma-SMC would infer roughly that same value.
+There is no hidden extra signal for an estimator to recover — truth and estimate
+agree that the swept region is ~55-70 ky deep, and the problem is that 55-70 ky
+sits above the 50 ky cutoff either way.
+
+**Three quantitative reasons inference should lose, not gain:**
+
+1. *Almost no mutations exist at these depths.* Expected heterozygous sites per
+   diploid pair available to infer the TMRCA:
+
+   | TMRCA | in 10 kb | in 100 kb | in 200 kb |
+   |---|---|---|---|
+   | 1 ky cutoff (40 gen) | 0.01 | 0.10 | 0.20 |
+   | 10 ky cutoff (400 gen) | 0.10 | 1.00 | 2.00 |
+   | 50 ky cutoff (2,000 gen) | 0.50 | 5.00 | 10.00 |
+   | CHB selected median (2,182 gen) | 0.55 | 5.46 | 10.91 |
+
+   At the recent cutoffs there is essentially nothing to infer from. Even at the
+   largest cutoff a pair contributes ~10 mutations across the entire sweep block.
+
+2. *The prior will dominate and compress the contrast.* The repo's decoder uses
+   `scaled_mutation_rate = 0.000315`, i.e. Ne = 6,300 and a prior mean TMRCA of
+   12,600 generations. The selected arm's truth (2,182) sits 5.8x below that and
+   the neutral arm's (22,515) 1.8x above, so shrinkage pulls both toward 12,600
+   and squeezes the separation from both sides.
+
+3. *Published precedent points the same way.* Zhang et al. report TRACE recall of
+   ~80% on true ARGs, ~50% with SINGER-inferred ARGs and <10% with Relate — ARG
+   inference retains at most about 60% of the truth's recall on precisely this
+   problem.
+
+**The one mechanism that could help — spatial pooling — was tested and is worth
+little here.** Gamma-SMC's HMM pools across positions, and the sweep signal is
+spatially extended while the sampling noise is local. Averaging the truth
+statistic over windows centred on the focal base emulates that:
+
+| window | CHB 30 ky | CHB 40 ky | CHB 50 ky | EAS 30 ky | EAS 40 ky | EAS 50 ky |
+|---|---|---|---|---|---|---|
+| point | 0.06 | 0.18 | **0.67** | 0.05 | 0.20 | 0.59 |
+| +/-50 kb | 0.10 | 0.18 | 0.57 | 0.07 | 0.29 | **0.66** |
+| +/-100 kb | 0.13 | **0.25** | 0.64 | 0.09 | **0.32** | 0.65 |
+| +/-250 kb | 0.04 | 0.21 | 0.50 | 0.15 | 0.29 | 0.64 |
+| +/-1 Mb | 0.07 | 0.17 | 0.43 | 0.11 | 0.12 | 0.46 |
+
+Pooling buys at most ~+0.12 (EAS at 40 ky, 0.20 to 0.32) and actively *hurts* at
+the best cutoff for CHB (0.67 down to 0.43-0.64). The optimal window is
++/-50-100 kb, which matches the hard-sweep block half-width
+`s / (r * ln(2Ns)) / 2` = 103 kb; wider windows dilute the block with unswept
+flanks.
+
+**Conclusion.** Gamma-SMC is worth running because it is what one would apply to
+real data, where the true ARG is unavailable. The right question for pass 2 is
+"how much of the truth's power does it retain", and the expected answer is
+somewhere below 100%, not above it. It is not a substitute for putting the cutoff
+above the admixture floor.
+
 ## What should change
 
 1. **Extend the threshold grid past the sweep onset.** Add 60, 75, 100 and
