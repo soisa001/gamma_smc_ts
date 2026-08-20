@@ -1,0 +1,48 @@
+{
+  "contract_sha256": "c593a2f8f61360fef48253bb8f143a3445a24a27fd5deb8c7a41ff563582da2e",
+  "summary_sha256": "67f7bc91b8cec92732036c8e4be4118e1dc587b595444ddc969e44b96caf6699",
+  "run_sha256": "3616a7b83708c63767c1285378ed3b96ec3ed1133bd358965e7627a1640be874",
+  "execution": {
+    "threads": 4,
+    "threads_cache_role": "provenance_only",
+    "run_settings_validated": true
+  },
+  "migration": {
+    "from_schema": "gamma-smc.eas-sweep-study/v1",
+    "validation": "legacy_contract_hash_and_run_semantics",
+    "legacy_contract_sha256": "b977065d9a57104db9daab4a9105e53cc50427bcebaf35e7b3fbc1d9ef9beddf",
+    "run_sha256": "3616a7b83708c63767c1285378ed3b96ec3ed1133bd358965e7627a1640be874"
+  },
+  "implementation": {
+    "legacy_decode_execution": "unknown",
+    "migration_process": {
+      "schema": "gamma-smc.eas-sweep-implementation/v1",
+      "recorded_at_utc": "2026-08-12T23:10:46.001879+00:00",
+      "python_implementation": "CPython",
+      "python_version": "3.11.15",
+      "tskit_version": "1.0.3",
+      "sources": {
+        "core": {
+          "path": "eas_sweep_study.py",
+          "available": true,
+          "sha256": "bef802f46dde46318c03c70629c581475c10437122132714a518c0cd3e29a766"
+        },
+        "orchestrator": {
+          "path": "eas_introgression_replicates.py",
+          "available": true,
+          "sha256": "74d4d9cc2b8d7f1b58c80376a79f7e6d9d2396ed96c175caaf659f93068c838c"
+        },
+        "decoder_wrapper": {
+          "path": "decoder.py",
+          "available": true,
+          "sha256": "bba1329963327729b25da63c65191e052eec5acd70c1569d6a7ff11b4c54df52"
+        },
+        "tree_sequence_vcf_producer": {
+          "path": "tree_sequence.py",
+          "available": true,
+          "sha256": "2e02df22db2f1f4ef64ae24d6c8339366d90d48cf430c24308be509438cd485a"
+        }
+      }
+    }
+  }
+}
