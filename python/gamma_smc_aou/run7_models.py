@@ -30,51 +30,71 @@ carriers recently coalescing, which manufactures the very signal under test.
 
 Parameter provenance
 --------------------
-``HUMAN_NEANDERTHAL_SPLIT_GENERATIONS`` (27,840 gen = 696 ky at 25 y/gen) and
-``INTROGRESSION_PULSE_GENERATIONS`` (2,272 gen = 56.8 ky) are the values this
-repository already used for the ``AncientEurasia_9K19`` work, and both sit inside
-the published ranges -- a 550-765 ky split (Prufer et al. 2014) and a 47-65 ky
-admixture date (Sankararaman et al. 2012; Fu et al. 2014, Ust'-Ishim).  The
-archaic effective size of 3,600 and the option of continuous rather than pulsed
-admixture are taken from ``OutOfAfricaArchaicAdmixture_5R19`` (Ragsdale & Gravel
-2019).  The default admixture proportion of 2.5% is the East Asian Neanderthal
-ancestry estimate (Prufer et al. 2014; Vernot & Akey 2015); the CHB arms in this
-repository used 2.96%, which is within the same range.
+Defaults come from :mod:`run7_config` and are the rounded literature values: a
+700 kya split (Prufer et al. 2014 give 550-765 ky), a 55 kya pulse (Sankararaman
+et al. 2012 and Fu et al. 2014 give 47-65 ky), an archaic effective size of 3,600
+(Ragsdale & Gravel 2019), and 2.5% admixture (Prufer et al. 2014; Vernot & Akey
+2015).  At 25 years per generation that is 28,000 and 2,200 generations.
 """
 
 from __future__ import annotations
 
+import hashlib
+import re
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 import msprime
 import numpy as np
+import stdpopsim
+from stdpopsim import slim_engine
 
 from .eas_sweep_models import (
-    ARCHAIC_POPULATION,
-    EAS_POPULATION,
-    GENERATION_TIME_YEARS,
-    HUMAN_NEANDERTHAL_SPLIT_GENERATIONS,
-    INTROGRESSION_PULSE_GENERATIONS,
     build_eas_demography_models,
     load_phlash_eas_npz,
 )
-from .run6_config import PHLASH_EAS_RELATIVE_PATH, PHLASH_EAS_SHA256
+from .run7_config import (
+    ADMIXTURE_PROPORTION as _ADMIXTURE_PROPORTION,
+    ARCHAIC_EFFECTIVE_SIZE as _ARCHAIC_EFFECTIVE_SIZE,
+    ARCHAIC_POPULATION,
+    DOMINANCE_COEFFICIENT,
+    EAS_POPULATION,
+    FOCAL_POSITION_BP,
+    FOCAL_SITE_ID,
+    GENERATION_TIME_YEARS,
+    MUTATION_RATE,
+    PHLASH_EAS_RELATIVE_PATH,
+    PHLASH_EAS_SHA256,
+    PULSE_GENERATIONS,
+    RECOMBINATION_RATE,
+    REQUIRED_STDPOPSIM_VERSION,
+    CONDITION_ON_SURVIVAL,
+    SEQUENCE_LENGTH_BP,
+    SLIM_SCALING_FACTOR,
+    SPLIT_GENERATIONS,
+    TARGET_FREQUENCY_BAND,
+)
 
 __all__ = [
     "ARCHAIC_EFFECTIVE_SIZE",
     "ADMIXTURE_PROPORTION",
     "CENSUS_OFFSET_GENERATIONS",
     "GraftedModel",
+    "build_contig",
     "build_eas_with_archaic",
+    "build_denovo_events",
+    "build_extended_events",
+    "build_stdpopsim_model",
     "call_archaic_ancestry",
+    "scoped_slim_patch",
 ]
 
 #: Ragsdale & Gravel (2019), as implemented in OutOfAfricaArchaicAdmixture_5R19.
-ARCHAIC_EFFECTIVE_SIZE = 3_600.0
+ARCHAIC_EFFECTIVE_SIZE = _ARCHAIC_EFFECTIVE_SIZE
 #: East Asian Neanderthal ancestry (Prufer et al. 2014; Vernot & Akey 2015).
-ADMIXTURE_PROPORTION = 0.025
+ADMIXTURE_PROPORTION = _ADMIXTURE_PROPORTION
 #: The census sits just *older* than the pulse, so a lineage sampled there is
 #: already in whichever population it came from.
 CENSUS_OFFSET_GENERATIONS = 1.0
@@ -100,8 +120,8 @@ def build_eas_with_archaic(
     repo_root: str | Path,
     *,
     quantile: str = "median",
-    split_generations: float = HUMAN_NEANDERTHAL_SPLIT_GENERATIONS,
-    pulse_generations: float = INTROGRESSION_PULSE_GENERATIONS,
+    split_generations: float = SPLIT_GENERATIONS,
+    pulse_generations: float = PULSE_GENERATIONS,
     archaic_effective_size: float = ARCHAIC_EFFECTIVE_SIZE,
     admixture_proportion: float = ADMIXTURE_PROPORTION,
     add_census: bool = True,
@@ -144,7 +164,7 @@ def build_eas_with_archaic(
         demography.add_census(time=census_generations)
     # A mass migration rather than ``add_population_split``: a split marks the
     # ancestral population inactive until its split time, which would leave EAS
-    # unable to coalesce for the whole 27,840 generations before it and push
+    # unable to coalesce for the whole 28,000 generations before it and push
     # every pair past the split. 5R19 joins its archaic branches the same way.
     demography.add_mass_migration(
         time=float(split_generations),
@@ -221,3 +241,286 @@ def call_archaic_ancestry(
         if node != -1:
             flags[index] = node_population[node] == archaic
     return flags
+
+
+# ---------------------------------------------------------------------------
+# SLiM building blocks
+# ---------------------------------------------------------------------------
+
+
+def _require_stdpopsim() -> None:
+    if stdpopsim.__version__ != REQUIRED_STDPOPSIM_VERSION:
+        raise RuntimeError(
+            f"run7 requires stdpopsim {REQUIRED_STDPOPSIM_VERSION}; "
+            f"found {stdpopsim.__version__}"
+        )
+
+
+def build_stdpopsim_model(repo_root: str | Path, **kwargs) -> stdpopsim.DemographicModel:
+    """The grafted demography wrapped for the SLiM engine.
+
+    The census is dropped here: it exists so that ancestry can be read off the
+    tree, and the SLiM engine has no use for it -- SLiM marks the focal allele
+    itself, which is what the genotype stratification uses.
+    """
+    _require_stdpopsim()
+    kwargs.setdefault("add_census", False)
+    grafted = build_eas_with_archaic(repo_root, **kwargs)
+    model = stdpopsim.DemographicModel(
+        id="PhlashEASArchaicGraft",
+        description="PHLASH EAS median history with a grafted Neanderthal branch",
+        long_description=(
+            "The inferred EAS history carrying the whole human lineage, with a "
+            "Neanderthal branch of constant size joining it at the split and a "
+            "single admixture pulse into EAS."
+        ),
+        generation_time=GENERATION_TIME_YEARS,
+        mutation_rate=MUTATION_RATE,
+        recombination_rate=RECOMBINATION_RATE,
+        model=grafted.demography,
+    )
+    return model
+
+
+def build_contig() -> stdpopsim.Contig:
+    _require_stdpopsim()
+    contig = stdpopsim.get_species("HomSap").get_contig(
+        length=SEQUENCE_LENGTH_BP,
+        mutation_rate=MUTATION_RATE,
+        recombination_rate=RECOMBINATION_RATE,
+    )
+    contig.add_single_site(
+        id=FOCAL_SITE_ID,
+        coordinate=FOCAL_POSITION_BP,
+        description="run7 focal selected site",
+    )
+    return contig
+
+
+def snap_generations(value: float) -> float:
+    """Round a time onto the tick grid the SLiM engine actually uses."""
+    return round(float(value) / SLIM_SCALING_FACTOR) * SLIM_SCALING_FACTOR
+
+
+def build_extended_events(mode: str, selection_coefficient: float) -> tuple[Any, ...]:
+    """Fix the allele in the archaic branch, then select it in EAS after the pulse.
+
+    The two frequency conditions together are the ascertainment: the allele has
+    to arrive in EAS at roughly the admixture proportion. Fixing it in the
+    archaic branch delivers 2.5% in expectation, but the pulse is a single
+    binomial draw, so the realised frequency is required rather than assumed.
+    """
+    _require_stdpopsim()
+    if mode == "neutral":
+        return ()
+    if mode != "selected":
+        raise ValueError(f"mode must be 'selected' or 'neutral', got {mode!r}")
+
+    placement = stdpopsim.GenerationAfter(snap_generations(SPLIT_GENERATIONS))
+    onset = snap_generations(PULSE_GENERATIONS)
+    # One tick *after* the pulse, as a plain time rather than a GenerationAfter:
+    # the condition has to be evaluated once the migration has actually moved
+    # archaic genomes into EAS, and a GenerationAfter on both ends of the window
+    # collapses it so that the check never runs at all.
+    check = onset - SLIM_SCALING_FACTOR
+    low, high = TARGET_FREQUENCY_BAND
+    events = (
+        stdpopsim.DrawMutation(
+            time=placement,
+            single_site_id=FOCAL_SITE_ID,
+            population=ARCHAIC_POPULATION,
+        ),
+        stdpopsim.ChangeMutationFitness(
+            start_time=onset,
+            end_time=0.0,
+            single_site_id=FOCAL_SITE_ID,
+            population=EAS_POPULATION,
+            selection_coeff=float(selection_coefficient),
+            dominance_coeff=DOMINANCE_COEFFICIENT,
+        ),
+        stdpopsim.ConditionOnAlleleFrequency(
+            start_time=check,
+            end_time=check,
+            single_site_id=FOCAL_SITE_ID,
+            population=EAS_POPULATION,
+            op=">=",
+            allele_frequency=float(low),
+        ),
+        stdpopsim.ConditionOnAlleleFrequency(
+            start_time=check,
+            end_time=check,
+            single_site_id=FOCAL_SITE_ID,
+            population=EAS_POPULATION,
+            op="<=",
+            allele_frequency=float(high),
+        ),
+    )
+    if CONDITION_ON_SURVIVAL:
+        # Only ever scan tracts that exist: the empirical analysis sees hmmix
+        # calls, never the loci where introgression failed to establish. The
+        # establishment probability is measured separately rather than lost here.
+        events = events + (
+            stdpopsim.ConditionOnAlleleFrequency(
+                start_time=check,
+                end_time=0.0,
+                single_site_id=FOCAL_SITE_ID,
+                population=EAS_POPULATION,
+                op=">",
+                allele_frequency=0.0,
+            ),
+        )
+    return events
+
+
+_ADD_MUT_PATTERN = re.compile(
+    r"// Add `mut_type` mutation at `pos`, to a single individual in `pop`\.\n"
+    r"function \(void\)add_mut\(object\$ mut_type, object\$ pop, integer\$ pos\) \{"
+    r".*?\n\}",
+    re.DOTALL,
+)
+_END_PATTERN = re.compile(
+    r"// Output tree sequence file and end the simulation\.\n"
+    r"function \(void\)end\(void\) \{.*?\n\}",
+    re.DOTALL,
+)
+
+#: Fixing the allele in the archaic branch is what makes the pulse deliver it on
+#: genuine archaic haplotypes; drawing a single copy instead would hand it a
+#: random modern background and defeat the whole point of the graft.
+_PLACEMENT = """// run7: fix the focal allele in the archaic branch.
+function (void)add_mut(object$ mut_type, object$ pop, integer$ pos) {
+    if (size(pop.individuals) == 0)
+        err("run7: the archaic population is empty at the placement tick");
+    carrier_genomes = pop.genomes;
+    carrier_genomes.addNewDrawnMutation(mut_type, pos);
+    muts = sim.mutationsOfType(mut_type);
+    if (size(muts) != 1)
+        err("run7: placement did not create exactly one focal mutation");
+    metadata.setValue("run7_focal_mutation_type_id", mut_type.id);
+    metadata.setValue("run7_placement_tick", community.tick);
+    metadata.setValue("run7_placement_mode", "fixed_in_archaic_population");
+    metadata.setValue("run7_placement_carrier_genomes", size(carrier_genomes));
+    metadata.setValue("run7_placement_frequency", sim.mutationFrequencies(pop, muts[0]));
+}"""
+
+
+def _census_end_function(target_population_id: int) -> str:
+    return f"""// run7: record the present-day census frequency, then finish.
+function (void)end(void) {{
+    mt_id = metadata.getValue("run7_focal_mutation_type_id");
+    pop = sim.subpopulations[sim.subpopulations.id == {target_population_id}];
+    if (size(pop) != 1)
+        err("run7: the target subpopulation is not present at the end");
+    pop = pop[0];
+    total_count = size(pop.genomes);
+    alt_count = 0;
+    state = "absent";
+    if (!isNULL(mt_id)) {{
+        mt_matches = sim.mutationTypes[sim.mutationTypes.id == mt_id];
+        if (size(mt_matches) == 1) {{
+            mt = mt_matches[0];
+            muts = sim.mutationsOfType(mt);
+            subs = sim.substitutions[sim.substitutions.mutationType == mt];
+            if (size(subs) == 1) {{
+                alt_count = total_count;
+                state = "fixed_as_substitution";
+            }} else if (size(muts) == 1) {{
+                alt_count = sum(pop.genomes.containsMutations(muts[0]));
+                state = "segregating_or_fixed";
+            }} else {{
+                alt_count = 0;
+                state = "lost";
+            }}
+        }}
+    }}
+    metadata.setValue("run7_final_census_alt_count", alt_count);
+    metadata.setValue("run7_final_census_total_count", total_count);
+    metadata.setValue("run7_final_census_af", alt_count / total_count);
+    metadata.setValue("run7_final_census_state", state);
+    sim.treeSeqOutput(trees_file, metadata=metadata);
+    sim.simulationFinished();
+}}"""
+
+
+def _replace_once(text: str, pattern: re.Pattern[str], replacement: str, label: str) -> str:
+    matches = pattern.findall(text)
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"stdpopsim {label} contract changed: expected one match, got {len(matches)}"
+        )
+    return pattern.sub(lambda _: replacement, text, count=1)
+
+
+@contextmanager
+def scoped_slim_patch(
+    mode: str, target_population_id: int = 0, *, patch_placement: bool = True
+) -> Iterator[dict[str, Any]]:
+    """Patch the SLiM preamble for the duration of one simulation.
+
+    ``patch_placement`` is False for the de novo arms: stdpopsim already draws a
+    single copy, which is exactly what a de novo origin means, so only the census
+    at the end needs replacing.
+    """
+    original = slim_engine._slim_functions
+    record: dict[str, Any] = {"mode": mode, "patch_placement": patch_placement}
+    if mode == "neutral":
+        record["patched"] = False
+        yield record
+        return
+    patched = str(original)
+    if patch_placement:
+        patched = _replace_once(patched, _ADD_MUT_PATTERN, _PLACEMENT, "add_mut")
+    patched = _replace_once(
+        patched, _END_PATTERN, _census_end_function(target_population_id), "end"
+    )
+    record.update(
+        {
+            "patched": True,
+            "target_population_id": target_population_id,
+            "patched_sha256": hashlib.sha256(patched.encode()).hexdigest(),
+        }
+    )
+    slim_engine._slim_functions = patched
+    try:
+        yield record
+    finally:
+        slim_engine._slim_functions = original
+
+
+def build_denovo_events(selection_coefficient: float) -> tuple[Any, ...]:
+    """A single de novo copy in EAS at the pulse time, conditioned on survival.
+
+    Everything except the origin is held identical to the introgressed arms --
+    same model, same onset, same null -- so the contrast isolates one variable:
+    a sweep starting from one copy on a random modern background against one
+    starting from ~39 copies carried on archaic haplotypes.
+
+    Survival conditioning is doing far more work here. A single copy establishes
+    with probability about ``2 h s``, so most draws are lost and SLiM restarts;
+    the restart is cheap only because the checkpoint sits at the draw itself
+    rather than back at the archaic split.
+    """
+    _require_stdpopsim()
+    onset = snap_generations(PULSE_GENERATIONS)
+    check = stdpopsim.GenerationAfter(onset)
+    return (
+        stdpopsim.DrawMutation(
+            time=onset, single_site_id=FOCAL_SITE_ID, population=EAS_POPULATION
+        ),
+        stdpopsim.ChangeMutationFitness(
+            start_time=onset,
+            end_time=0.0,
+            single_site_id=FOCAL_SITE_ID,
+            population=EAS_POPULATION,
+            selection_coeff=float(selection_coefficient),
+            dominance_coeff=DOMINANCE_COEFFICIENT,
+        ),
+        stdpopsim.ConditionOnAlleleFrequency(
+            start_time=check,
+            end_time=0.0,
+            single_site_id=FOCAL_SITE_ID,
+            population=EAS_POPULATION,
+            op=">",
+            allele_frequency=0.0,
+        ),
+    )
