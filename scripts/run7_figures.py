@@ -36,7 +36,12 @@ STUDY = REPO / "sim_results_run7"
 OUT = STUDY / "figures"
 PULSE_YEARS = PULSE_GENERATIONS * GENERATION_TIME_YEARS
 COLOURS = {0.002: "#8ecae6", 0.003: "#219ebc", 0.005: "#fb8500", 0.01: "#c1121f"}
-DENOVO_COLOURS = {0.005: "#b5e48c", 0.01: "#52b788", 0.02: "#2d6a4f", 0.05: "#1b4332"}
+# Built from the grid rather than hand-listed, so adding a coefficient cannot
+# leave the palette short a key.
+DENOVO_COLOURS = {
+    s: matplotlib.colormaps["YlGn"](0.30 + 0.65 * i / max(len(DENOVO_COEFFICIENTS) - 1, 1))
+    for i, s in enumerate(sorted(DENOVO_COEFFICIENTS))
+}
 CLASS_LABEL = {"unconditional": "all individuals", "hom_carrier": "hom carriers"}
 
 
@@ -298,7 +303,10 @@ def figure_scan(scan: pd.DataFrame) -> None:
                 axis.set_title(f"P(TMRCA < {years:,.0f} y)")
             if row == 1:
                 axis.set_xlabel("distance from focal site (Mb)")
-        axes[row, 0].set_ylabel(f"AUC vs neutral\n({CLASS_LABEL[name]})")
+    # Set outside the column loop: doing it inside left `row` and `name` at
+    # their final values, so only the bottom row was ever labelled.
+    for row, name in enumerate(("unconditional", "hom_carrier")):
+        axes[row, 0].set_ylabel("AUC vs neutral\n(" + CLASS_LABEL[name] + ")")
     axes[0, 0].set_ylim(0, 1.02)
     axes[0, 0].legend(fontsize=8, loc="upper left")
     fig.suptitle("Spatial extent of the signal along the 10 Mb contig", fontsize=12)

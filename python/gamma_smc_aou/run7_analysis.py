@@ -52,7 +52,17 @@ __all__ = [
 #: The de novo arms are a separate origin over their own coefficients. They share
 #: the model, the onset and the neutral null with the introgressed arms, so the
 #: only thing that differs is where the selected allele came from.
-DENOVO_COEFFICIENTS: tuple[float, ...] = (0.005, 0.01, 0.02, 0.05)
+DENOVO_COEFFICIENTS: tuple[float, ...] = (
+    0.001,
+    0.002,
+    0.003,
+    0.005,
+    0.01,
+    0.02,
+    0.05,
+)
+#: Analysis order is ascending for plotting; the runner keeps its own order
+#: because seeds are derived from position in that tuple.
 
 
 def denovo_arm_id_for(selection_coefficient: float) -> str:

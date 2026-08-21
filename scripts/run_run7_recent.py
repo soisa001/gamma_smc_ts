@@ -1,18 +1,23 @@
 #!/usr/bin/env python
-"""A quick de novo counterpart to run7's introgressed arms.
+"""A recent strong sweep: LCT/EPAS1-like, de novo, a few thousand years old.
 
-Same model, same onset, same shared neutral null -- the only thing that changes
-is where the selected allele comes from. The introgressed arms start from ~39
-copies riding archaic haplotypes whose mutual coalescence is deep; here the
-sweep starts from a single new copy on an ordinary modern background, so every
-carrier descends from one haplotype and the carrier class should coalesce very
-recently.
+run7's arms all start at the 55 kya pulse, and every one of them finishes long
+before the present, which is why nothing showed signal below ~10 ky. A sweep
+that began 5 kya is the opposite case -- it is necessarily still compressing
+coalescence at the moment of sampling -- so it is the regime where recent
+cutoffs should finally do something.
 
-That contrast is the point: it predicts a de novo sweep shows signal at cutoffs
-far more recent than adaptive introgression can reach, because introgression is
-floored by the pulse while a hard sweep is not.
+Everything else is held to run7: same grafted model, same shared neutral null,
+de novo single copy, conditioned on survival.
 
-    python scripts/run_run7_denovo.py --slim-bin .native-stdpopsim/bin/slim
+``s = 0.05`` is the requested LCT-like value. ``s = 0.10`` is carried alongside
+because 200 generations is a very short time to climb from one copy: additive
+selection multiplies the odds by exp(s t / 2), which is only about 150-fold at
+s = 0.05, so the allele may not reach a frequency the statistic can see at all.
+Bracketing separates "the method cannot detect this" from "the allele never got
+anywhere".
+
+    python scripts/run_run7_recent.py --slim-bin .native-stdpopsim/bin/slim
 """
 
 from __future__ import annotations
@@ -44,6 +49,7 @@ from gamma_smc_aou.run5_simulate import (  # noqa: E402
 from gamma_smc_aou.run7_config import (  # noqa: E402
     EAS_POPULATION,
     FOCAL_POSITION_BP,
+    GENERATION_TIME_YEARS,
     PROFILE_STRIDE_BP,
     SAMPLE_DIPLOIDS,
     SEQUENCE_LENGTH_BP,
@@ -58,17 +64,15 @@ from gamma_smc_aou.run7_models import (  # noqa: E402
 )
 
 STUDY_ROOT = REPO / "sim_results_run7"
-#: 0.001-0.003 fill in the weak end, where the introgressed arms peaked, and
-#: 0.002/0.003 are matched to introgressed arms so the origins compare directly.
-#: Appended rather than sorted in: the seed is SEED_BASE + s_index * 100000 +
-#: replicate, so reordering this tuple would silently re-seed the arms that
-#: have already been simulated.
-DENOVO_COEFFICIENTS = (0.005, 0.01, 0.02, 0.05, 0.001, 0.002, 0.003)
-SEED_BASE = 20261201
+#: 5,000 years at 25 years per generation.
+ONSET_GENERATIONS = 200.0
+RECENT_COEFFICIENTS = (0.05, 0.10)
+SEED_BASE = 20261301
 
 
 def arm_id_for(selection_coefficient: float) -> str:
-    return f"denovo_s{selection_coefficient:g}".replace(".", "p")
+    years = int(ONSET_GENERATIONS * GENERATION_TIME_YEARS / 1000)
+    return f"recent{years}k_s{selection_coefficient:g}".replace(".", "p")
 
 
 @dataclass(frozen=True)
@@ -89,13 +93,11 @@ def run_one(task: Task) -> dict:
     try:
         model = build_stdpopsim_model(task.repo_root)
         contig = build_contig()
-        events = build_denovo_events(task.selection_coefficient)
+        events = build_denovo_events(task.selection_coefficient, ONSET_GENERATIONS)
         engine = stdpopsim.get_engine("slim")
         target_id = [p.name for p in model.model.populations].index(EAS_POPULATION)
 
         with (
-            # The default stdpopsim placement already draws a single copy, which
-            # is what de novo means, so only the census is replaced.
             scoped_slim_patch("selected", target_id, patch_placement=False) as patch,
             scoped_focal_overlay_patch() as overlay,
         ):
@@ -143,7 +145,9 @@ def run_one(task: Task) -> dict:
             "schema": "gamma-smc.run7-endpoint/v1",
             "unit_id": f"{task.arm_id}__selected__rep{task.replicate_index:03d}",
             "arm_id": task.arm_id,
-            "origin": "de_novo_single_copy",
+            "origin": "de_novo_recent",
+            "onset_generations": ONSET_GENERATIONS,
+            "onset_years": ONSET_GENERATIONS * GENERATION_TIME_YEARS,
             "selection_coefficient": task.selection_coefficient,
             "mode": "selected",
             "replicate_index": task.replicate_index,
@@ -163,7 +167,7 @@ def run_one(task: Task) -> dict:
         endpoint = {
             "schema": "gamma-smc.run7-endpoint/v1",
             "arm_id": task.arm_id,
-            "origin": "de_novo_single_copy",
+            "origin": "de_novo_recent",
             "selection_coefficient": task.selection_coefficient,
             "mode": "selected",
             "replicate_index": task.replicate_index,
@@ -197,11 +201,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--replicates", type=int, default=20)
     parser.add_argument("--repo-root", default=str(REPO))
-    parser.add_argument(
-        "--redo",
-        action="store_true",
-        help="re-run replicates that already completed instead of skipping them",
-    )
     args = parser.parse_args(argv)
 
     tasks = [
@@ -220,28 +219,9 @@ def main(argv: list[str] | None = None) -> int:
             selection_coefficient=float(coefficient),
             arm_id=arm_id_for(coefficient),
         )
-        for s_index, coefficient in enumerate(DENOVO_COEFFICIENTS)
+        for s_index, coefficient in enumerate(RECENT_COEFFICIENTS)
         for index in range(args.replicates)
     ]
-    if not args.redo:
-        # Each arm costs hundreds of restarts at low s, so finished replicates
-        # are left alone and only the new coefficients are simulated.
-        keep = []
-        for task in tasks:
-            endpoint = Path(task.directory) / "endpoint.json"
-            if endpoint.is_file():
-                try:
-                    if json.loads(endpoint.read_text())["status"] == "completed":
-                        continue
-                except (ValueError, KeyError):
-                    pass
-            keep.append(task)
-        print(json.dumps({"queued": len(keep), "skipped": len(tasks) - len(keep)}))
-        tasks = keep
-    if not tasks:
-        print("nothing to do")
-        return 0
-
     if args.workers == 1:
         rows = [run_one(task) for task in tasks]
     else:
@@ -249,9 +229,7 @@ def main(argv: list[str] | None = None) -> int:
             rows = list(executor.map(run_one, tasks))
     status = pd.DataFrame(rows)
     (STUDY_ROOT / "logs").mkdir(parents=True, exist_ok=True)
-    status.to_csv(
-        STUDY_ROOT / "logs" / "denovo_status.tsv", sep="\t", index=False
-    )
+    status.to_csv(STUDY_ROOT / "logs" / "recent_status.tsv", sep="\t", index=False)
     failed = int((status["status"] != "completed").sum())
     print(json.dumps({"attempted": len(status), "failed": failed}, indent=2))
     if failed:

@@ -487,7 +487,9 @@ def scoped_slim_patch(
         slim_engine._slim_functions = original
 
 
-def build_denovo_events(selection_coefficient: float) -> tuple[Any, ...]:
+def build_denovo_events(
+    selection_coefficient: float, onset_generations: float | None = None
+) -> tuple[Any, ...]:
     """A single de novo copy in EAS at the pulse time, conditioned on survival.
 
     Everything except the origin is held identical to the introgressed arms --
@@ -501,7 +503,12 @@ def build_denovo_events(selection_coefficient: float) -> tuple[Any, ...]:
     rather than back at the archaic split.
     """
     _require_stdpopsim()
-    onset = snap_generations(PULSE_GENERATIONS)
+    # Defaults to the pulse time so the de novo arms are matched to the
+    # introgressed ones; an explicit onset covers recent sweeps such as an
+    # LCT-like allele a few thousand years old.
+    onset = snap_generations(
+        PULSE_GENERATIONS if onset_generations is None else onset_generations
+    )
     check = stdpopsim.GenerationAfter(onset)
     return (
         stdpopsim.DrawMutation(
