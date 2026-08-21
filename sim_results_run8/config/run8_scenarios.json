@@ -1,0 +1,114 @@
+{
+  "scenarios": [
+    {
+      "expected_cutoff_years": 5000.0,
+      "label": "Recent de novo sweep (LCT-like), 5 kya, s = 0.1",
+      "n_replicates": 100,
+      "onset_generations": 200.0,
+      "onset_years": 5000.0,
+      "origin": "de_novo",
+      "rationale": "A single new copy 200 generations ago, still compressing coalescence at the moment of sampling, so the signal should sit below the onset. s = 0.1 rather than an LCT-textbook 0.05 because run7 measured 0.05 over 200 generations: mean final frequency 0.016. Published LCT estimates span roughly 0.01-0.19.",
+      "scenario_id": "recent_denovo",
+      "selection_coefficient": 0.1
+    },
+    {
+      "expected_cutoff_years": 30000.0,
+      "label": "De novo sweep at the pulse time, 55 kya, s = 0.002",
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "de_novo",
+      "rationale": "A single new copy on an ordinary modern background, starting when the pulse lands and under the same coefficient as the introgressed arm. Holding onset and s fixed leaves origin as the only difference, so the contrast measures what an archaic starting pool does and nothing else.",
+      "scenario_id": "postintro_denovo",
+      "selection_coefficient": 0.002
+    },
+    {
+      "expected_cutoff_years": 50000.0,
+      "label": "Selected introgressed allele, 55 kya pulse, s = 0.002",
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "introgressed_pulse",
+      "rationale": "The allele arrives on archaic haplotypes at 2.5%. Carriers can only coalesce after the pulse or back in the archaic branch, so the signal is floored by the pulse and a more recent cutoff cannot capture it.",
+      "scenario_id": "introgressed_pulse",
+      "selection_coefficient": 0.002
+    },
+    {
+      "expected_cutoff_years": 50000.0,
+      "label": "Selected introgressed allele, 55 kya pulse, s = 0.001",
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "introgressed_pulse",
+      "rationale": "The 'or even lower?' bracket. Expected to end near 7%, which leaves few carrier-carrier pairs, so it tests where the approach runs out rather than where it works.",
+      "scenario_id": "introgressed_pulse_weak",
+      "selection_coefficient": 0.001
+    }
+  ],
+  "schema": "gamma-smc.run8-config/v2",
+  "shared": {
+    "analysis": {
+      "alpha": 0.01,
+      "n_neutral_replicates": 100,
+      "scored_at": "focal allele position, per 10 kb stride",
+      "significance_rule": "at most one of the neutral replicates may exceed the observation",
+      "thresholds_years": [
+        1000.0,
+        5000.0,
+        10000.0,
+        20000.0,
+        30000.0,
+        40000.0,
+        50000.0
+      ]
+    },
+    "conditioning": {
+      "neutral_conditioning": "none; the neutral mode carries no focal allele",
+      "selected_condition_on_survival": true,
+      "selected_target_frequency_band_at_pulse": [
+        0.02,
+        0.03
+      ]
+    },
+    "decoding": {
+      "implied_constant_ne": 14534.883720930233,
+      "note": "theta/rho are pinned to the Gamma-SMC paper and are not derived from the simulation rates; the decoder never sees mu or r.",
+      "primary_statistic": "frac_recent_<T> (proportion of posterior means below T)",
+      "recent_call": "mean",
+      "rho": 0.0006,
+      "secondary_statistic": "mean_p_lt_<T> (mean posterior probability below T)",
+      "theta": 0.00075
+    },
+    "demography": {
+      "admixture_proportion": 0.025,
+      "archaic_effective_size": 3600.0,
+      "archaic_population": "Neanderthal",
+      "eas_population": "EAS",
+      "pulse_generations": 2200.0,
+      "pulse_years": 55000.0,
+      "source": "run7 graft, imported unchanged",
+      "split_generations": 28000.0,
+      "split_years": 700000.0
+    },
+    "pairs": {
+      "n_decode_pairs": 10000,
+      "pairs_seed": 1729,
+      "selection": "decoder random draw; truth evaluated on the same manifest",
+      "total_possible_pairs": 19900
+    },
+    "simulation": {
+      "dominance_coefficient": 0.5,
+      "focal_position_0based": 5000000,
+      "focal_site_id": "run7_focal_site",
+      "generation_time_years": 25.0,
+      "mutation_rate_per_bp_per_generation": 1.29e-08,
+      "profile_stride_bp": 10000,
+      "recombination_rate_per_bp_per_generation": 1e-08,
+      "sample_diploids": 100,
+      "sample_haplotypes": 200,
+      "sequence_length_bp": 10000000,
+      "slim_burn_in": 0.1,
+      "slim_scaling_factor": 5.0
+    }
+  }
+}
