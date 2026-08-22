@@ -1,0 +1,172 @@
+{
+  "scenarios": [
+    {
+      "band_at_pulse": true,
+      "label": "Selected introgressed allele, 55 kya pulse, s = 0.003",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "introgressed_pulse",
+      "rationale": "run8 showed s = 0.002 is invisible unconditionally and s = 0.001 is dead. Raising s raises final frequency, and since only about AF^2 of random pairs are carrier-carrier, the unconditional statistic should scale steeply with it.",
+      "scenario_id": "pulse_s0p003",
+      "selection_coefficient": 0.003
+    },
+    {
+      "band_at_pulse": true,
+      "label": "Selected introgressed allele, 55 kya pulse, s = 0.004",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "introgressed_pulse",
+      "rationale": "run8 showed s = 0.002 is invisible unconditionally and s = 0.001 is dead. Raising s raises final frequency, and since only about AF^2 of random pairs are carrier-carrier, the unconditional statistic should scale steeply with it.",
+      "scenario_id": "pulse_s0p004",
+      "selection_coefficient": 0.004
+    },
+    {
+      "band_at_pulse": true,
+      "label": "Selected introgressed allele, 55 kya pulse, s = 0.005",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "introgressed_pulse",
+      "rationale": "run8 showed s = 0.002 is invisible unconditionally and s = 0.001 is dead. Raising s raises final frequency, and since only about AF^2 of random pairs are carrier-carrier, the unconditional statistic should scale steeply with it.",
+      "scenario_id": "pulse_s0p005",
+      "selection_coefficient": 0.005
+    },
+    {
+      "band_at_pulse": false,
+      "label": "Introgressed allele, drift then selection from 10 kya, s = 0.005",
+      "min_frequency_at_onset": 0.02,
+      "n_replicates": 100,
+      "onset_generations": 400.0,
+      "onset_years": 10000.0,
+      "origin": "introgressed_pulse",
+      "rationale": "EPAS1-like: the allele arrives on the pulse, drifts neutrally for 1,800 generations, and only becomes advantageous 400 generations ago, by which point it must be at least 2%. Tests whether a recent onset concentrates coalescence where the neutral baseline is low.",
+      "scenario_id": "pulse_delayed_s0p005",
+      "selection_coefficient": 0.005
+    },
+    {
+      "band_at_pulse": false,
+      "label": "De novo sweep at the pulse time, 55 kya, s = 0.003",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "de_novo",
+      "rationale": "Matched to the pulse arm in onset and coefficient so that origin is the only difference. A de novo allele starts at 1/(2N) rather than 0.025, roughly 190-fold lower, which the softness formula predicts makes its sweep far harder.",
+      "scenario_id": "denovo_s0p003",
+      "selection_coefficient": 0.003
+    },
+    {
+      "band_at_pulse": false,
+      "label": "De novo sweep at the pulse time, 55 kya, s = 0.004",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "de_novo",
+      "rationale": "Matched to the pulse arm in onset and coefficient so that origin is the only difference. A de novo allele starts at 1/(2N) rather than 0.025, roughly 190-fold lower, which the softness formula predicts makes its sweep far harder.",
+      "scenario_id": "denovo_s0p004",
+      "selection_coefficient": 0.004
+    },
+    {
+      "band_at_pulse": false,
+      "label": "De novo sweep at the pulse time, 55 kya, s = 0.005",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 2200.0,
+      "onset_years": 55000.0,
+      "origin": "de_novo",
+      "rationale": "Matched to the pulse arm in onset and coefficient so that origin is the only difference. A de novo allele starts at 1/(2N) rather than 0.025, roughly 190-fold lower, which the softness formula predicts makes its sweep far harder.",
+      "scenario_id": "denovo_s0p005",
+      "selection_coefficient": 0.005
+    },
+    {
+      "band_at_pulse": false,
+      "label": "De novo sweep from 10 kya, s = 0.01",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 400.0,
+      "onset_years": 10000.0,
+      "origin": "de_novo",
+      "rationale": "Matched in onset to the delayed pulse arm so the contrast isolates the head start that 2.5% archaic ancestry provides over a single new copy.",
+      "scenario_id": "denovo_delayed_s0p01",
+      "selection_coefficient": 0.01
+    },
+    {
+      "band_at_pulse": false,
+      "label": "De novo sweep from 10 kya, s = 0.05",
+      "min_frequency_at_onset": null,
+      "n_replicates": 100,
+      "onset_generations": 400.0,
+      "onset_years": 10000.0,
+      "origin": "de_novo",
+      "rationale": "Matched in onset to the delayed pulse arm so the contrast isolates the head start that 2.5% archaic ancestry provides over a single new copy.",
+      "scenario_id": "denovo_delayed_s0p05",
+      "selection_coefficient": 0.05
+    }
+  ],
+  "schema": "gamma-smc.run9-config/v1",
+  "shared": {
+    "analysis": {
+      "alpha": 0.01,
+      "n_neutral_replicates": 300,
+      "p_value_floor": 0.0033222591362126247,
+      "quantiles": [
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        0.9
+      ],
+      "significance_rule": "at most one neutral replicate may match or exceed the observation",
+      "thresholds_years": [
+        1000.0,
+        5000.0,
+        10000.0,
+        20000.0,
+        30000.0,
+        40000.0,
+        50000.0,
+        75000.0
+      ]
+    },
+    "conditioning": {
+      "all_selected_arms_condition_on_survival": true,
+      "delayed_min_frequency_at_onset": 0.02,
+      "delayed_onset_generations": 400.0,
+      "neutral_conditioning": "none",
+      "pulse_band": [
+        0.02,
+        0.03
+      ]
+    },
+    "decoding": {
+      "implied_constant_ne": 14534.883720930233,
+      "recent_call": "mean",
+      "rho": 0.0006,
+      "theta": 0.00075
+    },
+    "demography": {
+      "admixture_proportion": 0.025,
+      "archaic_effective_size": 3600.0,
+      "pulse_generations": 2200.0,
+      "split_generations": 28000.0
+    },
+    "inherits": "run8, unchanged: demography, samples, pairs, rates, decoding",
+    "pairs": {
+      "n_decode_pairs": 10000,
+      "pairs_seed": 1729
+    },
+    "simulation": {
+      "generation_time_years": 25.0,
+      "mutation_rate_per_bp_per_generation": 1.29e-08,
+      "recombination_rate_per_bp_per_generation": 1e-08,
+      "sample_diploids": 100,
+      "sample_haplotypes": 200
+    }
+  }
+}
