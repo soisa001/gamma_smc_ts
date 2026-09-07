@@ -26,13 +26,13 @@ def _streams_tree_sequence(input_path: str | Path, input_format: str) -> bool:
     )
 
 
-def _vcf_producer_command(input_path: str | Path, input_format: str) -> list[str]:
+def _vcf_producer_command(input_path: str | Path, input_format: str, position_transform: str = "legacy") -> list[str]:
     script = (
         "import sys; "
         "from gamma_smc_aou.tree_sequence import stream_tree_sequence_vcf; "
-        "stream_tree_sequence_vcf(sys.argv[1], sys.stdout, input_format=sys.argv[2])"
+        "stream_tree_sequence_vcf(sys.argv[1], sys.stdout, input_format=sys.argv[2], position_transform=sys.argv[3])"
     )
-    return [sys.executable, "-c", script, str(input_path), input_format]
+    return [sys.executable, "-c", script, str(input_path), input_format, position_transform]
 
 
 def _decode_failure(
@@ -96,6 +96,7 @@ def run_within_decoder(
     pair_block: int = 256,
     exp10: str = "accurate",
     backward_alignment: str = "fixed",
+    vcf_position_transform: str = "legacy",
     extra_args: Sequence[str] | None = None,
 ) -> dict:
     """Run the decoder and write a per-position recent-coalescence summary.
@@ -183,7 +184,7 @@ def run_within_decoder(
 
     started = perf_counter()
     producer_command = (
-        _vcf_producer_command(input_path, input_format) if streams_tree_sequence else None
+        _vcf_producer_command(input_path, input_format, vcf_position_transform) if streams_tree_sequence else None
     )
     producer = None
     producer_returncode = 0

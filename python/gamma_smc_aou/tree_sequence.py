@@ -40,7 +40,8 @@ def diploid_individuals(ts) -> list[int]:
 
 
 def stream_tree_sequence_vcf(
-    source: str | Path, output: TextIO, *, input_format: str = "auto"
+    source: str | Path, output: TextIO, *, input_format: str = "auto",
+    position_transform: str = "legacy",
 ) -> None:
     """Write VCF text directly to an open stream without materializing a temporary VCF."""
     ts = load_tree_sequence(source, input_format=input_format)
@@ -48,7 +49,16 @@ def stream_tree_sequence_vcf(
     # Tskit coordinates are 0-based, while VCF POS must be at least 1. The
     # legacy transform preserves the usual rounded positions, maps coordinate
     # zero to one, and disambiguates any resulting duplicate integer positions.
-    write_options = {"position_transform": "legacy"}
+    if position_transform == "one_based":
+        import numpy as np
+        positions = ts.tables.sites.position
+        if not np.array_equal(positions, np.floor(positions)):
+            raise ValueError("Exact one-based VCF conversion requires integer site positions")
+        write_options = {"position_transform": lambda x: np.asarray(x, dtype=np.int64) + 1}
+    elif position_transform == "legacy":
+        write_options = {"position_transform": "legacy"}
+    else:
+        raise ValueError(f"Unknown VCF position transform: {position_transform}")
     if individuals:
         ts.write_vcf(output, individuals=individuals, **write_options)
     else:

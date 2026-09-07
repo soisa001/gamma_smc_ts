@@ -37,3 +37,14 @@ sim_results_run2/run.sh -text
 scripts/bootstrap_run3.sh -text
 sim_results_run3/run.sh -text
 sim_results_run4/run.sh -text
+
+# Fresh power workflow entry points and specifications use Linux line endings.
+python/gamma_smc_aou/fresh_power.py text eol=lf
+scripts/launch_fresh_eas.sh text eol=lf
+scripts/run_fresh_eas.py text eol=lf
+configs/eas_q02_50k.json text eol=lf
+requirements/fresh_eas_runtime.txt text eol=lf
+tests/test_fresh_power.py text eol=lf
+docs/fresh_eas_power.md text eol=lf
+python/gamma_smc_aou/decoder.py text eol=lf
+python/gamma_smc_aou/tree_sequence.py text eol=lf
