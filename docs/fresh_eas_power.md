@@ -19,6 +19,8 @@ The primary statistic is `frac_recent_T`, the fraction of pairs whose posterior 
 
 Run inside WSL. The checkout is `/mnt/d/phase2simselection/code`; outputs are `/mnt/d/phase2simselection/sim/eas_q02`. The launcher uses 20 single-threaded workers, as requested. It uses the local pinned uv environment and resolves native library/SLiM locations from `GAMMA_NATIVE_DIR` and `SLIM_BIN`, with defaults for this machine. `UV_BIN` defaults to `$HOME/.local/bin/uv` so a background WSL launch does not depend on login-shell PATH setup.
 
+The permitted RAM budget is 300 GB, subject to memory exposed by WSL/the operating system. It is an allowance, not a reservation. The current workflow bounds concurrent work by worker count and does not preallocate the memory budget. Resource changes requested during a run are recorded in `resource_allowance.json`; they do not change simulation seeds or invalidate completed outputs.
+
 ```bash
 bash scripts/launch_fresh_eas.sh smoke
 bash scripts/launch_fresh_eas.sh run
