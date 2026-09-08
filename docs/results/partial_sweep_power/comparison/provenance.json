@@ -1,0 +1,13 @@
+{
+  "primary_endpoint": "At least one qualifying call anywhere in a 10 Mb region, identical on both sides",
+  "selected_population": "Fresh EAS s=.005; 100 accepted regions including one sample-fixed allele",
+  "neutral_population": "Fresh EAS 1000 neutral regions",
+  "inputs": {
+    "paired_peak_grid\\summary.csv": "ff9e4242ac896190c95b5528be21f6b62c0348f4a0b3b1e9981c69d85865dd4d",
+    "partial_sweep_region_cv\\summary.csv": "aaa87afa1e97aa42536392eca0de404eff062b4a7c4d44ab4a8f1dcc20ebf6b0"
+  },
+  "outputs": {
+    "cross_validated_region_calls.csv": "8d05a54e1bc68eca3275a5d5cab9ca051f40d47cc59eccfbf6616d4f0af95351",
+    "paired_grid_region_calls.csv": "82f72b8d216af5f5f999736bb82059f8a8530d1aed65849e5901052d180e89c6"
+  }
+}

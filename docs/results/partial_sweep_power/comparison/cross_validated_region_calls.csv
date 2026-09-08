@@ -1,0 +1,5 @@
+evaluation,policy,method,training_target,selected_called,selected_n,selected_fraction,neutral_called,neutral_n,neutral_fraction
+internal cross-validation,adaptive,ADAPTIVE,0.7,66,100,0.66,458,1000,0.458
+internal cross-validation,adaptive,ADAPTIVE,0.8,74,100,0.74,581,1000,0.581
+internal cross-validation,baseline,T10000_p0.01_min5,0.0,73,100,0.73,503,1000,0.503
+internal cross-validation,method,smooth_w1_T10000,0.7,70,100,0.7,448,1000,0.448

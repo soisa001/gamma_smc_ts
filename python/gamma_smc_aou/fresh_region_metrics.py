@@ -88,7 +88,7 @@ def score_counts(tp, fp, fn):
     )
 
 
-def load_profiles(root, workers):
+def load_profiles(root, workers, profile_name="frac_recent.tsv"):
     manifest_bytes = (root / "sample_manifest.json").read_bytes()
     manifest = json.loads(manifest_bytes)
     study = json.loads((root / "manifest.json").read_text())
@@ -106,9 +106,9 @@ def load_profiles(root, workers):
         for key in ("mode", "s", "replicate"):
             if item[key] != record["task"][key]:
                 raise ValueError(f"Manifest/receipt task mismatch: {directory}")
-        data = (directory / "frac_recent.tsv").read_bytes()
+        data = (directory / profile_name).read_bytes()
         digest = sha256(data)
-        artifact = record["artifacts"]["frac_recent.tsv"]
+        artifact = record["artifacts"][profile_name]
         if digest != artifact["sha256"] or len(data) != artifact["bytes"]:
             raise ValueError(f"Corrupt decoded profile: {directory}")
         frame = pd.read_csv(io.BytesIO(data), sep="\t")

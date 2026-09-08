@@ -1,0 +1,101 @@
+{
+  "purpose": "Compact scientific summaries; full outputs and simulation trees remain in the D-drive study",
+  "source_analysis_directory": "D:\\phase2simselection\\sim\\eas_q02\\analysis",
+  "files": {
+    "comparison/paired_grid_region_calls.csv": {
+      "sha256": "82f72b8d216af5f5f999736bb82059f8a8530d1aed65849e5901052d180e89c6",
+      "bytes": 79693,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\region_call_comparison\\paired_grid_region_calls.csv"
+    },
+    "comparison/cross_validated_region_calls.csv": {
+      "sha256": "8d05a54e1bc68eca3275a5d5cab9ca051f40d47cc59eccfbf6616d4f0af95351",
+      "bytes": 447,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\region_call_comparison\\cross_validated_region_calls.csv"
+    },
+    "comparison/provenance.json": {
+      "sha256": "81ef71a1a775ad9af3cc5d03a0ec9107b8a4b2b1938eea41913971bf91c244af",
+      "bytes": 747,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\region_call_comparison\\provenance.json"
+    },
+    "paired/summary.csv": {
+      "sha256": "ff9e4242ac896190c95b5528be21f6b62c0348f4a0b3b1e9981c69d85865dd4d",
+      "bytes": 735536,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\summary.csv"
+    },
+    "paired/distance_statistics.csv": {
+      "sha256": "d81af0679c113cc53097a3232aa81194d18bedf993a9b24f6f4f6e9fee53d79b",
+      "bytes": 180289,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\distance_statistics.csv"
+    },
+    "paired/distance_profile.csv": {
+      "sha256": "58f42c5d47446549508126836322dcaa8157e56ccc5f14667f6d3435cbfea78f",
+      "bytes": 155670,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\distance_profile.csv"
+    },
+    "paired/truth_decoded_stride_agreement.csv": {
+      "sha256": "3f4056e299a0e9add469921ffe28490252c980c5f3fd4757a1dd5361bd009da0",
+      "bytes": 1967,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\truth_decoded_stride_agreement.csv"
+    },
+    "paired/provenance.json": {
+      "sha256": "ed867c1ac079ffc4c53221ac22ad846fde39bfd7cd2d4727a7ed79fb46840b9e",
+      "bytes": 578322,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\provenance.json"
+    },
+    "paired/truth_decoded_tradeoff.png": {
+      "sha256": "ead05cbd767efc952d9b0cf3ac8fdbfd1e61b8c7b98a13548963976e5e02dc32",
+      "bytes": 370568,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\truth_decoded_tradeoff.png"
+    },
+    "paired/truth_decoded_tradeoff.pdf": {
+      "sha256": "1d51de336de4988cf6a7d061a5f414bf22d8e88cf93e22577bac9a4dd253529c",
+      "bytes": 25062,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\truth_decoded_tradeoff.pdf"
+    },
+    "paired/signal_decay.png": {
+      "sha256": "e8351b69ede3ba6fa4d74b965d2078f882503ac613885c44a35907ca898befc3",
+      "bytes": 244313,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\signal_decay.png"
+    },
+    "paired/signal_decay.pdf": {
+      "sha256": "24bb14bcc7b30d0acfd326598ed5177f757e86d1275d5b081541ffdfb0f2b0bd",
+      "bytes": 25672,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\signal_decay.pdf"
+    },
+    "cross_validation/summary.csv": {
+      "sha256": "aaa87afa1e97aa42536392eca0de404eff062b4a7c4d44ab4a8f1dcc20ebf6b0",
+      "bytes": 429148,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\summary.csv"
+    },
+    "cross_validation/training_choices.csv": {
+      "sha256": "9478cc0677817bb9620cc3bd28e22ea3df928987ae81c2c193939e835a68dffd",
+      "bytes": 53222,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\training_choices.csv"
+    },
+    "cross_validation/linear_coefficients.json": {
+      "sha256": "fd37f83d33fcf3a3125973a782ecb8bc9f9443a6aee6e05991e81667db0bf267",
+      "bytes": 9652,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\linear_coefficients.json"
+    },
+    "cross_validation/fold_manifest.csv": {
+      "sha256": "bb33b3f0b4a6050c02d8583d8f3d7c7139dbb90c95fcfb4fb6791bb951c08219",
+      "bytes": 121457,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\fold_manifest.csv"
+    },
+    "cross_validation/provenance.json": {
+      "sha256": "e6ff18fccc1da320f2d109d48d0ebe8b3dce1da2ec3207f089569018e9666c59",
+      "bytes": 281237,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\provenance.json"
+    },
+    "cross_validation/tradeoff.png": {
+      "sha256": "5d3dd528d67bda0acc85b7972528f7b6ec1544ed3d026c5b603ce5adcaddbcba",
+      "bytes": 223510,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\tradeoff.png"
+    },
+    "cross_validation/tradeoff.pdf": {
+      "sha256": "91ebfa12fdcf6b7040bd9bdd416a51da5b5c2ef112b77354b98e79620bba6127",
+      "bytes": 21555,
+      "source": "D:\\phase2simselection\\sim\\eas_q02\\analysis\\partial_sweep_region_cv\\tradeoff.pdf"
+    }
+  }
+}
