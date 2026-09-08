@@ -69,3 +69,6 @@ scripts/launch_eas_h400.sh text eol=lf
 python/gamma_smc_aou/panel_size_comparison.py text eol=lf
 tests/test_panel_size_comparison.py text eol=lf
 docs/eas_h400.md text eol=lf
+docs/eas_h400_results.md text eol=lf
+docs/results/eas_h400/**/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/results/eas_h400/**/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -1,0 +1,9 @@
+{
+  "inputs": {
+    "D:\\phase2simselection\\sim\\eas_q02\\analysis\\paired_peak_grid\\summary.csv": "ff9e4242ac896190c95b5528be21f6b62c0348f4a0b3b1e9981c69d85865dd4d",
+    "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\summary.csv": "bea441f1381a51176f50f1263249bf3e48c4887cba5440e861cd8d15a1c552d8"
+  },
+  "output_sha256": "b54e2fe40213300c02d43f8880438b4b2f2bac103c0d2f7d479f49247849cd12",
+  "comparisons": 1080,
+  "endpoint": "At least one qualifying call anywhere in a 10 Mb region; all selected simulations retained"
+}

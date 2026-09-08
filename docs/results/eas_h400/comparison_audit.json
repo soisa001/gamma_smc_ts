@@ -1,0 +1,14 @@
+[
+  {
+    "analysis": "paired_peak_grid",
+    "unique_rows_checked": 1188000,
+    "summary_rates_recomputed": 3240,
+    "output_checksums_verified": 9
+  },
+  {
+    "analysis": "panel_size_comparison",
+    "unique_rows_checked": 211200,
+    "summary_rates_recomputed": 384,
+    "output_checksums_verified": 9
+  }
+]

@@ -1,0 +1,120 @@
+{
+  "purpose": "Compact verified summaries from the 400-haplotype experiment; detailed outputs remain on D",
+  "files": {
+    "comparison/region_calls.csv": {
+      "sha256": "537dfd5a85886d724201be4bcf9efc0fc34b49cf90ed102f33f4fdf8c69ba21d",
+      "bytes": 32509,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\region_calls.csv"
+    },
+    "comparison/profile_diagnostics.csv": {
+      "sha256": "eb573706bfaab349a5555d3c7b54b4c654e83010e368d9159bd5a8764199ed4b",
+      "bytes": 7143,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\profile_diagnostics.csv"
+    },
+    "comparison/decoded_error.csv": {
+      "sha256": "8f50b01b31906132b79529cfac2cf390a4ccefc0559eb6926d0d3b8de9b61d82",
+      "bytes": 2045,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\decoded_error.csv"
+    },
+    "comparison/training_thresholds.csv": {
+      "sha256": "d7ed78c6754a7913f47ce3b9d12a43db5c934d1477488eba162db61e09acd281",
+      "bytes": 17622,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\training_thresholds.csv"
+    },
+    "comparison/provenance.json": {
+      "sha256": "fe862ede2bb55d931d9a8a80637dd3c4b3522537c279407bcd086eeaf244b6c7",
+      "bytes": 945845,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\provenance.json"
+    },
+    "comparison/paired_grid_panel_comparison.csv": {
+      "sha256": "b54e2fe40213300c02d43f8880438b4b2f2bac103c0d2f7d479f49247849cd12",
+      "bytes": 85721,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\paired_grid_panel_comparison.csv"
+    },
+    "comparison/paired_grid_comparison_provenance.json": {
+      "sha256": "fe859ae4e9c4961baa7d438f54b1fb369c76d31b27325d10a6a3388edc71646f",
+      "bytes": 550,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\paired_grid_comparison_provenance.json"
+    },
+    "comparison/panel_noise.png": {
+      "sha256": "6b10f0c81c849878733ec3b7cb27166df9cd490e70dc89c596b2c29a92758f14",
+      "bytes": 296672,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\panel_noise.png"
+    },
+    "comparison/panel_noise.pdf": {
+      "sha256": "9de333d8a04e613ab78a96ed598c2dbd30f60cbf5bfd009425866f1f9e2c645b",
+      "bytes": 19331,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\panel_noise.pdf"
+    },
+    "comparison/panel_region_calls.png": {
+      "sha256": "233faa6d1d7b625220f4bb225a25bcebbe005239a5f47cd686b6087730534741",
+      "bytes": 220306,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\panel_region_calls.png"
+    },
+    "comparison/panel_region_calls.pdf": {
+      "sha256": "7db7124fe5b51cab701edf96fcfd8016c7c42b0a02a6920504eafe85856e4ef0",
+      "bytes": 15822,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\panel_size_comparison\\panel_region_calls.pdf"
+    },
+    "paired/summary.csv": {
+      "sha256": "bea441f1381a51176f50f1263249bf3e48c4887cba5440e861cd8d15a1c552d8",
+      "bytes": 562023,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\summary.csv"
+    },
+    "paired/distance_statistics.csv": {
+      "sha256": "d267927ede6ad125e3c74786bbb15be2572360b139c52595432107db183bb571",
+      "bytes": 176340,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\distance_statistics.csv"
+    },
+    "paired/distance_profile.csv": {
+      "sha256": "95040fa0a214d3aaedf7bd1af8baa8edaa6da5bec849ab05c3961c90fce87208",
+      "bytes": 155598,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\distance_profile.csv"
+    },
+    "paired/truth_decoded_stride_agreement.csv": {
+      "sha256": "2a95aa888b1c67ed7a24421fab13eee0d7265bac39f515ad10a71355a5768495",
+      "bytes": 1933,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\truth_decoded_stride_agreement.csv"
+    },
+    "paired/provenance.json": {
+      "sha256": "7163d39e1919620a331e45f8f3d050d5bafe1d9642ce647ea18593615f10ce7b",
+      "bytes": 311739,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\provenance.json"
+    },
+    "paired/truth_decoded_tradeoff.png": {
+      "sha256": "891117aaf1e8ff1b6154dcdce8412832bc29056dd9d51a5f324e0db94c1b180e",
+      "bytes": 377882,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\truth_decoded_tradeoff.png"
+    },
+    "paired/truth_decoded_tradeoff.pdf": {
+      "sha256": "4527a1a12c0c4f6b689657e8d58d558e2ca9c325d0715ad65ae5052c85f1225d",
+      "bytes": 25094,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\truth_decoded_tradeoff.pdf"
+    },
+    "paired/signal_decay.png": {
+      "sha256": "f53b1157ab4dc68bf611416962381e49bddab42916f353a7b940b62dfbe8220b",
+      "bytes": 246788,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\signal_decay.png"
+    },
+    "paired/signal_decay.pdf": {
+      "sha256": "0b759a36e4f63eababf30819e435597ac2ecaf1358da0a0422e1fccf23c0f361",
+      "bytes": 25685,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\paired_peak_grid\\signal_decay.pdf"
+    },
+    "comparison_audit.json": {
+      "sha256": "f737ba65b5305278121e481af9a1105a17508039d43f521160c4fb0669f30dfb",
+      "bytes": 314,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\analysis\\comparison_audit.json"
+    },
+    "manifest.json": {
+      "sha256": "64f2ade186181f24b7dfd1c4ce93212e8bbb3232ff1bc53289dd83c02afc338d",
+      "bytes": 4961,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\manifest.json"
+    },
+    "run_status.json": {
+      "sha256": "f98108aba807609308b6f432df575dc1c52705f348e36ffde6cfa8286bd9259d",
+      "bytes": 156,
+      "source": "D:\\phase2simselection\\sim\\eas_q02_h400\\run_status.json"
+    }
+  }
+}
