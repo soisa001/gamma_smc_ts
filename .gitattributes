@@ -48,3 +48,9 @@ tests/test_fresh_power.py text eol=lf
 docs/fresh_eas_power.md text eol=lf
 python/gamma_smc_aou/decoder.py text eol=lf
 python/gamma_smc_aou/tree_sequence.py text eol=lf
+python/gamma_smc_aou/fresh_region_metrics.py text eol=lf
+tests/test_fresh_region_metrics.py text eol=lf
+docs/fresh_eas_region_metrics.md text eol=lf
+docs/fresh_eas_region_results.md text eol=lf
+docs/results/fresh_eas_region/*.csv -text
+docs/results/fresh_eas_region/*.json -text
