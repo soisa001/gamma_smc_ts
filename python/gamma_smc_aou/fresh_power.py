@@ -907,11 +907,14 @@ def main(argv=None):
             while cursor < len(todo) or pending:
                 while cursor < len(todo) and len(pending) < workers and not failures:
                     if cursor % 20 == 0:
-                        used = directory_bytes(out.parent)
+                        # Whole-volume usage is a conservative upper bound on
+                        # simulation storage. Avoid repeatedly stat-ing every
+                        # old artifact over the Windows/WSL filesystem bridge.
+                        volume = shutil.disk_usage(out)
                         reserve = 20_000_000_000
                         if (
-                            used + reserve > cfg["storage_limit_bytes"]
-                            or shutil.disk_usage(out).free < reserve
+                            volume.used + reserve > cfg["storage_limit_bytes"]
+                            or volume.free < reserve
                         ):
                             failures.append(
                                 dict(
