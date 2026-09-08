@@ -64,3 +64,8 @@ docs/partial_sweep_results.md text eol=lf
 # Preserve checksummed artifacts, including Windows CRLF line endings.
 docs/results/partial_sweep_power/**/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/results/partial_sweep_power/**/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+configs/eas_q02_50k_h400.json text eol=lf
+scripts/launch_eas_h400.sh text eol=lf
+python/gamma_smc_aou/panel_size_comparison.py text eol=lf
+tests/test_panel_size_comparison.py text eol=lf
+docs/eas_h400.md text eol=lf
