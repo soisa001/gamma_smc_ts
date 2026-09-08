@@ -256,6 +256,10 @@ def main(argv=None):
                             focal_mean=float(v[:, focal, t].mean()),
                             focal_sd=float(v[:, focal, t].std(ddof=1)),
                             region_mean=float(v[:, :, t].mean()),
+                            region_mean_sd=float(v[:, :, t].mean(axis=1).std(ddof=1)),
+                            average_position_sd=float(
+                                v[:, :, t].std(axis=0, ddof=1).mean()
+                            ),
                             profile_roughness=float(
                                 np.abs(np.diff(v[:, :, t], axis=1)).mean()
                             ),
@@ -336,7 +340,9 @@ def main(argv=None):
         inputs=provenance,
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         helper_source_sha256={
-            name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+            name: hashlib.sha256(
+                Path(__file__).with_name(name).read_bytes()
+            ).hexdigest()
             for name in ("fresh_region_metrics.py", "partial_sweep_cv.py")
         },
         outputs={
