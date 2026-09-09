@@ -419,6 +419,7 @@ def figures(summary, out):
         {"font.size": 17, "axes.labelsize": 19, "pdf.fonttype": 42, "ps.fonttype": 42}
     )
     colors = dict(zip(SOURCES, ("#377eb8", "#e58224", "#39945b", "#964da5", "#333333")))
+    layout_checks = []
     for alpha in (0.05, 0.1):
         fig, axes = plt.subplots(1, 2, figsize=(11, 8.5), sharey=True)
         fig.subplots_adjust(left=0.11, right=0.98, bottom=0.15, top=0.76, wspace=0.13)
@@ -444,11 +445,13 @@ def figures(summary, out):
                 title=f"Selection onset {onset // 1000} kya",
                 xlabel="TMRCA cutoff (kya)",
                 ylim=(-0.02, 1.02),
+                xticks=[5, 10, 20, 30, 40, 50],
+                yticks=np.linspace(0, 1, 6),
             )
             ax.axhline(0.7, color="gray", linestyle=":")
             ax.spines[["top", "right"]].set_visible(False)
         axes[0].set_ylabel("Fraction of selected regions called")
-        fig.legend(
+        legend = fig.legend(
             *axes[0].get_legend_handles_labels(),
             loc="upper center",
             bbox_to_anchor=(0.5, 0.90),
@@ -459,9 +462,52 @@ def figures(summary, out):
         fig.suptitle(
             f"Regional maximum; nominal neutral error {alpha:.0%}", y=0.99, fontsize=20
         )
+        # Inspect layout bounds on the headless canvas without emitting images.
+        fig.canvas.draw()
+        renderer = fig.canvas.get_renderer()
+        legend_box = legend.get_window_extent(renderer)
+        assert all(
+            not legend_box.overlaps(ax.get_window_extent(renderer)) for ax in axes
+        )
+        texts = [fig._suptitle, *legend.get_texts()]
+        for ax in axes:
+            texts.extend(
+                [
+                    ax.title,
+                    ax.xaxis.label,
+                    ax.yaxis.label,
+                    *ax.get_xticklabels(),
+                    *ax.get_yticklabels(),
+                ]
+            )
+        for text in texts:
+            if not text.get_visible() or not text.get_text():
+                continue
+            box = text.get_window_extent(renderer)
+            assert (
+                box.x0 >= 0
+                and box.y0 >= 0
+                and box.x1 <= fig.bbox.width
+                and box.y1 <= fig.bbox.height
+            ), text.get_text()
         fig.savefig(out / f"power_neutral_{alpha:g}.png", dpi=200)
-        fig.savefig(out / f"power_neutral_{alpha:g}.pdf")
+        pdf = out / f"power_neutral_{alpha:g}.pdf"
+        fig.savefig(pdf)
+        assert b"/Subtype /Image" not in pdf.read_bytes(), (
+            "Unexpected rasterized PDF content"
+        )
+        layout_checks.append(
+            dict(
+                alpha=alpha,
+                all_text_in_canvas=True,
+                legend_outside_panels=True,
+                pdf_contains_no_images=True,
+                pdf_fonttype=42,
+                displayed_inline=False,
+            )
+        )
         plt.close(fig)
+    atomic_json(out / "figure_layout_checks.json", layout_checks)
 
 
 def main(argv=None):
