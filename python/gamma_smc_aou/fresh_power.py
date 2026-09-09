@@ -134,8 +134,10 @@ def validate_config(cfg):
         raise ValueError(
             "This version implements EAS and frac_recent_T from posterior means only"
         )
-    if cfg["selection_onset_years"] != cfg["pulse_years"]:
-        raise ValueError("This study requires selection starting at the pulse")
+    if not 0 < cfg["selection_onset_years"] <= cfg["pulse_years"]:
+        raise ValueError(
+            "Selection must start at or after introgression, before present"
+        )
     if cfg["scored_length_bp"] != 2 * cfg["focal_position_bp"]:
         raise ValueError("Scored region must be centered on the focal coordinate")
     if cfg["simulated_length_bp"] <= cfg["scored_length_bp"]:
@@ -199,6 +201,7 @@ def model(cfg):
 
 def selected_events(cfg, s):
     pulse = cfg["pulse_years"] / cfg["generation_time_years"]
+    onset = cfg["selection_onset_years"] / cfg["generation_time_years"]
     split = cfg["archaic_split_years"] / cfg["generation_time_years"]
     return [
         stdpopsim.DrawMutation(
@@ -207,7 +210,7 @@ def selected_events(cfg, s):
             population="Neanderthal",
         ),
         stdpopsim.ChangeMutationFitness(
-            start_time=pulse,
+            start_time=onset,
             end_time=0,
             single_site_id=SITE_ID,
             population="EAS",
@@ -827,7 +830,9 @@ def main(argv=None):
     parser.add_argument("--decoder", type=Path, default=REPO / "bin/gamma_smc")
     parser.add_argument("--workers", type=int)
     parser.add_argument(
-        "--phase", choices=("smoke", "run", "analyse", "status"), default="run"
+        "--phase",
+        choices=("smoke", "simulate", "run", "analyse", "status"),
+        default="run",
     )
     args = parser.parse_args(argv)
     cfg = json.loads(args.config.read_text(encoding="utf-8-sig"))

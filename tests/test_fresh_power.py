@@ -115,6 +115,25 @@ def test_matched_pulse_and_survival_only_events(cfg):
     assert events[1].start_time == 2000 and events[1].selection_coeff == 0.001
 
 
+def test_delayed_selection_keeps_pulse_and_survival_condition(cfg):
+    import stdpopsim
+
+    later = dict(cfg, selection_onset_years=10000)
+    validate_config(later)
+    assert model(later).model.asdict() == model(cfg).model.asdict()
+    events = selected_events(later, 0.005)
+    fitness = [e for e in events if isinstance(e, stdpopsim.ChangeMutationFitness)]
+    condition = [
+        e for e in events if isinstance(e, stdpopsim.ConditionOnAlleleFrequency)
+    ]
+    assert fitness[0].start_time == 400 and fitness[0].end_time == 0
+    assert condition[0].start_time == 1995 and condition[0].end_time == 0
+    assert condition[0].op == ">" and condition[0].allele_frequency == 0
+    for invalid in (0, -1000, 50001):
+        with pytest.raises(ValueError, match="Selection must"):
+            validate_config(dict(cfg, selection_onset_years=invalid))
+
+
 def test_resume_rejects_corrupted_completed_outputs(tmp_path):
     cfg = dict(
         scored_length_bp=20, stride_bp=10, tmrca_cutoffs_years=[5000], haplotype_pairs=2
