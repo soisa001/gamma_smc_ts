@@ -80,3 +80,10 @@ scripts/check_variable_ne_flow.py text eol=lf
 docs/recent_call_experiment.md text eol=lf
 docs/variable_ne_flow_field.md text eol=lf
 docs/results/variable_ne_flow_checks.json -text
+tests/test_recent_call_native.py text eol=lf
+scripts/check_embedded_flow_convention.py text eol=lf
+docs/results/embedded_flow_convention_checks.json -text
+scripts/audit_recent_calls.py text eol=lf
+python/gamma_smc_aou/posterior_replay.py text eol=lf
+src/summarize_recent_rules.cpp text eol=lf
+Makefile text eol=lf

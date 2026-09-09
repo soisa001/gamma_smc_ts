@@ -1,0 +1,199 @@
+{
+  "purpose": "Five-point embedded/source flow normalization audit; not decoder validation",
+  "rng": "No random numbers used; probe indices are fixed",
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "source_files": {
+    "src/io.h": {
+      "bytes": 92146,
+      "sha256": "d354e672df6ea60070c56d1752995d7f09b28fc2b57ddb70b62ec1353fe67f8e"
+    },
+    "src/generate_canonical_flow_field.cpp": {
+      "bytes": 18331,
+      "sha256": "3abccdd3609aa45f9c8a08593eb9cf7cbbae37bfff2e76c21936bc3c4c73538a"
+    },
+    "src/flow_field.h": {
+      "bytes": 153431,
+      "sha256": "8f32cb5bd54296cf289de722aebc8697ffe9aaf71323cbc4f14d21543635f939"
+    },
+    "src/gamma_smc.cpp": {
+      "bytes": 41300,
+      "sha256": "34e4b987a5638aa242ec020b4ff722944081f320812c235aefab5b26a0fb2e00"
+    },
+    "src/data_processor.h": {
+      "bytes": 14636,
+      "sha256": "dd31ae8ce68016fba7a84d14c569b123703e86fc6a6b1a2d2e5c3fd1da12c534"
+    },
+    "python/gamma_smc_aou/decoder.py": {
+      "bytes": 10329,
+      "sha256": "e36169f7f0d4701d6a23be77be1a077e9bf775677289bafb5f2b64ccd1ada840"
+    }
+  },
+  "audit_script": {
+    "bytes": 9232,
+    "sha256": "e981bc2471ca2c8e7c5d6612080831a50440f5604ab43847768de0e0d1dba3cd"
+  },
+  "scientific_assumptions": {
+    "population_model": "Constant diploid effective population size N0",
+    "scaled_tmrca": "t = physical generations / (2*N0)",
+    "scaled_rates": "theta = 4*N0*mu; rho = 4*N0*r",
+    "conditional_transition": "Pairwise SMC prime, including invisible recombinations",
+    "standard_first_order_recombination_probability": "rho*s per physical base",
+    "existing_source_generator": "Uses 2*s times conditional kernel, minus 2*t*f(t)",
+    "comparison": "Embedded table versus this existing source formula, before runtime rho scaling",
+    "runtime_operations": "No interpolation, cache building, clipping, or sequence decoding in this script",
+    "scope": "Ratios near one exclude a global hidden 1/2 at these entries; not full-grid accuracy or power",
+    "quadrature_origin": "Default settings in generate_canonical_flow_field.cpp; historical table build metadata unavailable"
+  },
+  "settings": {
+    "integration_min_time": 1e-10,
+    "integration_n_steps": 1000,
+    "gamma_tail_probability": 0.001,
+    "exponential_tail_probability": 0.001,
+    "log_coordinates": true,
+    "least_squares_weight": "sqrt(delta_t); final point has zero weight",
+    "special_function_backend": "scipy.special.hyp1f1; production generator uses Arb",
+    "relative_ratio_tolerance": 0.0001
+  },
+  "embedded_mean_grid": [
+    1e-05,
+    100.0,
+    51.0
+  ],
+  "embedded_cv_grid": [
+    0.01,
+    1.0,
+    50.0
+  ],
+  "embedded_value_count": 5100,
+  "probes": [
+    {
+      "mean_index_zero_based": 25,
+      "cv_index_zero_based": 49,
+      "mean_scaled_time": 0.031622776601683826,
+      "cv": 1.0,
+      "alpha": 1.0,
+      "beta_rate": 31.62277660168376,
+      "velocity_order": [
+        "log10_mean",
+        "log10_cv"
+      ],
+      "source_projection": [
+        0.002040761152794806,
+        0.0004911332367554004
+      ],
+      "embedded_velocity": [
+        0.00204076,
+        0.000491133
+      ],
+      "embedded_over_source": [
+        0.9999994351152732,
+        0.999999517940586
+      ],
+      "max_absolute_ratio_error_from_one": 5.648847267725188e-07
+    },
+    {
+      "mean_index_zero_based": 30,
+      "cv_index_zero_based": 42,
+      "mean_scaled_time": 0.15848931924611143,
+      "cv": 0.517947467923121,
+      "alpha": 3.727593720314942,
+      "beta_rate": 23.51952635070959,
+      "velocity_order": [
+        "log10_mean",
+        "log10_cv"
+      ],
+      "source_projection": [
+        0.015972153489966986,
+        0.059293082251669106
+      ],
+      "embedded_velocity": [
+        0.0159722,
+        0.0592931
+      ],
+      "embedded_over_source": [
+        1.0000029119450324,
+        1.000000299332236
+      ],
+      "max_absolute_ratio_error_from_one": 2.9119450324355256e-06
+    },
+    {
+      "mean_index_zero_based": 35,
+      "cv_index_zero_based": 35,
+      "mean_scaled_time": 0.7943282347242822,
+      "cv": 0.2682695795279725,
+      "alpha": 13.894954943731387,
+      "beta_rate": 17.49271187439842,
+      "velocity_order": [
+        "log10_mean",
+        "log10_cv"
+      ],
+      "source_projection": [
+        0.013721951954767775,
+        0.2904312597699963
+      ],
+      "embedded_velocity": [
+        0.0137222,
+        0.290431
+      ],
+      "embedded_over_source": [
+        1.0000180765267976,
+        0.9999991055714991
+      ],
+      "max_absolute_ratio_error_from_one": 1.8076526797639048e-05
+    },
+    {
+      "mean_index_zero_based": 40,
+      "cv_index_zero_based": 49,
+      "mean_scaled_time": 3.9810717055349776,
+      "cv": 1.0,
+      "alpha": 1.0,
+      "beta_rate": 0.2511886431509577,
+      "velocity_order": [
+        "log10_mean",
+        "log10_cv"
+      ],
+      "source_projection": [
+        -1.1684460507828471,
+        -0.04344376698522744
+      ],
+      "embedded_velocity": [
+        -1.16845,
+        -0.0434438
+      ],
+      "embedded_over_source": [
+        1.0000033798883143,
+        1.0000007599426763
+      ],
+      "max_absolute_ratio_error_from_one": 3.3798883143365543e-06
+    },
+    {
+      "mean_index_zero_based": 40,
+      "cv_index_zero_based": 42,
+      "mean_scaled_time": 3.9810717055349776,
+      "cv": 0.517947467923121,
+      "alpha": 3.727593720314942,
+      "beta_rate": 0.9363292088239409,
+      "velocity_order": [
+        "log10_mean",
+        "log10_cv"
+      ],
+      "source_projection": [
+        -0.5887321373187315,
+        0.6419380410637039
+      ],
+      "embedded_velocity": [
+        -0.588732,
+        0.641938
+      ],
+      "embedded_over_source": [
+        0.9999997667551629,
+        0.9999999360316709
+      ],
+      "max_absolute_ratio_error_from_one": 2.332448371111795e-07
+    }
+  ],
+  "max_absolute_ratio_error_from_one": 1.8076526797639048e-05,
+  "passed": true
+}

@@ -18,7 +18,6 @@ import os
 from pathlib import Path
 import shutil
 import time
-import traceback
 
 os.environ["MPLBACKEND"] = "Agg"
 for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -27,17 +26,24 @@ for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
 import numpy as np
 import pandas as pd
 
-from .decoder import run_within_decoder
-from .fresh_power import atomic_json, canonical_hash, digest, read_profile
+from .fresh_power import atomic_json, digest, read_profile
 from .fresh_region_metrics import aligned_pvalues
 from .panel_size_comparison import evaluate
 
-RULES = {"median": ("median", 0.5), "prob80": ("prob", 0.8), "prob90": ("prob", 0.9)}
+from .posterior_replay import (
+    RULES,
+    cached_decode,
+    checked_source,
+    decode_identity,
+    decode_bundle,
+)
+
 SOURCES = ["mean", "median", "prob80", "prob90", "truth"]
 
 
 def inventory(baseline, later, decoder, allow_incomplete=False):
     items, configs, studies = [], [], []
+    replay_helper_sha = digest(decoder.with_name("summarize_recent_rules"))
     for root in (baseline, later):
         study = json.loads((root / "manifest.json").read_text())
         cfg = study["config"]
@@ -94,6 +100,7 @@ def inventory(baseline, later, decoder, allow_incomplete=False):
                     fixed=record["fixed"],
                     artifacts=record["artifacts"],
                     receipt_sha256=digest(path),
+                    replay_helper_sha256=replay_helper_sha,
                 )
             )
     allowed = {"selection_onset_years", "neutral_replicates"}
@@ -122,149 +129,11 @@ def inventory(baseline, later, decoder, allow_incomplete=False):
     return items, configs[0], studies
 
 
-def checked_source(item, name):
-    path = Path(item["directory"]) / name
-    spec = item["artifacts"][name]
-    if path.stat().st_size != spec["bytes"] or digest(path) != spec["sha256"]:
-        raise ValueError(f"Corrupt simulation input: {path}")
-    return path
-
-
-def decode_identity(item, rule, decoder_sha):
-    return canonical_hash(
-        dict(
-            tree=item["artifacts"]["decoded_input.trees"]["sha256"],
-            pairs=digest(Path(item["root"]) / "pairs.tsv"),
-            positions=digest(Path(item["root"]) / "positions.txt"),
-            decoder=decoder_sha,
-            rule=RULES[rule],
-            parameters={
-                k: v
-                for k, v in item["cfg"].items()
-                if k.startswith("decoder_")
-                or k
-                in (
-                    "mutation_rate",
-                    "generation_time_years",
-                    "tmrca_cutoffs_years",
-                    "haplotype_pairs",
-                )
-            },
-            input_transform="one_based",
-            no_recent_probability=True,
-            schema="recent-call-comparison/v1",
-        )
-    )
-
-
-def cached_decode(directory, fingerprint, cfg):
-    receipt = directory / "complete.json"
-    if not receipt.exists():
-        return False
-    saved = json.loads(receipt.read_text())
-    if saved["fingerprint"] != fingerprint:
-        raise ValueError(f"Different decoding inputs: {directory}")
-    for name, spec in saved["outputs"].items():
-        path = directory / name
-        if path.stat().st_size != spec["bytes"] or digest(path) != spec["sha256"]:
-            raise ValueError(f"Corrupt saved decoding: {path}")
-    read_profile(directory / "frac_recent.tsv", cfg)
-    return True
-
-
-def decode_one(payload):
-    item, rule, out, decoder, decoder_sha = payload
-    directory = Path(out) / "decoded" / rule / item["key"]
-    directory.mkdir(parents=True, exist_ok=True)
-    fingerprint = decode_identity(item, rule, decoder_sha)
-    if cached_decode(directory, fingerprint, item["cfg"]):
-        return dict(key=item["key"], rule=rule, status="reused")
-    if (directory / "failed.json").exists():
-        history = directory / "failure_history"
-        history.mkdir(exist_ok=True)
-        os.replace(
-            directory / "failed.json", history / f"failure_{time.time_ns()}.json"
-        )
-    start = time.perf_counter()
-    try:
-        tree = checked_source(item, "decoded_input.trees")
-        cfg = item["cfg"]
-        call, probability = RULES[rule]
-        result = run_within_decoder(
-            decoder,
-            tree,
-            directory / "gamma_smc_summary.tsv",
-            scaled_mutation_rate=cfg["decoder_scaled_mutation_rate"],
-            recombination_to_mutation_ratio=cfg[
-                "decoder_recombination_to_mutation_ratio"
-            ],
-            mutation_rate=cfg["mutation_rate"],
-            threshold_years=cfg["tmrca_cutoffs_years"],
-            generation_time=cfg["generation_time_years"],
-            output_at_stride=-1,
-            output_at_hets=False,
-            only_within=False,
-            output_positions_file=Path(item["root"]) / "positions.txt",
-            pairs_file=Path(item["root"]) / "pairs.tsv",
-            recent_call=call,
-            recent_call_probability=probability,
-            threads=1,
-            cache_size=cfg["decoder_cache_size"],
-            pair_block=cfg["decoder_pair_block"],
-            exp10=cfg["decoder_exp10"],
-            backward_alignment=cfg["decoder_backward_alignment"],
-            vcf_position_transform="one_based",
-            extra_args=["--no_recent_probability"],
-        )
-        for channel in ("stdout", "stderr"):
-            (directory / f"decoder.{channel}.log").write_text(result.pop(channel))
-        full = pd.read_csv(directory / "gamma_smc_summary.tsv", sep="\t")
-        if not (full.n_pairs == cfg["haplotype_pairs"]).all():
-            raise ValueError("Decoder did not retain every requested pair")
-        frame = read_profile(directory / "gamma_smc_summary.tsv", cfg)
-        temp = directory / "frac_recent.tsv.tmp"
-        frame.to_csv(temp, sep="\t", index=False)
-        os.replace(temp, directory / "frac_recent.tsv")
-        atomic_json(
-            directory / "complete.json",
-            dict(
-                fingerprint=fingerprint,
-                input_receipt_sha256=item["receipt_sha256"],
-                rule=rule,
-                recent_call=call,
-                probability=probability,
-                decode=result,
-                elapsed_seconds=time.perf_counter() - start,
-                outputs={
-                    name: dict(
-                        bytes=(directory / name).stat().st_size,
-                        sha256=digest(directory / name),
-                    )
-                    for name in ("frac_recent.tsv", "gamma_smc_summary.tsv")
-                },
-            ),
-        )
-        return dict(
-            key=item["key"],
-            rule=rule,
-            status="completed",
-            seconds=time.perf_counter() - start,
-        )
-    except Exception:
-        error = traceback.format_exc()
-        atomic_json(
-            directory / "failed.json", dict(error=error, fingerprint=fingerprint)
-        )
-        return dict(key=item["key"], rule=rule, status="failed", error=error)
-
-
 def decode(items, cfg, out, decoder, workers, smoke=False):
     if smoke:
         items = [i for i in items if i["replicate"] == 0]
     binary_sha = digest(decoder)
-    tasks = [
-        (i, rule, str(out), str(decoder), binary_sha) for i in items for rule in RULES
-    ]
+    tasks = [(i, str(out), str(decoder), binary_sha) for i in items]
     done, pending, failures, cursor = 0, {}, [], 0
 
     def status(state):
@@ -286,7 +155,7 @@ def decode(items, cfg, out, decoder, workers, smoke=False):
                 if usage.used + 20_000_000_000 > cfg["storage_limit_bytes"]:
                     failures.append(dict(error="Storage reserve reached"))
                     break
-                pending[pool.submit(decode_one, tasks[cursor])] = cursor
+                pending[pool.submit(decode_bundle, tasks[cursor])] = cursor
                 cursor += 1
             if not pending:
                 break
@@ -401,9 +270,14 @@ def load_rule(items, source, out, decoder_sha, workers):
             ):
                 raise ValueError(f"Missing decoding: {directory}")
             path = directory / "frac_recent.tsv"
-        return read_profile(path, item["cfg"]).iloc[:, 1:].to_numpy(), dict(
-            key=item["key"], source=source, sha256=digest(path)
+        values = read_profile(path, item["cfg"]).iloc[:, 1:].to_numpy()
+        # Recover the exact integer count before dividing, as in the baseline
+        # analyses, so CSV parser rounding cannot alter tied score ranks.
+        values = (
+            np.rint(values * item["cfg"]["haplotype_pairs"])
+            / item["cfg"]["haplotype_pairs"]
         )
+        return values, dict(key=item["key"], source=source, sha256=digest(path))
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         loaded = list(pool.map(read, items))
@@ -520,8 +394,14 @@ def analyse(items, cfg, out, decoder, workers):
                     Path(__file__),
                     Path(__file__).with_name("panel_size_comparison.py"),
                     Path(__file__).with_name("partial_sweep_cv.py"),
+                    Path(__file__).with_name("posterior_replay.py"),
+                    Path(__file__).resolve().parents[2]
+                    / "src/summarize_recent_rules.cpp",
+                    Path(__file__).resolve().parents[2] / "src/recent_stats.h",
                 )
             },
+            decoder_sha256=digest(decoder),
+            replay_helper_sha256=digest(decoder.with_name("summarize_recent_rules")),
             outputs={
                 p.name: dict(bytes=p.stat().st_size, sha256=digest(p))
                 for p in dest.iterdir()

@@ -38,6 +38,12 @@ bin/generate_canonical_flow_field: src/generate_canonical_flow_field.o
 	mkdir -p bin
 	$(CXX) -o $@ $< $(LDFLAGS) $(LDFLAGS_FF)
 
+bin/summarize_recent_rules: src/summarize_recent_rules.o
+	mkdir -p bin
+	$(CXX) -o $@ $< $(LDFLAGS) -lzstd
+
+src/summarize_recent_rules.o: src/recent_stats.h src/common.h
+
 clean:
 	rm -f src/*.o
 	rm -f bin/*

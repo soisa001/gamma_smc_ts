@@ -10,6 +10,35 @@ from gamma_smc_aou.recent_call_comparison import (
     grid_summary,
     longest_run,
 )
+from gamma_smc_aou.posterior_replay import decode_identity, posterior_identity
+
+
+def test_posterior_cache_is_independent_of_summary_helper(tmp_path):
+    (tmp_path / "pairs.tsv").write_text("0\t1\n")
+    (tmp_path / "positions.txt").write_text("0\n")
+    item = dict(
+        root=str(tmp_path),
+        artifacts={"decoded_input.trees": {"sha256": "tree"}},
+        cfg=dict(
+            decoder_scaled_mutation_rate=0.00075,
+            mutation_rate=1.25e-8,
+            generation_time_years=25,
+            tmrca_cutoffs_years=[10000],
+            haplotype_pairs=1,
+        ),
+        replay_helper_sha256="helper_a",
+    )
+    other = dict(item, replay_helper_sha256="helper_b")
+    assert posterior_identity(item, "decoder") == posterior_identity(other, "decoder")
+    assert decode_identity(item, "median", "decoder") != decode_identity(
+        other, "median", "decoder"
+    )
+    assert decode_identity(item, "median", "decoder") != decode_identity(
+        item, "prob80", "decoder"
+    )
+    original = posterior_identity(item, "decoder")
+    (tmp_path / "pairs.tsv").write_text("1\t2\n")
+    assert posterior_identity(item, "decoder") != original
 
 
 def test_run_counts_match_explicit_connected_hits():

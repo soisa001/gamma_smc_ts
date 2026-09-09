@@ -180,7 +180,7 @@ The convention was checked beyond the generator formula:
 
 - The supplement defines Ne as diploid size, scaled time as g/(2Ne), and rho as 4Ne*r on its printed page 22. Printed page 24 states rho*s; printed page 29 states it again and then introduces 2*rho*s in the next displayed transition expression. This is not a switch from haploid to diploid population-size units.
 - In the current experiment, theta=0.00075 and rho/theta=0.8 reach the command-line parser unchanged, producing rho=0.0006. The same parser converts times using 2Ne=theta/(2mu)=30,000 generations. No compensating rate factor is present there. [Wrapper](../python/gamma_smc_aou/decoder.py), [rate and threshold construction](../src/gamma_smc.cpp)
-- Five nontrivial embedded-grid entries were recomputed independently with SciPy using the source projection formula and its default 1,000-step quadrature settings. Embedded/source velocity ratios ranged from 0.9999991 to 1.0000181, consistent with the stored precision and numerical integration; they were approximately one, not one half. Thus the embedded table has not globally halved the generator. The probed zero-based (mean,CV) indices were (25,49), (30,42), (35,35), (40,49), and (40,42). This is a convention check, not full-grid accuracy validation. [Embedded table](../src/io.h)
+- Five nontrivial embedded-grid entries were recomputed independently with SciPy using the source projection formula and its default 1,000-step quadrature settings. Embedded/source velocity ratios ranged from 0.9999991 to 1.0000181, consistent with the stored precision and numerical integration; they were approximately one, not one half. Thus the embedded table has not globally halved the generator. The probed zero-based (mean,CV) indices were (25,49), (30,42), (35,35), (40,49), and (40,42). This is a convention check, not full-grid accuracy validation. The [reproducible audit script](../scripts/check_embedded_flow_convention.py) and [JSON results with source hashes](results/embedded_flow_convention_checks.json) record the equations, units, grid, quadrature settings, software versions, numerical ratios, and tolerance. Historical metadata for the original table build are unavailable; the script reproduces the current generator's default settings. [Embedded table](../src/io.h)
 - The cache constructor keeps rho unchanged; preprocess adds rho times each velocity once per base. Segment counts are physical base differences. Flattening copies the cached values, and the SIMD path takes ordinary bilinear weighted sums. The variable name `halfdots` refers to the two 128-bit halves of an AVX register and introduces no factor of one half. Likewise, the -0.5 factor converting log(alpha) velocity to log(CV) is the coordinate derivative, not a rate correction. [Cache/runtime code](../src/flow_field.h), [segment construction](../src/data_processor.h)
 
 These checks support a factor-of-two discrepancy in the current source/table rate convention; they do not quantify its effect on the approximate final posterior or on calibrated scan performance. Resolving the convention in a separate controlled benchmark is preferable to changing rates in the ongoing mean/median/mass experiment.
@@ -220,7 +220,7 @@ These checks verify the formulas at the evaluated points. They do not establish 
 
 This separates a potentially useful decoder improvement from changes to the biological experiment. A variable-Ne implementation should only become the production decoder after both the reference checks and the held-out regional detection comparison support it.
 
-To rerun the standalone feasibility check in the repository's pinned uv environment:
+To rerun the standalone feasibility and embedded-table convention checks in the repository's pinned uv environment:
 
 ```bash
 %%bash
@@ -231,6 +231,8 @@ cd gamma_smc_ts
 git pull --ff-only
 uv run python scripts/check_variable_ne_flow.py \
   --output docs/results/variable_ne_flow_checks.json
+uv run python scripts/check_embedded_flow_convention.py \
+  --output docs/results/embedded_flow_convention_checks.json
 ```
 
 Source audit reference: repository commit 916a829a513bee6c09e20c1cf649d7d9cb61c503. Primary article and supplemental methods were read from the author-hosted Cambridge copies when publisher/PMC full-page access failed. The original paper's general motivation, the supplement's projection recipe, and Carmi's demographic kernel are distinguished above from the new algebra, proposed family, numerical checks, and implementation recommendations.

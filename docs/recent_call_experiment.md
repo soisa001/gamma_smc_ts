@@ -43,10 +43,17 @@ not the old handoff simulation data.
 
 Each result is the number of passing pairs divided by 10,000. None uses
 `mean_p_lt_T`. Mean and truth profiles are reused by reference with checksum
-validation. Median, prob80 and prob90 run the same decoder binary on the same
-sequence and pairs. `--no_recent_probability` skips computation of unused
+validation. One pass of the same decoder binary saves the per-pair gamma
+posteriors. A small native helper reuses `src/recent_stats.h` to compute all four
+hard-call summaries from those posteriors. This avoids three repeated HMM passes.
+For every replicate, both the native pass and replayed mean must reproduce the
+original mean's exact integer counts. The helper checks raw-stream length,
+compression integrity and posterior validity; the wrapper checks pair and
+position manifests. `--no_recent_probability` skips computation of unused
 average probabilities; it does not alter the HMM or hard-call criteria.
 
+Small native tests compare all four rules with direct incomplete-gamma
+evaluation and check posterior replay, padded pair lanes and truncated streams.
 The smoke phase checks all pair counts, valid fractions, age-cutoff monotonicity,
 mean <= median, and prob90 <= prob80 <= median on one replicate per arm. Full
 analysis checks posterior-mass nesting over all 1,200 input regions. Different
@@ -101,6 +108,9 @@ The comparison's `analysis` folder contains regional call summaries, the complet
 held-out predictions, fitted thresholds, secondary grid, allele frequencies,
 diagnostics, provenance and figures saved as PNG and editable-text vector PDF.
 Figures are not displayed inline or emitted as notebook output.
+The independent audit recomputes the 960 regional summaries from 528,000 unique
+held-out predictions, checks output hashes, and verifies that the 192 mean/truth
+baseline rows reproduce the previously completed 400-haplotype comparison.
 
 Twenty workers run one decoder thread each; simulation and decoding phases do
 not overlap their worker pools. WSL currently exposes about 188 GiB RAM, below the
