@@ -172,6 +172,18 @@ There is a subtle limitation: closure of multiplication is algebraic, but two ar
 
 If u=H(t), then the prior on u is Exp(1). However, a match emits exp[-theta*H^-1(u)], and a mismatch emits H^-1(u)*exp[-theta*H^-1(u)] up to constants. These are not the gamma-conjugate factors exp(-theta*u) and u*exp(-theta*u), unless H is linear. Recombination pruning is uniform in physical branch time, not in u; its density gains a factor dt/du. Simply transforming the age axis while keeping the prebuilt field and mutation update would implement the wrong model. This is a direct change-of-variables calculation.
 
+This route is nevertheless implementable: retain a gamma approximation in u,
+construct a demographic recombination field, and project the nonconjugate
+match/mismatch emissions into new cached two-dimensional update maps. The
+Exp(1) prior then retains the existing algebra for combining two gamma filters.
+Posterior-mass calls at physical threshold T use the gamma CDF at H(T), and
+median calls use that same transformed threshold. A physical-time posterior mean
+requires E[H^-1(u)], which is generally different from H^-1(E[u]); it would need
+its own expectation lookup. These are additional approximations and caches to
+benchmark against the proposed prior-tilt family, not a reason to rule the
+hazard-time route out. No comparison between these two variable-Ne designs has
+yet been implemented.
+
 ## Source-audit issues to resolve before a new demographic decoder
 
 **Recombination factor of two.** With t=g/(2N0) and rho=4N0*r, total two-lineage branch length gives a per-base recombination probability approximately rho*t. The original supplement states this convention, but its section E replaces it by 2*rho*t during the flow derivation. The local generator follows that latter expression, and FlowFieldCache multiplies the resulting arrows directly by the supplied rho. This is a source/documentation inconsistency with a potential physical scaling consequence. It must be checked against a small independent SMC-prime reference before choosing the convention for a new decoder. It is not silently corrected here, and it has not been shown to explain the selected-versus-neutral performance gap. [Supplement sections B and E](https://api.repository.cam.ac.uk/server/api/core/bitstreams/48ddd6e8-c82a-4e78-a4a2-3f62bcbf28f1/content), [generator](../src/generate_canonical_flow_field.cpp), [cache construction](../src/flow_field.h)
