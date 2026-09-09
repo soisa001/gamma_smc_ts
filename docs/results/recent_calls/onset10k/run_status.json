@@ -1,0 +1,9 @@
+{
+  "completed": 100,
+  "failed": [],
+  "phase": "simulate",
+  "state": "complete",
+  "target": 100,
+  "updated_at": "2026-09-09T17:56:54Z",
+  "workers": 20
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "all_text_in_canvas": true,
+    "alpha": 0.05,
+    "displayed_inline": false,
+    "legend_outside_panels": true,
+    "pdf_contains_no_images": true,
+    "pdf_fonttype": 42
+  },
+  {
+    "all_text_in_canvas": true,
+    "alpha": 0.1,
+    "displayed_inline": false,
+    "legend_outside_panels": true,
+    "pdf_contains_no_images": true,
+    "pdf_fonttype": 42
+  }
+]

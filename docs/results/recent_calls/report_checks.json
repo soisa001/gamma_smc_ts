@@ -1,0 +1,248 @@
+{
+  "50000": [
+    {
+      "source": "mean",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "20000",
+        "region_call_rate": "0.19"
+      },
+      "neutral05": "0.055",
+      "smallest_neutral_at_trained70": "0.54",
+      "selected70": "0.68",
+      "T70": "10000"
+    },
+    {
+      "source": "mean",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "20000",
+        "region_call_rate": "0.18"
+      },
+      "neutral05": "0.059",
+      "smallest_neutral_at_trained70": "0.54",
+      "selected70": "0.67",
+      "T70": "20000"
+    },
+    {
+      "source": "median",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "10000",
+        "region_call_rate": "0.18"
+      },
+      "neutral05": "0.058",
+      "smallest_neutral_at_trained70": "0.508",
+      "selected70": "0.7",
+      "T70": "5000"
+    },
+    {
+      "source": "median",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "5000",
+        "region_call_rate": "0.18"
+      },
+      "neutral05": "0.057",
+      "smallest_neutral_at_trained70": "0.492",
+      "selected70": "0.68",
+      "T70": "5000"
+    },
+    {
+      "source": "prob80",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "10000",
+        "region_call_rate": "0.18"
+      },
+      "neutral05": "0.046",
+      "smallest_neutral_at_trained70": "0.488",
+      "selected70": "0.69",
+      "T70": "10000"
+    },
+    {
+      "source": "prob80",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "40000",
+        "region_call_rate": "0.2"
+      },
+      "neutral05": "0.054",
+      "smallest_neutral_at_trained70": "0.461",
+      "selected70": "0.71",
+      "T70": "10000"
+    },
+    {
+      "source": "prob90",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.19"
+      },
+      "neutral05": "0.054",
+      "smallest_neutral_at_trained70": "0.547",
+      "selected70": "0.69",
+      "T70": "20000"
+    },
+    {
+      "source": "prob90",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.21"
+      },
+      "neutral05": "0.056",
+      "smallest_neutral_at_trained70": "0.546",
+      "selected70": "0.69",
+      "T70": "40000"
+    },
+    {
+      "source": "truth",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.45"
+      },
+      "neutral05": "0.055",
+      "smallest_neutral_at_trained70": "0.259",
+      "selected70": "0.68",
+      "T70": "50000"
+    },
+    {
+      "source": "truth",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.42"
+      },
+      "neutral05": "0.056",
+      "smallest_neutral_at_trained70": "0.283",
+      "selected70": "0.69",
+      "T70": "50000"
+    }
+  ],
+  "10000": [
+    {
+      "source": "mean",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "30000",
+        "region_call_rate": "0.08"
+      },
+      "neutral05": "0.055",
+      "smallest_neutral_at_trained70": "0.637",
+      "selected70": "0.68",
+      "T70": "20000"
+    },
+    {
+      "source": "mean",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "5000",
+        "region_call_rate": "0.07"
+      },
+      "neutral05": "0.046",
+      "smallest_neutral_at_trained70": "0.654",
+      "selected70": "0.68",
+      "T70": "20000"
+    },
+    {
+      "source": "median",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "30000",
+        "region_call_rate": "0.07"
+      },
+      "neutral05": "0.052",
+      "smallest_neutral_at_trained70": "0.648",
+      "selected70": "0.7",
+      "T70": "5000"
+    },
+    {
+      "source": "median",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "30000",
+        "region_call_rate": "0.05"
+      },
+      "neutral05": "0.048",
+      "smallest_neutral_at_trained70": "0.662",
+      "selected70": "0.69",
+      "T70": "5000"
+    },
+    {
+      "source": "prob80",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.07"
+      },
+      "neutral05": "0.053",
+      "smallest_neutral_at_trained70": "0.647",
+      "selected70": "0.67",
+      "T70": "40000"
+    },
+    {
+      "source": "prob80",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.05"
+      },
+      "neutral05": "0.048",
+      "smallest_neutral_at_trained70": "0.62",
+      "selected70": "0.69",
+      "T70": "10000"
+    },
+    {
+      "source": "prob90",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "50000",
+        "region_call_rate": "0.06"
+      },
+      "neutral05": "0.054",
+      "smallest_neutral_at_trained70": "0.646",
+      "selected70": "0.7",
+      "T70": "50000"
+    },
+    {
+      "source": "prob90",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "40000",
+        "region_call_rate": "0.05"
+      },
+      "neutral05": "0.05",
+      "smallest_neutral_at_trained70": "0.636",
+      "selected70": "0.7",
+      "T70": "50000"
+    },
+    {
+      "source": "truth",
+      "method": "maximum_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "10000",
+        "region_call_rate": "0.08"
+      },
+      "neutral05": "0.043",
+      "smallest_neutral_at_trained70": "0.585",
+      "selected70": "0.67",
+      "T70": "30000"
+    },
+    {
+      "source": "truth",
+      "method": "maximum_standardized_frac_recent",
+      "best_nominal05": {
+        "cutoff_years": "10000",
+        "region_call_rate": "0.07"
+      },
+      "neutral05": "0.05",
+      "smallest_neutral_at_trained70": "0.577",
+      "selected70": "0.68",
+      "T70": "30000"
+    }
+  ],
+  "grid_rules_at_least70_selected_at_most05_neutral": 0,
+  "description": "Exploratory extrema across listed cutoffs; not independently confirmed winners."
+}

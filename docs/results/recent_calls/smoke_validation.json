@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "mean <= median",
+    "prob90 <= prob80 <= median",
+    "all pairs retained"
+  ],
+  "samples": [
+    "neutral/rep0000",
+    "onset50000/rep0000",
+    "onset10000/rep0000"
+  ],
+  "status": "passed"
+}

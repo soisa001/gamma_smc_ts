@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "original_script": "D:\\phase2simselection\\sim\\eas_q02_onset10k_h400\\tmp\\stdpopsim_71q_8yg3\\bde5e1.slim",
+  "sha256": "f0220cc949b4e9e51dcb5b011da847b1953ae63dba00f2dfcbfde6b3ae6e0b22",
+  "fitness_callback_years": "10000, 0, 1, 0, 0.005, 0.5",
+  "survival_condition_years": "49875, 0, 1, 0, 2, 0",
+  "condition_operator": ">",
+  "notes": "Generated SLiM uses years for event arrays, selection begins 10000 years before present; survival begins one scaled generation after 50000-year pulse"
+}

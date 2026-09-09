@@ -1,0 +1,111 @@
+{
+  "purpose": "Verified compact summaries for four hard-call rules and delayed selection; raw posteriors and held-out predictions remain on D",
+  "raw_analysis": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis",
+  "files": {
+    "analysis/diagnostics.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\diagnostics.csv",
+      "bytes": 8061,
+      "sha256": "5bc4f21ebd4dcea90b4d37390536e820bf9cb6e8a28652980923ed419a457c58"
+    },
+    "analysis/figure_layout_checks.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\figure_layout_checks.json",
+      "bytes": 372,
+      "sha256": "bcac3cb2ac91ef3de15a10591ae2617c128819654a87eb92addfcd9244b3916b"
+    },
+    "analysis/paired_grid.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\paired_grid.csv",
+      "bytes": 594886,
+      "sha256": "37d6706fe0b4143d8afb82521718fc280bcc01f4b2eef115d260e15570e84a0b"
+    },
+    "analysis/power_neutral_0.05.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\power_neutral_0.05.pdf",
+      "bytes": 22800,
+      "sha256": "352ebcc02e6c257f63340ac1772d31d5570b40f7c13fc86e39cbd610065d6893"
+    },
+    "analysis/power_neutral_0.05.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\power_neutral_0.05.png",
+      "bytes": 214317,
+      "sha256": "7a2c38430d2ac3f8b378ce586fdcdbf000e4b7b1458a920c64ef2307f50c359f"
+    },
+    "analysis/power_neutral_0.1.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\power_neutral_0.1.pdf",
+      "bytes": 22836,
+      "sha256": "0f4446553983efaf43e08fe20922bc993fe2f573b49ce8792fd9dd99c5ca49c6"
+    },
+    "analysis/power_neutral_0.1.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\power_neutral_0.1.png",
+      "bytes": 222093,
+      "sha256": "7181e8effb581b1703dac8701c63160848e8925d191f2c1847164245530fbebe"
+    },
+    "analysis/provenance.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\provenance.json",
+      "bytes": 1112144,
+      "sha256": "06aa76baddffe53a3a3ab37bdb64758351b603d613406beede56549fbad9f922"
+    },
+    "analysis/region_calls.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\region_calls.csv",
+      "bytes": 82393,
+      "sha256": "3753ec3aa965951adb9b2ce377d473dd0a0cf4056357d90af0831e7d2e78754a"
+    },
+    "analysis/replicates.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\replicates.csv",
+      "bytes": 57414,
+      "sha256": "143c14da38d86c17c3bab4a732919b084599073d70c73438a3f798bddbda89d3"
+    },
+    "analysis/training_thresholds.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis\\training_thresholds.csv",
+      "bytes": 47123,
+      "sha256": "8f5ea41db9696899193adf60e2a637a6c9aec55866e2b3e31dbf6ae6d3c8034c"
+    },
+    "manifest.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\manifest.json",
+      "bytes": 3794831,
+      "sha256": "c6dcf5d476d69c63504ba0a6e0f43ea463b4914c115755887758223a09c04d12"
+    },
+    "decode_status.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\decode_status.json",
+      "bytes": 138,
+      "sha256": "089a1a4924b82cdd4284a3f4fb2be5a2c6e8067f18695a4318fcb6dc7f3ac6a1"
+    },
+    "smoke_validation.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\smoke_validation.json",
+      "bytes": 219,
+      "sha256": "c2ed27e8431e17a705161efb0e8b69a0c5ed1c6b21c56896127984701be39376"
+    },
+    "analysis_audit.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\analysis_audit.json",
+      "bytes": 261,
+      "sha256": "8bf662363aa7e5091c19d45554d92d75f024ee02dbb9f561100b1976b20fbe60"
+    },
+    "report_checks.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_recent_calls\\report_checks.json",
+      "bytes": 6664,
+      "sha256": "03fedfbf1c1b3e7aca19f76778ef3b38399d52ce3f95d5b89f207c4b64ea36ed"
+    },
+    "onset10k/manifest.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_q02_onset10k_h400\\manifest.json",
+      "bytes": 4967,
+      "sha256": "ecd29ac4e6a41f2658bd989f91228675520cf657e18ae4291af976f5a3d543cf"
+    },
+    "onset10k/run_status.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_q02_onset10k_h400\\run_status.json",
+      "bytes": 159,
+      "sha256": "6825de42d4047c559e53f308d54626580178dcc7b8960b470ff0c30560686b3b"
+    },
+    "onset10k/sample_manifest.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_q02_onset10k_h400\\sample_manifest.json",
+      "bytes": 13434,
+      "sha256": "f31ffe961df9386ce1453d85fb082f61b9ce7540d018c886fc05dd719ef10b44"
+    },
+    "onset10k/validation/generated_event_check.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_q02_onset10k_h400\\validation\\generated_event_check.json",
+      "bytes": 528,
+      "sha256": "bfa2a09669286212546dec9a1637d0018949311f002e8e49412a500559c5b30d"
+    },
+    "tables.md": {
+      "source": "Generated by scripts/summarize_recent_calls.py from the audited analysis",
+      "bytes": 5394,
+      "sha256": "7e0a935cd560df1e64050d6462b40d53cee48bde6ffe741d358e4aaf8ee87fe8"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "unique_held_out_predictions": 528000,
+  "summaries_recomputed": 960,
+  "existing_baseline_rows_reproduced": 192,
+  "output_hashes_checked": 11,
+  "audit_source_sha256": "4d31704a4b39156ccace9be65b2731fcd7378a4ffdead766b821fcdd8311c0a2"
+}
