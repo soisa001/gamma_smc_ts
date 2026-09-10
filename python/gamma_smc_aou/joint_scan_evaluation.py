@@ -264,9 +264,11 @@ def evaluate(out):
         operational_fdr="Fraction of whole neutral 10 Mb regions with any call (a regional false-positive rate)",
         selected_endpoint="Any call anywhere in region; all 100 surviving-allele regions per onset retained",
         primary_frozen_before_outcomes=True,methods_are_exploratory_except_primary=True,
+        method_development_used_prior_selected_class_summaries=True,
+        validation_scope="Exploratory cross-validation in the existing fresh cohort; not untouched prospective validation",
         confidence_interval_note="Wilson intervals summarize held-out binomial counts; shared fitted thresholds induce dependence not included in these intervals"))
     figures(table,target_metrics,output)
-    atomic_json(output/"artifact_manifest.json",{p.name:dict(bytes=p.stat().st_size,sha256=digest(p)) for p in sorted(output.iterdir()) if p.is_file() and p.name!="artifact_manifest.json"})
+    atomic_json(output/"artifact_manifest.json",{p.name:dict(bytes=p.stat().st_size,sha256=digest(p)) for p in sorted(output.iterdir()) if p.is_file() and p.name not in ("artifact_manifest.json","audit.json")})
     print(table[(table.method.isin([PRIMARY,"tuned_joint","af_r1","all_r1_T50000"]))&(table.alpha==.05)][["scheme","source","method","onset_years","power","neutral_call_fraction"]].to_string(index=False),flush=True)
 
 

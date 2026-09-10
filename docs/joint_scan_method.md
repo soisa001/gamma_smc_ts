@@ -127,6 +127,21 @@ the survival/observation ascertainment and the isolated-region simulation model,
 not a guarantee for a whole-genome empirical scan. Wilson intervals summarize
 held-out counts; they do not include dependence from shared fitted thresholds.
 
+These are exploratory, cross-validated estimates within the current simulation
+cohort. The selected pair-class summaries from this cohort informed development
+of the score, so the cohort is not an untouched prospective validation set.
+The primary formula was frozen before inspecting its new whole-region joint
+power/null results. A final chosen method should be confirmed with new seeds.
+The benchmark also inherits the existing msprime-neutral / scaled-SLiM-selected
+simulation design and perfect archaic-marker labels. The selected allele is
+aligned to the central grid coordinate by the original simulation protocol;
+the every-site comparison is less dependent on that grid alignment.
+
+The new score explicitly uses archaic carrier frequency. Earlier findings about
+the all-pair statistic being insensitive to realized ancestry do not establish
+the same property for this score. Its null is the specified neutral 2% pulse
+model, without purifying selection against archaic ancestry.
+
 With 400 calibration regions the smallest valid rank p is 1/401, so this held-out
 design cannot resolve p=0.001. A separately marked exploratory table uses all
 1,000 neutrals to calibrate fixed ungated scores at p<=0.001. A selected score
