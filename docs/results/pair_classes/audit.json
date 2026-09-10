@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "regions": 200,
+  "profile_rows_checked": 1600000,
+  "pair_class_partitions_checked": 400000,
+  "summary_means_recomputed": 112000,
+  "analysis_provenance_sha256": "8ad7a841e3180fe1eec6da48840be03124415afad8fe4abd21d658cebb968731",
+  "audit_source_sha256": "c1bfce5b4ba55dd667cbb66ed704aba511d79418f4197f4f1a6c94cbebebfdd3"
+}

@@ -1,0 +1,100 @@
+[
+  {
+    "displayed_inline": false,
+    "figure": "mean_tmrca_years_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "mean_tmrca_years_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_5000_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_5000_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_10000_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_10000_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_20000_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_20000_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_30000_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_30000_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_40000_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_40000_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_50000_full",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  },
+  {
+    "displayed_inline": false,
+    "figure": "frac_recent_50000_zoom",
+    "legend_outside_panels": true,
+    "text_within_canvas": true,
+    "vector_pdf": true
+  }
+]

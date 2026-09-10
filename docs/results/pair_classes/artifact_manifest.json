@@ -1,0 +1,190 @@
+{
+  "purpose": "Compact summaries and saved figures for true archaic focal-allele haplotype pair classes; full per-region profiles remain on D",
+  "files": {
+    "analysis/figure_checks.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\figure_checks.json",
+      "bytes": 2379,
+      "sha256": "515e7b30c703d74ce037c8e2abe13952c8b3daf7469911c6aad03999ae23232f"
+    },
+    "analysis/focal_by_replicate.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\focal_by_replicate.csv",
+      "bytes": 240490,
+      "sha256": "2962dd6bed35400b00f09fd5c1cbc35c4e4e9732fdd75316cc1483409640f89e"
+    },
+    "analysis/focal_summary.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\focal_summary.csv",
+      "bytes": 5284,
+      "sha256": "6bb02aad2f8e4b47510c5d65fc70d2abf0d50f9f6f0570823c6775fe7471dbe9"
+    },
+    "analysis/frac_recent_10000_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_10000_full.pdf",
+      "bytes": 291011,
+      "sha256": "22bc816e7c69e0dbd7c849e6ce2f794ed9d886150949b3e072760f8a8ed1ab5a"
+    },
+    "analysis/frac_recent_10000_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_10000_full.png",
+      "bytes": 225989,
+      "sha256": "b8c543209cfe766d51f056f335c65d411bcb4ec57f2b00538d41901057c9186c"
+    },
+    "analysis/frac_recent_10000_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_10000_zoom.pdf",
+      "bytes": 49085,
+      "sha256": "d2f371974f65c00085d7feb1db8e7d891002392544e9a0338f2cde1c24eab785"
+    },
+    "analysis/frac_recent_10000_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_10000_zoom.png",
+      "bytes": 224613,
+      "sha256": "e9e19af5996f84c9640d42af4cd7082813acd25130ede468ce52b04977054151"
+    },
+    "analysis/frac_recent_20000_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_20000_full.pdf",
+      "bytes": 342697,
+      "sha256": "7e82161c701ac7fa8708c89c28297d5e9294a2714b1145241ee2ca311bf77eec"
+    },
+    "analysis/frac_recent_20000_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_20000_full.png",
+      "bytes": 278337,
+      "sha256": "6d6f2b846b9cc5664d18514e41a8281d7be46627611134b2033d30170bed14d5"
+    },
+    "analysis/frac_recent_20000_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_20000_zoom.pdf",
+      "bytes": 50672,
+      "sha256": "26f264f77c840f2e7d700698a9bc46f411f7414d6da5c79b0d70492ea161cc23"
+    },
+    "analysis/frac_recent_20000_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_20000_zoom.png",
+      "bytes": 279517,
+      "sha256": "146a9f846d6ae98fbd0aaa7d1f2fb3f54c2c4b75f60693a0ce620c1d2944a9e2"
+    },
+    "analysis/frac_recent_30000_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_30000_full.pdf",
+      "bytes": 379446,
+      "sha256": "5a7c3f8a2977dcbfa187f18e3ce378b4a6073399c2b9b4a2e21a417fd4f64b43"
+    },
+    "analysis/frac_recent_30000_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_30000_full.png",
+      "bytes": 325118,
+      "sha256": "e274d7b84069ea9ce55e51ebd7687dc5c8df62b5286697c56b4f6222af4a4e1e"
+    },
+    "analysis/frac_recent_30000_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_30000_zoom.pdf",
+      "bytes": 51349,
+      "sha256": "61155730039aac416a0cf6336f8813699acec8ed3d77c2f48b6a002fabbfee23"
+    },
+    "analysis/frac_recent_30000_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_30000_zoom.png",
+      "bytes": 322007,
+      "sha256": "6ffbb6bc4decaba83d10916167b1eec241528f69cb12d57d513f9cb7cadc853b"
+    },
+    "analysis/frac_recent_40000_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_40000_full.pdf",
+      "bytes": 391828,
+      "sha256": "89a566e7a10b70945dea91c748d6cfa01a1b854310dcd01b72e93aff4311f632"
+    },
+    "analysis/frac_recent_40000_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_40000_full.png",
+      "bytes": 369029,
+      "sha256": "7c31f9d27f94f6c0f47b5697e3e1c8821eee5f7944f64b2652058861b9813b78"
+    },
+    "analysis/frac_recent_40000_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_40000_zoom.pdf",
+      "bytes": 51535,
+      "sha256": "485b447d5c61e2cc55b906f28e4f9ef8d4821f9b6ae4739fd47246cb58eec6c1"
+    },
+    "analysis/frac_recent_40000_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_40000_zoom.png",
+      "bytes": 358646,
+      "sha256": "f48315e5973c36fb9c8d48b5e8a4fa62126066e3b7d3763f7aa6e2a0da2a2597"
+    },
+    "analysis/frac_recent_50000_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_50000_full.pdf",
+      "bytes": 398674,
+      "sha256": "7c5bfea0823ec875b6c918fe12e75fa9339f463641f8d7b3a1f91d37315db76a"
+    },
+    "analysis/frac_recent_50000_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_50000_full.png",
+      "bytes": 411957,
+      "sha256": "b2b0e773ebc77cff051b70cbb011fa75e2f1a990bd5ada63c935aa467f5ff3f5"
+    },
+    "analysis/frac_recent_50000_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_50000_zoom.pdf",
+      "bytes": 51558,
+      "sha256": "a7d187c07e9565cc7b3198f6259ebffc90d4574fec1a88b77ef3948c0b5fd910"
+    },
+    "analysis/frac_recent_50000_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_50000_zoom.png",
+      "bytes": 383280,
+      "sha256": "26fa474c08fb7cb04bf7b085b766956ecd952403d4ebacf80ad02de11aae5088"
+    },
+    "analysis/frac_recent_5000_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_5000_full.pdf",
+      "bytes": 269849,
+      "sha256": "cfda274b675f6dcabeebd9fa5656f13dfde2148484d338b0caccdd968eada2d2"
+    },
+    "analysis/frac_recent_5000_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_5000_full.png",
+      "bytes": 195759,
+      "sha256": "648740c432df04f9f53e1b609e4414d1e883c4ccccfb1464a19de38605ad877c"
+    },
+    "analysis/frac_recent_5000_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_5000_zoom.pdf",
+      "bytes": 47684,
+      "sha256": "f57dbf137ef3f778657ac3bcd423e80c2d2b67abf723017796936ec5c796b234"
+    },
+    "analysis/frac_recent_5000_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\frac_recent_5000_zoom.png",
+      "bytes": 193562,
+      "sha256": "c801a9fe6f0d5f33a9e7cad7f1cb450d0ac3e906dbffc9be5d43c4329341bcf8"
+    },
+    "analysis/mean_profiles.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\mean_profiles.csv",
+      "bytes": 4966338,
+      "sha256": "44bfa735c15c60671850db941d82e0ec791f75010f24f9b8725547fe3acb7fd5"
+    },
+    "analysis/mean_tmrca_years_full.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\mean_tmrca_years_full.pdf",
+      "bytes": 405623,
+      "sha256": "a8a168a0ee28a43e2749fdf64ab5f9b74a4f7fcbb0541641d015d1725d27686c"
+    },
+    "analysis/mean_tmrca_years_full.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\mean_tmrca_years_full.png",
+      "bytes": 380713,
+      "sha256": "618429b0be66637933c3b077a547c10d62259affda21fe67d02e0a9d8c3da0cd"
+    },
+    "analysis/mean_tmrca_years_zoom.pdf": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\mean_tmrca_years_zoom.pdf",
+      "bytes": 52452,
+      "sha256": "cfa76220066048a0be3ae99034c8a11adc18281f9d1bb05f242d9445bc83f459"
+    },
+    "analysis/mean_tmrca_years_zoom.png": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\mean_tmrca_years_zoom.png",
+      "bytes": 340133,
+      "sha256": "f26c0de1b0c9eb4a00a6ea96cdaf6112151a53f49f85b58f9956e4f21719bf76"
+    },
+    "analysis/pair_counts.csv": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\pair_counts.csv",
+      "bytes": 7317,
+      "sha256": "eb5a54d858b5c0510e49bb3957cf60488ed682319cb11e17e4bc310f4af86017"
+    },
+    "analysis/provenance.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\analysis\\provenance.json",
+      "bytes": 226365,
+      "sha256": "8ad7a841e3180fe1eec6da48840be03124415afad8fe4abd21d658cebb968731"
+    },
+    "audit.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\audit.json",
+      "bytes": 348,
+      "sha256": "bf221295e0761027ff3686bcbc0d6f64eeadd7c150cbef1bd929ac3adcc6c3a3"
+    },
+    "manifest.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\manifest.json",
+      "bytes": 7832,
+      "sha256": "c4463365e141b6b9693d41f61b7d602d20362befc1a3d8198678dbdc34c977f8"
+    },
+    "status.json": {
+      "source": "D:\\phase2simselection\\sim\\eas_pair_classes\\status.json",
+      "bytes": 79,
+      "sha256": "c917003cc9430ac88c9e00c5e00e42fce47ea3a31e2897ce0e54a056fddd1c4d"
+    }
+  }
+}
