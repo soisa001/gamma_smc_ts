@@ -108,11 +108,29 @@ power at 5%. It then uses the independent calibration and test regions. Training
 selection is repeated inside each outer fold. No empirical onset label is needed
 to apply that detector to a test region.
 
+After the AF-only ablation was calculated, but before the joint results were
+examined, two simpler exploratory confirmations were added to the training
+comparison. Both use the median all-pair gate and the same cutoff/run search:
+
+    M_T = nAA / Npairs × fAA_T = count_recent_AA_T / Npairs
+    E_T = nAA / Npairs × max(fAA_T − f_nonAA_T, 0)
+
+Here f_nonAA pools REF/REF and ALT/REF counts using their actual pair counts.
+Its comparator is zero at fixation. M is the carrier contribution to the
+all-pair recent fraction. E measures carrier enrichment against the remainder
+of the pair panel, avoiding an unstable separate REF/REF comparison near
+fixation. These alternatives also use only hard `frac_recent_T` calls. The
+original primary formula is unchanged. Training can select among the three
+confirmation families; calibration and test regions remain excluded from that
+selection.
+
 An additional operating point sets a score threshold from the lower 30th
 percentile of selected training scores, separately for each onset, and evaluates
 the resulting power and neutral call fraction on the outer test fold. Zero
 evidence is never called. This measures the cost of aiming at 70% power; it does
 not assert that the target will be reached out of sample.
+This operating point is evaluated for the primary score, the trained
+confirmation, and the AF-only baseline.
 
 Power is the fraction of selected regions with **any call anywhere in the 10 Mb
 region**. The user's operational “FDR” is the fraction of neutral regions with

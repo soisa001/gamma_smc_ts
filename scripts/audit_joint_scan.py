@@ -83,6 +83,43 @@ def audit(out):
                     fdr=(1-prevalence)*fpr/den
                     assert abs(fdr-float(row[f'fdr_prevalence_{prevalence}']))<1e-14
             metrics_rows+=1
+    target_counts=defaultdict(lambda:[0,0])
+    target_reference={}
+    with (analysis/'target70_predictions.csv').open() as stream:
+        for row in csv.DictReader(stream):
+            fold=int(row['fold']);target=int(row['target_onset']);onset=int(row['onset_years'])
+            scheme,source,method=row['scheme'],row['source'],row['method']
+            resolved=choices[(fold,scheme,source)] if method=='tuned_joint' else method
+            k=mi[resolved];matrix=scores[f'fold{fold}_{scheme}_{source}']
+            reference_key=(fold,scheme,source,method,target)
+            if reference_key not in target_reference:
+                train=[index[key] for key,v in inventory.items() if int(v['onset_years'])==target and int(v['fold'])!=fold]
+                assert len(train)==80
+                target_reference[reference_key]=(float(np.quantile(matrix[train,k],.3,method='lower')),{items[i]['key'] for i in train})
+            threshold,training_ids=target_reference[reference_key]
+            assert row['key'] not in training_ids
+            value=matrix[index[row['key']],k]
+            assert abs(threshold-float(row['threshold']))<1e-14
+            assert abs(value-float(row['score']))<1e-14
+            called=row['called']=='True'
+            assert called==(value>=threshold and value>0)
+            key=(scheme,source,method,target,onset)
+            target_counts[key][0]+=int(called);target_counts[key][1]+=1
+    with (analysis/'target70_metrics.csv').open() as stream:
+        for row in csv.DictReader(stream):
+            base=(row['scheme'],row['source'],row['method'],int(row['target_onset']))
+            tp,n=target_counts[base+(int(row['onset_years']),)];fp,nn=target_counts[base+(0,)]
+            assert (n,nn)==(100,1000)
+            assert (tp,fp)==(int(row['selected_called']),int(row['neutral_called']))
+            assert abs(tp/n-float(row['power']))<1e-14 and abs(fp/nn-float(row['neutral_call_fraction']))<1e-14
+    ablation=out/'af_ablation/metrics.csv'
+    if ablation.exists():
+        with ablation.open() as stream:
+            for row in csv.DictReader(stream):
+                for source in ('truth','decoded'):
+                    base=(row['scheme'],source,row['method'],float(row['alpha']))
+                    assert counts[base+(int(row['onset_years']),)]==[int(row['selected_called']),int(row['selected_n'])]
+                    assert counts[base+(0,)]==[int(row['neutral_called']),int(row['neutral_n'])]
     # Every derived class count stays within its denominator and partitions all pairs.
     positions=0
     for item in items:
@@ -96,11 +133,16 @@ def audit(out):
                 assert np.array_equal(c[:,:,:3].sum(axis=2),c[:,:,3])
                 assert np.all(c<=n[None,:,:,None])
                 assert np.all(np.diff(c.astype(int),axis=-1)>=0)
+                if prefix=='site':
+                    # A single archaic mutation older than every cutoff forces
+                    # mixed-allele pairs to coalesce before that mutation.
+                    assert not np.any(c[0,:,1]),item['key']
                 positions+=c.shape[1]
     result=dict(status='passed',regions=len(items),prediction_rows=rows,metric_rows=metrics_rows,
                 profiled_positions=positions,calibration_ranks_recomputed=True,
                 all_regions_retained=True,disjoint_fit_calibration_test=True,
-                class_partitions_verified=True,artifact_hashes_verified=True)
+                class_partitions_verified=True,artifact_hashes_verified=True,
+                target70_training_thresholds_recomputed=True,af_ablation_matches=ablation.exists())
     (analysis/'audit.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
 

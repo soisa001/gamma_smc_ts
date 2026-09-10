@@ -3,7 +3,7 @@ import numpy as np
 import tskit
 from gamma_smc_aou.joint_scan_labels import ancestry_mask
 from gamma_smc_aou.joint_scan_profiles import nearest_markers,count_classes
-from gamma_smc_aou.joint_scan_evaluation import components,binned_region_score,rank_p,make_folds
+from gamma_smc_aou.joint_scan_evaluation import components,extra_components,binned_region_score,rank_p,make_folds
 from gamma_smc_aou.joint_truth import pair_ages
 
 
@@ -35,6 +35,9 @@ def test_joint_fraction_fixation_and_missing_pairs():
     all_pairs,joint=components(counts,n)
     np.testing.assert_allclose(joint[0,:,0],[.25,.8,0])
     np.testing.assert_allclose(all_pairs[0,:,0],[.6,.8,.3])
+    mass,excess=extra_components(counts,n)
+    np.testing.assert_allclose(mass[0,:,0],[.5,.8,0])
+    np.testing.assert_allclose(excess[0,:,0],[.4,.8,0])
 
 
 def test_spatial_runs_require_distinct_adjacent_physical_bins():
@@ -78,7 +81,7 @@ def test_end_to_end_region_evaluation_and_figures(tmp_path,monkeypatch):
     items=[dict(key=f'{o}/{r}',onset_years=o,replicate=r) for o,n in [(0,1000),(10000,100),(50000,100)] for r in range(n)]
     config=dict(seed_base=20380101,tmrca_cutoffs_years=[5000,10000,20000,30000,40000,50000],scored_length_bp=30,stride_bp=10)
     (tmp_path/'profile_manifest.json').write_text(json.dumps(dict(items=items,config=config)))
-    selected_methods=[m for m in evaluation.methods(config['tmrca_cutoffs_years']) if m['name'] in [evaluation.PRIMARY,'all_r1_T50000','af_r1']]
+    selected_methods=[m for m in evaluation.methods(config['tmrca_cutoffs_years']) if m['name'] in [evaluation.PRIMARY,'all_r1_T50000','af_r1','mass_g50_r1_T50000','excess_g50_r1_T50000']]
     monkeypatch.setattr(evaluation,'methods',lambda cutoffs:selected_methods)
     def fake_load(payload):
         item,_=payload
@@ -94,7 +97,11 @@ def test_end_to_end_region_evaluation_and_figures(tmp_path,monkeypatch):
     primary=result[(result.method==evaluation.PRIMARY)&(result.alpha==.05)]
     assert (primary.power==1).all() and (primary.neutral_call_fraction==0).all()
     assert (primary.selected_n==100).all() and (primary.neutral_n==1000).all()
+    extra=result[result.method.isin(['mass_g50_r1_T50000','excess_g50_r1_T50000'])]
+    assert len(extra)>0 and (extra.power==1).all() and (extra.neutral_call_fraction==0).all()
     af=result[result.method=='af_r1']
     assert (af.power==0).all()
+    target=pd.read_csv(tmp_path/'analysis/target70_metrics.csv')
+    assert (target[target.method=='af_r1'].neutral_call_fraction==1).all()
     checks=json.loads((tmp_path/'analysis/figure_checks.json').read_text())
     assert len(checks)==2 and all(c['vector_pdf'] and c['legend_clear'] for c in checks)

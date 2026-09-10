@@ -35,6 +35,10 @@ def methods(cutoffs):
         # Union across all six cutoffs is itself calibrated as one region score.
         for gate in GATES:
             result.append(dict(name=f"joint_g{int(gate*100)}_r{run}_Tall",family="joint",gate=gate,run=run,cutoff=-1,years=-1))
+        for family in ("mass","excess"):
+            for j,t in enumerate(cutoffs):
+                result.append(dict(name=f"{family}_g50_r{run}_T{t}",family=family,gate=.5,run=run,cutoff=j,years=int(t)))
+            result.append(dict(name=f"{family}_g50_r{run}_Tall",family=family,gate=.5,run=run,cutoff=-1,years=-1))
     return result
 
 
@@ -46,6 +50,17 @@ def components(counts,n):
     # reduces to the all-pair recent fraction, retaining fixed sweeps.
     joint=weight[None,:,None]*np.maximum(aa-rr,0)*(1-ar)
     return all_pairs,joint
+
+
+def extra_components(counts,n):
+    """Carrier mass and enrichment against ALL non-AA pairs, retaining fixation."""
+    mass=counts[:,:,2]/n[None,:,3,None]
+    aa=np.divide(counts[:,:,2],n[None,:,2,None],out=np.zeros_like(mass),where=n[None,:,2,None]>0)
+    other_n=n[:,3].astype(int)-n[:,2]
+    other_recent=counts[:,:,3].astype(int)-counts[:,:,2]
+    other=np.divide(other_recent,other_n[None,:,None],out=np.zeros_like(mass),where=other_n[None,:,None]>0)
+    excess=(n[:,2]/n[:,3])[None,:,None]*np.maximum(aa-other,0)
+    return mass,excess
 
 
 def binned_region_score(local,positions,nbins,stride,run):
@@ -71,7 +86,8 @@ def score_region(features,scheme,source,method,gate_values,stride,nbins):
     elif method["family"]=="all":
         local=all_pairs[source,:,method["cutoff"]]
     else:
-        values=joint[source].copy()
+        if method["family"]=="joint":values=joint[source].copy()
+        else:values=extra_components(counts,n)[0 if method["family"]=="mass" else 1][source].copy()
         if method["gate"]:
             # Gate at the SAME time cutoff and coordinate as the carrier score.
             values[all_pairs[source]<=gate_values[method["gate"]][source]]=0
@@ -184,6 +200,10 @@ def evaluate(out):
                         local_features[f"all_T{t}"]=all_pairs[source_index,:,j]
                         for g in GATES:local_features[f"joint_g{int(g*100)}_T{t}"]=gated[g][:,j]
                     for g in GATES:local_features[f"joint_g{int(g*100)}_Tall"]=gated[g].max(axis=1)
+                    for family,extra in zip(("mass","excess"),extra_components(f[prefix+"_counts"],f[prefix+"_n"])):
+                        values=np.where(all_pairs[source_index]>gate_values[.5][source_index],extra[source_index],0.)
+                        for j,t in enumerate(cfg["tmrca_cutoffs_years"]):local_features[f"{family}_g50_T{t}"]=values[:,j]
+                        local_features[f"{family}_g50_Tall"]=values.max(axis=1)
                     cached={}
                     for name,local in local_features.items():
                         binned=np.zeros(nbins)
@@ -195,7 +215,7 @@ def evaluate(out):
                         scores[i,k]=cached[(name,m["run"])]
                 score_archive[f"fold{fold}_{scheme}_{source}"]=scores
                 selected_train=(~neutral)&(~test)
-                joint_index=np.array([k for k,m in enumerate(methods_list) if m["family"]=="joint"])
+                joint_index=np.array([k for k,m in enumerate(methods_list) if m["family"] in ("joint","mass","excess")])
                 # Family/cutoff/run selection uses FIT regions only. Calibration
                 # and test regions never participate in choosing the method.
                 training_p=np.column_stack([rank_p(scores[fit,k],scores[selected_train,k]) for k in joint_index])
@@ -210,7 +230,7 @@ def evaluate(out):
                         for i,pv in zip(ids,pvalues):
                             predictions.append(dict(key=items[i]["key"],onset_years=int(onset[i]),fold=fold,
                                 scheme=scheme,source=source,method=m["name"],alpha=alpha,score=float(scores[i,k]),p=float(pv),called=bool(pv<=alpha)))
-                    if m["name"] in (PRIMARY,"tuned_joint"):
+                    if m["name"] in (PRIMARY,"tuned_joint","af_r1"):
                         for target_onset in (10000,50000):
                             train=(onset==target_onset)&(~test)
                             threshold=float(np.quantile(scores[train,k],.3,method="lower"))
@@ -264,6 +284,7 @@ def evaluate(out):
         operational_fdr="Fraction of whole neutral 10 Mb regions with any call (a regional false-positive rate)",
         selected_endpoint="Any call anywhere in region; all 100 surviving-allele regions per onset retained",
         primary_frozen_before_outcomes=True,methods_are_exploratory_except_primary=True,
+        mass_and_excess_added_after_AF_ablation_before_joint_results=True,
         method_development_used_prior_selected_class_summaries=True,
         validation_scope="Exploratory cross-validation in the existing fresh cohort; not untouched prospective validation",
         confidence_interval_note="Wilson intervals summarize held-out binomial counts; shared fitted thresholds induce dependence not included in these intervals"))
