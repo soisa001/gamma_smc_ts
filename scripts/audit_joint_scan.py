@@ -39,6 +39,9 @@ def audit(out):
     mi={x['name']:i for i,x in enumerate(methods)}
     with (analysis/'training_choices.csv').open() as stream:
         choices={(int(r['fold']),r['scheme'],r['source']):r['method'] for r in csv.DictReader(stream)}
+    with (analysis/'training_choices_all.csv').open() as stream:
+        choices_all={(int(r['fold']),r['scheme'],r['source']):r['method'] for r in csv.DictReader(stream)}
+    choice_maps={'tuned_joint':choices,'tuned_all':choices_all}
     scores=np.load(analysis/'fold_region_scores.npz',allow_pickle=False)
     references={}
     for fold in range(5):
@@ -55,7 +58,7 @@ def audit(out):
             alpha=float(row['alpha']);called=row['called']=='True'
             assert int(inventory[row['key']]['fold'])==fold
             assert int(inventory[row['key']]['onset_years'])==onset
-            resolved=choices[(fold,scheme,source)] if method=='tuned_joint' else method
+            resolved=choice_maps[method][(fold,scheme,source)] if method in choice_maps else method
             k=mi[resolved]
             expected_score=scores[f'fold{fold}_{scheme}_{source}'][index[row['key']],k]
             assert abs(expected_score-value)<1e-14
@@ -89,7 +92,7 @@ def audit(out):
         for row in csv.DictReader(stream):
             fold=int(row['fold']);target=int(row['target_onset']);onset=int(row['onset_years'])
             scheme,source,method=row['scheme'],row['source'],row['method']
-            resolved=choices[(fold,scheme,source)] if method=='tuned_joint' else method
+            resolved=choice_maps[method][(fold,scheme,source)] if method in choice_maps else method
             k=mi[resolved];matrix=scores[f'fold{fold}_{scheme}_{source}']
             reference_key=(fold,scheme,source,method,target)
             if reference_key not in target_reference:

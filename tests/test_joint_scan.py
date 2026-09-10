@@ -46,6 +46,12 @@ def test_spatial_runs_require_distinct_adjacent_physical_bins():
     assert binned_region_score([.8,.9],[1,21],5,10,2)==0
     assert nearest_markers(np.array([0,10,20]),np.array([5,16]),5).tolist()==[0,0,1]
     assert nearest_markers(np.array([0]),np.array([],dtype=int),5).tolist()==[-1]
+    empty=np.zeros((2,0,4,6),dtype=np.uint16)
+    denominators=np.zeros((0,4),dtype=np.uint16)
+    all_pairs,joint=components(empty,denominators)
+    assert all_pairs.shape==joint.shape==(2,0,6)
+    assert all(x.shape==(2,0,6) for x in extra_components(empty,denominators))
+    assert binned_region_score([],[],1000,10000,3)==0
 
 
 def test_conservative_ranks_ties_and_whole_region_folds():

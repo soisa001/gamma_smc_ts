@@ -166,7 +166,7 @@ def evaluate(out):
     output=out/"analysis";output.mkdir(exist_ok=True)
     all_grid=np.array([components(f["grid_counts"],f["grid_n"])[0] for f in features])
     # shape regions x sources x 1000 strides x 6 cutoffs
-    predictions,chosen,targets,gate_records=[],[],[],[]
+    predictions,chosen,chosen_all,targets,gate_records=[],[],[],[],[]
     score_archive={}
     for fold in range(5):
         test=folds==fold
@@ -222,7 +222,12 @@ def evaluate(out):
                 train_power=(training_p<=.05).mean(axis=0)
                 best=int(joint_index[np.argmax(train_power)])
                 chosen.append(dict(fold=fold,scheme=scheme,source=source,method=methods_list[best]["name"],training_power=float(train_power.max())))
-                selected_methods=list(enumerate(methods_list))+[(best,dict(name="tuned_joint"))]
+                all_index=np.array([k for k,m in enumerate(methods_list) if m["family"]=="all"])
+                all_training_p=np.column_stack([rank_p(scores[fit,k],scores[selected_train,k]) for k in all_index])
+                all_train_power=(all_training_p<=.05).mean(axis=0)
+                best_all=int(all_index[np.argmax(all_train_power)])
+                chosen_all.append(dict(fold=fold,scheme=scheme,source=source,method=methods_list[best_all]["name"],training_power=float(all_train_power.max())))
+                selected_methods=list(enumerate(methods_list))+[(best,dict(name="tuned_joint")),(best_all,dict(name="tuned_all"))]
                 for k,m in selected_methods:
                     ids=np.where(test)[0]
                     pvalues=rank_p(scores[calibration,k],scores[test,k])
@@ -230,7 +235,7 @@ def evaluate(out):
                         for i,pv in zip(ids,pvalues):
                             predictions.append(dict(key=items[i]["key"],onset_years=int(onset[i]),fold=fold,
                                 scheme=scheme,source=source,method=m["name"],alpha=alpha,score=float(scores[i,k]),p=float(pv),called=bool(pv<=alpha)))
-                    if m["name"] in (PRIMARY,"tuned_joint","af_r1"):
+                    if m["name"] in (PRIMARY,"tuned_joint","tuned_all","af_r1"):
                         for target_onset in (10000,50000):
                             train=(onset==target_onset)&(~test)
                             threshold=float(np.quantile(scores[train,k],.3,method="lower"))
@@ -243,6 +248,7 @@ def evaluate(out):
     pred.to_csv(output/"heldout_predictions.csv.gz",index=False,compression=dict(method="gzip",mtime=0))
     table=metrics(pred);table.to_csv(output/"heldout_metrics.csv",index=False)
     pd.DataFrame(chosen).to_csv(output/"training_choices.csv",index=False)
+    pd.DataFrame(chosen_all).to_csv(output/"training_choices_all.csv",index=False)
     target=pd.DataFrame(targets)
     target.to_csv(output/"target70_predictions.csv",index=False)
     target_tables=[]
@@ -290,15 +296,15 @@ def evaluate(out):
         confidence_interval_note="Wilson intervals summarize held-out binomial counts; shared fitted thresholds induce dependence not included in these intervals"))
     figures(table,target_metrics,output)
     atomic_json(output/"artifact_manifest.json",{p.name:dict(bytes=p.stat().st_size,sha256=digest(p)) for p in sorted(output.iterdir()) if p.is_file() and p.name not in ("artifact_manifest.json","audit.json")})
-    print(table[(table.method.isin([PRIMARY,"tuned_joint","af_r1","all_r1_T50000"]))&(table.alpha==.05)][["scheme","source","method","onset_years","power","neutral_call_fraction"]].to_string(index=False),flush=True)
+    print(table[(table.method.isin([PRIMARY,"tuned_joint","tuned_all","af_r1"]))&(table.alpha==.05)][["scheme","source","method","onset_years","power","neutral_call_fraction"]].to_string(index=False),flush=True)
 
 
 def figures(table,target,output):
     import matplotlib
-    matplotlib.rcParams.update({"pdf.fonttype":42,"ps.fonttype":42,"font.size":17,"axes.titlesize":18,"axes.labelsize":18,"legend.fontsize":12})
+    matplotlib.rcParams.update({"pdf.fonttype":42,"ps.fonttype":42,"font.size":17,"axes.titlesize":18,"axes.labelsize":18,"legend.fontsize":14})
     import matplotlib.pyplot as plt
-    selected_methods=["all_r1_T50000","af_r1",PRIMARY,"tuned_joint"]
-    names=["All pairs, 50 ky","Archaic AF","Joint, 50 ky","Trained joint"]
+    selected_methods=["tuned_all","af_r1",PRIMARY,"tuned_joint"]
+    names=["Trained all pairs","Archaic AF","Joint, 50 ky","Trained joint"]
     colors=["#666666","#CC8833","#228833","#4477AA"]
     checks=[]
     for scheme in ("grid10kb","archaic_sites"):

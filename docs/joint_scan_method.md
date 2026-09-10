@@ -107,6 +107,8 @@ neutrals and the 160 selected training regions, maximizing their pooled training
 power at 5%. It then uses the independent calibration and test regions. Training
 selection is repeated inside each outer fold. No empirical onset label is needed
 to apply that detector to a test region.
+The all-pair baseline also selects its cutoff and run length within the same
+training folds, followed by independent calibration and testing.
 
 After the AF-only ablation was calculated, but before the joint results were
 examined, two simpler exploratory confirmations were added to the training
@@ -130,7 +132,7 @@ the resulting power and neutral call fraction on the outer test fold. Zero
 evidence is never called. This measures the cost of aiming at 70% power; it does
 not assert that the target will be reached out of sample.
 This operating point is evaluated for the primary score, the trained
-confirmation, and the AF-only baseline.
+confirmation, the trained all-pair baseline, and the AF-only baseline.
 
 Power is the fraction of selected regions with **any call anywhere in the 10 Mb
 region**. The user's operational “FDR” is the fraction of neutral regions with
