@@ -83,6 +83,13 @@ fractions use zero comparator baselines, making J_T=fAll_T; the region is retain
 With no ALT/ALT pairs, J_T=0. No pair-count independence or binomial pair-level
 standard error is assumed.
 
+At an exact eligible marker, true ALT/REF TMRCA must predate its single mutation.
+Because every eligible mutation is at least as old as the pulse, true fAR is
+zero for every tested cutoff. The mixed-pair penalty therefore tests decoder
+consistency at exact sites; it is not a separate selection-specific feature in
+the truth analysis. At a nearby grid coordinate, recombination between that
+coordinate and the marker can also create true recent ALT/REF pairs.
+
 Scores are calculated at T=5,10,20,30,40,50 kya. The primary T is 50 kya. An
 additional score takes the maximum over these six cutoffs before calibration.
 
@@ -92,6 +99,9 @@ minimum scores in two or three consecutive bins. Multiple adjacent SNPs inside
 one bin cannot satisfy a multi-bin requirement. The primary uses one bin.
 The full site/time/run search belonging to a detector is completed before its
 region score is calibrated.
+Consecutive bins may use different markers and their corresponding pair
+classes. This tests spatially extended support; it does not require the same
+carrier haplotypes to supply the evidence across the entire run.
 
 ## Held-out power and neutral-region call fractions
 

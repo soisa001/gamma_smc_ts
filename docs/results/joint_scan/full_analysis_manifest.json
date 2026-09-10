@@ -1,0 +1,70 @@
+{
+  "figure_checks.json": {
+    "bytes": 280,
+    "sha256": "6bc4fa339dae512502930c7a0d8206961a8ad5797d1d0fd7045cf1a57c6acce8"
+  },
+  "fold_region_scores.npz": {
+    "bytes": 14498517,
+    "sha256": "aceb51890b09b83a1cf6e1bb22999b71a2de351f7b09bc0181257c54da8728cc"
+  },
+  "gate_fits.json": {
+    "bytes": 104685,
+    "sha256": "0ceeb70b35525986b834cf3eacda2e644664ff87dda552d95a88972c9f5b960d"
+  },
+  "heldout_metrics.csv": {
+    "bytes": 951359,
+    "sha256": "62b5c2bd6796f9d66b8ac067fe35fbd99f76f1a291715e7c525321af320a7de6"
+  },
+  "heldout_predictions.csv.gz": {
+    "bytes": 14356402,
+    "sha256": "7f7663aca80602252735038da50db5aa6245effd5c3e83a25c5657c6ccdfa66a"
+  },
+  "methods.json": {
+    "bytes": 19383,
+    "sha256": "009cbe6e1fcd32d997fc8e78020d8242c18793926e0dd932b7b42792ea33e9d8"
+  },
+  "p001_full_null_exploratory.csv": {
+    "bytes": 21576,
+    "sha256": "0ee8a7abbe57b90f888eba33de5e409596bf89f06d91f600e70899d99a93ba3b"
+  },
+  "power_neutral_calls_archaic_sites.pdf": {
+    "bytes": 19907,
+    "sha256": "6c301347f249de489e56cc78bf42d19bebb79db835697a47994c9008da4e8c6f"
+  },
+  "power_neutral_calls_archaic_sites.png": {
+    "bytes": 243928,
+    "sha256": "dc4ae6684b6de3c12c88e755f8a059e6879153436a770f33ebc9a672f7d85645"
+  },
+  "power_neutral_calls_grid10kb.pdf": {
+    "bytes": 19446,
+    "sha256": "fd2884003b6e3cb1856254bcbbe653179cbe3509b2cd3d08c1075f57749213dd"
+  },
+  "power_neutral_calls_grid10kb.png": {
+    "bytes": 233813,
+    "sha256": "63c64d11d22162b3bcdc9c92df67f15cc0a35ddcd52ab33f7c428d4baf1085ed"
+  },
+  "provenance.json": {
+    "bytes": 112777,
+    "sha256": "f04b232af836cfe015559e1e67f4216ae7a1be126986e27300924aa35e4a78ea"
+  },
+  "region_inventory.csv": {
+    "bytes": 57685,
+    "sha256": "69428d1d7d903d2401c70c7b48357622d14934908645065a29ad5615d58ae9a3"
+  },
+  "target70_metrics.csv": {
+    "bytes": 8756,
+    "sha256": "1b9b575a83fe0afe004aa2dc9d09552fc63eecd2cc063fc0276b1670ad84904d"
+  },
+  "target70_predictions.csv": {
+    "bytes": 2953990,
+    "sha256": "d300341093974907caad48285480bf8bd1850c1411762c1316b7e6a1e2dd55de"
+  },
+  "training_choices.csv": {
+    "bytes": 964,
+    "sha256": "73288bd089504824ec861ba76e1ce56094d07d368491c7b38391d62981b194af"
+  },
+  "training_choices_all.csv": {
+    "bytes": 860,
+    "sha256": "98a0624244e14215af440d09a4a3fe9adc9cbb07140825501755520e8e663abb"
+  }
+}

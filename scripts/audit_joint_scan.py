@@ -42,7 +42,10 @@ def audit(out):
     with (analysis/'training_choices_all.csv').open() as stream:
         choices_all={(int(r['fold']),r['scheme'],r['source']):r['method'] for r in csv.DictReader(stream)}
     choice_maps={'tuned_joint':choices,'tuned_all':choices_all}
-    scores=np.load(analysis/'fold_region_scores.npz',allow_pickle=False)
+    # NpzFile.__getitem__ decompresses an array on every lookup. Keep the
+    # small score matrices in memory before checking millions of predictions.
+    with np.load(analysis/'fold_region_scores.npz',allow_pickle=False) as saved:
+        scores={name:saved[name] for name in saved.files}
     references={}
     for fold in range(5):
         cal=[index[k] for k in gates[fold]['calibration_ids']]

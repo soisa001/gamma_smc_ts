@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "regions": 1200,
+  "prediction_rows": 2145600,
+  "metric_rows": 3576,
+  "profiled_positions": 1891426,
+  "calibration_ranks_recomputed": true,
+  "all_regions_retained": true,
+  "disjoint_fit_calibration_test": true,
+  "class_partitions_verified": true,
+  "artifact_hashes_verified": true,
+  "target70_training_thresholds_recomputed": true,
+  "af_ablation_matches": true
+}

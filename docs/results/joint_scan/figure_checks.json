@@ -1,0 +1,14 @@
+[
+  {
+    "labels_within_canvas": true,
+    "legend_clear": true,
+    "name": "power_neutral_calls_grid10kb",
+    "vector_pdf": true
+  },
+  {
+    "labels_within_canvas": true,
+    "legend_clear": true,
+    "name": "power_neutral_calls_archaic_sites",
+    "vector_pdf": true
+  }
+]

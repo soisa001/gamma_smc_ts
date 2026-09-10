@@ -1,0 +1,1178 @@
+[
+  {
+    "cutoff": -1,
+    "family": "af",
+    "gate": 0.0,
+    "name": "af_r1",
+    "run": 1,
+    "years": 0
+  },
+  {
+    "cutoff": 0,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r1_Tall",
+    "run": 1,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r1_Tall",
+    "run": 1,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r1_Tall",
+    "run": 1,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r1_Tall",
+    "run": 1,
+    "years": -1
+  },
+  {
+    "cutoff": 0,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r1_Tall",
+    "run": 1,
+    "years": -1
+  },
+  {
+    "cutoff": 0,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_T5000",
+    "run": 1,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_T10000",
+    "run": 1,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_T20000",
+    "run": 1,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_T30000",
+    "run": 1,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_T40000",
+    "run": 1,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_T50000",
+    "run": 1,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r1_Tall",
+    "run": 1,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "af",
+    "gate": 0.0,
+    "name": "af_r2",
+    "run": 2,
+    "years": 0
+  },
+  {
+    "cutoff": 0,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r2_Tall",
+    "run": 2,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r2_Tall",
+    "run": 2,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r2_Tall",
+    "run": 2,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r2_Tall",
+    "run": 2,
+    "years": -1
+  },
+  {
+    "cutoff": 0,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r2_Tall",
+    "run": 2,
+    "years": -1
+  },
+  {
+    "cutoff": 0,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_T5000",
+    "run": 2,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_T10000",
+    "run": 2,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_T20000",
+    "run": 2,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_T30000",
+    "run": 2,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_T40000",
+    "run": 2,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_T50000",
+    "run": 2,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r2_Tall",
+    "run": 2,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "af",
+    "gate": 0.0,
+    "name": "af_r3",
+    "run": 3,
+    "years": 0
+  },
+  {
+    "cutoff": 0,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "all",
+    "gate": 0.0,
+    "name": "all_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.0,
+    "name": "joint_g0_r3_Tall",
+    "run": 3,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.5,
+    "name": "joint_g50_r3_Tall",
+    "run": 3,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.8,
+    "name": "joint_g80_r3_Tall",
+    "run": 3,
+    "years": -1
+  },
+  {
+    "cutoff": -1,
+    "family": "joint",
+    "gate": 0.95,
+    "name": "joint_g95_r3_Tall",
+    "run": 3,
+    "years": -1
+  },
+  {
+    "cutoff": 0,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "mass",
+    "gate": 0.5,
+    "name": "mass_g50_r3_Tall",
+    "run": 3,
+    "years": -1
+  },
+  {
+    "cutoff": 0,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_T5000",
+    "run": 3,
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_T10000",
+    "run": 3,
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_T20000",
+    "run": 3,
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_T30000",
+    "run": 3,
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_T40000",
+    "run": 3,
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_T50000",
+    "run": 3,
+    "years": 50000
+  },
+  {
+    "cutoff": -1,
+    "family": "excess",
+    "gate": 0.5,
+    "name": "excess_g50_r3_Tall",
+    "run": 3,
+    "years": -1
+  }
+]
