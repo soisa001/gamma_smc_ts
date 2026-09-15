@@ -1,0 +1,17 @@
+operating_point,scheme,source,cohort,n,both,mass_only,contrast_only,neither,mass_called,contrast_called,mass_rate,contrast_rate,mass_minus_contrast_pp,mcnemar_p_nominal,mcnemar_p_holm_16
+regional_p_0.05,grid10kb,decoded,selected,100,80,3,1,16,83,81,0.83,0.81,2.0,0.625,1.0
+regional_p_0.05,grid10kb,decoded,neutral,1000,42,6,6,946,48,48,0.048,0.048,0.0,1.0,1.0
+regional_p_0.05,grid10kb,truth,selected,100,77,6,3,14,83,80,0.83,0.8,3.0,0.5078125,1.0
+regional_p_0.05,grid10kb,truth,neutral,1000,41,9,12,938,50,53,0.05,0.053,-0.3,0.6636238098144531,1.0
+regional_p_0.05,archaic_sites,decoded,selected,100,80,4,0,16,84,80,0.84,0.8,4.0,0.125,1.0
+regional_p_0.05,archaic_sites,decoded,neutral,1000,42,7,4,947,49,46,0.049,0.046,0.3,0.548828125,1.0
+regional_p_0.05,archaic_sites,truth,selected,100,76,5,3,16,81,79,0.81,0.79,2.0,0.7265625,1.0
+regional_p_0.05,archaic_sites,truth,neutral,1000,41,10,11,938,51,52,0.051,0.052,-0.1,1.0,1.0
+training_power_target_0.70,grid10kb,decoded,selected,100,65,6,7,22,71,72,0.71,0.72,-1.0,1.0,1.0
+training_power_target_0.70,grid10kb,decoded,neutral,1000,13,0,7,980,13,20,0.013,0.02,-0.7,0.015625,0.234375
+training_power_target_0.70,grid10kb,truth,selected,100,68,1,2,29,69,70,0.69,0.7,-1.0,1.0,1.0
+training_power_target_0.70,grid10kb,truth,neutral,1000,14,4,6,976,18,20,0.018,0.02,-0.2,0.75390625,1.0
+training_power_target_0.70,archaic_sites,decoded,selected,100,65,4,7,24,69,72,0.69,0.72,-3.0,0.548828125,1.0
+training_power_target_0.70,archaic_sites,decoded,neutral,1000,14,0,10,976,14,24,0.014,0.024,-1.0,0.001953125,0.03125
+training_power_target_0.70,archaic_sites,truth,selected,100,68,2,1,29,70,69,0.7,0.69,1.0,1.0,1.0
+training_power_target_0.70,archaic_sites,truth,neutral,1000,15,3,6,976,18,21,0.018,0.021,-0.3,0.5078125,1.0

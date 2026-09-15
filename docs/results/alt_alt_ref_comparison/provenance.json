@@ -1,0 +1,91 @@
+{
+  "source_directory": "/mnt/d/phase2simselection/sim/eas_allele_class_ablation",
+  "config": {
+    "alpha": 0.05,
+    "archaic_bottleneck_generations": 100,
+    "archaic_bottleneck_size": 10,
+    "archaic_effective_size": 3600,
+    "archaic_split_years": 700000,
+    "decoder_backward_alignment": "fixed",
+    "decoder_cache_size": 1000,
+    "decoder_exp10": "accurate",
+    "decoder_pair_block": 256,
+    "decoder_recombination_to_mutation_ratio": 0.8,
+    "decoder_scaled_mutation_rate": 0.00075,
+    "dominance": 0.5,
+    "focal_position_bp": 5000000,
+    "generation_time_years": 25,
+    "haplotype_pairs": 10000,
+    "introgression_proportion": 0.02,
+    "maximum_sample_attempts": 100,
+    "memory_limit_gb": 300,
+    "mutation_rate": 1.25e-08,
+    "neutral_replicates": 1000,
+    "pairs_seed": 1729,
+    "phlash_resource": "no_introgression_EAS_sim/resources/EAS.npz",
+    "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+    "population": "EAS",
+    "pulse_years": 50000,
+    "recent_call": "mean",
+    "recombination_rate": 1e-08,
+    "sample_diploids": 200,
+    "schema": "gamma-smc.fresh-power/v1",
+    "scored_length_bp": 10000000,
+    "seed_base": 20380101,
+    "selected_replicates_per_coefficient": 100,
+    "selection_coefficients": [
+      0.005
+    ],
+    "selection_onset_years": 50000,
+    "simulated_length_bp": 11000000,
+    "slim_burn_in": 0.1,
+    "slim_scaling_factor": 5,
+    "statistic": "frac_recent_T",
+    "storage_limit_bytes": 3000000000000,
+    "stride_bp": 10000,
+    "tmrca_cutoffs_years": [
+      5000,
+      10000,
+      20000,
+      30000,
+      40000,
+      50000
+    ],
+    "workers": 20
+  },
+  "mass_method": "mass_g0_r1_T50000",
+  "contrast_method": "weighted_contrast_g0_r1_T50000",
+  "script_sha256": "2d5fb2709b46e372679e048c2db445a7f44238bdd70048ded21b04e429cd4f4b",
+  "source_files": {
+    "predictions.csv.gz": {
+      "bytes": 6521569,
+      "sha256": "776a8384e5728371f1476e02f1ebe5bcccff20fce7a7fa56cae9bbbfd71495f8"
+    },
+    "target70_predictions.csv.gz": {
+      "bytes": 520901,
+      "sha256": "a8f0a3b2b14749c6f86341d27a78c0ba0a892595f129974a98cd3fbc1045b092"
+    },
+    "metrics.csv": {
+      "bytes": 239702,
+      "sha256": "5a783fddb027f1add8700875abf803ee4305880ad6b568efb485d951fa386c66"
+    },
+    "target70_metrics.csv": {
+      "bytes": 15179,
+      "sha256": "e11461bb70c985661dc8dbbfbede5bee95357e8fed831dad3707a447122e869e"
+    },
+    "regions.csv": {
+      "bytes": 22721,
+      "sha256": "f86a4c1ef13b1802d68aee8becb8f88b2e8eb12ed28634af498850f05e96eed9"
+    },
+    "provenance.json": {
+      "bytes": 103036,
+      "sha256": "3bdbe43def7006ad71aab5efa0507d373f81039fd6c7470915c037ae6ac66a9f"
+    }
+  },
+  "source_audit_sha256": "46c2262a4ad4fcd41ba0805dc257258e8434f2e9f067da86ac70e02fb127c4b5",
+  "no_simulation_decoding_or_refitting": true,
+  "rng_used": false,
+  "test": "two-sided conditional exact McNemar; exploratory",
+  "holm_family_size": 16,
+  "primary_comparison": "regional_p_0.05 / grid10kb / decoded"
+}

@@ -1,0 +1,17 @@
+operating_point,scheme,source,method,changed_calls
+regional_p_0.05,grid10kb,decoded,mass_g0_r1_T50000,0
+regional_p_0.05,grid10kb,decoded,weighted_contrast_g0_r1_T50000,0
+regional_p_0.05,grid10kb,truth,mass_g0_r1_T50000,0
+regional_p_0.05,grid10kb,truth,weighted_contrast_g0_r1_T50000,0
+regional_p_0.05,archaic_sites,decoded,mass_g0_r1_T50000,0
+regional_p_0.05,archaic_sites,decoded,weighted_contrast_g0_r1_T50000,0
+regional_p_0.05,archaic_sites,truth,mass_g0_r1_T50000,0
+regional_p_0.05,archaic_sites,truth,weighted_contrast_g0_r1_T50000,0
+training_power_target_0.70,grid10kb,decoded,mass_g0_r1_T50000,0
+training_power_target_0.70,grid10kb,decoded,weighted_contrast_g0_r1_T50000,0
+training_power_target_0.70,grid10kb,truth,mass_g0_r1_T50000,0
+training_power_target_0.70,grid10kb,truth,weighted_contrast_g0_r1_T50000,0
+training_power_target_0.70,archaic_sites,decoded,mass_g0_r1_T50000,0
+training_power_target_0.70,archaic_sites,decoded,weighted_contrast_g0_r1_T50000,0
+training_power_target_0.70,archaic_sites,truth,mass_g0_r1_T50000,0
+training_power_target_0.70,archaic_sites,truth,weighted_contrast_g0_r1_T50000,0

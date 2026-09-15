@@ -1,0 +1,26 @@
+{
+  "paired_comparisons.csv": {
+    "bytes": 1755,
+    "sha256": "bb6860afb6fdef7a2c41eda5483dbe25c8d3cadcf2d8018037557fe309b6e1f2"
+  },
+  "fold_comparisons.csv": {
+    "bytes": 7187,
+    "sha256": "b71f2d4f35021c60dcb828cb82026e1c070f0ee2964ba550d36ea5dffa96f285"
+  },
+  "paired_calls.csv": {
+    "bytes": 687916,
+    "sha256": "400cf75c16769bacfac48d481569ccaa90d4261bfdf2b8489c37992d474f4f44"
+  },
+  "gate_sensitivity.csv": {
+    "bytes": 1115,
+    "sha256": "d107ee52e3a1c8d515c40dcd08702961869080df36cf1e3e01cf14b4d734949f"
+  },
+  "report.md": {
+    "bytes": 2818,
+    "sha256": "775c1b6e06298fc68bf09c1c0cace1e272b92f1c0008ab00b8f21ffcb70d8b89"
+  },
+  "provenance.json": {
+    "bytes": 3028,
+    "sha256": "e1235c604c4d97c5f6c66caf98c9b42d8fdfd5223ece85434597340de817bd31"
+  }
+}
