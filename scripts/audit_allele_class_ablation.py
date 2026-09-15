@@ -63,11 +63,12 @@ def audit(out,export=None):
                 np.testing.assert_allclose(expected_p,group.p,atol=1e-14,rtol=0)
                 expected=expected_p<=group.alpha.to_numpy()
             assert np.array_equal(expected,group.called.to_numpy())
+        counts=pred.groupby(['scheme','source','method','alpha','onset_years']).called.agg(['size','sum'])
         for row in pd.read_csv(out/metric_name).to_dict('records'):
-            subset=pred[(pred.scheme==row['scheme'])&(pred.source==row['source'])&(pred.method==row['method'])&(pred.alpha==row['alpha'])]
-            selected=subset[subset.onset_years==50000];neutral=subset[subset.onset_years==0]
-            assert len(selected)==100 and len(neutral)==1000
-            tp,fp=int(selected.called.sum()),int(neutral.called.sum())
+            base=(row['scheme'],row['source'],row['method'],row['alpha'])
+            selected,neutral=counts.loc[base+(50000,)],counts.loc[base+(0,)]
+            assert selected['size']==100 and neutral['size']==1000
+            tp,fp=int(selected['sum']),int(neutral['sum'])
             assert tp==row['selected_called'] and fp==row['neutral_called']
             power,fpr=tp/100,fp/1000
             assert abs(power-row['power'])<1e-14 and abs(fpr-row['neutral_call_fraction'])<1e-14

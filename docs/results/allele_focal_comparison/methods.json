@@ -1,0 +1,303 @@
+[
+  {
+    "cutoff": -1,
+    "family": "af",
+    "gate": 0,
+    "name": "af_r1",
+    "years": 0
+  },
+  {
+    "cutoff": 0,
+    "family": "all",
+    "gate": 0,
+    "name": "all_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "aa",
+    "gate": 0,
+    "name": "aa_g0_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "rr",
+    "gate": 0,
+    "name": "rr_g0_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "contrast",
+    "gate": 0,
+    "name": "contrast_g0_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "weighted_contrast",
+    "gate": 0,
+    "name": "weighted_contrast_g0_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "joint",
+    "gate": 0,
+    "name": "joint_g0_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 0,
+    "family": "mass",
+    "gate": 0,
+    "name": "mass_g0_r1_T5000",
+    "years": 5000
+  },
+  {
+    "cutoff": 1,
+    "family": "all",
+    "gate": 0,
+    "name": "all_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "aa",
+    "gate": 0,
+    "name": "aa_g0_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "rr",
+    "gate": 0,
+    "name": "rr_g0_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "contrast",
+    "gate": 0,
+    "name": "contrast_g0_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "weighted_contrast",
+    "gate": 0,
+    "name": "weighted_contrast_g0_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "joint",
+    "gate": 0,
+    "name": "joint_g0_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 1,
+    "family": "mass",
+    "gate": 0,
+    "name": "mass_g0_r1_T10000",
+    "years": 10000
+  },
+  {
+    "cutoff": 2,
+    "family": "all",
+    "gate": 0,
+    "name": "all_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "aa",
+    "gate": 0,
+    "name": "aa_g0_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "rr",
+    "gate": 0,
+    "name": "rr_g0_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "contrast",
+    "gate": 0,
+    "name": "contrast_g0_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "weighted_contrast",
+    "gate": 0,
+    "name": "weighted_contrast_g0_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "joint",
+    "gate": 0,
+    "name": "joint_g0_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 2,
+    "family": "mass",
+    "gate": 0,
+    "name": "mass_g0_r1_T20000",
+    "years": 20000
+  },
+  {
+    "cutoff": 3,
+    "family": "all",
+    "gate": 0,
+    "name": "all_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "aa",
+    "gate": 0,
+    "name": "aa_g0_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "rr",
+    "gate": 0,
+    "name": "rr_g0_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "contrast",
+    "gate": 0,
+    "name": "contrast_g0_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "weighted_contrast",
+    "gate": 0,
+    "name": "weighted_contrast_g0_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "joint",
+    "gate": 0,
+    "name": "joint_g0_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 3,
+    "family": "mass",
+    "gate": 0,
+    "name": "mass_g0_r1_T30000",
+    "years": 30000
+  },
+  {
+    "cutoff": 4,
+    "family": "all",
+    "gate": 0,
+    "name": "all_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "aa",
+    "gate": 0,
+    "name": "aa_g0_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "rr",
+    "gate": 0,
+    "name": "rr_g0_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "contrast",
+    "gate": 0,
+    "name": "contrast_g0_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "weighted_contrast",
+    "gate": 0,
+    "name": "weighted_contrast_g0_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "joint",
+    "gate": 0,
+    "name": "joint_g0_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 4,
+    "family": "mass",
+    "gate": 0,
+    "name": "mass_g0_r1_T40000",
+    "years": 40000
+  },
+  {
+    "cutoff": 5,
+    "family": "all",
+    "gate": 0,
+    "name": "all_r1_T50000",
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "aa",
+    "gate": 0,
+    "name": "aa_g0_r1_T50000",
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "rr",
+    "gate": 0,
+    "name": "rr_g0_r1_T50000",
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "contrast",
+    "gate": 0,
+    "name": "contrast_g0_r1_T50000",
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "weighted_contrast",
+    "gate": 0,
+    "name": "weighted_contrast_g0_r1_T50000",
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "joint",
+    "gate": 0,
+    "name": "joint_g0_r1_T50000",
+    "years": 50000
+  },
+  {
+    "cutoff": 5,
+    "family": "mass",
+    "gate": 0,
+    "name": "mass_g0_r1_T50000",
+    "years": 50000
+  }
+]

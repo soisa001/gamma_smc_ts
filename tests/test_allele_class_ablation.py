@@ -47,3 +47,15 @@ def test_saturated_fraction_ties_do_not_become_significant():
     assert target[target.method=='saturated'].called.all()
     assert not target[(target.method=='separable')&(target.onset_years==0)].called.any()
     assert set(pred[pred.fold==0].key)=={i['key'] for j,i in enumerate(items) if folds[j]==0}
+
+
+def test_focal_choice_requires_the_selected_snp_and_breaks_neutral_ties_left():
+    from pathlib import Path
+    import runpy
+    import pytest
+    choose=runpy.run_path(str(Path(__file__).resolve().parents[1]/'scripts/allele_focal_comparison.py'))['choose_marker']
+    assert choose(np.array([100,200]),150,False)==0
+    assert choose(np.array([100,200]),200,True)==1
+    assert choose(np.array([]),150,False) is None
+    with pytest.raises(ValueError):choose(np.array([100,200]),150,True)
+    with pytest.raises(ValueError):choose(np.array([]),150,True)

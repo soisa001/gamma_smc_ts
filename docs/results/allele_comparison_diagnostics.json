@@ -1,0 +1,114 @@
+{
+  "paired_penalty_calls": [
+    {
+      "scheme": "archaic_sites",
+      "source": "decoded",
+      "alpha": 0.01,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "archaic_sites",
+      "source": "decoded",
+      "alpha": 0.05,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "archaic_sites",
+      "source": "decoded",
+      "alpha": 0.1,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "archaic_sites",
+      "source": "truth",
+      "alpha": 0.01,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "archaic_sites",
+      "source": "truth",
+      "alpha": 0.05,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "archaic_sites",
+      "source": "truth",
+      "alpha": 0.1,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "grid10kb",
+      "source": "decoded",
+      "alpha": 0.01,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "grid10kb",
+      "source": "decoded",
+      "alpha": 0.05,
+      "call_disagreements": 0
+    },
+    {
+      "scheme": "grid10kb",
+      "source": "decoded",
+      "alpha": 0.1,
+      "call_disagreements": 1
+    },
+    {
+      "scheme": "grid10kb",
+      "source": "truth",
+      "alpha": 0.01,
+      "call_disagreements": 2
+    },
+    {
+      "scheme": "grid10kb",
+      "source": "truth",
+      "alpha": 0.05,
+      "call_disagreements": 4
+    },
+    {
+      "scheme": "grid10kb",
+      "source": "truth",
+      "alpha": 0.1,
+      "call_disagreements": 3
+    }
+  ],
+  "focal_aa_saturation": [
+    {
+      "source": "truth",
+      "onset": 0,
+      "regions": 1000,
+      "aa_equals_one": 870,
+      "no_aa_pairs": 113,
+      "median_aa_pairs": 34.0,
+      "median_rr_pairs": 8784.5
+    },
+    {
+      "source": "truth",
+      "onset": 50000,
+      "regions": 100,
+      "aa_equals_one": 77,
+      "no_aa_pairs": 0,
+      "median_aa_pairs": 6791.5,
+      "median_rr_pairs": 308.0
+    },
+    {
+      "source": "decoded",
+      "onset": 0,
+      "regions": 1000,
+      "aa_equals_one": 242,
+      "no_aa_pairs": 113,
+      "median_aa_pairs": 34.0,
+      "median_rr_pairs": 8784.5
+    },
+    {
+      "source": "decoded",
+      "onset": 50000,
+      "regions": 100,
+      "aa_equals_one": 0,
+      "no_aa_pairs": 0,
+      "median_aa_pairs": 6791.5,
+      "median_rr_pairs": 308.0
+    }
+  ]
+}

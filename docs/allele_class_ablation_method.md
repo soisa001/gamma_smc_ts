@@ -54,3 +54,20 @@ Compare the saved original scores for all overlapping unchanged rules. Check
 that exact-site true-TMRCA scores are identical with and without the ALT/REF
 factor. Independently audit every new calibration rank, call count, and
 70%-target training threshold. Existing simulations and decoding are not rerun.
+
+## Focal-allele diagnostic
+
+After inspecting the regional class comparison, add a separately labelled
+diagnostic to address selected-allele versus noncarrier power directly. In a
+selected region use its known causal archaic SNP at the original focal
+coordinate. In a neutral region use the eligible archaic SNP nearest that
+prespecified coordinate, with ties toward the left; marker-free regions remain
+with zero evidence. Check that every selected focal coordinate is exactly an
+eligible marker. Evaluate all ungated single-site scores at the same six
+cutoffs and on the same held-out folds.
+
+This grants knowledge of the selected SNP and removes the whole-region search.
+It is an oracle focal-candidate diagnostic with different ascertainment from
+the region scan, not an estimate of blind genome-wide detection power. It
+prevents a REF/REF peak at some other archaic marker from being mistaken for
+evidence specifically among noncarriers of the causal allele.

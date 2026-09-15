@@ -1,0 +1,65 @@
+{
+  "source": "/mnt/d/phase2simselection/sim/eas_allele_class_ablation",
+  "files": {
+    "allele_class_archaic_sites.pdf": {
+      "bytes": 19789,
+      "sha256": "3ff1258faab913cb9f163634967f4b2d7153bf5ee2186dda1a38404704bc7d04"
+    },
+    "allele_class_archaic_sites.png": {
+      "bytes": 194647,
+      "sha256": "e4ccc73c6ea04feb24bd7f1d22704aa59c338a5e4cafe73880e8dfbef1518641"
+    },
+    "allele_class_grid10kb.pdf": {
+      "bytes": 19517,
+      "sha256": "c8c65dbd1369648b1e5fc24e5061578864660cde240bbda433c894552ded49f4"
+    },
+    "allele_class_grid10kb.png": {
+      "bytes": 195903,
+      "sha256": "36224148061ef691b3a1bab235685fd1a71212f65dd2b8b3218cbbc6199df875"
+    },
+    "figure_checks.json": {
+      "bytes": 266,
+      "sha256": "b29729e6e3eda89c8856478389e8f85c99bd00a6ce0a1e7f18209e0967f105a3"
+    },
+    "folds.json": {
+      "bytes": 101612,
+      "sha256": "d290960b7cf5e8304556f72c9e000e4f26646a2b89806609d136153d681139a0"
+    },
+    "methods.json": {
+      "bytes": 9423,
+      "sha256": "60a3dd0bd5bfe285b6ff96e46f2f1a483fac1c3c17e90acddf44e1a5bb56902d"
+    },
+    "metrics.csv": {
+      "bytes": 239702,
+      "sha256": "5a783fddb027f1add8700875abf803ee4305880ad6b568efb485d951fa386c66"
+    },
+    "provenance.json": {
+      "bytes": 103036,
+      "sha256": "3bdbe43def7006ad71aab5efa0507d373f81039fd6c7470915c037ae6ac66a9f"
+    },
+    "regions.csv": {
+      "bytes": 22721,
+      "sha256": "f86a4c1ef13b1802d68aee8becb8f88b2e8eb12ed28634af498850f05e96eed9"
+    },
+    "saturation.csv": {
+      "bytes": 4579,
+      "sha256": "543ed542822e3b2c31659489652da3ad0289e9ea7dd4da70650260ef308682bc"
+    },
+    "target70_metrics.csv": {
+      "bytes": 15179,
+      "sha256": "e11461bb70c985661dc8dbbfbede5bee95357e8fed831dad3707a447122e869e"
+    },
+    "audit.json": {
+      "bytes": 396,
+      "sha256": "46c2262a4ad4fcd41ba0805dc257258e8434f2e9f067da86ac70e02fb127c4b5"
+    },
+    "full_analysis_manifest.json": {
+      "bytes": 2129,
+      "sha256": "4ec7fa4067d37e1ad7545f86e7b7e6601d5c273977f41d9860bcc5aeb0452010"
+    },
+    "primary_predictions.csv.gz": {
+      "bytes": 1146992,
+      "sha256": "521f96bf38e661c60a671cabcfe7c19de3d9b13548e850322d6b1a21c0f265bf"
+    }
+  }
+}

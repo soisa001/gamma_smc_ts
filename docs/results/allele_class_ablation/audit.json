@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "regions": 1100,
+  "selected": 100,
+  "neutral": 1000,
+  "prediction_rows": 1104400,
+  "no_later_onset": true,
+  "calibration_ranks_recomputed": true,
+  "target70_thresholds_recomputed": true,
+  "truth_exact_site_penalty_equality_checks": 66000,
+  "artifact_hashes_verified": true,
+  "script_sha256": "b2f98e452c9c8da5d80ff28ff36480c19dcb648460ae0bf1a9ce4983876ff080"
+}
