@@ -1,5 +1,9 @@
 # Archaic pair-class confirmation after an all-pair scan
 
+The current primary specification is the
+[archaic ALT/ALT signal](archaic_alt_alt_signal.md), `fAA * nAA / Npairs`.
+This document preserves the original joint-score experiment and its definitions.
+
 This specification was written before examining the new joint detector's power
 or false-positive results. The primary comparison is
 `joint_g50_r1_T50000`, separately for true and posterior-mean TMRCA calls.

@@ -1,5 +1,9 @@
 # ALT/ALT and REF/REF ablation without an ALT/REF penalty
 
+The current primary specification is the
+[archaic ALT/ALT signal](archaic_alt_alt_signal.md), `fAA * nAA / Npairs`.
+The protocol below records the completed comparison that preceded that choice.
+
 This comparison was specified after the original joint-scan results, in response
 to the request to remove the mixed-pair penalty and compare carrier and
 noncarrier recency. It is exploratory in the existing fresh simulation cohort.

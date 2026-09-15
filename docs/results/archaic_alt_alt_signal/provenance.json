@@ -1,0 +1,46 @@
+{
+  "display_name": "Archaic ALT/ALT signal",
+  "config": {
+    "schema": "gamma-smc.archaic-alt-alt-signal/v1",
+    "display_name": "Archaic ALT/ALT signal",
+    "statistic": "frac_recent_T",
+    "formula": "frac_recent_T_among_ALT_ALT * n_ALT_ALT / n_total_pairs",
+    "equivalent_count": "n_recent_ALT_ALT / n_total_pairs",
+    "source_family": "mass",
+    "primary_method": "mass_g0_r1_T50000",
+    "primary_cutoff_years": 50000,
+    "primary_scheme": "grid10kb",
+    "secondary_scheme": "archaic_sites",
+    "all_pair_gate_quantile": 0,
+    "consecutive_bins": 1,
+    "ref_ref_subtraction": false,
+    "alt_ref_penalty": false,
+    "primary_region_alpha": 0.05,
+    "selection_onset_years": 50000,
+    "pulse_years": 50000,
+    "population": "EAS",
+    "simulation_config": "configs/eas_q02_50k_h400.json",
+    "selected_endpoint": "Any call anywhere in an isolated 10 Mb selected region",
+    "neutral_endpoint": "Fraction of neutral 10 Mb regions with any call",
+    "empty_alt_alt_class_score": 0,
+    "decision_scope": "Adopted after existing-cohort ablation; confirm on new seeds before prospective claims"
+  },
+  "config_sha256": "40c3457c6b499d8ac8a09a4e77453259674dc150a390581504e97f8e19d217a6",
+  "source_directory": "/mnt/d/phase2simselection/sim/eas_allele_class_ablation",
+  "source_audit_sha256": "46c2262a4ad4fcd41ba0805dc257258e8434f2e9f067da86ac70e02fb127c4b5",
+  "source_files": {
+    "metrics.csv": {
+      "sha256": "5a783fddb027f1add8700875abf803ee4305880ad6b568efb485d951fa386c66"
+    },
+    "target70_metrics.csv": {
+      "sha256": "e11461bb70c985661dc8dbbfbede5bee95357e8fed831dad3707a447122e869e"
+    },
+    "provenance.json": {
+      "sha256": "3bdbe43def7006ad71aab5efa0507d373f81039fd6c7470915c037ae6ac66a9f"
+    }
+  },
+  "script_sha256": "a9c78e886a4dfd4499d33006b428d62b77f5a0b663027b75204e92b99dd1241e",
+  "selected_metric_rows": 72,
+  "target70_rows": 4,
+  "no_simulation_or_decoding_rerun": true
+}

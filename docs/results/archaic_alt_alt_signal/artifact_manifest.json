@@ -1,0 +1,18 @@
+{
+  "metrics.csv": {
+    "bytes": 19462,
+    "sha256": "fb924ba61a19c3cf068e22a03f46786b8779c0e66b82ea6d91c925143269a7f1"
+  },
+  "target70_metrics.csv": {
+    "bytes": 1350,
+    "sha256": "5731f09eca1c3ed0784e9d944e2a535d6549ac298164586aa4dd5b421b688114"
+  },
+  "tables.md": {
+    "bytes": 1083,
+    "sha256": "584bbc7cef1cb3de0635094756a6bb8bc2ab082c5bbaa866aa568a7e86038a3e"
+  },
+  "provenance.json": {
+    "bytes": 1936,
+    "sha256": "f9bc5963b59cc5f9125de6b533c35e605c67bb1fceab86301e0d25eeb1d23ada"
+  }
+}

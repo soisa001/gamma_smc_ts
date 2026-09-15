@@ -1,5 +1,9 @@
 # Getting Started
 
+For the current immediate-onset introgression simulation statistic, see the
+[archaic ALT/ALT signal](docs/archaic_alt_alt_signal.md): the within-carrier
+`frac_recent_T` weighted by the fraction of all pairs that are ALT/ALT.
+
 For the AoU selection scan, fixed-standard-coalescent simulations,
 tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries, and
 simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).

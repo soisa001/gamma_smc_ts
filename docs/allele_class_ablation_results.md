@@ -1,5 +1,9 @@
 # Removing the ALT/REF penalty and comparing carrier/noncarrier recency
 
+**Current specification:** the [archaic ALT/ALT signal](archaic_alt_alt_signal.md)
+uses `fAA * nAA / Npairs` as the primary score. This report records the preceding
+method comparisons; its contrast-based labels are historical.
+
 **The ALT/REF penalty can be removed without a meaningful loss in the tested
 detector. Raw ALT/ALT and REF/REF fractions, however, behave very differently
 from the frequency-weighted score.** At exact archaic sites with T=50 kya,

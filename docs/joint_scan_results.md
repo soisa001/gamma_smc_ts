@@ -1,5 +1,8 @@
 # Archaic pair-class scan: regional power and neutral call rates
 
+**Current specification:** the [archaic ALT/ALT signal](archaic_alt_alt_signal.md)
+uses `fAA * nAA / Npairs`. The joint-score results below are historical comparisons.
+
 The decoded pair-class score meets the approximate 70% power objective for
 s=0.005 with selection beginning at 50 kya. On the 10 kb grid, a threshold chosen
 to target 70% training power calls **72/100 selected regions and 19/1,000 neutral
