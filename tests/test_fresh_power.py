@@ -71,6 +71,8 @@ def tiny_tree():
 
 
 def test_fixation_retained_neutral_site_segregates_and_crop_preserves_coordinates():
+    from gamma_smc_aou.fresh_power import exact_focal_variant
+
     ts = tiny_tree()
     nodes = ordered_nodes(ts)
     assert focal_variant(ts, nodes, 55)["af"] == 1
@@ -81,6 +83,13 @@ def test_fixation_retained_neutral_site_segregates_and_crop_preserves_coordinate
     assert offset == 6 and cropped.sequence_length == 100
     assert cropped.reference_sequence.data == "A" * 100
     assert focal_variant(cropped, ordered_nodes(cropped), 50)["af"] == 0.5
+    for position in (55, 56):
+        direct = exact_focal_variant(ts, nodes, position)
+        scanned = focal_variant(ts, nodes, position)
+        assert direct["af"] == scanned["af"]
+        np.testing.assert_array_equal(direct["carriers"], scanned["carriers"])
+    assert exact_focal_variant(ts, nodes, 57) is None
+    assert exact_focal_variant(ts, nodes, 20) is None
 
 
 def test_vcf_exact_site_coordinates(tmp_path):

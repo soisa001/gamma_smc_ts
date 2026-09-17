@@ -381,6 +381,20 @@ def completed_record(directory, fingerprint, cfg):
     return record
 
 
+def exact_focal_variant(ts, nodes, position):
+    """Decode only the known focal site when auditing a large saved region."""
+    index = int(np.searchsorted(ts.sites_position, position))
+    if index == ts.num_sites or ts.sites_position[index] != position:
+        return None
+    variant = tskit.Variant(ts, samples=nodes)
+    variant.decode(index)
+    genotypes = np.asarray(variant.genotypes)
+    if np.any(genotypes < 0) or genotypes.max() > 1 or not np.any(genotypes):
+        return None
+    return dict(position=float(position), af=float(np.mean(genotypes != 0)),
+                carriers=genotypes != 0)
+
+
 def simulated_record(directory, fingerprint, cfg, task=None):
     """Validate decoder-independent saved inputs, including their focal allele."""
     directory = Path(directory)
@@ -407,8 +421,8 @@ def simulated_record(directory, fingerprint, cfg, task=None):
         if ts.num_samples != 2 * cfg["sample_diploids"] or ts.sequence_length != length:
             raise ValueError(f"Wrong simulation sample count or sequence length: {directory}")
         ordered_nodes(ts)  # Checks the diploid sample ordering used by decoding.
-    original = focal_variant(raw, ordered_nodes(raw), record["original_focal_position"])
-    aligned = focal_variant(cropped, ordered_nodes(cropped), cfg["focal_position_bp"])
+    original = exact_focal_variant(raw, ordered_nodes(raw), record["original_focal_position"])
+    aligned = exact_focal_variant(cropped, ordered_nodes(cropped), cfg["focal_position_bp"])
     carriers = np.load(directory / "focal_carriers.npy", allow_pickle=False)
     if (original is None or aligned is None or carriers.dtype != np.bool_
             or carriers.shape != (2 * cfg["sample_diploids"],)
