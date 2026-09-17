@@ -100,3 +100,51 @@ small neutral simulation through the new CLI phase with decoder/truth-profile
 functions replaced by failure sentinels, an idempotent restart, an independent
 audit, preserved historical status/manifests, fixed-allele retention, and
 rejection of corrupt or inconsistent saved inputs. No full test suite was run.
+
+**Hypothesis for later decoding: founder diversity and complementary evidence.**
+When selection expands one introgressed haplotype, linked archaic allele
+frequencies can already provide substantial power. Carrier coalescence and
+allele frequency may then describe much of the same expansion. With several
+introgressed backgrounds, a joint signal of archaic carriage and recent
+coalescence may add information beyond allele frequency alone. This is a
+hypothesis to test, not an established gain in the present results.
+
+Several backgrounds can mean different biological situations: multiple
+introgressing founders bearing the same selected allele, different archaic
+alleles carried on different backgrounds, or recombined descendants of one
+founder. These should not be treated as interchangeable. At a single marker,
+the current carrier-mass score is
+`M_T = (n_alt_alt / n_total) * frac_recent_T_alt_alt`.
+At fixed allele frequency and pair sampling, any gain comes from differences
+in the fraction of carrier pairs with TMRCA below T. Distinct successful
+founders can also produce older between-founder carrier pairs and weaken this
+recent-coalescence fraction. Thus, more backgrounds do not by themselves
+guarantee greater power for the current score.
+
+The current regional detector takes the maximum score across positions; it
+does not combine evidence from multiple markers or require spatially sustained
+carrier coalescence. A later aggregation method could test whether several
+moderate, spatially coherent signals help, with neutral simulations calibrating
+their linkage and dependence. An aggregated carrier score must be compared
+against an allele-frequency baseline using the same marker set, physical
+windows, and aggregation opportunities, in addition to the existing maximum-AF
+baseline.
+
+The 2% pulse in this array does not specify exactly one contributing haplotype.
+The model fixes the selected allele in the archaic source before introgression,
+and the source bottleneck can reduce diversity without enforcing one founder.
+The later analysis should measure ancestry contribution and relatedness rather
+than assume the number of founders from the pulse fraction. Where retained
+ancestry records or deterministic replays permit, record the number of
+contributing pulse lineages, their descendant weights (and effective diversity),
+and the distribution of carrier coalescence times.
+
+The planned comparisons are AF-only versus carrier mass, followed by any
+proposed regional aggregation, using truth and decoded `frac_recent_T` at
+T <= 50 kya. Evaluate power at matched neutral 10 Mb region call rates,
+stratify by measured founder diversity, and use AF-matched comparisons to
+isolate information beyond frequency. Keep any score tuning separate from
+evaluation. Linked archaic SNPs are not independent replications. Explicit
+founder-diversity simulation arms would be a separate follow-up with matched
+neutral controls; this note does not change the running array's model or start
+decoding.
