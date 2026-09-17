@@ -152,3 +152,99 @@ def test_resume_rejects_corrupted_completed_outputs(tmp_path):
     (tmp_path / "simulation.trees").write_bytes(b"truncated")
     with pytest.raises(ValueError, match="corrupt"):
         completed_record(tmp_path, "expected", cfg)
+
+
+def test_simulation_only_cli_saves_resumes_and_audits_without_decoding(tmp_path, monkeypatch, cfg):
+    from concurrent.futures import ThreadPoolExecutor
+    from types import SimpleNamespace
+    import gamma_smc_aou.fresh_power as fresh
+
+    settings = dict(cfg, neutral_replicates=1, selected_replicates_per_coefficient=0,
+                    selection_coefficients=[], sample_diploids=2, haplotype_pairs=3,
+                    simulated_length_bp=11000, scored_length_bp=10000,
+                    focal_position_bp=5000, stride_bp=1000, mutation_rate=1e-4,
+                    storage_limit_bytes=10**16)
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps(settings))
+    binary = tmp_path / "binary-for-identity-only"
+    binary.write_bytes(b"must not execute")
+    out = tmp_path / "saved"
+    out.mkdir()
+    (out / "run_status.json").write_text('{"previous_decoding":"unchanged"}')
+    demography = msprime.Demography()
+    demography.add_population(name="EAS", initial_size=100)
+    monkeypatch.setattr(fresh, "model", lambda _: SimpleNamespace(model=demography))
+    monkeypatch.setattr(fresh, "ProcessPoolExecutor", ThreadPoolExecutor)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Simulation-only phase attempted decoding/truth profiling or resimulation")
+
+    monkeypatch.setattr(fresh, "run_within_decoder", forbidden)
+    monkeypatch.setattr(fresh, "truth_profile", forbidden)
+    arguments = ["--config", str(config), "--out", str(out), "--slim", str(binary),
+                 "--decoder", str(binary), "--workers", "1"]
+    assert fresh.main(arguments + ["--phase", "simulate-only"]) == 0
+    directory = out / "neutral/rep0000"
+    before = {name: fresh.digest(directory / name) for name in fresh.SIMULATION_ARTIFACTS}
+    assert not (directory / "complete.json").exists()
+    assert not (directory / "frac_recent.tsv").exists()
+    assert not (directory / "truth_frac_recent.tsv").exists()
+    assert json.loads((out / "run_status.json").read_text()) == {"previous_decoding": "unchanged"}
+    status = json.loads((out / "simulation_status.json").read_text())
+    assert status["state"] == "complete" and status["new_simulations"] == 1
+    assert status["decoding_requested"] is False
+    inventory = pd.read_csv(out / "simulation_inventory.csv")
+    assert len(inventory) == 1 and not inventory.already_decoded.any()
+    monkeypatch.setattr(fresh, "model", forbidden)
+    assert fresh.main(arguments + ["--phase", "simulate-only"]) == 0
+    assert fresh.main(arguments + ["--phase", "audit-simulations"]) == 0
+    assert before == {name: fresh.digest(directory / name) for name in fresh.SIMULATION_ARTIFACTS}
+    # An internally plausible carrier file with an updated checksum must still
+    # match the genotypes of the archived raw and cropped trees.
+    path = directory / "focal_carriers.npy"
+    np.save(path, ~np.load(path), allow_pickle=False)
+    receipt = json.loads((directory / "simulated.json").read_text())
+    receipt["simulation_hashes"][path.name] = fresh.digest(path)
+    (directory / "simulated.json").write_text(json.dumps(receipt))
+    with pytest.raises(ValueError, match="allele/carriers"):
+        fresh.main(arguments + ["--phase", "audit-simulations"])
+
+
+def test_simulation_archive_retains_fixed_allele_and_rejects_wrong_identity(tmp_path, cfg):
+    import gamma_smc_aou.fresh_power as fresh
+
+    settings = dict(cfg, simulated_length_bp=110, scored_length_bp=100,
+                    focal_position_bp=50, sample_diploids=1)
+    task = dict(mode="selected", s=0.005, replicate=0)
+    raw = tiny_tree()
+    cropped, offset = crop_at_site(raw, 55, settings)
+    raw.dump(tmp_path / "simulation.trees")
+    cropped.dump(tmp_path / "decoded_input.trees")
+    np.save(tmp_path / "focal_carriers.npy", np.ones(2, dtype=bool), allow_pickle=False)
+    seed = seed_for(settings, task)
+    record = dict(task=task, fingerprint="expected", seed=seed,
+                  attempts=[dict(accepted=True, attempt=0, seed=seed)],
+                  sample_af=1.0, fixed=True, original_focal_position=55, crop_offset=offset,
+                  simulation_hashes={name: fresh.digest(tmp_path / name)
+                                     for name in fresh.SIMULATION_ARTIFACTS})
+    fresh.atomic_json(tmp_path / "simulated.json", record)
+    assert fresh.simulated_record(tmp_path, "expected", settings, task)["fixed"]
+    with pytest.raises(ValueError, match="task identity"):
+        fresh.simulated_record(tmp_path, "expected", settings, dict(task, s=0.001))
+    (tmp_path / "simulation.trees").write_bytes(b"truncated")
+    with pytest.raises(ValueError, match="corrupt"):
+        fresh.simulated_record(tmp_path, "expected", settings, task)
+
+
+def test_array_extension_preserves_original_manifest_bytes(tmp_path):
+    from gamma_smc_aou.fresh_power import versioned_json
+
+    path = tmp_path / "manifest.json"
+    original = b'{"selection_coefficients": [0.005]}\n'
+    path.write_bytes(original)
+    value = dict(selection_coefficients=[0.001, 0.005])
+    versioned_json(path, value)
+    versions = list((tmp_path / "manifest_history").glob("manifest.*.json"))
+    assert len(versions) == 1 and versions[0].read_bytes() == original
+    versioned_json(path, value)
+    assert list((tmp_path / "manifest_history").glob("manifest.*.json")) == versions

@@ -10,7 +10,9 @@ floor. Exact pair and position manifests are shared across both engines.
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ProcessPoolExecutor, FIRST_COMPLETED, wait
+from collections import Counter
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, FIRST_COMPLETED, wait
+import csv
 from contextlib import redirect_stdout, redirect_stderr
 import hashlib
 import importlib.metadata
@@ -53,6 +55,9 @@ ARTIFACTS = (
     "truth_frac_recent.tsv",
     "focal_carriers.npy",
 )
+SIMULATION_ARTIFACTS = (
+    "simulation.trees", "decoded_input.trees", "focal_carriers.npy"
+)
 
 
 def digest(path):
@@ -81,6 +86,18 @@ def atomic_json(path, value):
         stream.flush()
         os.fsync(stream.fileno())
     os.replace(temporary, path)
+
+
+def versioned_json(path, value):
+    """Retain earlier study inventories when an existing array is extended."""
+    path = Path(path)
+    if path.exists() and json.loads(path.read_text()) != value:
+        history = path.parent / "manifest_history"
+        history.mkdir(exist_ok=True)
+        previous = history / f"{path.stem}.{digest(path)}.json"
+        if not previous.exists():
+            previous.write_bytes(path.read_bytes())
+    atomic_json(path, value)
 
 
 def seed_for(cfg, task, attempt=0, component="simulation"):
@@ -364,7 +381,84 @@ def completed_record(directory, fingerprint, cfg):
     return record
 
 
-def run_one(payload):
+def simulated_record(directory, fingerprint, cfg, task=None):
+    """Validate decoder-independent saved inputs, including their focal allele."""
+    directory = Path(directory)
+    path = directory / "simulated.json"
+    if not path.exists():
+        return None
+    record = json.loads(path.read_text())
+    if record["fingerprint"] != fingerprint:
+        raise ValueError(f"Different scientific inputs in simulation: {directory}")
+    if task is not None and record["task"] != task:
+        raise ValueError(f"Simulation task identity differs: {directory}")
+    if set(record["simulation_hashes"]) != set(SIMULATION_ARTIFACTS):
+        raise ValueError(f"Incomplete simulation artifact manifest: {directory}")
+    for name, expected in record["simulation_hashes"].items():
+        if not (directory / name).is_file() or digest(directory / name) != expected:
+            raise ValueError(f"Simulation artifact missing or corrupt: {directory / name}")
+    accepted = record["attempts"][-1]
+    if (not accepted["accepted"] or accepted["seed"] != record["seed"]
+            or seed_for(cfg, record["task"], accepted["attempt"]) != record["seed"]):
+        raise ValueError(f"Simulation seed/attempt identity differs: {directory}")
+    raw = tskit.load(directory / "simulation.trees")
+    cropped = tskit.load(directory / "decoded_input.trees")
+    for ts, length in ((raw, cfg["simulated_length_bp"]), (cropped, cfg["scored_length_bp"])):
+        if ts.num_samples != 2 * cfg["sample_diploids"] or ts.sequence_length != length:
+            raise ValueError(f"Wrong simulation sample count or sequence length: {directory}")
+        ordered_nodes(ts)  # Checks the diploid sample ordering used by decoding.
+    original = focal_variant(raw, ordered_nodes(raw), record["original_focal_position"])
+    aligned = focal_variant(cropped, ordered_nodes(cropped), cfg["focal_position_bp"])
+    carriers = np.load(directory / "focal_carriers.npy", allow_pickle=False)
+    if (original is None or aligned is None or carriers.dtype != np.bool_
+            or carriers.shape != (2 * cfg["sample_diploids"],)
+            or not np.array_equal(original["carriers"], carriers)
+            or not np.array_equal(aligned["carriers"], carriers)
+            or record["sample_af"] != float(carriers.mean())
+            or not 0 < record["sample_af"] <= 1
+            or record["fixed"] != (record["sample_af"] == 1)):
+        raise ValueError(f"Saved focal allele/carriers are inconsistent: {directory}")
+    offset = record["original_focal_position"] - cfg["focal_position_bp"]
+    if (record["crop_offset"] != offset or offset < 0
+            or offset + cfg["scored_length_bp"] > raw.sequence_length):
+        raise ValueError(f"Invalid crop coordinates: {directory}")
+    raw_path = directory / "raw_simulated.json"
+    if raw_path.exists():
+        raw_record = json.loads(raw_path.read_text())
+        if (raw_record["fingerprint"] != fingerprint or raw_record["seed"] != record["seed"]
+                or raw_record["sha256"] != record["simulation_hashes"]["simulation.trees"]):
+            raise ValueError(f"Raw simulation receipt is inconsistent: {directory}")
+    return record
+
+
+def simulation_inventory(out, tasks):
+    """Index verified archived inputs without inventing a decoding completion."""
+    path = out / "simulation_inventory.csv"
+    temporary = path.with_suffix(".csv.tmp")
+    fields = ["task_id", "mode", "s", "replicate", "seed", "accepted_attempt", "sample_af", "fixed",
+              "simulation_path", "decoder_input_path", "carriers_path", "simulation_sha256",
+              "decoder_input_sha256", "carriers_sha256", "already_decoded"]
+    with temporary.open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
+        writer.writeheader()
+        for task in tasks:
+            directory = out / task_id(task)
+            record = json.loads((directory / "simulated.json").read_text())
+            writer.writerow(dict(task_id=task_id(task), **task, seed=record["seed"],
+                accepted_attempt=record["attempts"][-1]["attempt"], sample_af=record["sample_af"],
+                fixed=record["fixed"], simulation_path=str(directory / "simulation.trees"),
+                decoder_input_path=str(directory / "decoded_input.trees"),
+                carriers_path=str(directory / "focal_carriers.npy"),
+                simulation_sha256=record["simulation_hashes"]["simulation.trees"],
+                decoder_input_sha256=record["simulation_hashes"]["decoded_input.trees"],
+                carriers_sha256=record["simulation_hashes"]["focal_carriers.npy"],
+                already_decoded=(directory / "complete.json").exists()))
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, path)
+
+
+def run_one(payload, *, simulate_only=False):
     cfg, task, out, fingerprint, slim, decoder = payload
     out = Path(out)
     directory = out / task_id(task)
@@ -533,6 +627,10 @@ def run_one(payload):
                     },
                 )
                 atomic_json(receipt, sim)
+            if simulate_only:
+                verified = simulated_record(directory, fingerprint, cfg, task)
+                return dict(task_id=task_id(task), status="completed", phase="simulate-only",
+                            seconds=time.perf_counter() - started, af=verified["sample_af"])
             result = run_within_decoder(
                 decoder,
                 directory / "decoded_input.trees",
@@ -776,7 +874,7 @@ def initialise(out, cfg, slim, decoder):
                 raise ValueError(f"Existing sample/position manifest differs: {path}")
         else:
             np.savetxt(path, values, fmt="%d", delimiter="\t")
-    atomic_json(
+    versioned_json(
         out / "manifest.json",
         dict(
             config=cfg,
@@ -809,7 +907,7 @@ def initialise(out, cfg, slim, decoder):
             ],
         ),
     )
-    atomic_json(
+    versioned_json(
         out / "sample_manifest.json",
         [dict(task_id=task_id(t), **t, seed=seed_for(cfg, t)) for t in plan(cfg)],
     )
@@ -831,10 +929,12 @@ def main(argv=None):
     parser.add_argument("--workers", type=int)
     parser.add_argument(
         "--phase",
-        choices=("smoke", "simulate", "run", "analyse", "status"),
+        choices=("smoke", "simulate", "simulate-only", "simulation-status", "audit-simulations",
+                 "run", "analyse", "status"),
         default="run",
     )
     args = parser.parse_args(argv)
+    simulation_phase = args.phase in ("simulate-only", "simulation-status", "audit-simulations")
     cfg = json.loads(args.config.read_text(encoding="utf-8-sig"))
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -868,11 +968,24 @@ def main(argv=None):
             ]
         done = []
         todo = []
-        for task in tasks:
-            if completed_record(out / task_id(task), fingerprint, cfg):
-                done.append(task)
-            else:
-                todo.append(task)
+        if simulation_phase:
+            def validate_saved(task):
+                return simulated_record(out / task_id(task), fingerprint, cfg, task) is not None
+
+            with ThreadPoolExecutor(max_workers=workers) as validators:
+                for i, (task, valid) in enumerate(zip(tasks, validators.map(validate_saved, tasks)), 1):
+                    (done if valid else todo).append(task)
+                    if i % 100 == 0:
+                        print(json.dumps(dict(phase="validating-simulations", checked=i,
+                                              target=len(tasks), verified=len(done))), flush=True)
+            simulation_inventory(out, done)
+        else:
+            for task in tasks:
+                if completed_record(out / task_id(task), fingerprint, cfg):
+                    done.append(task)
+                else:
+                    todo.append(task)
+        reused = len(done)
 
         def status(state, failed=None):
             compact_failures = [
@@ -888,12 +1001,19 @@ def main(argv=None):
                 failed=compact_failures,
                 updated_at=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             )
-            atomic_json(out / "run_status.json", value)
+            if simulation_phase:
+                value.update(reused_simulations=reused, new_simulations=len(done) - reused,
+                             completed_by_arm=dict(sorted(Counter(task_id(t).split("/")[0] for t in done).items())),
+                             decoding_requested=False, inventory_path=str(out / "simulation_inventory.csv"))
+            atomic_json(out / ("simulation_status.json" if simulation_phase else "run_status.json"), value)
             print(json.dumps(value), flush=True)
 
         status("validated")
         if args.phase == "status":
             return 0
+        if args.phase in ("simulation-status", "audit-simulations"):
+            status("complete" if not todo else "incomplete")
+            return int(bool(todo) and args.phase == "audit-simulations")
         if args.phase == "analyse":
             analyse(out, cfg, fingerprint)
             status("complete")
@@ -939,6 +1059,7 @@ def main(argv=None):
                             str(args.slim.resolve()),
                             str(args.decoder.resolve()),
                         ),
+                        simulate_only=simulation_phase,
                     )
                     pending[future] = task
                 if not pending:
@@ -963,6 +1084,8 @@ def main(argv=None):
                 status("running", failures)
                 if failures and not pending:
                     break
+        if simulation_phase:
+            simulation_inventory(out, sorted(done, key=task_id))
         if failures:
             status("failed", failures)
             return 1
