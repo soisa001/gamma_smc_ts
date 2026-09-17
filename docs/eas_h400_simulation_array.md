@@ -5,6 +5,11 @@ replicates. The completed s=0.005 arm and neutrals are verified and reused;
 900 selected replicates are newly generated. No old handoff simulations or
 200-haplotype replicates are used.
 
+The array was subsequently paused at the user's request with 1,947/2,000
+regions validated. See the [paused-array evaluation](eas_h400_paused_evaluation.md)
+for the saved counts, preliminary true-TMRCA results and evaluation-only
+commands. Generation and decoding remain paused.
+
 The configuration is [eas_q02_50k_h400_array.json](../configs/eas_q02_50k_h400_array.json).
 Selection starts immediately at the 50-kya, nominal 2% introgression pulse.
 All other model inputs are unchanged: PHLASH EAS history, archaic split and

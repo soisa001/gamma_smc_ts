@@ -1,0 +1,26 @@
+{
+  "af_mass_paired_comparison.csv": {
+    "bytes": 287,
+    "sha256": "04d0a38da0e465570423270749d1e99e537e5139fb37aa63c8aacfd3f98a6e82"
+  },
+  "arm_summary.csv": {
+    "bytes": 1253,
+    "sha256": "8f6104dd63d818357ff0bd4b72903ea271a39d2754f8728a660a9a948757ec8a"
+  },
+  "audit.json": {
+    "bytes": 317,
+    "sha256": "7e0ff5b6b02bebbce53cfeddf0647e6da2c8c1a3a503066ecc92bbb3ec221203"
+  },
+  "neutral_region_metrics.csv": {
+    "bytes": 947,
+    "sha256": "ec0302cc69e03d5d4ea0d5335e88d4c34a03daf1e7558a53b957e7d8f01c39c1"
+  },
+  "provenance.json": {
+    "bytes": 4865,
+    "sha256": "3c61a89e7d4459d75e81528353c4e193b77bd5aee6668597429dfba0e6af7fc4"
+  },
+  "selected_site_metrics.csv": {
+    "bytes": 52657,
+    "sha256": "a1898f36f73d7da26f67a5e70b53b25ac203ec2db5adbbc40e5f9c87c219f24f"
+  }
+}

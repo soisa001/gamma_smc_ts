@@ -1,0 +1,10 @@
+{
+  "common_replicates_per_arm": 91,
+  "lineage_partition_vs_pairwise_tmrca_verified": true,
+  "neutral_call_rates_match_previous_analysis": true,
+  "neutral_regions": 1000,
+  "original_reference_tree_hashes_matched": true,
+  "saved_s005_focal_values_matched": 1900,
+  "selected_regions": 947,
+  "status": "passed"
+}
