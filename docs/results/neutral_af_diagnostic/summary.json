@@ -1,0 +1,100 @@
+{
+  "conditional_single_carrier_lineage_fraction": 0.9085365853658537,
+  "fixed_coordinate_all_regions": {
+    "fraction_ge_018": 0.044,
+    "maximum": 0.5275,
+    "mean": 0.0206625,
+    "median": 0.0,
+    "n": 1000,
+    "q05": 0.0,
+    "q95": 0.16012499999999988
+  },
+  "fixed_coordinate_conditional_on_ancestry_present": {
+    "fraction_ge_018": 0.2682926829268293,
+    "maximum": 0.5275,
+    "mean": 0.1259908536585366,
+    "median": 0.0925,
+    "n": 164,
+    "q05": 0.010375,
+    "q95": 0.329625
+  },
+  "fold_thresholds": {
+    "af_r1": {
+      "alpha": 0.05,
+      "strict_greater_than": [
+        0.6275,
+        0.6675,
+        0.67,
+        0.6525,
+        0.6275
+      ]
+    },
+    "mass_g0_r1_T50000": {
+      "alpha": 0.05,
+      "strict_greater_than": [
+        0.3448,
+        0.3891,
+        0.4188,
+        0.3824,
+        0.3448
+      ]
+    }
+  },
+  "mean_lineages_at_pulse": 8.96,
+  "nearest_observed_archaic_marker": {
+    "fraction_ge_018": 0.15853658536585366,
+    "maximum": 0.6225,
+    "mean": 0.09295477642276423,
+    "median": 0.06,
+    "n": 984,
+    "q05": 0.005,
+    "q95": 0.29212499999999975
+  },
+  "neutral_regions_without_markers": 16,
+  "nominal_pulse": 0.02,
+  "probability_ancestry_present_at_fixed_coordinate": 0.164,
+  "provenance": {
+    "coordinate_raw_bp": 5500000,
+    "decoding_started": false,
+    "fixed_coordinate_endpoint": "Local archaic ancestry fraction, including zero-ancestry regions; not a marker-ascertained AF",
+    "focal_reference_artifact_manifest_sha256": "d2fd16635ac51bc961c88f8e1ddc802eaa61296c7e86c4399d3220823e2eca81",
+    "generation_time_years": 25,
+    "haplotypes": 400,
+    "inventory_sha256": "1dc22a0c05c324eee9969e6b1c82f4f420cd904d7394ce699216fd1f51045d26",
+    "pulse_years": 50000,
+    "reference_artifact_manifest_sha256": "4ec7fa4067d37e1ad7545f86e7b7e6601d5c273977f41d9860bcc5aeb0452010",
+    "selected_focal_sha256": "794cb58f442012ab28bbad34588ad658f0dd060a14ad4000b3d4a8626ec16d7a",
+    "simulations_started": false,
+    "source_sha256": "b79f2098ca5bd9641f84338d1be2b51be674198876b5179a1405efe799c32e45",
+    "workers": 20
+  },
+  "regional_neutral_maxima": {
+    "af_r1": {
+      "fraction_ge_018": 0.909,
+      "maximum": 0.88,
+      "mean": 0.38,
+      "median": 0.3825,
+      "n": 1000,
+      "q05": 0.12737500000000002,
+      "q95": 0.6475
+    },
+    "mass_g0_r1_T50000": {
+      "fraction_ge_018": 0.325,
+      "maximum": 0.757,
+      "mean": 0.15237759999999997,
+      "median": 0.13629999999999998,
+      "n": 1000,
+      "q05": 0.0158,
+      "q95": 0.36813499999999993
+    }
+  },
+  "selected_s001_survival_conditioned_af": {
+    "fraction_ge_018": 0.40217391304347827,
+    "maximum": 0.665,
+    "mean": 0.17891304347826084,
+    "median": 0.13875,
+    "n": 92,
+    "q05": 0.015,
+    "q95": 0.47537500000000005
+  }
+}
