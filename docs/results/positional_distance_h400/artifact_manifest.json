@@ -1,0 +1,23 @@
+{
+  "source": "/mnt/d/phase2simselection/sim/eas_positional_distance_h400",
+  "source_manifest_sha256": "32003b869ce44524f5ccc00bb5c85b8b2f18f54395a3cd3f02bc2f304e3afe31",
+  "exporter_sha256": "5571dff87883dfd7566dc006ef064b959af67380bdcf9cd3ef261eed6335882d",
+  "files": {
+    "selected_distances.csv": {
+      "bytes": 54861,
+      "sha256": "e9a8f008cbf8d9ce250e0d0f26711d1c12a693ecda49d4ad8a127baf05d7687f"
+    },
+    "audit.json": {
+      "bytes": 396,
+      "sha256": "d62c90c55d4cc6cea9e3682509894c9f00d1b229498717642f38114f57f93419"
+    },
+    "provenance.json": {
+      "bytes": 100843,
+      "sha256": "d385a69f6bfa398af0694fcb7f778bdc032a3bdefea89f5eb75a1455def78be2"
+    },
+    "full_analysis_manifest.json": {
+      "bytes": 518,
+      "sha256": "32003b869ce44524f5ccc00bb5c85b8b2f18f54395a3cd3f02bc2f304e3afe31"
+    }
+  }
+}

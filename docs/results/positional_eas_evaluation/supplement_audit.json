@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_sha256": "f22fd16d8ff35f5569884b35a52b9e3b393012db13c2595725a6efb4ca2c0bbf",
+  "source_manifest_sha256": "546fdccb5a3ff48d0a86a496356a1877a54ad61f9bee179518a68baa1e1fc206",
+  "neutral_positions": 1000,
+  "neutral_positions_with_marker": 169,
+  "neutral_positions_af_at_least_018": 43,
+  "mean_positional_marker_af": 0.0206575,
+  "pooled_p001_caveat": "Only one extreme neutral rank is available; this is not precise validation of a 0.1% tail.",
+  "comparisons": "Paired tests are exploratory and not adjusted for multiple comparisons; T was not tuned per replicate."
+}

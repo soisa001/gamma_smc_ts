@@ -1,0 +1,22 @@
+{
+  "calibration_thresholds.csv": {
+    "sha256": "a373ade015bc54ff020bca8e13879a4f9a59a588800cb546718f17164b80a129",
+    "bytes": 9061
+  },
+  "paired_af_comparison.csv": {
+    "sha256": "2a5454d9f40c760fdc219423be1bb37e6ec2501abb7ec711d26f235fd8241cb7",
+    "bytes": 16153
+  },
+  "pooled_rank_predictions.csv.gz": {
+    "sha256": "3b813be33752e167e324a67f9bafa40530378029ac2aee8dcf880556402bb93e",
+    "bytes": 250223
+  },
+  "pooled_rank_metrics.csv": {
+    "sha256": "a76dafcc80b5f51fe92f4254887b7bb87fbf8b1e18f662670fc5deb1d02c5229",
+    "bytes": 18461
+  },
+  "supplement_audit.json": {
+    "sha256": "bc67ed117f97261467d6a557afb6a43546397e25c251579eb43db526b0366605",
+    "bytes": 603
+  }
+}

@@ -1,5 +1,10 @@
 **Why an 18% archaic allele can fail the regional scan.**
 
+The user subsequently clarified that the target is a particular position or
+gene. The [positional evaluation](positional_eas_evaluation.md) now calibrates
+against that same local position/window; the regional-maxima thresholds in
+this diagnostic do not apply to the new primary endpoint.
+
 This diagnostic reads the saved 1,000 neutral ancestry replays and existing
 regional scores. No simulations or decoding were started. The array remains
 paused. Each replay and sample/ancestry mapping was checked against its saved

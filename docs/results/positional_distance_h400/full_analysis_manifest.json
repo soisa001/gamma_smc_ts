@@ -1,0 +1,18 @@
+{
+  "metrics.csv": {
+    "sha256": "6900d55bb80bce34305da7d3583670f5b5e98e7ce657a5037e0986febd74ab49",
+    "bytes": 3245838
+  },
+  "selected_distances.csv": {
+    "sha256": "e9a8f008cbf8d9ce250e0d0f26711d1c12a693ecda49d4ad8a127baf05d7687f",
+    "bytes": 54861
+  },
+  "audit.json": {
+    "sha256": "d62c90c55d4cc6cea9e3682509894c9f00d1b229498717642f38114f57f93419",
+    "bytes": 396
+  },
+  "provenance.json": {
+    "sha256": "d385a69f6bfa398af0694fcb7f778bdc032a3bdefea89f5eb75a1455def78be2",
+    "bytes": 100843
+  }
+}

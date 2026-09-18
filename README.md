@@ -4,6 +4,11 @@ For the current immediate-onset introgression simulation statistic, see the
 [archaic ALT/ALT signal](docs/archaic_alt_alt_signal.md): the within-carrier
 `frac_recent_T` weighted by the fraction of all pairs that are ALT/ALT.
 
+The current EAS simulation endpoint is a pre-specified position or gene window:
+see [matched-position calibration and power](docs/positional_eas_evaluation.md).
+The neutral calibration uses the same local position/window, excluding peaks
+elsewhere in the 10-Mb region.
+
 For the AoU selection scan, fixed-standard-coalescent simulations,
 tree-sequence input, streaming `P(TMRCA < 4500 years)` summaries, and
 simulation p-values, see [AOU_WORKFLOW.md](AOU_WORKFLOW.md).
@@ -387,5 +392,4 @@ In `meta`, useful properties are:
 - `output_positions` - a list of genomic positions at which TMRCA posteriors were inferred
 - `pairs` - the order of pairs for which posteriors were inferred, using serial numbers (e.g. `0_1`)
 - `sample_names` - a mapping from a serial number a the sample name; e.g. `sample_names = {0: "sample_name.0", 1: "sample_name.1", 2: "another_sample_name.0", ...}` 
-
 

@@ -1,10 +1,14 @@
 # Archaic ALT/ALT signal
 
-This is the current specification for the immediate-onset introgression
-experiment. The primary statistic is the contribution of recently coalescing
+The score definition is unchanged. The current primary calibration is
+[matched-position or gene-window evaluation](positional_eas_evaluation.md);
+the older whole-10-Mb maximum results below are historical comparisons.
+
+For the immediate-onset introgression experiment, the primary statistic is the contribution of recently coalescing
 archaic-carrier pairs to the complete haplotype-pair panel. It was previously
 reported as the **carrier mass** score; the calculation is already implemented
-and evaluated. The primary saved method is `mass_g0_r1_T50000`.
+and evaluated. Its matched-position method is `mass_50000`; the earlier
+whole-region method was `mass_g0_r1_T50000`.
 
 ## Definition
 
@@ -54,7 +58,9 @@ selected regions remain in the denominator.
 > combines the recency of carrier genealogies with their representation in
 > the sample. We assessed significance against neutral simulations subjected
 > to the same archaic-marker ascertainment, pair sampling, and positional
-> scan, calibrating the maximum signal across each 10 Mb region.
+> evaluation. At a pre-specified position, the null uses that same position
+> in each neutral replicate. For a pre-specified gene interval, the null
+> uses the same statistic within a matching neutral interval.
 
 ## Scan and interpretation
 
@@ -62,23 +68,26 @@ Use the existing fixed pair panel. The primary scan evaluates every 10 kb,
 assigning the nearest eligible archaic marker within 5 kb to define carrier
 membership. The comparison scan evaluates every eligible archaic marker at
 its exact coordinate. Marker-free positions cannot contribute signal.
-The region score is the maximum S over the evaluated candidates. A single
-position is sufficient; spatial run requirements are separate comparisons.
+The current primary endpoint is the focal position. A pre-specified gene
+window can be scored separately and calibrated against an identical neutral
+window. The earlier whole-region comparison used the maximum S over all
+evaluated candidates in 10 Mb; it answers a different question.
 
 The primary cutoff is T=50 kya. The all-pair benchmark remains
 `frac_recent_T` across the complete pair panel. The ALT/ALT signal is its
 contribution from pairs carrying the candidate archaic allele: it requires
 the same pairs to satisfy both the carrier and recent-coalescence conditions.
-S is an evidence score, not a selection p-value. Obtain region p-values by
-ranking region maxima against independent neutral calibration regions,
-including ties.
+S is an evidence score, not a selection p-value. Obtain local p-values by
+ranking the local score against the same position/window in independent
+neutral calibration regions, including ties. Peaks outside the target window
+are excluded.
 
 Current scope is EAS, a 2% pulse at 50 kya with selection starting immediately,
-s=0.005, fixed mutation/recombination rates, 400 haplotypes and 10,000 sampled
+s=0.001 through 0.010, fixed mutation/recombination rates, 400 haplotypes and 10,000 sampled
 pairs, and isolated 10 Mb regions. The later-onset arm is excluded. Primary
-defaults are recorded in [the analysis preset](../configs/archaic_alt_alt_signal.json).
+whole-region defaults are recorded in [the historical analysis preset](../configs/archaic_alt_alt_signal.json).
 
-## Existing performance
+## Historical whole-region performance
 
 These are the already audited results for this exact score, without a separate
 all-pair gate. No new simulations or decoding were needed for the reframing.

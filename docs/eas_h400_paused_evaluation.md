@@ -1,5 +1,9 @@
 **Paused EAS array: preliminary evaluation, 17 September 2026.**
 
+The user subsequently specified a positional/gene-level FPR. The
+[matched-position evaluation](positional_eas_evaluation.md) is now the primary
+analysis. This document retains the earlier whole-region-maxima endpoint.
+
 The user requested a pause before completion. No simulation or decoder process
 was active at inspection. A validation-only pass finished at 23:50:58 UTC and
 verified 1,947 saved regions: 1,000 neutral and 947 selected. There are 53

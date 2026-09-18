@@ -1,0 +1,43 @@
+{
+  "source": "/mnt/d/phase2simselection/sim/eas_positional_h400",
+  "source_manifest_sha256": "546fdccb5a3ff48d0a86a496356a1877a54ad61f9bee179518a68baa1e1fc206",
+  "exporter_sha256": "d4b6195ce86ae2b23748cd65003c233ad8d5f996bcda31fd77a3600e4a7fa037",
+  "files": {
+    "metrics.csv": {
+      "bytes": 17584,
+      "sha256": "ead1ecb28f8c6cd5ff5b35fbe4d8c0cd91c32823eca3e67995c33572d654748b"
+    },
+    "audit.json": {
+      "bytes": 286,
+      "sha256": "82ceee8b6b0cfbc86c964f06332fb073aeb3711668bae32acbac55308f88a577"
+    },
+    "provenance.json": {
+      "bytes": 101486,
+      "sha256": "c9d9ca1a9c131f6300dff405f6b5073da870732a102ec67a7fa72c64264669d7"
+    },
+    "calibration_thresholds.csv": {
+      "bytes": 9061,
+      "sha256": "a373ade015bc54ff020bca8e13879a4f9a59a588800cb546718f17164b80a129"
+    },
+    "paired_af_comparison.csv": {
+      "bytes": 16153,
+      "sha256": "2a5454d9f40c760fdc219423be1bb37e6ec2501abb7ec711d26f235fd8241cb7"
+    },
+    "pooled_rank_metrics.csv": {
+      "bytes": 18461,
+      "sha256": "a76dafcc80b5f51fe92f4254887b7bb87fbf8b1e18f662670fc5deb1d02c5229"
+    },
+    "supplement_audit.json": {
+      "bytes": 603,
+      "sha256": "bc67ed117f97261467d6a557afb6a43546397e25c251579eb43db526b0366605"
+    },
+    "full_analysis_manifest.json": {
+      "bytes": 772,
+      "sha256": "546fdccb5a3ff48d0a86a496356a1877a54ad61f9bee179518a68baa1e1fc206"
+    },
+    "full_supplement_manifest.json": {
+      "bytes": 695,
+      "sha256": "689fc5281f8d189e1b62a39eae3d7533c98f3d78e5cfec8b58ad332f2d7f623d"
+    }
+  }
+}
