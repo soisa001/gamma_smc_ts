@@ -5,6 +5,22 @@ regional scores. No simulations or decoding were started. The array remains
 paused. Each replay and sample/ancestry mapping was checked against its saved
 SHA-256 receipt, and its seed against the validated simulation inventory.
 
+**There is no archaic-survival filter on the current neutral simulations.**
+The neutral generator anchors its crop to the nearest observed ordinary
+variant, regardless of archaic origin. It does not reject regions because
+archaic ancestry is absent. The regional null includes all 1,000 neutral
+regions, including the 16 without eligible archaic markers (carrier/AF
+scores zero). The survival-conditioned numbers below are diagnostic subsets
+of this same unconditional neutral set, not the calibration distribution
+used by the regional scan. Selected simulations, in contrast, explicitly
+require survival and observation of their selected allele.
+
+The difference between the nominal 2.00% and measured 2.07% is only 0.07
+percentage points, but both refer to unconditional ancestry. It is not an
+estimate of the effect of survival conditioning. Conditioning at the fixed
+coordinate gives 12.60%; selecting the nearest observed archaic marker gives
+9.30%, a different ascertainment scheme.
+
 At the pre-specified 5.5-Mb coordinate in the original 11-Mb simulation, mean
 sampled archaic ancestry is 2.06625%, consistent with the nominal 2% pulse.
 However, 836/1,000 regions have no sampled archaic ancestry at that position.
