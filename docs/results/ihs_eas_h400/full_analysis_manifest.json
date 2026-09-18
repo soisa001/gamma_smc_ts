@@ -1,0 +1,30 @@
+{
+  "analysis_provenance.json": {
+    "bytes": 186375,
+    "sha256": "5c65600b7dc28a1a251a93fd784e526ad6097277b148b550e2f4077945ad588b"
+  },
+  "audit.json": {
+    "bytes": 444,
+    "sha256": "642aa04d1680ad84756187fd596f9b996246017b0ff749ec2c007a78f03802a9"
+  },
+  "metrics.csv": {
+    "bytes": 5218,
+    "sha256": "d89ebd2eff10e3ca984ad8dcdeea3555000718f3d7cb54a850bbc9b72f573319"
+  },
+  "normalization.json": {
+    "bytes": 132334,
+    "sha256": "8be3f803f10d2fc6ea2906639aa7c3bca305c3b6c16eebd891f1f547d073c2df"
+  },
+  "predictions.csv.gz": {
+    "bytes": 82840,
+    "sha256": "f230953f27043d2115920e1ff4be0757571715297b6d23aba0b21dff153f09d7"
+  },
+  "regions.csv": {
+    "bytes": 121608,
+    "sha256": "cf967be94013e18a545b023a05d52fd04b9828703b6002c41156afd73b0bf8f2"
+  },
+  "scores.npz": {
+    "bytes": 192821,
+    "sha256": "cffdd99efeb33bc85fe2df8e307e63ce93c6795787277ac0bff5964d5f2652ab"
+  }
+}

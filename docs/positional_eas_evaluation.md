@@ -148,7 +148,41 @@ restricted to the oracle marker set; they were not caused by including
 pre-split modern/archaic shared mutations. Those peaks outside the focal
 position are excluded from the present calibration.
 
-**iHS comparison in progress.** Compute conventional iHS from all biallelic
+**Completed iHS comparison.** Raw extraction finished for all 1,947 saved
+regions in 36.9 minutes with 20 workers. Every cached raw output passed its
+hash check, and the analysis independently reconstructed the saved p-values.
+At p<=0.05:
+
+| s | Positional iHS power | Fixed 100-kb window iHS power |
+|---|---:|---:|
+| 0.001 | 10.9% | 8.7% |
+| 0.002 | 12.9% | 19.4% |
+| 0.003 | 32.6% | 36.8% |
+| 0.004 | 53.2% | 58.5% |
+| 0.005 | 67.0% | 81.0% |
+| 0.006 | 64.9% | 71.3% |
+| 0.007 | 43.6% | 75.5% |
+| 0.008 | 32.6% | 63.2% |
+| 0.009 | 27.4% | 53.7% |
+| 0.010 | 14.7% | 47.4% |
+
+Held-out local FPR is 4.8% for positional iHS and 5.0% for the fixed window.
+At p<=0.01, positional power for s=0.001 through 0.005 is 1.1%, 3.2%, 18.9%,
+30.9%, and 50.0%, at 0.7% FPR. Window power is 3.3%, 6.5%, 23.2%, 37.2%, and
+58.0%, at 1.3% FPR. Thus conventional iHS does not outperform local archaic
+AF or carrier mass under this model. The window and pointwise columns are
+different endpoints and should be described separately.
+
+Strong-arm iHS power declines as fixation and very high target AF become
+common. For s=0.010, 46/95 selected alleles are fixed and only 2/95 focal
+alleles themselves meet the finite-score/core-MAF rule; the positional method
+can still use a nearby scorable SNP. These diagnostics are consistent with
+iHS being an incomplete-sweep statistic, but are not a decomposition of all
+causes of its power loss. Fixed/undefined cases were retained in every power
+denominator. The checked iHS tables and audit are in
+[`results/ihs_eas_h400`](results/ihs_eas_h400).
+
+**iHS methods.** Compute conventional iHS from all biallelic
 segregating variants across each saved 11-Mb tree sequence, with the 10-Mb
 crop defining scored positions and the flanks supporting EHH integration.
 Use the known uniform recombination rate, minimum core MAF 5%, EHH cutoff
@@ -183,6 +217,9 @@ smoke run passed, including a selected replicate with a fixed focal allele.
 
 **Reproduce without resuming simulations.**
 
+The following WSL cell uses the saved studies and existing simulation
+environment on this machine. Raw tree sequences are not stored in Git.
+
 ```bash
 %%bash
 set -euo pipefail
@@ -196,9 +233,11 @@ git pull --ff-only git@github.com:soisa001/gamma_smc_ts.git AOU_run_opt
   python scripts/evaluate_positional_array.py
 "${HOME}/.local/bin/uv" --no-config run --no-project --python .venv/bin/python \
   python scripts/summarize_positional_evaluation.py
+bash scripts/launch_ihs_benchmark.sh run
 "${HOME}/.local/bin/uv" --no-config run --no-project --python .venv-ihs/bin/python \
   python scripts/evaluate_positional_distance.py
-bash scripts/launch_ihs_benchmark.sh run
+"${HOME}/.local/bin/uv" --no-config run --no-project --python .venv-ihs/bin/python \
+  python scripts/export_positional_summary.py --analysis all
 ```
 
 Positional carrier/AF outputs are in

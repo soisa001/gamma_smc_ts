@@ -1,0 +1,27 @@
+{
+  "source": "/mnt/d/phase2simselection/sim/eas_ihs_h400",
+  "source_manifest_sha256": "bfc42303e59fe925f10ea5344db6ef285f23fc9fa24ae44a370e9048748219ef",
+  "exporter_sha256": "5571dff87883dfd7566dc006ef064b959af67380bdcf9cd3ef261eed6335882d",
+  "files": {
+    "metrics.csv": {
+      "bytes": 5218,
+      "sha256": "d89ebd2eff10e3ca984ad8dcdeea3555000718f3d7cb54a850bbc9b72f573319"
+    },
+    "audit.json": {
+      "bytes": 444,
+      "sha256": "642aa04d1680ad84756187fd596f9b996246017b0ff749ec2c007a78f03802a9"
+    },
+    "analysis_provenance.json": {
+      "bytes": 186375,
+      "sha256": "5c65600b7dc28a1a251a93fd784e526ad6097277b148b550e2f4077945ad588b"
+    },
+    "regions.csv": {
+      "bytes": 121608,
+      "sha256": "cf967be94013e18a545b023a05d52fd04b9828703b6002c41156afd73b0bf8f2"
+    },
+    "full_analysis_manifest.json": {
+      "bytes": 904,
+      "sha256": "bfc42303e59fe925f10ea5344db6ef285f23fc9fa24ae44a370e9048748219ef"
+    }
+  }
+}
