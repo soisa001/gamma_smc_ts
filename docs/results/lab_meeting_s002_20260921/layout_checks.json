@@ -1,0 +1,62 @@
+[
+  {
+    "figure": "01_design_and_score",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "02_matched_position_null",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "03_allele_frequency_distribution",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "04_positional_power",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "05_time_cutoff_power",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "06_positional_false_positive_rate",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "07_truth_vs_decoding",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "08_gain_beyond_allele_frequency",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "09_ihs_and_sweep_completion",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "10_spatial_decay",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "11_example_regions",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "12_threshold_stringency",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "13_carrier_genealogies",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "14_demography_and_assumptions",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "15_pair_class_coalescence",
+    "text_outside_canvas": []
+  }
+]

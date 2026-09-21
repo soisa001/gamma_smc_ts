@@ -1,0 +1,11 @@
+{
+  "decoded_selected_positions": 100,
+  "focal_truth_matches_existing_profiles": true,
+  "neutral_positions": 1000,
+  "neutral_positions_with_archaic_marker": 169,
+  "pvalues_recomputed": true,
+  "regional_maximum_used": false,
+  "selection_coefficient": 0.002,
+  "status": "passed",
+  "truth_selected_positions": 100
+}

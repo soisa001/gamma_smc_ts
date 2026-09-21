@@ -1,0 +1,17 @@
+{
+  "primary_tmrca": "Gamma-SMC decoded posterior-mean hard calls; frac_recent_T",
+  "truth_comparison_figures": [
+    "07_truth_vs_decoding"
+  ],
+  "decoded_selection_coefficients": [
+    0.002
+  ],
+  "decoded_selected_regions": 100,
+  "decoded_neutral_regions": 1000,
+  "all_pairs_only": true,
+  "carrier_label_scope": "focal selected allele only",
+  "spatial_carrier_plots": false,
+  "simulation_replays": false,
+  "new_simulations": false,
+  "existing_selected_trees_newly_decoded": true
+}

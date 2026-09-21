@@ -25,12 +25,13 @@ def verify(root, visual_review):
     book = root/"EAS_lab_meeting_figures.pdf"
     pdfs = [book, *sorted((root/"figures").glob("*.pdf"))]
     pngs = sorted((root/"figures").glob("*.png"))
-    if len(pdfs) != 16 or len(pngs) != 15:
-        raise ValueError("Expected 15 figure pairs and one combined PDF")
+    expected_figures = len(json.loads((root/"figure_index.json").read_text()))
+    if len(pdfs) != expected_figures+1 or len(pngs) != expected_figures:
+        raise ValueError(f"Expected {expected_figures} figure pairs and one combined PDF")
     pdf_records, png_records = [], []
     for path in pdfs:
         reader = PdfReader(path, strict=True)
-        assert len(reader.pages) == (15 if path == book else 1), path
+        assert len(reader.pages) == (expected_figures if path == book else 1), path
         fonts = set()
         for page in reader.pages:
             assert len(page.images) == 0, (path, "raster image")
@@ -68,7 +69,10 @@ def main(root, export_to, visual_review):
     verify(root, visual_review)
     audits = root/"analysis_audit"
     audits.mkdir(exist_ok=True)
-    for source, prefix in ((root/"analysis", "focal"), (root/"analysis/positional", "positional"),
+    is_s002 = root.name.startswith("eas_lab_meeting_s002")
+    analysis_root = root.parent/"eas_lab_meeting_s002_20260921" if is_s002 else root
+    for source, prefix in ((analysis_root/"analysis", "focal"), (analysis_root/"analysis/positional", "positional"),
+                           (analysis_root/"analysis/distance", "distance"),
                            (root.parent/"eas_ihs_h400", "ihs")):
         for name in ("audit.json", "provenance.json", "analysis_provenance.json", "supplement_audit.json"):
             if (source/name).exists():
@@ -78,7 +82,19 @@ def main(root, export_to, visual_review):
         assert json.loads((tail_audit/"audit.json").read_text())["status"] == "passed"
         for name in ("audit.json", "selected_endpoint_audit.csv", "s006_lower_tail.csv", "af_tail_by_s.csv"):
             shutil.copyfile(tail_audit/name, audits/f"af_tail_{name}")
-    shutil.copyfile(root/"analysis/positional/calibration_thresholds.csv", root/"figure_data/calibration_thresholds.csv")
+    calibration = analysis_root/"analysis/positional/calibration_thresholds.csv"
+    if "all_pairs" in root.name:
+        import csv
+        with calibration.open(newline="") as stream:
+            reader = csv.DictReader(stream)
+            fields = reader.fieldnames
+            records = [row for row in reader if row["method"].startswith("all_")]
+        with (root/"figure_data/calibration_thresholds.csv").open("w", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(records)
+    else:
+        shutil.copyfile(calibration, root/"figure_data/calibration_thresholds.csv")
     (root/"REPRODUCE.md").write_text("""# Reproduce this figure collection
 
 Repository: git@github.com:soisa001/gamma_smc_ts.git, branch AOU_run_opt.
@@ -113,6 +129,43 @@ After changing figure code, render the combined PDF with Poppler and inspect
 every page. The PDF/PNG checks cannot replace visual inspection. A manual
 review recorded in `quality_checks.json` applies only to its exact PDF hashes.
 """, encoding="utf-8", newline="\n")
+    if is_s002:
+        (root/"REPRODUCE.md").write_text("""# Reproduce the s=0.002 figure packs
+
+Repository: git@github.com:soisa001/gamma_smc_ts.git, branch AOU_run_opt.
+Run in WSL with the existing D: archive at `/mnt/d/phase2simselection/sim`.
+The repository includes summarized results, not tree sequences or raw posteriors.
+
+```bash
+git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
+cd gamma_smc_ts
+bash scripts/launch_s002_figures.sh build
+bash scripts/launch_s002_figures.sh package
+```
+
+The launcher uses uv and the existing `.venv`. Phases are idempotent:
+`decode` decodes the 100 saved s=0.002 trees with 20 single-thread workers,
+hash-checks cached results, and never starts simulations or ancestry replays.
+`analyze` calculates focal calibration and all-pair spatial power/FPR.
+`build` renders both packs from those analyses; `package` validates PDF/PNG
+structure and verifies ZIP contents. Run decode/analyze only if their saved
+outputs need to be built. Original simulation and pair seeds are retained.
+
+Inputs: eas_q02_h400, eas_s002_saved_decoding, eas_joint_scan,
+eas_allele_class_ablation, eas_ihs_h400, eas_lab_meeting_20260921/analysis,
+and eas_lab_meeting_s002_20260921/analysis. Exact paths and hashes are in
+figure_provenance.json; decoder inputs, defaults and outputs have manifests
+and per-replicate receipts in eas_s002_saved_decoding.
+
+Saved s=0.002 archaic carrier labels are known only at the selected allele.
+No spatial carrier score is produced. The all-pairs-only pack excludes
+carrier-mass plots. Spatial scores use all 10,000 sampled pairs at every stride.
+After changing plots, render the PDFs and visually inspect every page; manual
+review is valid only for the hashes recorded in quality_checks.json.
+""", encoding="utf-8", newline="\n")
+        for name in ("manifest.json", "status.json"):
+            source = root.parent/"eas_s002_saved_decoding"/name
+            shutil.copyfile(source, audits/f"saved_decoding_{name}")
     names = ["README.md", "REPRODUCE.md", "figure_index.json", "figure_provenance.json",
              "layout_checks.json", "quality_checks.json", "EAS_lab_meeting_figures.pdf"]
     if (root/"plot_sources.json").exists():

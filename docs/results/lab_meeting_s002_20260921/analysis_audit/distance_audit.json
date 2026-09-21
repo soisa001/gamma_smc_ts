@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "grid_positions": 1000,
+  "neutral_regions": 1000,
+  "selected_regions": 100,
+  "selection_coefficient": 0.002,
+  "matched_coordinate_in_neutral_calibration": true,
+  "all_pairs_only": true,
+  "no_spatial_or_time_maximum": true,
+  "focal_counts_match_independent_evaluation": true,
+  "interpretation": "Pointwise rejection probability at each distance, not gene-level call probability or FDR."
+}

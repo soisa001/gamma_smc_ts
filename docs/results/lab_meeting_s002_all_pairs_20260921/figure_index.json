@@ -1,0 +1,82 @@
+[
+  {
+    "number": 1,
+    "stem": "01_design_and_score",
+    "title": "Design and score",
+    "category": "main",
+    "caption": "Same saved 100 s=0.002 selected simulations; no new simulations or ancestry replays. Selection begins at the 2% pulse, 50 kya. Fixed mutation/recombination rates, 25-year generations, h=0.5. Selected power is conditional on survival and observation; all fixed replicates are retained. All-pair scoring uses every sampled pair regardless of archaic allele status.",
+    "takeaway": "Compare the same decoded statistic at the same coordinate in selected and neutral regions."
+  },
+  {
+    "number": 2,
+    "stem": "02_matched_position_null",
+    "title": "Focal all-pair score distributions",
+    "category": "main",
+    "caption": "The score uses all 10,000 sampled pairs at the same 5-Mb coordinate in each region. There is no requirement for an archaic marker and no maximum across the region. Selected simulations were conditioned on allele survival and observation when generated; no further selected or neutral filtering is performed here.",
+    "takeaway": "Separation of the score distributions determines positional power."
+  },
+  {
+    "number": 3,
+    "stem": "04_positional_power",
+    "title": "Decoded focal power",
+    "category": "main",
+    "caption": "Each selected replicate is ranked against 400 neutral values at the same focal coordinate in its assigned fold; 200 held-out neutral positions per fold measure FPR. Five folds cover 1,000 neutrals. Wilson intervals describe binomial uncertainty conditional on the estimated null, not its Monte Carlo uncertainty. The all-pair score uses all 10,000 pairs.",
+    "takeaway": "Decoded all-pair power at T=50 kya is 5% at nominal 5%."
+  },
+  {
+    "number": 4,
+    "stem": "05_time_cutoff_power",
+    "title": "Decoded power across time cutoffs",
+    "category": "main",
+    "caption": "All scores are Gamma-SMC decoded and separately calibrated at each cutoff (5, 10, 20, 30, 40, 50 kya). No maximum across cutoffs enters the test. Cells use all 100 selected replicates. Cutoff comparisons are exploratory, not per-replicate tuning.",
+    "takeaway": "Calibration and power use the same decoded score and genomic coordinate."
+  },
+  {
+    "number": 5,
+    "stem": "06_positional_false_positive_rate",
+    "title": "Positional neutral FPR",
+    "category": "main",
+    "caption": "All scores are Gamma-SMC decoded and separately calibrated at each cutoff (5, 10, 20, 30, 40, 50 kya). No maximum across cutoffs enters the test. FPR is the fraction of neutral positions called, not discovery FDR. Each neutral is held out from its own calibration set; all 1,000 positions remain in the denominator. Color scales differ between nominal thresholds.",
+    "takeaway": "Calibration and power use the same decoded score and genomic coordinate."
+  },
+  {
+    "number": 6,
+    "stem": "07_truth_vs_decoding",
+    "title": "Truth versus decoded validation",
+    "category": "validation",
+    "caption": "This is the only figure that uses true TMRCA as a plotted reference. Each source has its own matching neutral calibration. The decoded rule thresholds posterior-mean TMRCA per pair; it does not average posterior probability mass. Matching the null calibrates errors but need not restore discrimination lost in decoding.",
+    "takeaway": "At 50 kya and nominal 5%, all-pair power is 19% from truth and 5% after decoding."
+  },
+  {
+    "number": 7,
+    "stem": "10_spatial_decay",
+    "title": "All-pair detection across the region",
+    "category": "main",
+    "caption": "Only all-pair scores are used. Each point is the fraction of 100 selected or 1,000 neutral regions called at that stride. Full 10-Mb results are saved; +/-500 kb is displayed without smoothing. Linked signal is not counted as a new causal target or localization error. Spatial carrier scores are unavailable from the saved labels and are omitted.",
+    "takeaway": "The positional null is matched separately at every stride; unrelated peaks never set the cutoff."
+  },
+  {
+    "number": 8,
+    "stem": "11_example_regions",
+    "title": "Example all-pair profiles",
+    "category": "backup",
+    "caption": "T=50 kya. Neutral neutral/rep0286 has focal decoded all-pair score closest to the neutral median. Selected replicate 0006 has selected AF closest to the s=0.002 median; ties use IDs. Gold shading marks a fixed 100-kb interval around 5 Mb. These examples were not selected for significant peaks and do not estimate power.",
+    "takeaway": "All-pair profiles are available across the entire saved 10-Mb region."
+  },
+  {
+    "number": 9,
+    "stem": "12_threshold_stringency",
+    "title": "Stringency sensitivity",
+    "category": "backup",
+    "caption": "Nominal 5% and 1% use 400 calibration neutrals per fold; 0.1% uses all 1,000 neutrals to rank selected regions and leave-one-out ranks for neutrals. This is a different calibration size, and only one extreme neutral rank is available. It is not precise independent validation of a 0.1% tail or genome-wide error control.",
+    "takeaway": "All-pair power at pooled p<=0.001 is 0%."
+  },
+  {
+    "number": 10,
+    "stem": "14_demography_and_assumptions",
+    "title": "Demography and decoder assumptions",
+    "category": "backup",
+    "caption": "The EAS trajectory is read from the same PHLASH-derived model used by the archived simulations. The Ne history is displayed only to 50 kya; simulation genealogies also contain the older archaic branch. Decoder Ne is theta/(4*mu)=15,000. Neutral and selected simulations share the archaic bottleneck and rate assumptions. No variable-Ne Gamma-SMC flow field or empirical recombination-map benchmark is claimed here.",
+    "takeaway": "Matched nulls address calibration under the model; they do not establish robustness to every model misspecification."
+  }
+]

@@ -1,0 +1,243 @@
+{
+  "status": "passed",
+  "pdfs": [
+    {
+      "file": "EAS_lab_meeting_figures.pdf",
+      "pages": 15,
+      "sha256": "b4f39210ded86d6fc648a8952f1d245940d021d4a9f03bcc1d0f815ce27daf90",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/01_design_and_score.pdf",
+      "pages": 1,
+      "sha256": "a093dd26803c270a040bb65333f88d9e701af9fcfa37c31177384221d1788fcf",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/02_matched_position_null.pdf",
+      "pages": 1,
+      "sha256": "a35cc5f00b826a5f0cd80c7adc4ef17016580ac49e5f43fd3b605e152e082189",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/03_allele_frequency_distribution.pdf",
+      "pages": 1,
+      "sha256": "9ddbae783a2eb5d279fc3a4dc2e2d7cba596f1daa557418dbde2641796238b6a",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/04_positional_power.pdf",
+      "pages": 1,
+      "sha256": "405a17dbb6d68f8c6717e2f751dcbb8562ae1eeb55c890762570c1dc18f49fa5",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/05_time_cutoff_power.pdf",
+      "pages": 1,
+      "sha256": "75a05a88e0e72bd0203efd20d6767dc7db0220ef36bdb6e5e2b21abcf626a88e",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/06_positional_false_positive_rate.pdf",
+      "pages": 1,
+      "sha256": "399e0767dacc942238e752436139bc03ca93032b3fecc6652dddf960e889a547",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/07_truth_vs_decoding.pdf",
+      "pages": 1,
+      "sha256": "d4e22b774fba8e125543722376073b35d215f478215f8dda0b10fc6cda1f77b1",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/08_gain_beyond_allele_frequency.pdf",
+      "pages": 1,
+      "sha256": "00be6aa5df42e665e3306463964e20ec633b60efcd9f371040811a2deafd29f8",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/09_ihs_and_sweep_completion.pdf",
+      "pages": 1,
+      "sha256": "93b5317d0811fde7257632185876ac027860b0c0bbd1fed835bbe7a81ebef7e9",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/10_spatial_decay.pdf",
+      "pages": 1,
+      "sha256": "e31746856c03b0684d4f611bc34ded35b26fe18b2a8450596518888dfe9bc839",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/11_example_regions.pdf",
+      "pages": 1,
+      "sha256": "31d758cb82c0ea67811cea4925dceb4215d63d2ee5d1e8855d9413ca43376c89",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/12_threshold_stringency.pdf",
+      "pages": 1,
+      "sha256": "9b801f949234f269f5c2287fc22f652675449c2fe5e83592e0ea1b1e5d89328c",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/13_carrier_genealogies.pdf",
+      "pages": 1,
+      "sha256": "e1af1a06297ba7dfaf19cae76d3395d081918f936b03873dbebad07d7eef3aef",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/14_demography_and_assumptions.pdf",
+      "pages": 1,
+      "sha256": "b0f36b5cd6f2ebd5e3dcd1f29571c9885357b9a8ea1888b3ff6cd02763d8b166",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/15_pair_class_coalescence.pdf",
+      "pages": 1,
+      "sha256": "64a7194de257c545b822286004d784787825fcf089fcd66f5c6b75809ea8b043",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    }
+  ],
+  "pngs": [
+    {
+      "file": "figures/01_design_and_score.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/02_matched_position_null.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/03_allele_frequency_distribution.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/04_positional_power.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/05_time_cutoff_power.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/06_positional_false_positive_rate.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/07_truth_vs_decoding.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/08_gain_beyond_allele_frequency.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/09_ihs_and_sweep_completion.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/10_spatial_decay.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/11_example_regions.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/12_threshold_stringency.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/13_carrier_genealogies.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/14_demography_and_assumptions.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/15_pair_class_coalescence.png",
+      "width": 3199,
+      "height": 1800
+    }
+  ],
+  "visual_review": "All 15 combined-PDF pages rendered with Poppler and visually inspected, including a full-size check of page 07; large readable text, clear legends, and no clipping or overlaps. PDF source checks match the s=0.002 cohort and all primary TMRCA is decoded."
+}

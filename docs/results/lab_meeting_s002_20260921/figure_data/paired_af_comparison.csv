@@ -1,0 +1,25 @@
+source,alpha,s,method,n,af_called,mass_called,mass_only,af_only,power_difference,paired_exact_p,interpretation
+decoded,0.01,0.002,mass_10000,100,41,33,1,9,-0.07999999999999996,0.021484375,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.01,0.002,mass_20000,100,41,35,1,7,-0.06,0.0703125,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.01,0.002,mass_30000,100,41,33,0,8,-0.07999999999999996,0.0078125,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.01,0.002,mass_40000,100,41,36,0,5,-0.04999999999999999,0.0625,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.01,0.002,mass_5000,100,41,33,1,9,-0.07999999999999996,0.021484375,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.01,0.002,mass_50000,100,41,38,0,3,-0.02999999999999997,0.25,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.05,0.002,mass_10000,100,70,69,2,3,-0.010000000000000009,1.0,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.05,0.002,mass_20000,100,70,69,2,3,-0.010000000000000009,1.0,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.05,0.002,mass_30000,100,70,70,0,0,0.0,1.0,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.05,0.002,mass_40000,100,70,71,1,0,0.010000000000000009,1.0,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.05,0.002,mass_5000,100,70,67,3,6,-0.029999999999999916,0.5078125,exploratory; unadjusted across time cutoffs and selection arms
+decoded,0.05,0.002,mass_50000,100,70,69,0,1,-0.010000000000000009,1.0,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.01,0.002,mass_10000,100,41,44,7,4,0.030000000000000027,0.548828125,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.01,0.002,mass_20000,100,41,39,3,5,-0.019999999999999962,0.7265625,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.01,0.002,mass_30000,100,41,41,6,6,0.0,1.0,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.01,0.002,mass_40000,100,41,38,1,4,-0.02999999999999997,0.375,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.01,0.002,mass_5000,100,41,38,4,7,-0.02999999999999997,0.548828125,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.01,0.002,mass_50000,100,41,43,3,1,0.020000000000000018,0.625,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.05,0.002,mass_10000,100,70,67,3,6,-0.029999999999999916,0.5078125,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.05,0.002,mass_20000,100,70,73,4,1,0.030000000000000027,0.375,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.05,0.002,mass_30000,100,70,71,2,1,0.010000000000000009,1.0,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.05,0.002,mass_40000,100,70,69,0,1,-0.010000000000000009,1.0,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.05,0.002,mass_5000,100,70,58,1,13,-0.12,0.0018310546875,exploratory; unadjusted across time cutoffs and selection arms
+truth,0.05,0.002,mass_50000,100,70,70,0,0,0.0,1.0,exploratory; unadjusted across time cutoffs and selection arms

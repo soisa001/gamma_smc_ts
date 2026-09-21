@@ -19,12 +19,14 @@ METHODS = ["af"] + [f"{family}_{t}" for t in CUTOFFS for family in ("all", "mass
 
 
 def read_point(item):
-    directory = ROOT / "eas_joint_scan/profiles" / item["key"]
+    directory = Path(item.get("profile_root", ROOT / "eas_joint_scan/profiles")) / item["key"]
     receipt = json.loads((directory / "complete.json").read_text())
     if digest(directory / "features.npz") != receipt["outputs"]["features.npz"]["sha256"]:
         raise ValueError(f"Corrupt saved profile: {directory}")
     with np.load(directory / "features.npz", allow_pickle=False) as features:
         index = 500  # 5 Mb on the existing 10 kb grid.
+        if "carrier_labels_known" in features:
+            assert features["carrier_labels_known"][index]
         marker = int(features["grid_markers"][index])
         af = float(features["site_af"][marker]) if marker >= 0 else 0.
         counts, denominators = features["grid_counts"][:, index], features["grid_n"][index]
@@ -43,7 +45,7 @@ def read_point(item):
                 marker_position=coordinate, values=values, profile_sha256=digest(directory / "features.npz"))
 
 
-def main(out=OUT, focal_dir=ROOT / "eas_h400_pause_evaluation_20260917"):
+def main(out=OUT, focal_dir=ROOT / "eas_h400_pause_evaluation_20260917", selected_s=.005, selected_profiles=None, only_selected_s=False):
     OUT = out
     OUT.mkdir(parents=True, exist_ok=True)
     old = ROOT / "eas_allele_class_ablation"
@@ -51,6 +53,9 @@ def main(out=OUT, focal_dir=ROOT / "eas_h400_pause_evaluation_20260917"):
     if digest(old / "regions.csv") != artifact["regions.csv"]["sha256"]:
         raise ValueError("Corrupt fold assignments")
     regions = pd.read_csv(old / "regions.csv")
+    if selected_profiles is not None:
+        regions["profile_root"] = str(ROOT / "eas_joint_scan/profiles")
+        regions.loc[regions.key.str.startswith("onset50000/"), "profile_root"] = str(selected_profiles)
     # Read-only feature extraction; simulation generation remains paused.
     with ThreadPoolExecutor(max_workers=4) as pool:
         points = list(pool.map(read_point, regions.to_dict("records")))
@@ -62,17 +67,19 @@ def main(out=OUT, focal_dir=ROOT / "eas_h400_pause_evaluation_20260917"):
     if digest(focal_dir / "focal_truth.csv") != focal_artifacts["focal_truth.csv"]["sha256"]:
         raise ValueError("Corrupt selected focal truth")
     selected = pd.read_csv(focal_dir / "focal_truth.csv")
+    if only_selected_s:
+        selected = selected[selected.s == selected_s].reset_index(drop=True)
     values = np.zeros((len(selected), len(METHODS)))
     values[:, 0] = selected.sample_af
     for k, method in enumerate(METHODS[1:], 1):
         values[:, k] = selected[method]
     selected_folds = np.array([by_key[f"onset50000/rep{int(r):04d}"]["fold"] for r in selected.replicate])
     for j, row in selected.iterrows():
-        if row.s == .005:
+        if row.s == selected_s:
             np.testing.assert_allclose(values[j], by_key[f"onset50000/rep{int(row.replicate):04d}"]["values"][0], atol=1e-14, rtol=0)
     predictions = []
     for src, source in enumerate(("truth", "decoded")):
-        source_selected = np.flatnonzero(np.ones(len(selected), dtype=bool) if source == "truth" else selected.s == .005)
+        source_selected = np.flatnonzero(np.ones(len(selected), dtype=bool) if source == "truth" else selected.s == selected_s)
         for fold in range(5):
             cal = np.isin(neutral_folds, [(fold+3)%5, (fold+4)%5])
             test = neutral_folds == fold
@@ -118,7 +125,7 @@ def main(out=OUT, focal_dir=ROOT / "eas_h400_pause_evaluation_20260917"):
     atomic_json(OUT / "audit.json", dict(status="passed", neutral_positions=1000,
         neutral_positions_with_archaic_marker=sum(p["marker_present"] for p in neutral_items),
         truth_selected_positions=len(selected), decoded_selected_positions=100,
-        s005_truth_matches_existing_profiles=True, pvalues_recomputed=True, regional_maximum_used=False))
+        selection_coefficient=selected_s, focal_truth_matches_existing_profiles=True, pvalues_recomputed=True, regional_maximum_used=False))
     atomic_json(OUT / "provenance.json", dict(source_sha256=digest(Path(__file__)), focal_truth_sha256=digest(focal_dir / "focal_truth.csv"),
         fold_reference_sha256=digest(old / "regions.csv"), marker_radius_bp=5000, tmrca_position_bp=5_000_000,
         cutoffs_years=CUTOFFS, methods=METHODS, calibration_regions_per_fold=400, holdout_regions_per_fold=200,
@@ -134,5 +141,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=OUT)
     parser.add_argument("--focal-dir", type=Path, default=ROOT / "eas_h400_pause_evaluation_20260917")
+    parser.add_argument("--selected-s", type=float, default=.005)
+    parser.add_argument("--selected-profiles", type=Path)
+    parser.add_argument("--only-selected-s", action="store_true")
     args = parser.parse_args()
-    main(args.out, args.focal_dir)
+    main(args.out, args.focal_dir, args.selected_s, args.selected_profiles, args.only_selected_s)

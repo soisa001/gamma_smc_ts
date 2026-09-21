@@ -189,14 +189,19 @@ def local_null(book, neutral, region_max):
         "Only 4.3% of neutral focal positions reach 18% AF; unrelated peaks elsewhere do not enter the local test.")
 
 
-def allele_frequency(book, focal, neutral):
-    fig, axes=canvas("Selection shifts local archaic-allele frequency", "Completed cohort: 100 selected replicates per coefficient; 1,000 neutral focal positions")
+def allele_frequency(book, focal, neutral, focus_s=None):
+    subtitle="Completed cohort: 100 selected replicates per coefficient; 1,000 neutral focal positions"
+    if focus_s is not None:
+        subtitle=f"s={focus_s:.3f} highlighted | genotype-based context across the completed selection grid"
+    fig, axes=canvas("Selection shifts local archaic-allele frequency", subtitle)
     ax=axes[0,0]
     fig.subplots_adjust(bottom=.26)
     groups=[neutral.af.to_numpy()]+[focal.loc[focal.s == s,"sample_af"].to_numpy() for s in S]
     bp=ax.boxplot(groups,positions=np.arange(11),widths=.60,whis=(5,95),showfliers=False,patch_artist=True,
         medianprops=dict(color="white",lw=2.2))
     for j,box in enumerate(bp["boxes"]):box.set(facecolor=C["af"] if j==0 else C["mass"],alpha=.92)
+    if focus_s is not None:
+        bp["boxes"][int(np.flatnonzero(np.isclose(S,focus_s))[0])+1].set(facecolor=C["all"],edgecolor="#142E42",linewidth=2)
     ax.plot(np.arange(11),[g.mean() for g in groups],"D",color="#172E41",ms=5,label="Mean")
     ax.axhline(.02,color="#B84945",ls="--",label="Nominal 2% pulse",lw=1.6)
     ax.set_xticks(np.arange(11),["Neutral"]+[f"{s:.3f}" for s in S],rotation=25,ha="right")
@@ -311,8 +316,11 @@ def gain(book, metrics, paired):
         "The decoded s=0.005 cohort is near the power ceiling for both AF and carrier mass; weaker-selection gains remain untested.")
 
 
-def ihs_comparison(book, ihs, regions):
-    fig,axes=canvas("iHS is strongest before the target approaches fixation", "Conventional frequency-standardized iHS | all selected replicates retained",cols=2)
+def ihs_comparison(book, ihs, regions, focus_s=None):
+    subtitle="Conventional frequency-standardized iHS | all selected replicates retained"
+    if focus_s is not None:
+        subtitle=f"s={focus_s:.3f} marked | genotype-based context; all selected replicates retained"
+    fig,axes=canvas("iHS is strongest before the target approaches fixation", subtitle,cols=2)
     ax=axes[0,0]
     for method,label,color in (("nearest_core_abs_ihs","Positional iHS",C["ihs"]),("focal_100kb_extreme_fraction","Fixed 100-kb window",C["mass"])):
         z=ihs[(ihs.method==method)&(ihs.alpha==.05)].sort_values("s")
@@ -328,6 +336,9 @@ def ihs_comparison(book, ihs, regions):
     h1,l1=axes[0,0].get_legend_handles_labels();h2,l2=ax.get_legend_handles_labels()
     legend(fig,h1+h2,l1+l2,ncol=2)
     fig.subplots_adjust(top=.68)
+    if focus_s is not None:
+        for panel in axes[0]:
+            panel.axvline(focus_s,color="#B84945",ls="--",lw=1.5,zorder=2)
     finish(book,fig,"09_ihs_and_sweep_completion","iHS power and target-site eligibility",
         "The two iHS curves represent separately calibrated endpoints. Positional iHS uses the nearest finite-scoring core with MAF>=5% within 5 kb; the fixed 100-kb endpoint uses the fraction of finite-scoring cores with |standardized iHS|>2, requiring at least 20 cores. Right: exact focal-SNP eligibility, not eligibility of the fallback positional statistic. Fixation and missing/undefined scores never remove replicates from the denominator.",
         "Near fixation, the selected SNP is often unscorable by iHS; nearby SNPs may still carry signal.")
@@ -476,8 +487,8 @@ def demography(book, cfg):
         "Matched nulls address calibration under the model; they do not establish robustness to every model misspecification.",category="backup")
 
 
-def pair_classes(book, all_profiles):
-    fig,axes=canvas("Gamma-SMC recency among archaic ALT/ALT pairs", "Decoded focal TMRCA | pairs pooled within each class | s=0.005 selected versus neutral")
+def pair_classes(book, all_profiles, selection_s=.005):
+    fig,axes=canvas("Gamma-SMC recency among archaic ALT/ALT pairs", f"Decoded focal TMRCA | pairs pooled within each class | s={selection_s:.3f} selected versus neutral")
     records=[]
     for ax,source,src in ((axes[0,0],"decoded",1),):
         for selected,style in ((True,"-"),(False,"--")):

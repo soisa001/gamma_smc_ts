@@ -1,0 +1,254 @@
+{
+  "package": "EAS lab meeting figures, 2026-09-21",
+  "source_sha256": "7d4c04ffa896d1b538f33cd0d0a1e9d808fe4215a2fbf3d2de5a7e248b3be28f",
+  "files": {
+    "README.md": {
+      "sha256": "40ecf1fa2e5ba146e05b8c72984cb35a6185a77b2defa55676777b342be05e12",
+      "bytes": 10753
+    },
+    "REPRODUCE.md": {
+      "sha256": "f27b7759f245bd4f2ea526ffeb0595d4a96a3698b60f86eaa60dce9d2e165264",
+      "bytes": 1701
+    },
+    "figure_index.json": {
+      "sha256": "1e43338f9bed35e6eb1d2ddbec95766975439855c747f6b8626569d70d44f50b",
+      "bytes": 9338
+    },
+    "figure_provenance.json": {
+      "sha256": "d0f9a71fe85bc78b90f8c2ddb8ad13f2a77920cd8da9f1c9f92456cb8b6e3810",
+      "bytes": 179313
+    },
+    "layout_checks.json": {
+      "sha256": "0470a741e6ee45bee516f2a145c4f25a04f7b99ed85ceb65e86645962c2aa89c",
+      "bytes": 1216
+    },
+    "quality_checks.json": {
+      "sha256": "67f006d9eea585f46458d38040609448ede1756cdd4804ac867bfc5963e99a2e",
+      "bytes": 6308
+    },
+    "EAS_lab_meeting_figures.pdf": {
+      "sha256": "b4f39210ded86d6fc648a8952f1d245940d021d4a9f03bcc1d0f815ce27daf90",
+      "bytes": 145560
+    },
+    "plot_sources.json": {
+      "sha256": "a7f5427e8db39618b1d24881fc0b972ab85c5a03e58b7d445cac71418f15ac75",
+      "bytes": 495
+    },
+    "figures/01_design_and_score.pdf": {
+      "sha256": "a093dd26803c270a040bb65333f88d9e701af9fcfa37c31177384221d1788fcf",
+      "bytes": 29183
+    },
+    "figures/01_design_and_score.png": {
+      "sha256": "4e88d52b73bea50721adc80fba0a7ea39bfa30a35c1871b3b2c700ad4c35e602",
+      "bytes": 232050
+    },
+    "figures/02_matched_position_null.pdf": {
+      "sha256": "a35cc5f00b826a5f0cd80c7adc4ef17016580ac49e5f43fd3b605e152e082189",
+      "bytes": 30512
+    },
+    "figures/02_matched_position_null.png": {
+      "sha256": "5b46d45b6784130f90c905a6e32a20593c14c1cc55b9afce24d24a9cebaf8028",
+      "bytes": 290269
+    },
+    "figures/03_allele_frequency_distribution.pdf": {
+      "sha256": "9ddbae783a2eb5d279fc3a4dc2e2d7cba596f1daa557418dbde2641796238b6a",
+      "bytes": 27980
+    },
+    "figures/03_allele_frequency_distribution.png": {
+      "sha256": "c0994f16ca88c56ae17785025ac5013ea678af72b728dd90ae7b13c1f8519cd7",
+      "bytes": 208430
+    },
+    "figures/04_positional_power.pdf": {
+      "sha256": "405a17dbb6d68f8c6717e2f751dcbb8562ae1eeb55c890762570c1dc18f49fa5",
+      "bytes": 24917
+    },
+    "figures/04_positional_power.png": {
+      "sha256": "0ca2d8a5d0650857c77178c17bd4780f968e084f2d7e6472580dec2af1e6bc05",
+      "bytes": 267334
+    },
+    "figures/05_time_cutoff_power.pdf": {
+      "sha256": "75a05a88e0e72bd0203efd20d6767dc7db0220ef36bdb6e5e2b21abcf626a88e",
+      "bytes": 30730
+    },
+    "figures/05_time_cutoff_power.png": {
+      "sha256": "25f750a689a957fd0bd4c19ff0f5a0fa817dcde6ce9697cd2ddd9306cf09cea7",
+      "bytes": 213646
+    },
+    "figures/06_positional_false_positive_rate.pdf": {
+      "sha256": "399e0767dacc942238e752436139bc03ca93032b3fecc6652dddf960e889a547",
+      "bytes": 26098
+    },
+    "figures/06_positional_false_positive_rate.png": {
+      "sha256": "a23a486a194e85f16c61ef2256a0d1a2620e2934083234561d2f9db2c486d201",
+      "bytes": 205120
+    },
+    "figures/07_truth_vs_decoding.pdf": {
+      "sha256": "d4e22b774fba8e125543722376073b35d215f478215f8dda0b10fc6cda1f77b1",
+      "bytes": 30332
+    },
+    "figures/07_truth_vs_decoding.png": {
+      "sha256": "f66353fbb89695a4abd0cfb165e2a53907473cfd7de25737a7b3cfcd886e3037",
+      "bytes": 306715
+    },
+    "figures/08_gain_beyond_allele_frequency.pdf": {
+      "sha256": "00be6aa5df42e665e3306463964e20ec633b60efcd9f371040811a2deafd29f8",
+      "bytes": 27574
+    },
+    "figures/08_gain_beyond_allele_frequency.png": {
+      "sha256": "3c4b6215301e7115bc26dc8ac8f534de1799f316c4cd7fcd930060ab4a4dd463",
+      "bytes": 256017
+    },
+    "figures/09_ihs_and_sweep_completion.pdf": {
+      "sha256": "93b5317d0811fde7257632185876ac027860b0c0bbd1fed835bbe7a81ebef7e9",
+      "bytes": 34147
+    },
+    "figures/09_ihs_and_sweep_completion.png": {
+      "sha256": "a242e6ada8b476c8f6586bc6b540892c22d39d0008c2b93a32dacca5e6eeed38",
+      "bytes": 411199
+    },
+    "figures/10_spatial_decay.pdf": {
+      "sha256": "e31746856c03b0684d4f611bc34ded35b26fe18b2a8450596518888dfe9bc839",
+      "bytes": 25813
+    },
+    "figures/10_spatial_decay.png": {
+      "sha256": "e977460f153ded7793aaf7b19a3e55a04f534ad7dcda6d5f7aacbf8825c050b6",
+      "bytes": 370516
+    },
+    "figures/11_example_regions.pdf": {
+      "sha256": "31d758cb82c0ea67811cea4925dceb4215d63d2ee5d1e8855d9413ca43376c89",
+      "bytes": 45225
+    },
+    "figures/11_example_regions.png": {
+      "sha256": "0e88665d7182d902aa7daf36edcb6a06e0b6a1458cadd565e19b5af513f8982d",
+      "bytes": 377336
+    },
+    "figures/12_threshold_stringency.pdf": {
+      "sha256": "9b801f949234f269f5c2287fc22f652675449c2fe5e83592e0ea1b1e5d89328c",
+      "bytes": 22499
+    },
+    "figures/12_threshold_stringency.png": {
+      "sha256": "befd7e278e29734d46ae5a170ff51bba2309e0588cb10dab7e29c622b8791e95",
+      "bytes": 209729
+    },
+    "figures/13_carrier_genealogies.pdf": {
+      "sha256": "e1af1a06297ba7dfaf19cae76d3395d081918f936b03873dbebad07d7eef3aef",
+      "bytes": 30044
+    },
+    "figures/13_carrier_genealogies.png": {
+      "sha256": "1e7090e2eff9de5927df7cf39f6e8bbc6d9ccd3a3bf8626fd2c4b0be8d55dd19",
+      "bytes": 380272
+    },
+    "figures/14_demography_and_assumptions.pdf": {
+      "sha256": "b0f36b5cd6f2ebd5e3dcd1f29571c9885357b9a8ea1888b3ff6cd02763d8b166",
+      "bytes": 42761
+    },
+    "figures/14_demography_and_assumptions.png": {
+      "sha256": "467cea1b860198acfb747b85eae446293182c255ed1f781e41b74434546cb87e",
+      "bytes": 300166
+    },
+    "figures/15_pair_class_coalescence.pdf": {
+      "sha256": "64a7194de257c545b822286004d784787825fcf089fcd66f5c6b75809ea8b043",
+      "bytes": 29803
+    },
+    "figures/15_pair_class_coalescence.png": {
+      "sha256": "0a1427161be033c0d177ac340f2e63f0e2a2b3511783bd6a44301d18375dbc55",
+      "bytes": 272130
+    },
+    "figure_data/calibration_thresholds.csv": {
+      "sha256": "a373ade015bc54ff020bca8e13879a4f9a59a588800cb546718f17164b80a129",
+      "bytes": 9061
+    },
+    "figure_data/decoded_carrier_score_components.csv": {
+      "sha256": "b2fcbd2a05218e03d7a86a51ac062e23c0221187b401908494faa0dbac10b5c7",
+      "bytes": 16196
+    },
+    "figure_data/distance_metrics.csv": {
+      "sha256": "e98ab743891a5710dc440478b9ceb6318591fe7c673cdb1ce511b1e2379f7904",
+      "bytes": 1497054
+    },
+    "figure_data/eas_demography.csv": {
+      "sha256": "125db89614d88105b21d7570c80612f6405ab120e983654bc3d1d5f505e1f605",
+      "bytes": 344751
+    },
+    "figure_data/example_all_pair_profiles.csv": {
+      "sha256": "b33b7cbf887f7e8f228c7c22b888a5abc1814aff53a0ed00866b82b569350fc2",
+      "bytes": 64580
+    },
+    "figure_data/figure04_decoded_power.csv": {
+      "sha256": "483b2a0095ca89af78e270a5f43fba007843534e1574d8156ae2a3aa48d4e3d3",
+      "bytes": 324
+    },
+    "figure_data/focal_truth.csv": {
+      "sha256": "9f65e2c74dedc50a2f7231e07dc9c7866b02491e01d78a83fe36be3707ddf886",
+      "bytes": 259549
+    },
+    "figure_data/ihs_metrics.csv": {
+      "sha256": "a7af8ecf8088df5a4cbcfbe58b7f06f1465da382d79c38f6ca28716e717c1c74",
+      "bytes": 4734
+    },
+    "figure_data/ihs_regions.csv": {
+      "sha256": "42c02ade1153d047e61925a5796f7a0dbbb7c5bc2e8467aa9585f2118b04c932",
+      "bytes": 125184
+    },
+    "figure_data/neutral_focal_af.csv": {
+      "sha256": "5cbc8b0018fceb3f73dd6620362f99602610f30f498f8928f1ec0a579e259899",
+      "bytes": 95810
+    },
+    "figure_data/pair_class_recency.csv": {
+      "sha256": "abc214fc6c8444fc46f39cbe811d232288e3adc624ddb384bca9bfd6722bdce7",
+      "bytes": 1523
+    },
+    "figure_data/paired_af_comparison.csv": {
+      "sha256": "f1193ec5ada93267dffa0544533d346654e7f87f492a91972989c86101c46a61",
+      "bytes": 3262
+    },
+    "figure_data/pooled_rank_metrics.csv": {
+      "sha256": "5e2cfc35823b85add089b3db035445503542272e76ed4e1e62a12f2e4cf4c700",
+      "bytes": 3322
+    },
+    "figure_data/positional_metrics.csv": {
+      "sha256": "550cfcf83b4a5fdd0378f8e46fdafec83b23884c681a25226bf93dff8abe26db",
+      "bytes": 2860
+    },
+    "analysis_audit/distance_audit.json": {
+      "sha256": "2fbdcf376d9216596d92adae10056e387e6ee97c59b764551561b9fcfc2c9f62",
+      "bytes": 422
+    },
+    "analysis_audit/distance_provenance.json": {
+      "sha256": "416ad6f78796db30fd3728ac4498da7b94074a509f3f440326a533c2c9d7d56b",
+      "bytes": 100843
+    },
+    "analysis_audit/ihs_analysis_provenance.json": {
+      "sha256": "beb1f545c91ec3822891df4d43a9d76fa3f539dd8ea83b610ad8de5165568956",
+      "bytes": 191623
+    },
+    "analysis_audit/ihs_audit.json": {
+      "sha256": "2982e6180a6196c0e1f71783092a36d4bb6b5b72cc6f5839e73783da4e5f69d2",
+      "bytes": 445
+    },
+    "analysis_audit/positional_audit.json": {
+      "sha256": "12e1811f3cd9fcefbdda3db3520eeea352632d98ec6982248d8f40424346debf",
+      "bytes": 321
+    },
+    "analysis_audit/positional_provenance.json": {
+      "sha256": "bb00951ebc122525b7cc09c1b3f33fabde7237d45d3ac06d95bfdf9abb5c38d9",
+      "bytes": 101486
+    },
+    "analysis_audit/positional_supplement_audit.json": {
+      "sha256": "d6f92d0fa37422f9829ca6219c454c87302739586c1dc299822c9b4edf31d802",
+      "bytes": 603
+    },
+    "analysis_audit/saved_decoding_manifest.json": {
+      "sha256": "2149473e4f2bcf184dc1644c289182b952a9ef22573a9e79a4d41d55ab7704bd",
+      "bytes": 91499
+    },
+    "analysis_audit/saved_decoding_status.json": {
+      "sha256": "f612e2d336f69ccba40663c506aca4ecb1b877549c1815655f0f4403f86a4410",
+      "bytes": 81
+    },
+    "analysis_audit/source_validation.json": {
+      "sha256": "11acd9e94679849924482fa70563124da02746274a813ce03c5aa1cf9e1b3e97",
+      "bytes": 589
+    }
+  }
+}

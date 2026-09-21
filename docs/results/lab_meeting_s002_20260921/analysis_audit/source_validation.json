@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "selected_s": 0.002,
+  "selected_regions": 100,
+  "neutral_regions": 1000,
+  "matched_neutral_counts_equal_original_pack": true,
+  "identical_decoder_binary_and_pair_manifest_in_all_1100_profiles": true,
+  "all_pair_only_data_exact_subset": true,
+  "no_s005_labels_in_decoded_figures": true,
+  "no_carrier_labels_in_all_pair_only_figures": true,
+  "PDF_pages": 15,
+  "relevant_tests": "9 passed: tests/test_joint_scan.py and tests/test_pair_class_profiles.py",
+  "source_sha256": "2f28c66f0d1b0ab0035355ae513da7168bcc0451b7c087bb79ec558f75f64035"
+}
