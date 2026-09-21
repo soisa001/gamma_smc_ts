@@ -1,6 +1,6 @@
 {
   "package": "EAS lab meeting figures, 2026-09-21",
-  "source_sha256": "3742e1cd2e00557d5f2675fe233f0a29b970f2ef070c880db45f864c4117cab6",
+  "source_sha256": "a5947fc58d4fe7a028d038388b9c91b7b66ec333d2e6fda71a4ae2faeeab3efe",
   "files": {
     "README.md": {
       "sha256": "842ba79446bc1b5ccbe9a510660c91ae856862b85074524c6a0073f571c84c83",
@@ -29,6 +29,10 @@
     "EAS_lab_meeting_figures.pdf": {
       "sha256": "1980ba192995a317ea62dc5e67692508adcffa976fa19976335c14d850953f4b",
       "bytes": 162986
+    },
+    "AF_TAIL_AUDIT.md": {
+      "sha256": "8c6b9bd6978a1f337e4f5636d5780c94a2c294b44c81fe2a8613e02f9cac4a9c",
+      "bytes": 1590
     },
     "figures/01_design_and_score.pdf": {
       "sha256": "d476a4949301a14fc6957a93a6b649f7a710ba9be23684a2fad5f0845c3b1aa0",
@@ -201,6 +205,22 @@
     "figure_data/positional_metrics.csv": {
       "sha256": "45b2033f17437d89d36f342a3f5cfefc677b69c4e1623a054c42fb76a5a1828b",
       "bytes": 15047
+    },
+    "analysis_audit/af_tail_af_tail_by_s.csv": {
+      "sha256": "a3f9fa367bfd6b552fecdf3c4fb89dc9bf1842bffcaa3d4877528f8e8c2560ca",
+      "bytes": 536
+    },
+    "analysis_audit/af_tail_audit.json": {
+      "sha256": "136fa6cd2cdadaf4657ed28f3806d47c7624e3bd27238f9b97ec3c8955f83cb0",
+      "bytes": 682
+    },
+    "analysis_audit/af_tail_s006_lower_tail.csv": {
+      "sha256": "26e7fd68a97443ce1b4b18ee4f94779e95bc0ba764cbf015bab9dd3aaed973b3",
+      "bytes": 1437
+    },
+    "analysis_audit/af_tail_selected_endpoint_audit.csv": {
+      "sha256": "8a196b5e032ab965dbd49728d36743ebf101016c8c69465a7c4034601762c4db",
+      "bytes": 123230
     },
     "analysis_audit/focal_audit.json": {
       "sha256": "bdada0bb1b99ef040edbbb48ec6fc332df19c26b19515f482eeda6f392906957",

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "selected_audited": 1000,
+  "source_sha256": "202e2a91b0b54d644d66ebc4f244039ee1ca0ed79cc0c4b0e5410ab61389a700",
+  "input_inventory_sha256": "f4e8a2125241ab5c04c638898c0a350427216a4b29ec829d1728bd45a1741a47",
+  "workers": 20,
+  "s006_below_50": 10,
+  "s006_min_sample_af": 0.0575,
+  "s006_min_sample_corresponding_census_af": 0.05227846419556264,
+  "historical_af_fields_found": 0,
+  "accepted_replay_seconds_sum": 220364.810940822,
+  "interpretation": "Endpoint integrity passed; stochastic historical paths cannot be inferred from terminal samples. Replay is needed to check the actual trajectory.",
+  "new_simulations": false,
+  "replacements": false
+}

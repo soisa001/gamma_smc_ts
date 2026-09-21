@@ -103,6 +103,7 @@ scripts/audit_pair_class_profiles.py text eol=lf
 # Presentation artifacts carry SHA-256 inventories; preserve their exact bytes.
 docs/results/lab_meeting_20260921/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 scripts/prepare_lab_meeting.py text eol=lf
+scripts/audit_selected_af_tail.py text eol=lf
 scripts/lab_meeting_figures.py text eol=lf
 scripts/package_lab_meeting_figures.py text eol=lf
 scripts/launch_lab_meeting_figures.sh text eol=lf

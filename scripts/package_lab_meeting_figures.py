@@ -73,6 +73,11 @@ def main(root, export_to, visual_review):
         for name in ("audit.json", "provenance.json", "analysis_provenance.json", "supplement_audit.json"):
             if (source/name).exists():
                 shutil.copyfile(source/name, audits/f"{prefix}_{name}")
+    tail_audit = root/"analysis/trajectory_audit"
+    if (tail_audit/"audit.json").exists():
+        assert json.loads((tail_audit/"audit.json").read_text())["status"] == "passed"
+        for name in ("audit.json", "selected_endpoint_audit.csv", "s006_lower_tail.csv", "af_tail_by_s.csv"):
+            shutil.copyfile(tail_audit/name, audits/f"af_tail_{name}")
     shutil.copyfile(root/"analysis/positional/calibration_thresholds.csv", root/"figure_data/calibration_thresholds.csv")
     (root/"REPRODUCE.md").write_text("""# Reproduce this figure collection
 
@@ -110,6 +115,8 @@ review recorded in `quality_checks.json` applies only to its exact PDF hashes.
 """, encoding="utf-8", newline="\n")
     names = ["README.md", "REPRODUCE.md", "figure_index.json", "figure_provenance.json",
              "layout_checks.json", "quality_checks.json", "EAS_lab_meeting_figures.pdf"]
+    if (root/"AF_TAIL_AUDIT.md").exists():
+        names.append("AF_TAIL_AUDIT.md")
     paths = [root/name for name in names]
     for folder in ("figures", "figure_data", "analysis_audit"):
         paths.extend(sorted((root/folder).glob("*")))
