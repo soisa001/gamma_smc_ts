@@ -1,5 +1,9 @@
 **Primary endpoint updated to a matched position or gene window.**
 
+**Completed-cohort update (21 September 2026):** the tables below are the
+earlier 947-selected snapshot. See the [lab meeting figure collection](lab_meeting_figures.md)
+for the completed 1,000-selected cohort, refreshed iHS, and presentation figures.
+
 The user's clarified question is whether a particular position or gene has a
 signal unusual under neutrality at that same position or within that same
 gene-sized window. A peak elsewhere in the 10-Mb neutral region is irrelevant

@@ -1,4 +1,5 @@
 """Matched-position AF and carrier-TMRCA calibration, without regional maxima."""
+import argparse
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
@@ -42,7 +43,8 @@ def read_point(item):
                 marker_position=coordinate, values=values, profile_sha256=digest(directory / "features.npz"))
 
 
-def main():
+def main(out=OUT, focal_dir=ROOT / "eas_h400_pause_evaluation_20260917"):
+    OUT = out
     OUT.mkdir(parents=True, exist_ok=True)
     old = ROOT / "eas_allele_class_ablation"
     artifact = json.loads((old / "artifact_manifest.json").read_text())
@@ -56,7 +58,6 @@ def main():
     neutral_items = [p for p in points if p["key"].startswith("neutral/")]
     neutral_values = np.array([p["values"] for p in neutral_items])
     neutral_folds = np.array([p["fold"] for p in neutral_items])
-    focal_dir = ROOT / "eas_h400_pause_evaluation_20260917"
     focal_artifacts = json.loads((focal_dir / "artifact_manifest.json").read_text())
     if digest(focal_dir / "focal_truth.csv") != focal_artifacts["focal_truth.csv"]["sha256"]:
         raise ValueError("Corrupt selected focal truth")
@@ -130,4 +131,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out", type=Path, default=OUT)
+    parser.add_argument("--focal-dir", type=Path, default=ROOT / "eas_h400_pause_evaluation_20260917")
+    args = parser.parse_args()
+    main(args.out, args.focal_dir)

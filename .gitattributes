@@ -99,3 +99,11 @@ docs/pair_class_results.md text eol=lf
 docs/results/pair_classes/**/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/results/pair_classes/**/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 scripts/audit_pair_class_profiles.py text eol=lf
+
+# Presentation artifacts carry SHA-256 inventories; preserve their exact bytes.
+docs/results/lab_meeting_20260921/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+scripts/prepare_lab_meeting.py text eol=lf
+scripts/lab_meeting_figures.py text eol=lf
+scripts/package_lab_meeting_figures.py text eol=lf
+scripts/launch_lab_meeting_figures.sh text eol=lf
+docs/lab_meeting_figures.md text eol=lf

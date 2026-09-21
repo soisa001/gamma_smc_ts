@@ -285,7 +285,9 @@ def analyze(items, cfg, out, fold_path, workers):
         source_sha256=digest(Path(__file__)), fold_reference_sha256=digest(fold_path),
         raw_receipt_hashes={item["task_id"]: d["raw_receipt_sha256"] for item, d in zip(items, loaded)},
         versions={m: importlib.metadata.version(m) for m in ("scikit-allel", "numpy", "pandas", "tskit")},
-        simulations_started=False, gamma_smc_decoding_started=False, selected_cohort_incomplete=True))
+        simulations_started=False, gamma_smc_decoding_started=False,
+        selected_cohort_incomplete=any(sum(i["mode"] == "selected" and i["s"] == s for i in items) != 100
+            for s in sorted({i["s"] for i in items if i["mode"] == "selected"}))))
     names = ("predictions.csv.gz", "metrics.csv", "regions.csv", "scores.npz", "normalization.json", "audit.json", "analysis_provenance.json")
     json_write(out / "artifact_manifest.json", {name: dict(sha256=digest(out/name), bytes=(out/name).stat().st_size) for name in names})
     print(metrics[metrics.alpha == .05].to_string(index=False), flush=True)

@@ -1,0 +1,14 @@
+{
+  "focal_scores_bounded_by_region_scores": true,
+  "folds_disjoint": true,
+  "minimum_p": 0.0024937655860349127,
+  "neutral_regions": 1000,
+  "null_is_same_local_position_or_window": true,
+  "prediction_ranks_recomputed": true,
+  "regional_maximum_used_for_pvalues": false,
+  "regions": 2000,
+  "selected_excluded_from_normalization": true,
+  "selected_regions": 1000,
+  "status": "passed",
+  "zero_or_undefined_local_scores_retained": true
+}
