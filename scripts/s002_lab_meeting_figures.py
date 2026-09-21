@@ -47,8 +47,9 @@ def profile(key):
         return dict(key=key, position=f["grid"], af=af, counts=f["grid_counts"], n=f["grid_n"], valid=markers >= 0)
 
 
-def design(book, all_only):
-    fig, axes = v.canvas("All-pair coalescence scan" if all_only else "Focal archaic-carrier coalescence", "s = 0.002 | saved simulations, newly decoded with Gamma-SMC")
+def design(book, all_only, selection_s=.002, newly_decoded=True):
+    decoding_note = "saved simulations, newly decoded with Gamma-SMC" if newly_decoded else "saved Gamma-SMC decoding; no new simulations or decoding"
+    fig, axes = v.canvas("All-pair coalescence scan" if all_only else "Focal archaic-carrier coalescence", f"s = {selection_s:.3f} | {decoding_note}")
     ax = axes[0, 0]
     ax.axis("off")
     ax.text(.5, .90, "2% introgression pulse + selection starting at 50 kya\n100 selected regions + 1,000 neutral regions\n400 haplotypes; 10,000 fixed sampled pairs; isolated 10 Mb", ha="center", va="top", transform=ax.transAxes, fontsize=22, linespacing=1.65)
@@ -56,26 +57,26 @@ def design(book, all_only):
         r"$S_T=\mathrm{frac\_recent}_T(\mathrm{ALT/ALT})\times\frac{n_{\mathrm{ALT/ALT}}}{10{,}000}$")
     ax.text(.5, .29, formula, transform=ax.transAxes, ha="center", fontsize=28)
     ax.text(.5, .02, "Posterior-mean TMRCA hard calls | fixed-coordinate neutral calibration", ha="center", transform=ax.transAxes, fontsize=17)
-    v.finish(book, fig, "01_design_and_score", "Design and score", "Same saved 100 s=0.002 selected simulations; no new simulations or ancestry replays. Selection begins at the 2% pulse, 50 kya. Fixed mutation/recombination rates, 25-year generations, h=0.5. Selected power is conditional on survival and observation; all fixed replicates are retained. " +
+    v.finish(book, fig, "01_design_and_score", "Design and score", f"Same saved 100 s={selection_s:.3f} selected simulations; no new simulations or ancestry replays. Selection begins at the 2% pulse, 50 kya. Fixed mutation/recombination rates, 25-year generations, h=0.5. Selected power is conditional on survival and observation; all fixed replicates are retained. " +
         ("All-pair scoring uses every sampled pair regardless of archaic allele status." if all_only else "Carrier information is available at the selected allele only. The carrier score has no ALT/REF or REF/REF penalty. Spatial plots show all-pair recency only."),
         "Compare the same decoded statistic at the same coordinate in selected and neutral regions.")
 
 
-def power(book, metrics, ihs, all_only):
+def power(book, metrics, ihs, all_only, selection_s=.002):
     methods = ["all_50000"] if all_only else ["af", "mass_50000", "all_50000", "nearest_core_abs_ihs"]
     labels = {"af": "Archaic\nAF", "mass_50000": "Carrier\nmass", "all_50000": "All-pair\nrecency", "nearest_core_abs_ihs": "Positional\niHS"}
     colors = {"af": v.C["af"], "mass_50000": v.C["mass"], "all_50000": v.C["all"], "nearest_core_abs_ihs": v.C["ihs"]}
-    fig, axes = v.canvas("Decoded all-pair power at s = 0.002" if all_only else "Gamma-SMC power at s = 0.002", "T = 50 kya | 100 selected replicates | error bars: 95% Wilson intervals", cols=2)
+    fig, axes = v.canvas(f"Decoded all-pair power at s = {selection_s:.3f}" if all_only else f"Gamma-SMC power at s = {selection_s:.3f}", "T = 50 kya | 100 selected replicates | error bars: 95% Wilson intervals", cols=2)
     records = []
     for ax, alpha in zip(axes[0], (.05, .01)):
         for j, method in enumerate(methods):
-            df = ihs[ihs.s == .002] if method == "nearest_core_abs_ihs" else metrics[metrics.source == "decoded"]
+            df = ihs[ihs.s == selection_s] if method == "nearest_core_abs_ihs" else metrics[metrics.source == "decoded"]
             row = df[(df.method == method) & (df.alpha == alpha)].iloc[0]
             lo, hi = v.wilson(row.selected_called, row.selected_regions)
             ax.bar(j, row.power, color=colors[method], width=.5, zorder=3)
             ax.errorbar(j, row.power, yerr=[[row.power-lo], [hi-row.power]], fmt="none", color="#172E41", capsize=5)
             ax.text(j, hi+.025, f"{row.power:.0%}", ha="center", fontsize=22, weight="bold")
-            records.append(dict(method=method, alpha=alpha, s=.002, power=row.power, selected_called=int(row.selected_called), selected_regions=int(row.selected_regions)))
+            records.append(dict(method=method, alpha=alpha, s=selection_s, power=row.power, selected_called=int(row.selected_called), selected_regions=int(row.selected_regions)))
         ax.set_xticks(range(len(methods)), [labels[m] for m in methods], fontsize=14)
         ax.set_title(f"Nominal p <= {alpha:g}")
         v.percent(ax, upper=1.13)
@@ -88,9 +89,9 @@ def power(book, metrics, ihs, all_only):
         f"Decoded all-pair power at T=50 kya is {value(metrics, 'all_50000'):.0%} at nominal 5%.")
 
 
-def heatmaps(book, metrics, all_only, fpr=False):
+def heatmaps(book, metrics, all_only, fpr=False, selection_s=.002):
     families = ["all"] if all_only else ["all", "mass"]
-    fig, axes = v.canvas("Decoded neutral false-positive rates" if fpr else "TMRCA cutoffs change decoded power", "s = 0.002 | 1,000 neutral positions" if fpr else "s = 0.002 | 100 selected replicates per cell | percentages", cols=2)
+    fig, axes = v.canvas("Decoded neutral false-positive rates" if fpr else "TMRCA cutoffs change decoded power", f"s = {selection_s:.3f} | 1,000 neutral positions" if fpr else f"s = {selection_s:.3f} | 100 selected replicates per cell | percentages", cols=2)
     for ax, alpha in zip(axes[0], (.05, .01)):
         data = np.array([[100*value(metrics, f"{f}_{t}", alpha, field="positional_fpr" if fpr else "power") for t in T] for f in families])
         v.heatmap(ax, data, [t//1000 for t in T], ["All pairs"] if all_only else ["All pairs", "Carrier mass"], maximum=(7 if alpha == .05 else 2) if fpr else 100, fmt=".1f" if fpr else ".0f", cmap="Blues" if fpr else "YlGnBu")
@@ -103,9 +104,9 @@ def heatmaps(book, metrics, all_only, fpr=False):
         "Calibration and power use the same decoded score and genomic coordinate.")
 
 
-def validation(book, metrics, all_only):
+def validation(book, metrics, all_only, selection_s=.002):
     families = ["all"] if all_only else ["all", "mass"]
-    fig, axes = v.canvas("Validation: true versus decoded TMRCA", "s = 0.002 | same saved genealogies, selected allele, and 10,000 pairs", cols=len(families))
+    fig, axes = v.canvas("Validation: true versus decoded TMRCA", f"s = {selection_s:.3f} | same saved genealogies, selected allele, and 10,000 pairs", cols=len(families))
     for ax, family in zip(axes[0], families):
         for src in ("truth", "decoded"):
             for alpha, style in ((.05, "-"), (.01, "--")):
@@ -143,8 +144,8 @@ def gain(book, metrics, paired):
         f"At nominal 1%, AF detects {af:.0%}; decoded carrier mass detects {min(mass):.0%}-{max(mass):.0%} across cutoffs.")
 
 
-def spatial(book, distance):
-    fig, axes = v.canvas("Spatial extent of the decoded all-pair signal", "s = 0.002 | T = 50 kya | each stride uses its own matched neutral coordinate", rows=2, cols=2, gridspec_kw=dict(height_ratios=[2.3, 1]))
+def spatial(book, distance, selection_s=.002):
+    fig, axes = v.canvas("Spatial extent of the decoded all-pair signal", f"s = {selection_s:.3f} | T = 50 kya | each stride uses its own matched neutral coordinate", rows=2, cols=2, gridspec_kw=dict(height_ratios=[2.3, 1]))
     fig.subplots_adjust(top=.73, bottom=.21, hspace=.28)
     shown = distance[(distance.source == "decoded") & (distance.method == "all_50000") & (distance.distance_bp.abs() <= 500000)]
     power_upper = max(.20, np.ceil(shown.power.max()*1.2*10)/10)
@@ -162,11 +163,11 @@ def spatial(book, distance):
         for row in range(2):
             axes[row, col].axvline(0, color="#9FAAB4", ls=":", lw=1)
             axes[row, col].set_xlim(-500, 500)
-    v.finish(book, fig, "10_spatial_decay", "All-pair detection across the region", "Only all-pair scores are used. Each point is the fraction of 100 selected or 1,000 neutral regions called at that stride. Full 10-Mb results are saved; +/-500 kb is displayed without smoothing. Linked signal is not counted as a new causal target or localization error. Spatial carrier scores are unavailable from the saved labels and are omitted.", "The positional null is matched separately at every stride; unrelated peaks never set the cutoff.")
+    v.finish(book, fig, "10_spatial_decay", "All-pair detection across the region", "Only all-pair scores are used. Each point is the fraction of 100 selected or 1,000 neutral regions called at that stride. Full 10-Mb results are saved; +/-500 kb is displayed without smoothing. Linked signal is not counted as a new causal target or localization error. All 10,000 sampled pairs contribute at each stride.", "The positional null is matched separately at every stride; unrelated peaks never set the cutoff.")
 
 
-def examples(book, profiles, focal):
-    selected = focal[focal.s == .002].copy()
+def examples(book, profiles, focal, selection_s=.002):
+    selected = focal[focal.s == selection_s].copy()
     selected["delta"] = abs(selected.sample_af-selected.sample_af.median())
     rep = int(selected.sort_values(["delta", "replicate"]).iloc[0].replicate)
     neutrals = [p for p in profiles if p["key"].startswith("neutral/")]
@@ -183,17 +184,17 @@ def examples(book, profiles, focal):
         ax.plot(p["position"]/1e6, y, color=v.C["all"], lw=1.6)
         ax.axvline(5, color="#AD7C14", ls="--", lw=1.2)
         ax.axvspan(4.95, 5.05, color="#D8A82F", alpha=.25)
-        ax.set_title(("Neutral: " if key.startswith("neutral/") else "Selected s=0.002: ")+key.split("/")[-1], loc="left", fontsize=16)
+        ax.set_title(("Neutral: " if key.startswith("neutral/") else f"Selected s={selection_s:.3f}: ")+key.split("/")[-1], loc="left", fontsize=16)
         v.percent(ax, "frac_recent_T", upper=1)
         ax.set_xlim(0, 10)
         records.append(pd.DataFrame(dict(key=key, position_bp=p["position"], decoded_all_T50000=y)))
     axes[1, 0].set_xlabel("Position in scored region (Mb)")
     pd.concat(records).to_csv(v.DATA/"example_all_pair_profiles.csv", index=False)
-    v.finish(book, fig, "11_example_regions", "Example all-pair profiles", f"T=50 kya. Neutral {neutral_key} has focal decoded all-pair score closest to the neutral median. Selected replicate {rep:04d} has selected AF closest to the s=0.002 median; ties use IDs. Gold shading marks a fixed 100-kb interval around 5 Mb. These examples were not selected for significant peaks and do not estimate power.", "All-pair profiles are available across the entire saved 10-Mb region.", category="backup")
+    v.finish(book, fig, "11_example_regions", "Example all-pair profiles", f"T=50 kya. Neutral {neutral_key} has focal decoded all-pair score closest to the neutral median. Selected replicate {rep:04d} has selected AF closest to the s={selection_s:.3f} median; ties use IDs. Gold shading marks a fixed 100-kb interval around 5 Mb. These examples were not selected for significant peaks and do not estimate power.", "All-pair profiles are available across the entire saved 10-Mb region.", category="backup")
 
 
-def stringency(book, metrics, pooled, all_only):
-    fig, axes = v.canvas("Power at stricter positional thresholds", "s = 0.002 | decoded TMRCA < 50 kya | p=0.001 uses pooled ranks")
+def stringency(book, metrics, pooled, all_only, selection_s=.002):
+    fig, axes = v.canvas("Power at stricter positional thresholds", f"s = {selection_s:.3f} | decoded TMRCA < 50 kya | p=0.001 uses pooled ranks")
     ax = axes[0, 0]
     methods = ["all_50000"] if all_only else ["af", "mass_50000", "all_50000"]
     x = np.arange(len(methods))
@@ -236,11 +237,11 @@ def components(book, profiles):
     v.finish(book, fig, "13_carrier_genealogies", "Focal decoded carrier-score components", "Carrier mass is exactly within-ALT/ALT frac_recent_T times the ALT/ALT fraction of the 10,000-pair panel. AF squared only approximates this sampled-pair fraction. Replicates with no sampled ALT/ALT pair have mass zero and undefined within-class recency; they remain in the power denominator. All labels are from the saved selected allele; no spatial archaic labels are inferred.", "The same pairs must both carry the allele and have recent decoded TMRCA.", category="backup")
 
 
-def all_null(book, profiles):
+def all_null(book, profiles, selection_s=.002):
     fig, axes = v.canvas("The all-pair score at the fixed focal coordinate", "Gamma-SMC | T = 50 kya | 100 selected versus 1,000 neutral regions")
     ax = axes[0, 0]
     records = []
-    for selected, color, label in ((False, v.C["af"], "Neutral"), (True, v.C["all"], "Selected s=0.002")):
+    for selected, color, label in ((False, v.C["af"], "Neutral"), (True, v.C["all"], f"Selected s={selection_s:.3f}")):
         group = [p for p in profiles if p["key"].startswith("onset50000/") == selected]
         values = np.sort([p["counts"][1, 500, 3, -1]/10000 for p in group])
         ax.step(values, np.arange(1, len(values)+1)/len(values), where="post", color=color, label=label)

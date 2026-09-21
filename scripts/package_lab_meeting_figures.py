@@ -70,9 +70,12 @@ def main(root, export_to, visual_review):
     audits = root/"analysis_audit"
     audits.mkdir(exist_ok=True)
     is_s002 = root.name.startswith("eas_lab_meeting_s002")
+    is_s005_all = root.name.startswith("eas_lab_meeting_s005_all_pairs")
     analysis_root = root.parent/"eas_lab_meeting_s002_20260921" if is_s002 else root
+    if is_s005_all:
+        analysis_root = root.parent/"eas_lab_meeting_20260921"
     for source, prefix in ((analysis_root/"analysis", "focal"), (analysis_root/"analysis/positional", "positional"),
-                           (analysis_root/"analysis/distance", "distance"),
+                           (root.parent/"eas_positional_distance_h400" if is_s005_all else analysis_root/"analysis/distance", "distance"),
                            (root.parent/"eas_ihs_h400", "ihs")):
         for name in ("audit.json", "provenance.json", "analysis_provenance.json", "supplement_audit.json"):
             if (source/name).exists():
@@ -166,6 +169,38 @@ review is valid only for the hashes recorded in quality_checks.json.
         for name in ("manifest.json", "status.json"):
             source = root.parent/"eas_s002_saved_decoding"/name
             shutil.copyfile(source, audits/f"saved_decoding_{name}")
+    if is_s005_all:
+        (root/"REPRODUCE.md").write_text("""# Reproduce the s=0.005 all-pairs-only pack
+
+Repository: git@github.com:soisa001/gamma_smc_ts.git, branch AOU_run_opt.
+Run in WSL on the machine with the saved D: archive at
+`/mnt/d/phase2simselection/sim`.
+
+```bash
+git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
+cd gamma_smc_ts
+bash scripts/launch_s005_all_pair_figures.sh build
+bash scripts/launch_s005_all_pair_figures.sh package
+```
+
+The launcher uses uv and the existing `.venv`. Both phases are idempotent.
+`build` verifies source hashes, checks the selected coefficient and onset,
+independently recomputes focal power/FPR from saved integer pair counts,
+checks agreement with the spatial center, and renders 10 figures.
+`package` checks PDF/PNG structure, writes SHA-256 inventories and verifies
+the ZIP. There is no simulation, replay, or decoder phase.
+
+Required saved inputs: eas_joint_scan, eas_allele_class_ablation,
+eas_positional_distance_h400, and eas_lab_meeting_20260921/analysis.
+Exact inputs, hashes and parameters are in figure_provenance.json. Plotting
+uses four profile readers and one thread per numerical-library process.
+The simulation and pair RNG seeds are retained; plotting introduces no
+randomness. Raw trees and per-pair posteriors remain on D:; the repository
+contains figures, summarized data, and provenance.
+
+Render and visually inspect every PDF page after a plot edit. Manual review
+in quality_checks.json applies only to the exact recorded PDF hashes.
+""", encoding="utf-8", newline="\n")
     names = ["README.md", "REPRODUCE.md", "figure_index.json", "figure_provenance.json",
              "layout_checks.json", "quality_checks.json", "EAS_lab_meeting_figures.pdf"]
     if (root/"plot_sources.json").exists():

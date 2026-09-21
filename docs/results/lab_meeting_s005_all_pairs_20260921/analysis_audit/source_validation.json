@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "selection_coefficient": 0.005,
+  "selected_regions": 100,
+  "neutral_regions": 1000,
+  "verified_profile_count": 1100,
+  "focal_metrics_recomputed_from_integer_counts": true,
+  "focal_spatial_center_matches": true,
+  "only_all_pair_methods": true,
+  "new_simulations": false,
+  "new_decoding": false,
+  "pdf_pages": 10,
+  "no_s002_labels": true,
+  "no_carrier_scores_in_plot_text_or_method_tables": true,
+  "pdf_sha256": "06080843929b2b959d7a9bfa35811da7f9fbe559340e8f89236eace487a9bffb"
+}

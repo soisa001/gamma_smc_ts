@@ -1,0 +1,42 @@
+[
+  {
+    "figure": "01_design_and_score",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "02_matched_position_null",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "04_positional_power",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "05_time_cutoff_power",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "06_positional_false_positive_rate",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "07_truth_vs_decoding",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "10_spatial_decay",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "11_example_regions",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "12_threshold_stringency",
+    "text_outside_canvas": []
+  },
+  {
+    "figure": "14_demography_and_assumptions",
+    "text_outside_canvas": []
+  }
+]

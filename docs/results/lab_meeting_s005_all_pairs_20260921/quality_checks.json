@@ -1,0 +1,168 @@
+{
+  "status": "passed",
+  "pdfs": [
+    {
+      "file": "EAS_lab_meeting_figures.pdf",
+      "pages": 10,
+      "sha256": "06080843929b2b959d7a9bfa35811da7f9fbe559340e8f89236eace487a9bffb",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/01_design_and_score.pdf",
+      "pages": 1,
+      "sha256": "dccd5900b2a19f26601091596b3d4d217352499d1d4ebe9da31710eb9dc28f72",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/02_matched_position_null.pdf",
+      "pages": 1,
+      "sha256": "9ba39cbd5baa6134b862c4768dda7393073f2d3f0fcb2b5fa36497a2cb867abb",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/04_positional_power.pdf",
+      "pages": 1,
+      "sha256": "1e4e738868976cc18dbad6aa9e45014c06ba887dffba3b2e0950490d125aed06",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/05_time_cutoff_power.pdf",
+      "pages": 1,
+      "sha256": "94bf10eee0fa842f321f35850f58c45af010674d0185ae26494c19e74314543a",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/06_positional_false_positive_rate.pdf",
+      "pages": 1,
+      "sha256": "bf562e1905b38788f8a443e233f0728e71b1bbccaed75900d1ef0088b670a294",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/07_truth_vs_decoding.pdf",
+      "pages": 1,
+      "sha256": "fcbcc016297a3c114840f5f0f5223a81ae3cbb8de8355ca357600d7bd5092e57",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/10_spatial_decay.pdf",
+      "pages": 1,
+      "sha256": "5791379c176a839d4620ff0f4c941f065c4e5ce4fb2573ed4a93cb9ac6aefced",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/11_example_regions.pdf",
+      "pages": 1,
+      "sha256": "f428dac42eee2ee21db7a7d9d3fd2bc8eefafd4bc164fa4416d42bc154805609",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/12_threshold_stringency.pdf",
+      "pages": 1,
+      "sha256": "08e1d398d940b84694a5374294ae7731c5a934a02bc0a05e14e36451f53d9ccf",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    },
+    {
+      "file": "figures/14_demography_and_assumptions.pdf",
+      "pages": 1,
+      "sha256": "f3f41b956b5c4d9d43951c071dad2297b21feb67c7f7b2103ace8ef0e2f9cc4b",
+      "raster_images": 0,
+      "font_types": [
+        "/Type0"
+      ],
+      "fonts_embedded": true
+    }
+  ],
+  "pngs": [
+    {
+      "file": "figures/01_design_and_score.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/02_matched_position_null.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/04_positional_power.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/05_time_cutoff_power.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/06_positional_false_positive_rate.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/07_truth_vs_decoding.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/10_spatial_decay.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/11_example_regions.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/12_threshold_stringency.png",
+      "width": 3199,
+      "height": 1800
+    },
+    {
+      "file": "figures/14_demography_and_assumptions.png",
+      "width": 3199,
+      "height": 1800
+    }
+  ],
+  "visual_review": "All 10 combined-PDF pages rendered with Poppler and visually inspected. Large text is readable, legends clear, and no clipping or overlaps were found. Plot text and method tables use only the s=0.005 all-pair results, with truth confined to the validation figure."
+}

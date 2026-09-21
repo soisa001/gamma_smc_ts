@@ -1,0 +1,15 @@
+{
+  "primary_tmrca": "Gamma-SMC decoded posterior-mean hard calls; frac_recent_T",
+  "truth_comparison_figures": [
+    "07_truth_vs_decoding"
+  ],
+  "decoded_selection_coefficients": [
+    0.005
+  ],
+  "decoded_selected_regions": 100,
+  "decoded_neutral_regions": 1000,
+  "all_pairs_only": true,
+  "simulations_started": false,
+  "decoding_started": false,
+  "simulation_replays": false
+}
