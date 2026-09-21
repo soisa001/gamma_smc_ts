@@ -1,0 +1,9 @@
+method,alpha,s,power,source,selected_regions,selected_called
+af,0.05,0.005,1.0,genotypes,100,100
+mass_50000,0.05,0.005,1.0,decoded,100,100
+all_50000,0.05,0.005,0.61,decoded,100,61
+nearest_core_abs_ihs,0.05,0.005,0.67,genotypes,100,67
+af,0.01,0.005,0.99,genotypes,100,99
+mass_50000,0.01,0.005,0.98,decoded,100,98
+all_50000,0.01,0.005,0.41,decoded,100,41
+nearest_core_abs_ihs,0.01,0.005,0.5,genotypes,100,50

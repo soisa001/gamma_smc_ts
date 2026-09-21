@@ -34,7 +34,7 @@ do not provide the full population census through time.
 Recovering actual paths would require replaying the original seeds with
 frequency logging and checking the reproduced endpoints and tree tables.
 The user declined those replays, so figures 03_a and 03_b were deferred and
-the existing 15 figures remain unchanged. A logger passed a SLiM initialization
+the allele-frequency values and replicate inclusion remain unchanged. A logger passed a SLiM initialization
 dry run, but no historical simulation replay or replacement was started.
 
 The [audit report](results/lab_meeting_20260921/AF_TAIL_AUDIT.md) and its source

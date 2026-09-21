@@ -17,7 +17,7 @@ outcomes would alter the simulated distribution, so they remain in all figures.
 
 No historical AF time series was saved in the 1,000 archived selected runs.
 The user chose to skip replaying them, so 03_a and 03_b are deferred. The
-existing 15 figures are unchanged. No historical simulation replay or
+allele-frequency values and replicate inclusion are unchanged. No historical simulation replay or
 replacement was started; the original archive remains unchanged.
 
 Audit files:

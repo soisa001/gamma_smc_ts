@@ -4,7 +4,7 @@
     {
       "file": "EAS_lab_meeting_figures.pdf",
       "pages": 15,
-      "sha256": "1980ba192995a317ea62dc5e67692508adcffa976fa19976335c14d850953f4b",
+      "sha256": "568cc016e3f2f23a4d841adb866a913f46bb41c8dd25af0d95715f066c728820",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -14,7 +14,7 @@
     {
       "file": "figures/01_design_and_score.pdf",
       "pages": 1,
-      "sha256": "d476a4949301a14fc6957a93a6b649f7a710ba9be23684a2fad5f0845c3b1aa0",
+      "sha256": "b4933576201b1e02719cc990ea17b78987f25807ce9e6f3f4e5989504c6c50d4",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -44,7 +44,7 @@
     {
       "file": "figures/04_positional_power.pdf",
       "pages": 1,
-      "sha256": "378543c84d9aaa8df1319bdf238d34f9b88ac0732705d96f7447fa1804a97241",
+      "sha256": "99b8616c355d96c0ebcf8b5339a17f1112889c31f4c372d898547f34f4387de1",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -54,7 +54,7 @@
     {
       "file": "figures/05_time_cutoff_power.pdf",
       "pages": 1,
-      "sha256": "264b8861cc5e09a28f7810b7862ae908ad713a5fa133aeed5a87d5ee3db51f9f",
+      "sha256": "418917f1cbca7f7fc83d47b190c238374f0c26543b682273b02fc13b308315e0",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -64,7 +64,7 @@
     {
       "file": "figures/06_positional_false_positive_rate.pdf",
       "pages": 1,
-      "sha256": "ed263c864fc5043a8979bcca07e408eaf94eb178a133fd21c452302702c2664f",
+      "sha256": "7768ee422b1b899d0bf733284a8d116edf3723ec5d07e07729d2267e07dfedf6",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -74,7 +74,7 @@
     {
       "file": "figures/07_truth_vs_decoding.pdf",
       "pages": 1,
-      "sha256": "ff0185da8cb9bf09ad075689f64bf928219e7be0f03445edfef60ef5c25af8a4",
+      "sha256": "7a4f0f5ee8334348d45a6bb6105b95a6cb81d1e908c168f7147b2bf774780fdf",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -84,7 +84,7 @@
     {
       "file": "figures/08_gain_beyond_allele_frequency.pdf",
       "pages": 1,
-      "sha256": "d9c03e37a45435b1d429f90f2f121406f34aa23306c93db8b9a82699edbb5d1a",
+      "sha256": "4fc40c8586a228f9f9743bba5190c5667d6fb9a8313885edae2b94a0becb8aec",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -104,7 +104,7 @@
     {
       "file": "figures/10_spatial_decay.pdf",
       "pages": 1,
-      "sha256": "8e995e207a3f492018559f84ac8e2623890d82e53392849f4602b91f27a4686e",
+      "sha256": "de64397fd8312e3c0207999c4d098825ee9a49918e4f2826182897507e9a56ea",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -124,7 +124,7 @@
     {
       "file": "figures/12_threshold_stringency.pdf",
       "pages": 1,
-      "sha256": "15855990211bb86b04fe0a0ad0f7870497fac851605efb306bb51164a94228fc",
+      "sha256": "c484d097dae1c5a85ede4fa811d3b20472fcbc85f864f56891f1e0c7b9f41765",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -134,7 +134,7 @@
     {
       "file": "figures/13_carrier_genealogies.pdf",
       "pages": 1,
-      "sha256": "7ecf67e1413e0c14ec2eb6b5ce09197e32f7fbc067c52e491c77344fca017e65",
+      "sha256": "53ddd14d22aec0495d96e811442662c8c3831dbd05ef49943a19844306b5d6c1",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -154,7 +154,7 @@
     {
       "file": "figures/15_pair_class_coalescence.pdf",
       "pages": 1,
-      "sha256": "45249aff250b59f24733895e89217915903e104dde91805a60e82cdeae376711",
+      "sha256": "c45c62d3a67c7860b4da2cddcdaf8700f880851b1f176cfeec16ecdf5cc7244c",
       "raster_images": 0,
       "font_types": [
         "/Type0"
@@ -239,5 +239,5 @@
       "height": 1800
     }
   ],
-  "visual_review": "Passed: all 15 pages rendered with Poppler at 1600px and visually inspected; final vector heatmaps on pages 5 and 6 inspected separately, other 13 pages pixel-identical to reviewed renders. No clipped labels, overlapping legends, broken fonts or footer collisions."
+  "visual_review": "Passed: all 15 final decoded-presentation pages rendered with Poppler and visually inspected. Page 4 was rechecked after moving percentage labels above their confidence intervals; the other 14 pages were pixel-identical to reviewed renders. Primary TMRCA panels were independently checked against decoded predictions and metrics."
 }

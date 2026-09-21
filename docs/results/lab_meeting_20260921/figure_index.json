@@ -26,42 +26,42 @@
   {
     "number": 4,
     "stem": "04_positional_power",
-    "title": "Power across selection coefficients",
+    "title": "Decoded power at s=0.005",
     "category": "main",
-    "caption": "All TMRCA curves use true TMRCA. Each position is compared with 400 neutral calibration positions in one of five folds; 200 neutral positions per fold are held out. All 1,000 selected and 1,000 neutrals are included. iHS uses the nearest scorable core within 5 kb. Wilson bands do not include uncertainty from estimating the neutral reference or cross-fold dependence.",
-    "takeaway": "Carrier-based local tests are much more sensitive than all-pair recency at weak selection."
+    "caption": "Carrier mass and all-pair recency use Gamma-SMC decoded posterior-mean TMRCA hard calls. AF and iHS use the observed simulated genotypes. All four methods are restricted to the same 100 s=0.005 selected regions; the other selection arms have not been decoded. Each test position uses 400 neutral calibration positions in its fold, with 200 held-out neutral positions. Wilson intervals do not include fitted-null uncertainty or cross-fold dependence.",
+    "takeaway": "At nominal 5%, decoded carrier power is 100%, all-pair power 61%, and positional iHS power 67%."
   },
   {
     "number": 5,
     "stem": "05_time_cutoff_power",
-    "title": "Power across TMRCA cutoffs",
+    "title": "Decoded power across TMRCA cutoffs",
     "category": "main",
-    "caption": "Cutoffs are 5, 10, 20, 30, 40 and 50 kya; there is no per-replicate maximum over cutoffs. Each cell uses 100 selected replicates and the matching neutral statistic. Comparing cutoffs is exploratory, not an independently validated tuning procedure.",
-    "takeaway": "Shorter cutoffs can add discrimination beyond frequency, particularly at s=0.001."
+    "caption": "All TMRCA scores are decoded. Cutoffs are 5, 10, 20, 30, 40 and 50 kya, each calibrated separately against the matching decoded neutral statistic. No per-replicate maximum over cutoffs is used. Only s=0.005 has selected decoding; the full s grid is not represented. Cutoff comparisons are exploratory.",
+    "takeaway": "Decoded carrier mass has 100% power at nominal 5% across the tested cutoffs in the s=0.005 cohort."
   },
   {
     "number": 6,
     "stem": "06_positional_false_positive_rate",
     "title": "Neutral FPR calibration",
     "category": "main",
-    "caption": "Cell labels are percentages, with separate color scales for the 5% and 1% panels. Neutral marker-free positions contribute zero carrier mass. The false discovery rate among selected discoveries also depends on the prevalence of selection and is not estimated by this figure. No chromosome-maximum error rate is substituted for the positional rate.",
-    "takeaway": "Matched nulls control local false calls close to the nominal level for both truth and decoding."
+    "caption": "Both rows use Gamma-SMC decoded statistics. Cell labels are percentages, with separate color scales for the 5% and 1% panels. Neutral marker-free positions contribute zero carrier mass. Discovery FDR also depends on the prevalence of selection and is not estimated here. No chromosome-maximum error rate is substituted for positional FPR.",
+    "takeaway": "Matched decoded nulls keep local false calls close to the nominal level."
   },
   {
     "number": 7,
     "stem": "07_truth_vs_decoding",
     "title": "Truth versus decoded TMRCA",
-    "category": "main",
+    "category": "validation",
     "caption": "This comparison is available only for the already decoded s=0.005 cohort. Both sources use the same 10,000 sampled pairs and local marker assignments. Decoded frac_recent_T thresholds posterior-mean TMRCA per pair; it does not average posterior mass. Weak-selection arms have not been decoded. Matching nulls calibrates the test but does not remove decoding-related loss of discrimination.",
     "takeaway": "At T=50 kya and p<=0.05, all-pair power falls from 86% to 61%; carrier mass remains at 100%."
   },
   {
     "number": 8,
     "stem": "08_gain_beyond_allele_frequency",
-    "title": "Incremental gain from coalescence",
+    "title": "Decoded carrier mass versus allele frequency",
     "category": "main",
-    "caption": "Left: power for pre-specified AF and carrier-mass scores. Right: within-replicate gains and losses relative to AF at s=0.001; negative bars are losses, not negative probabilities. Null FPR is approximately 5% for each method but not identical. Paired p-values and all cutoffs are in paired_af_comparison.csv; they are unadjusted for examining several cutoffs and arms.",
-    "takeaway": "The added coalescence signal is clearest at a shorter cutoff in the weakest selection arm."
+    "caption": "The left panel has a zoomed 90-100% power axis. At nominal 1%, AF detects 99/100 and decoded carrier mass detects 97-99/100 across cutoffs. Right: paired gains and losses, with negative bars representing AF-only detections. At nominal 5%, both methods detect all 100 regions at every cutoff. These near-ceiling results do not establish a gain from decoded coalescence at weaker selection, which has not been decoded. Comparisons across cutoffs are exploratory.",
+    "takeaway": "The decoded s=0.005 cohort is near the power ceiling for both AF and carrier mass; weaker-selection gains remain untested."
   },
   {
     "number": 9,
@@ -76,8 +76,8 @@
     "stem": "10_spatial_decay",
     "title": "Detection and FPR across the region",
     "category": "main",
-    "caption": "Each point is the fraction of 100 selected or 1,000 neutral replicates called at that coordinate. No smoothing or maximum over positions is used. Detection at linked positions describes the extent of the signal, not a separate causal target or a localization false discovery. Curves are restricted to +/-500 kb for readability; full 10-Mb pointwise results are in the source table.",
-    "takeaway": "Strong local carrier signal extends into linked sequence while neutral per-position FPR stays near 5%."
+    "caption": "TMRCA curves use Gamma-SMC decoded scores at both nominal thresholds; AF uses genotypes. Each point is the fraction of 100 selected or 1,000 neutral replicates called at that coordinate. No smoothing or maximum over positions is used. Detection at linked positions describes signal extent, not a separate causal target or a localization false discovery. The FPR panels have different scales matching the nominal thresholds. Full 10-Mb pointwise results accompany the plotted +/-500-kb interval.",
+    "takeaway": "Decoded carrier signal extends into linked sequence while neutral per-position FPR stays near its nominal level."
   },
   {
     "number": 11,
@@ -90,18 +90,18 @@
   {
     "number": 12,
     "stem": "12_threshold_stringency",
-    "title": "Power at stricter thresholds",
+    "title": "Decoded power at stricter thresholds",
     "category": "backup",
-    "caption": "p<=0.05 and 0.01 use 400 neutral calibration positions per fold. The separate p<=0.001 sensitivity uses all 1,000 neutrals for selected ranks and leave-one-out ranks for neutrals. One extreme neutral rank gives 1/1,000 calls for the shown scores; this is not precise independent validation of a 0.1% tail. Comparisons remain positional, not family-wise over a genome.",
-    "takeaway": "The s=0.005 signal remains strong at stringent ranks; very weak selection loses substantial power."
+    "caption": "Carrier and all-pair scores use decoded TMRCA in the s=0.005 cohort. p<=0.05 and 0.01 use 400 neutral calibration positions per fold. The separate p<=0.001 sensitivity uses all 1,000 neutrals for selected ranks and leave-one-out ranks for neutrals. One extreme neutral rank gives 1/1,000 calls for these scores; this is not precise independent validation of a 0.1% tail. These are positional tests, not genome-wide family-wise tests.",
+    "takeaway": "At the pooled p<=0.001 threshold, decoded carrier mass detects 92%, AF 90%, and decoded all-pair recency 23%."
   },
   {
     "number": 13,
     "stem": "13_carrier_genealogies",
-    "title": "Why AF and carrier mass can be similar",
+    "title": "Decoded carrier-score components",
     "category": "backup",
-    "caption": "Carrier mass equals the sampled ALT/ALT pair fraction times within-carrier frac_recent_T. AF squared approximates the first factor for random distinct pairs, with finite-panel and pair-sampling differences; it is not an exact upper bound. Branches are the sampled-carrier ancestral groups immediately below the 50-kya cutoff, verified against pairwise TMRCA, not a census of introgressing founders. The model has a strong archaic bottleneck.",
-    "takeaway": "When most carriers share recent ancestry by T=50 kya, weighting by coalescence adds less beyond AF."
+    "caption": "Both panels use Gamma-SMC decoded TMRCA at the focal selected allele in the 100 s=0.005 regions. Left: carrier mass; right: within-ALT/ALT frac_recent_T. The score is exactly the sampled ALT/ALT pair fraction times the right-panel quantity. AF squared approximates the pair fraction for random distinct pairs, with finite-panel and pair-sampling differences; it is not an exact bound.",
+    "takeaway": "Decoded carrier mass weights allele-pair abundance by the fraction of those same pairs called recent."
   },
   {
     "number": 14,
@@ -116,7 +116,7 @@
     "stem": "15_pair_class_coalescence",
     "title": "Pair-class coalescence diagnostic",
     "category": "backup",
-    "caption": "ALT/ALT and REF/REF are haplotype-pair classes at the focal archaic marker. Only regions with an assigned marker contribute to this within-class diagnostic: 100 selected and 169 neutral. Counts are pooled across pairs, so regions with larger classes contribute more weight; this is not a replicate-average or the unconditional neutral denominator used for FPR. REF/REF is a diagnostic and is not subtracted from the carrier score; ALT/REF is not scored.",
+    "caption": "All recency calls are Gamma-SMC decoded. ALT/ALT and REF/REF are haplotype-pair classes at the focal archaic marker. Only regions with an assigned marker contribute: 100 selected and 169 neutral. Counts are pooled across pairs, so regions with larger classes contribute more weight; this is not a replicate-average or the unconditional neutral denominator used for FPR. REF/REF is diagnostic and is not subtracted from the score; ALT/REF is not scored.",
     "takeaway": "The carrier score combines this within-ALT/ALT recency with the fraction of the complete pair panel that is ALT/ALT."
   }
 ]

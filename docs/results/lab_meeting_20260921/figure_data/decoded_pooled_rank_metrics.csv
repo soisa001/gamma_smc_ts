@@ -1,0 +1,14 @@
+source,method,alpha,s,selected_positions,selected_called,power,neutral_positions,neutral_called,positional_fpr,selected_calibration_positions,neutral_calibration_positions,calibration
+decoded,af,0.001,0.005,100,90,0.9,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,all_10000,0.001,0.005,100,12,0.12,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,all_20000,0.001,0.005,100,14,0.14,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,all_30000,0.001,0.005,100,17,0.17,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,all_40000,0.001,0.005,100,24,0.24,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,all_5000,0.001,0.005,100,5,0.05,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,all_50000,0.001,0.005,100,23,0.23,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,mass_10000,0.001,0.005,100,85,0.85,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,mass_20000,0.001,0.005,100,82,0.82,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,mass_30000,0.001,0.005,100,88,0.88,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,mass_40000,0.001,0.005,100,89,0.89,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,mass_5000,0.001,0.005,100,91,0.91,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation
+decoded,mass_50000,0.001,0.005,100,92,0.92,1000,1,0.001,1000,999,pooled neutral ranks; leave-one-out for neutral evaluation

@@ -115,6 +115,8 @@ review recorded in `quality_checks.json` applies only to its exact PDF hashes.
 """, encoding="utf-8", newline="\n")
     names = ["README.md", "REPRODUCE.md", "figure_index.json", "figure_provenance.json",
              "layout_checks.json", "quality_checks.json", "EAS_lab_meeting_figures.pdf"]
+    if (root/"plot_sources.json").exists():
+        names.append("plot_sources.json")
     if (root/"AF_TAIL_AUDIT.md").exists():
         names.append("AF_TAIL_AUDIT.md")
     paths = [root/name for name in names]

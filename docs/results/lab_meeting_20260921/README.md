@@ -2,9 +2,9 @@
 
 15 figures in slide-sized 16:9 layout. Each has a 3199 x 1800 PNG and a vector PDF with editable text. The combined PDF has one figure per page; full captions and suggested speaking points are below.
 
-The figures use the completed 1,000 neutral + 1,000 selected array (100 selected per s). Gamma-SMC decoding is available only for s=0.005 and the neutral cohort. Simulation generation and new Gamma-SMC decoding were not started for this figure request.
+All primary TMRCA plots use Gamma-SMC decoded frac_recent_T. Decoding is available for 1,000 neutrals and 100 selected regions at s=0.005, so decoded power is restricted to that coefficient. AF and iHS use observed simulated genotypes and retain all 1,000 selected regions (100 per s). Figure 07 alone includes true TMRCA as an explicitly labeled validation comparison. No simulations or new decoding were started for this revision.
 
-Suggested main narrative: 01 -> 02 -> 03 -> 04 -> 05 -> 07 -> 08 -> 09 -> 10. Figure 06 verifies FPR calibration; 11-15 are backup figures.
+Suggested main narrative: 01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 08 -> 09 -> 10. Figure 07 is truth-versus-decoding validation; 11-15 are backup figures. Figures 03_a and 03_b remain deferred because actual trajectories were not recorded and replays were declined.
 
 All primary error rates are positional FPR, not FDR among discoveries. Tests at a pre-specified gene require the same statistic in a matching neutral interval. No maximum across unrelated positions or T cutoffs enters the primary p-values. The 100-kb iHS window is a separate endpoint.
 
@@ -32,31 +32,31 @@ All primary error rates are positional FPR, not FDR among discoveries. Tests at 
 
 **Caption:** Boxes show interquartile range and median; whiskers show the 5th and 95th percentiles; diamonds show means. Selected data are conditional on survival and sample observation. Neutral data are unconditional pre-specified positions, with absent nearby markers scored zero. These are not frequency-matched cohorts.
 
-## 04. Power across selection coefficients (main)
+## 04. Decoded power at s=0.005 (main)
 
 [PNG](figures/04_positional_power.png) | [Vector PDF](figures/04_positional_power.pdf)
 
-**Takeaway:** Carrier-based local tests are much more sensitive than all-pair recency at weak selection.
+**Takeaway:** At nominal 5%, decoded carrier power is 100%, all-pair power 61%, and positional iHS power 67%.
 
-**Caption:** All TMRCA curves use true TMRCA. Each position is compared with 400 neutral calibration positions in one of five folds; 200 neutral positions per fold are held out. All 1,000 selected and 1,000 neutrals are included. iHS uses the nearest scorable core within 5 kb. Wilson bands do not include uncertainty from estimating the neutral reference or cross-fold dependence.
+**Caption:** Carrier mass and all-pair recency use Gamma-SMC decoded posterior-mean TMRCA hard calls. AF and iHS use the observed simulated genotypes. All four methods are restricted to the same 100 s=0.005 selected regions; the other selection arms have not been decoded. Each test position uses 400 neutral calibration positions in its fold, with 200 held-out neutral positions. Wilson intervals do not include fitted-null uncertainty or cross-fold dependence.
 
-## 05. Power across TMRCA cutoffs (main)
+## 05. Decoded power across TMRCA cutoffs (main)
 
 [PNG](figures/05_time_cutoff_power.png) | [Vector PDF](figures/05_time_cutoff_power.pdf)
 
-**Takeaway:** Shorter cutoffs can add discrimination beyond frequency, particularly at s=0.001.
+**Takeaway:** Decoded carrier mass has 100% power at nominal 5% across the tested cutoffs in the s=0.005 cohort.
 
-**Caption:** Cutoffs are 5, 10, 20, 30, 40 and 50 kya; there is no per-replicate maximum over cutoffs. Each cell uses 100 selected replicates and the matching neutral statistic. Comparing cutoffs is exploratory, not an independently validated tuning procedure.
+**Caption:** All TMRCA scores are decoded. Cutoffs are 5, 10, 20, 30, 40 and 50 kya, each calibrated separately against the matching decoded neutral statistic. No per-replicate maximum over cutoffs is used. Only s=0.005 has selected decoding; the full s grid is not represented. Cutoff comparisons are exploratory.
 
 ## 06. Neutral FPR calibration (main)
 
 [PNG](figures/06_positional_false_positive_rate.png) | [Vector PDF](figures/06_positional_false_positive_rate.pdf)
 
-**Takeaway:** Matched nulls control local false calls close to the nominal level for both truth and decoding.
+**Takeaway:** Matched decoded nulls keep local false calls close to the nominal level.
 
-**Caption:** Cell labels are percentages, with separate color scales for the 5% and 1% panels. Neutral marker-free positions contribute zero carrier mass. The false discovery rate among selected discoveries also depends on the prevalence of selection and is not estimated by this figure. No chromosome-maximum error rate is substituted for the positional rate.
+**Caption:** Both rows use Gamma-SMC decoded statistics. Cell labels are percentages, with separate color scales for the 5% and 1% panels. Neutral marker-free positions contribute zero carrier mass. Discovery FDR also depends on the prevalence of selection and is not estimated here. No chromosome-maximum error rate is substituted for positional FPR.
 
-## 07. Truth versus decoded TMRCA (main)
+## 07. Truth versus decoded TMRCA (validation)
 
 [PNG](figures/07_truth_vs_decoding.png) | [Vector PDF](figures/07_truth_vs_decoding.pdf)
 
@@ -64,13 +64,13 @@ All primary error rates are positional FPR, not FDR among discoveries. Tests at 
 
 **Caption:** This comparison is available only for the already decoded s=0.005 cohort. Both sources use the same 10,000 sampled pairs and local marker assignments. Decoded frac_recent_T thresholds posterior-mean TMRCA per pair; it does not average posterior mass. Weak-selection arms have not been decoded. Matching nulls calibrates the test but does not remove decoding-related loss of discrimination.
 
-## 08. Incremental gain from coalescence (main)
+## 08. Decoded carrier mass versus allele frequency (main)
 
 [PNG](figures/08_gain_beyond_allele_frequency.png) | [Vector PDF](figures/08_gain_beyond_allele_frequency.pdf)
 
-**Takeaway:** The added coalescence signal is clearest at a shorter cutoff in the weakest selection arm.
+**Takeaway:** The decoded s=0.005 cohort is near the power ceiling for both AF and carrier mass; weaker-selection gains remain untested.
 
-**Caption:** Left: power for pre-specified AF and carrier-mass scores. Right: within-replicate gains and losses relative to AF at s=0.001; negative bars are losses, not negative probabilities. Null FPR is approximately 5% for each method but not identical. Paired p-values and all cutoffs are in paired_af_comparison.csv; they are unadjusted for examining several cutoffs and arms.
+**Caption:** The left panel has a zoomed 90-100% power axis. At nominal 1%, AF detects 99/100 and decoded carrier mass detects 97-99/100 across cutoffs. Right: paired gains and losses, with negative bars representing AF-only detections. At nominal 5%, both methods detect all 100 regions at every cutoff. These near-ceiling results do not establish a gain from decoded coalescence at weaker selection, which has not been decoded. Comparisons across cutoffs are exploratory.
 
 ## 09. iHS power and target-site eligibility (main)
 
@@ -84,9 +84,9 @@ All primary error rates are positional FPR, not FDR among discoveries. Tests at 
 
 [PNG](figures/10_spatial_decay.png) | [Vector PDF](figures/10_spatial_decay.pdf)
 
-**Takeaway:** Strong local carrier signal extends into linked sequence while neutral per-position FPR stays near 5%.
+**Takeaway:** Decoded carrier signal extends into linked sequence while neutral per-position FPR stays near its nominal level.
 
-**Caption:** Each point is the fraction of 100 selected or 1,000 neutral replicates called at that coordinate. No smoothing or maximum over positions is used. Detection at linked positions describes the extent of the signal, not a separate causal target or a localization false discovery. Curves are restricted to +/-500 kb for readability; full 10-Mb pointwise results are in the source table.
+**Caption:** TMRCA curves use Gamma-SMC decoded scores at both nominal thresholds; AF uses genotypes. Each point is the fraction of 100 selected or 1,000 neutral replicates called at that coordinate. No smoothing or maximum over positions is used. Detection at linked positions describes signal extent, not a separate causal target or a localization false discovery. The FPR panels have different scales matching the nominal thresholds. Full 10-Mb pointwise results accompany the plotted +/-500-kb interval.
 
 ## 11. Example neutral and selected regions (backup)
 
@@ -96,21 +96,21 @@ All primary error rates are positional FPR, not FDR among discoveries. Tests at 
 
 **Caption:** Neutral example neutral/rep0388: choose focal AF<5% and whole-region maximum AF>=40%, then the maximum nearest the median of eligible examples (ties by ID). Selected example 0014: AF nearest the s=0.005 median (ties by replicate). Gold shading marks a fixed 100-kb interval centered at 5 Mb. AF and carrier mass have different scales of interpretation despite both lying in [0,1].
 
-## 12. Power at stricter thresholds (backup)
+## 12. Decoded power at stricter thresholds (backup)
 
 [PNG](figures/12_threshold_stringency.png) | [Vector PDF](figures/12_threshold_stringency.pdf)
 
-**Takeaway:** The s=0.005 signal remains strong at stringent ranks; very weak selection loses substantial power.
+**Takeaway:** At the pooled p<=0.001 threshold, decoded carrier mass detects 92%, AF 90%, and decoded all-pair recency 23%.
 
-**Caption:** p<=0.05 and 0.01 use 400 neutral calibration positions per fold. The separate p<=0.001 sensitivity uses all 1,000 neutrals for selected ranks and leave-one-out ranks for neutrals. One extreme neutral rank gives 1/1,000 calls for the shown scores; this is not precise independent validation of a 0.1% tail. Comparisons remain positional, not family-wise over a genome.
+**Caption:** Carrier and all-pair scores use decoded TMRCA in the s=0.005 cohort. p<=0.05 and 0.01 use 400 neutral calibration positions per fold. The separate p<=0.001 sensitivity uses all 1,000 neutrals for selected ranks and leave-one-out ranks for neutrals. One extreme neutral rank gives 1/1,000 calls for these scores; this is not precise independent validation of a 0.1% tail. These are positional tests, not genome-wide family-wise tests.
 
-## 13. Why AF and carrier mass can be similar (backup)
+## 13. Decoded carrier-score components (backup)
 
 [PNG](figures/13_carrier_genealogies.png) | [Vector PDF](figures/13_carrier_genealogies.pdf)
 
-**Takeaway:** When most carriers share recent ancestry by T=50 kya, weighting by coalescence adds less beyond AF.
+**Takeaway:** Decoded carrier mass weights allele-pair abundance by the fraction of those same pairs called recent.
 
-**Caption:** Carrier mass equals the sampled ALT/ALT pair fraction times within-carrier frac_recent_T. AF squared approximates the first factor for random distinct pairs, with finite-panel and pair-sampling differences; it is not an exact upper bound. Branches are the sampled-carrier ancestral groups immediately below the 50-kya cutoff, verified against pairwise TMRCA, not a census of introgressing founders. The model has a strong archaic bottleneck.
+**Caption:** Both panels use Gamma-SMC decoded TMRCA at the focal selected allele in the 100 s=0.005 regions. Left: carrier mass; right: within-ALT/ALT frac_recent_T. The score is exactly the sampled ALT/ALT pair fraction times the right-panel quantity. AF squared approximates the pair fraction for random distinct pairs, with finite-panel and pair-sampling differences; it is not an exact bound.
 
 ## 14. Demography and decoder assumptions (backup)
 
@@ -126,7 +126,7 @@ All primary error rates are positional FPR, not FDR among discoveries. Tests at 
 
 **Takeaway:** The carrier score combines this within-ALT/ALT recency with the fraction of the complete pair panel that is ALT/ALT.
 
-**Caption:** ALT/ALT and REF/REF are haplotype-pair classes at the focal archaic marker. Only regions with an assigned marker contribute to this within-class diagnostic: 100 selected and 169 neutral. Counts are pooled across pairs, so regions with larger classes contribute more weight; this is not a replicate-average or the unconditional neutral denominator used for FPR. REF/REF is a diagnostic and is not subtracted from the carrier score; ALT/REF is not scored.
+**Caption:** All recency calls are Gamma-SMC decoded. ALT/ALT and REF/REF are haplotype-pair classes at the focal archaic marker. Only regions with an assigned marker contribute: 100 selected and 169 neutral. Counts are pooled across pairs, so regions with larger classes contribute more weight; this is not a replicate-average or the unconditional neutral denominator used for FPR. REF/REF is diagnostic and is not subtracted from the score; ALT/REF is not scored.
 
 ## Interpretation limits
 

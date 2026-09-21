@@ -88,7 +88,7 @@ def scoeff(ax):
     ax.set_xlabel("Selection coefficient (s)")
 
 
-def rows(data, source="truth", method="mass_50000", alpha=.05):
+def rows(data, source="decoded", method="mass_50000", alpha=.05):
     return data[(data.source == source) & (data.method == method) & (data.alpha == alpha)].sort_values("s")
 
 
@@ -159,7 +159,7 @@ def design(book):
     for x in (.29,.65):
         ax.annotate("", xy=(x+.06,.78), xytext=(x,.78), xycoords="axes fraction", arrowprops=dict(arrowstyle="->",color="#46596A",lw=2))
     ax.text(.5,.36,r"$S_T=\mathrm{frac\_recent}_T(\mathrm{ALT/ALT})\times\frac{n_{\mathrm{ALT/ALT}}}{n_{\mathrm{all\ pairs}}}=\frac{n_{\mathrm{recent\ ALT/ALT},T}}{n_{\mathrm{all\ pairs}}}$",ha="center",va="center",transform=ax.transAxes,fontsize=23)
-    ax.text(.5,.12,"Eligible archaic ALT: oracle-specific origin after the archaic-modern split, before the pulse.\nTruth uses local TMRCA; decoding uses posterior-mean TMRCA hard calls.",transform=ax.transAxes,ha="center",va="center",fontsize=17,linespacing=1.6)
+    ax.text(.5,.12,"Eligible archaic ALT: oracle-specific origin after the archaic-modern split, before the pulse.\nGamma-SMC frac_recent_T uses posterior-mean TMRCA hard calls.",transform=ax.transAxes,ha="center",va="center",fontsize=17,linespacing=1.6)
     finish(book,fig,"01_design_and_score","Design and carrier score",
         "EAS; generation time 25 years; mutation rate 1.25e-8 and recombination rate 1e-8 per base per generation; dominance 0.5. Selected alleles must survive and be observed; fixation is retained. ALT/ALT denotes two haplotypes, not a diploid homozygote. The score uses frac_recent_T and no ALT/REF penalty or REF/REF subtraction.",
         "Require the same haplotype pairs to carry the archaic allele and coalesce recently.")
@@ -209,17 +209,25 @@ def allele_frequency(book, focal, neutral):
 
 
 def power(book, metrics, ihs):
-    fig, axes=canvas("Local calibration recovers partial-sweep power", "T = 50 kya for TMRCA scores | shaded bands: 95% Wilson intervals conditional on the fitted null",cols=2)
+    fig, axes=canvas("Gamma-SMC power at s = 0.005", "100 selected + 1,000 neutral regions | T = 50 kya | error bars: 95% Wilson intervals",cols=2)
+    labels=["Archaic\nAF","Carrier\nmass","All-pair\nrecency","Positional\niHS"]
+    export=[]
     for ax,alpha in zip(axes[0],(.05,.01)):
-        for method,label,key in (("af","Archaic AF","af"),("mass_50000","ALT/ALT carrier mass","mass"),("all_50000","All-pair recency","all")):
-            curve(ax,rows(metrics,method=method,alpha=alpha),label,C[key],band=True)
-        z=ihs[(ihs.method == "nearest_core_abs_ihs") & (ihs.alpha == alpha)].sort_values("s")
-        curve(ax,z,"Positional iHS",C["ihs"],style="--",band=True)
-        scoeff(ax);percent(ax);ax.set_title(f"Nominal p <= {alpha:g}",pad=14)
-    legend(fig,ncol=4)
-    finish(book,fig,"04_positional_power","Power across selection coefficients",
-        "All TMRCA curves use true TMRCA. Each position is compared with 400 neutral calibration positions in one of five folds; 200 neutral positions per fold are held out. All 1,000 selected and 1,000 neutrals are included. iHS uses the nearest scorable core within 5 kb. Wilson bands do not include uncertainty from estimating the neutral reference or cross-fold dependence.",
-        "Carrier-based local tests are much more sensitive than all-pair recency at weak selection.")
+        z=[rows(metrics,method=method,alpha=alpha).iloc[0] for method in ("af","mass_50000","all_50000")]
+        z.append(ihs[(ihs.method=="nearest_core_abs_ihs")&(ihs.alpha==alpha)&(ihs.s==.005)].iloc[0])
+        values=np.array([r.power for r in z]);lo,hi=wilson([r.selected_called for r in z],[r.selected_regions for r in z])
+        ax.bar(range(4),values,color=[C[k] for k in ("af","mass","all","ihs")],width=.68,zorder=3)
+        ax.errorbar(range(4),values,yerr=[values-lo,hi-values],fmt="none",color="#172E41",capsize=5,zorder=4)
+        for j,r in enumerate(z):
+            ax.text(j,hi[j]+.025,f"{r.power:.0%}",ha="center",fontsize=18,weight="bold")
+            export.append(dict(method=r.method,alpha=alpha,s=.005,power=r.power,
+                source="decoded" if j in (1,2) else "genotypes",selected_regions=int(r.selected_regions),selected_called=int(r.selected_called)))
+        ax.set_xticks(range(4),labels,fontsize=13)
+        percent(ax,upper=1.15);ax.set_yticks([0,.25,.5,.75,1]);ax.set_title(f"Nominal p <= {alpha:g}")
+    pd.DataFrame(export).to_csv(DATA/"figure04_decoded_power.csv",index=False)
+    finish(book,fig,"04_positional_power","Decoded power at s=0.005",
+        "Carrier mass and all-pair recency use Gamma-SMC decoded posterior-mean TMRCA hard calls. AF and iHS use the observed simulated genotypes. All four methods are restricted to the same 100 s=0.005 selected regions; the other selection arms have not been decoded. Each test position uses 400 neutral calibration positions in its fold, with 200 held-out neutral positions. Wilson intervals do not include fitted-null uncertainty or cross-fold dependence.",
+        "At nominal 5%, decoded carrier power is 100%, all-pair power 61%, and positional iHS power 67%.")
 
 
 def heatmap(ax, values, xticklabels, yticklabels, maximum=100, fmt=".0f", cmap="YlGnBu"):
@@ -236,33 +244,35 @@ def heatmap(ax, values, xticklabels, yticklabels, maximum=100, fmt=".0f", cmap="
 
 
 def time_power(book, metrics):
-    fig,axes=canvas("Recency cutoffs change power", "True TMRCA | p <= 0.05 | every cell is a separately calibrated test",cols=2)
-    for ax,family,title in zip(axes[0],("all","mass"),("All-pair recency","ALT/ALT carrier mass")):
-        values=np.array([rows(metrics,method=f"{family}_{t}").power.to_numpy()*100 for t in T])
-        heatmap(ax,values,list(range(1,11)),[t//1000 for t in T])
-        ax.set(title=title,xlabel="s (x 0.001)",ylabel="TMRCA cutoff (kya)")
-    finish(book,fig,"05_time_cutoff_power","Power across TMRCA cutoffs",
-        "Cutoffs are 5, 10, 20, 30, 40 and 50 kya; there is no per-replicate maximum over cutoffs. Each cell uses 100 selected replicates and the matching neutral statistic. Comparing cutoffs is exploratory, not an independently validated tuning procedure.",
-        "Shorter cutoffs can add discrimination beyond frequency, particularly at s=0.001.")
+    fig,axes=canvas("TMRCA cutoffs change decoded power", "Gamma-SMC | s = 0.005 only | 100 selected replicates per cell | values are percentages",cols=2)
+    for ax,alpha in zip(axes[0],(.05,.01)):
+        values=np.array([[rows(metrics,method=f"{family}_{t}",alpha=alpha).power.iloc[0]*100 for t in T] for family in ("all","mass")])
+        heatmap(ax,values,[t//1000 for t in T],["All pairs","Carrier mass"])
+        ax.set(title=f"Nominal p <= {alpha:g}",xlabel="TMRCA cutoff (kya)")
+        ax.tick_params(axis="y",labelsize=14)
+    fig.subplots_adjust(left=.15,wspace=.55)
+    finish(book,fig,"05_time_cutoff_power","Decoded power across TMRCA cutoffs",
+        "All TMRCA scores are decoded. Cutoffs are 5, 10, 20, 30, 40 and 50 kya, each calibrated separately against the matching decoded neutral statistic. No per-replicate maximum over cutoffs is used. Only s=0.005 has selected decoding; the full s grid is not represented. Cutoff comparisons are exploratory.",
+        "Decoded carrier mass has 100% power at nominal 5% across the tested cutoffs in the s=0.005 cohort.")
 
 
 def fpr(book, metrics):
-    fig,axes=canvas("Held-out positional false-positive rates", "1,000 neutral positions, tested once each | these are FPRs, not FDRs among discoveries",cols=2)
-    labels=["Truth: all pairs","Truth: carrier mass","Decoded: all pairs","Decoded: carrier mass"]
+    fig,axes=canvas("Gamma-SMC positional false-positive rates", "Decoded statistics | 1,000 neutral positions tested once each | FPR, not discovery FDR",cols=2)
+    labels=["All pairs","Carrier mass"]
     for ax,alpha in zip(axes[0],(.05,.01)):
         data=np.array([[rows(metrics,source=src,method=f"{fam}_{t}",alpha=alpha).positional_fpr.iloc[0]*100 for t in T]
-            for src,fam in (("truth","all"),("truth","mass"),("decoded","all"),("decoded","mass"))])
+            for src,fam in (("decoded","all"),("decoded","mass"))])
         heatmap(ax,data,[t//1000 for t in T],labels,maximum=7 if alpha==.05 else 2,fmt=".1f",cmap="Blues")
         ax.set(title=f"Nominal {alpha:.0%}",xlabel="TMRCA cutoff (kya)")
         ax.tick_params(axis="y",labelsize=13)
     fig.subplots_adjust(left=.17,wspace=.6)
     finish(book,fig,"06_positional_false_positive_rate","Neutral FPR calibration",
-        "Cell labels are percentages, with separate color scales for the 5% and 1% panels. Neutral marker-free positions contribute zero carrier mass. The false discovery rate among selected discoveries also depends on the prevalence of selection and is not estimated by this figure. No chromosome-maximum error rate is substituted for the positional rate.",
-        "Matched nulls control local false calls close to the nominal level for both truth and decoding.")
+        "Both rows use Gamma-SMC decoded statistics. Cell labels are percentages, with separate color scales for the 5% and 1% panels. Neutral marker-free positions contribute zero carrier mass. Discovery FDR also depends on the prevalence of selection and is not estimated here. No chromosome-maximum error rate is substituted for positional FPR.",
+        "Matched decoded nulls keep local false calls close to the nominal level.")
 
 
 def decoding(book, metrics):
-    fig,axes=canvas("Carrier mass retains power after decoding", "s = 0.005 only | matched truth and decoded nulls | 100 selected + 1,000 neutral regions",cols=2)
+    fig,axes=canvas("Validation: truth versus decoded TMRCA", "s = 0.005 only | explicit truth reference comparison | 100 selected + 1,000 neutral regions",cols=2)
     for ax,family,title in zip(axes[0],("all","mass"),("All-pair recency","ALT/ALT carrier mass")):
         for source in ("truth","decoded"):
             for alpha,style in ((.05,"-"),(.01,"--")):
@@ -272,32 +282,33 @@ def decoding(book, metrics):
     legend(fig,ncol=4)
     finish(book,fig,"07_truth_vs_decoding","Truth versus decoded TMRCA",
         "This comparison is available only for the already decoded s=0.005 cohort. Both sources use the same 10,000 sampled pairs and local marker assignments. Decoded frac_recent_T thresholds posterior-mean TMRCA per pair; it does not average posterior mass. Weak-selection arms have not been decoded. Matching nulls calibrates the test but does not remove decoding-related loss of discrimination.",
-        "At T=50 kya and p<=0.05, all-pair power falls from 86% to 61%; carrier mass remains at 100%.")
+        "At T=50 kya and p<=0.05, all-pair power falls from 86% to 61%; carrier mass remains at 100%.",category="validation")
 
 
 def gain(book, metrics, paired):
-    fig,axes=canvas("Coalescence can add information beyond AF", "True TMRCA | p <= 0.05 | comparisons across T and s are exploratory",cols=2)
+    fig,axes=canvas("Decoded carrier mass has little gain over AF here", "s = 0.005 | nominal p <= 0.01 | weaker-selection arms are not decoded",cols=2)
     ax=axes[0,0]
-    for method,label,color in (("af","Archaic AF",C["af"]),("mass_20000","Carrier mass, T=20 kya",C["mass"]),("mass_50000","Carrier mass, T=50 kya",C["all"])):
-        curve(ax,rows(metrics,method=method).query("s <= .005"),label,color)
-    percent(ax);ax.set_xticks(S[:5],[f"{s:.3f}" for s in S[:5]],rotation=20)
-    ax.set_xlabel("Selection coefficient (s)")
+    af=rows(metrics,method="af",alpha=.01).power.iloc[0]
+    values=[rows(metrics,method=f"mass_{t}",alpha=.01).power.iloc[0] for t in T]
+    ax.plot(np.array(T)/1000,[af]*len(T),color=C["af"],ls=":",marker="s",label="Archaic AF")
+    ax.plot(np.array(T)/1000,values,color=C["mass"],marker="o",label="Decoded carrier mass")
+    percent(ax);ax.set_ylim(.90,1.008);ax.set_yticks([.90,.95,1])
+    ax.set(xlabel="TMRCA cutoff (kya)",xticks=[5,10,20,30,40,50],title="Power (zoomed scale)")
     ax=axes[0,1]
-    p=paired[(paired.source=="truth") & (paired.alpha==.05) & (paired.s==.001)]
+    p=paired[(paired.source=="decoded") & (paired.alpha==.01) & (paired.s==.005)]
     p=p.set_index("method").loc[[f"mass_{t}" for t in T]]
     x=np.arange(len(T))
     ax.bar(x-.18,p.mass_only,width=.36,color=C["mass"],label="Carrier only (+)")
     ax.bar(x+.18,-p.af_only,width=.36,color=C["af"],label="AF only (-)")
     ax.axhline(0,color="#46596A",lw=1)
-    ax.set(xticks=x,xticklabels=[t//1000 for t in T],xlabel="TMRCA cutoff (kya)",ylabel="Discordant detections / 100",title="Paired comparison at s=0.001")
+    ax.set(xticks=x,xticklabels=[t//1000 for t in T],xlabel="TMRCA cutoff (kya)",ylabel="Discordant detections / 100",title="Paired comparison",ylim=(-2.4,2.4),yticks=[-2,-1,0,1,2])
     ax.grid(axis="y",color="#E5E9EE")
     h1,l1=axes[0,0].get_legend_handles_labels();h2,l2=ax.get_legend_handles_labels()
-    legend(fig,h1+h2,l1+l2,ncol=3)
-    fig.subplots_adjust(top=.64,bottom=.24)
-    ax.set_title("Paired comparison at s=0.001",fontsize=18)
-    finish(book,fig,"08_gain_beyond_allele_frequency","Incremental gain from coalescence",
-        "Left: power for pre-specified AF and carrier-mass scores. Right: within-replicate gains and losses relative to AF at s=0.001; negative bars are losses, not negative probabilities. Null FPR is approximately 5% for each method but not identical. Paired p-values and all cutoffs are in paired_af_comparison.csv; they are unadjusted for examining several cutoffs and arms.",
-        "The added coalescence signal is clearest at a shorter cutoff in the weakest selection arm.")
+    legend(fig,h1+h2,l1+l2,ncol=2)
+    fig.subplots_adjust(top=.66,bottom=.23)
+    finish(book,fig,"08_gain_beyond_allele_frequency","Decoded carrier mass versus allele frequency",
+        "The left panel has a zoomed 90-100% power axis. At nominal 1%, AF detects 99/100 and decoded carrier mass detects 97-99/100 across cutoffs. Right: paired gains and losses, with negative bars representing AF-only detections. At nominal 5%, both methods detect all 100 regions at every cutoff. These near-ceiling results do not establish a gain from decoded coalescence at weaker selection, which has not been decoded. Comparisons across cutoffs are exploratory.",
+        "The decoded s=0.005 cohort is near the power ceiling for both AF and carrier mass; weaker-selection gains remain untested.")
 
 
 def ihs_comparison(book, ihs, regions):
@@ -323,19 +334,19 @@ def ihs_comparison(book, ihs, regions):
 
 
 def spatial(book, distance):
-    fig,axes=canvas("The selected signal decays with distance", "s = 0.005; T = 50 kya; p <= 0.05 | every stride uses its own matched neutral position",rows=2,cols=2,
+    fig,axes=canvas("The decoded signal decays with distance", "Gamma-SMC | s = 0.005; T = 50 kya | every stride uses its own matched decoded null",rows=2,cols=2,
         gridspec_kw=dict(height_ratios=[2.3,1]))
     fig.subplots_adjust(top=.70,bottom=.21,hspace=.26)
-    for col,source in enumerate(("truth","decoded")):
+    for col,alpha in enumerate((.05,.01)):
         for method,label,key in (("af","Archaic AF","af"),("mass_50000","Carrier mass","mass"),("all_50000","All-pair recency","all")):
-            z=distance[(distance.source==source)&(distance.method==method)&(distance.alpha==.05)&(distance.distance_bp.abs()<=500000)].sort_values("distance_bp")
+            z=distance[(distance.source=="decoded")&(distance.method==method)&(distance.alpha==alpha)&(distance.distance_bp.abs()<=500000)].sort_values("distance_bp")
             axes[0,col].plot(z.distance_bp/1000,z.power,color=C[key],label=label)
             axes[1,col].plot(z.distance_bp/1000,z.positional_fpr,color=C[key],lw=1.6)
-        axes[0,col].set_title(source.capitalize(),pad=12)
+        axes[0,col].set_title(f"Nominal p <= {alpha:g}",pad=12)
         percent(axes[0,col],"Detection (%)")
-        percent(axes[1,col],"FPR (%)",upper=.10)
-        axes[1,col].set_yticks([0,.05,.10])
-        axes[1,col].axhline(.05,color="#172E41",ls="--",lw=1)
+        percent(axes[1,col],"FPR (%)",upper=2*alpha)
+        axes[1,col].set_yticks([0,alpha,2*alpha])
+        axes[1,col].axhline(alpha,color="#172E41",ls="--",lw=1)
         for row in range(2):
             axes[row,col].axvline(0,color="#A1ABB4",lw=1,ls=":")
             axes[row,col].set_xlim(-500,500)
@@ -343,8 +354,8 @@ def spatial(book, distance):
         axes[1,col].set_xlabel("Distance from selected allele (kb)")
     legend(fig,ncol=3)
     finish(book,fig,"10_spatial_decay","Detection and FPR across the region",
-        "Each point is the fraction of 100 selected or 1,000 neutral replicates called at that coordinate. No smoothing or maximum over positions is used. Detection at linked positions describes the extent of the signal, not a separate causal target or a localization false discovery. Curves are restricted to +/-500 kb for readability; full 10-Mb pointwise results are in the source table.",
-        "Strong local carrier signal extends into linked sequence while neutral per-position FPR stays near 5%.")
+        "TMRCA curves use Gamma-SMC decoded scores at both nominal thresholds; AF uses genotypes. Each point is the fraction of 100 selected or 1,000 neutral replicates called at that coordinate. No smoothing or maximum over positions is used. Detection at linked positions describes signal extent, not a separate causal target or a localization false discovery. The FPR panels have different scales matching the nominal thresholds. Full 10-Mb pointwise results accompany the plotted +/-500-kb interval.",
+        "Decoded carrier signal extends into linked sequence while neutral per-position FPR stays near its nominal level.")
 
 
 def profile(key):
@@ -354,6 +365,8 @@ def profile(key):
     if digest(path)!=receipt["outputs"]["features.npz"]["sha256"]:raise ValueError(f"Corrupt profile {key}")
     INPUTS[str(path)]=digest(path)
     with np.load(path,allow_pickle=False) as f:
+        assert list(f["sources"])==["truth","decoded"]
+        np.testing.assert_array_equal(f["cutoffs"],T)
         markers=f["grid_markers"];af=np.zeros(len(markers));valid=markers>=0
         af[valid]=f["site_af"][markers[valid]]
         return dict(key=key,position=f["grid"],af=af,counts=f["grid_counts"],n=f["grid_n"],valid=valid)
@@ -389,42 +402,52 @@ def examples(book, neutral, region_max, region_keys, focal):
 
 
 def stringency(book, metrics, pooled):
-    fig,axes=canvas("Greater stringency trades power for fewer false calls", "Pointwise tests | p=0.001 uses pooled ranks and has very limited neutral-tail resolution",cols=2)
+    fig,axes=canvas("Stringency reduces decoded detection power", "Gamma-SMC | s = 0.005; T = 50 kya | p=0.001 is a pooled-rank sensitivity analysis")
     colors=(C["mass"],C["all"],C["ihs"])
-    for ax,method,title in zip(axes[0],("af","mass_50000"),("Archaic AF","Carrier mass, T=50 kya")):
-        for alpha,color in zip((.05,.01,.001),colors):
-            z=rows(pooled if alpha==.001 else metrics,method=method,alpha=alpha)
-            ax.plot(z.s,z.power,marker="o",color=color,label=f"p <= {alpha:g}"+(" (pooled)" if alpha==.001 else " (5-fold)"))
-        percent(ax);scoeff(ax);ax.set_title(title)
+    ax=axes[0,0];x=np.arange(3)
+    for j,(alpha,color) in enumerate(zip((.05,.01,.001),colors)):
+        values=[rows(pooled if alpha==.001 else metrics,method=method,alpha=alpha).power.iloc[0] for method in ("af","mass_50000","all_50000")]
+        bx=x+(j-1)*.24
+        ax.bar(bx,values,width=.22,color=color,label=f"p <= {alpha:g}"+(" (pooled)" if alpha==.001 else " (5-fold)"),zorder=3)
+        for xx,v in zip(bx,values):ax.text(xx,v+.025,f"{v:.0%}",ha="center",fontsize=16)
+    ax.set_xticks(x,["Archaic AF","Decoded carrier mass","Decoded all-pair recency"])
+    percent(ax,upper=1.12);ax.set_yticks([0,.25,.5,.75,1])
     legend(fig,ncol=3)
-    finish(book,fig,"12_threshold_stringency","Power at stricter thresholds",
-        "p<=0.05 and 0.01 use 400 neutral calibration positions per fold. The separate p<=0.001 sensitivity uses all 1,000 neutrals for selected ranks and leave-one-out ranks for neutrals. One extreme neutral rank gives 1/1,000 calls for the shown scores; this is not precise independent validation of a 0.1% tail. Comparisons remain positional, not family-wise over a genome.",
-        "The s=0.005 signal remains strong at stringent ranks; very weak selection loses substantial power.",category="backup")
+    finish(book,fig,"12_threshold_stringency","Decoded power at stricter thresholds",
+        "Carrier and all-pair scores use decoded TMRCA in the s=0.005 cohort. p<=0.05 and 0.01 use 400 neutral calibration positions per fold. The separate p<=0.001 sensitivity uses all 1,000 neutrals for selected ranks and leave-one-out ranks for neutrals. One extreme neutral rank gives 1/1,000 calls for these scores; this is not precise independent validation of a 0.1% tail. These are positional tests, not genome-wide family-wise tests.",
+        "At the pooled p<=0.001 threshold, decoded carrier mass detects 92%, AF 90%, and decoded all-pair recency 23%.",category="backup")
 
 
-def genealogies(book, focal):
-    fig,axes=canvas("Carrier mass and allele frequency are related", "True focal genealogies | 1,000 selected regions | ancestral branches are not a count of founding haplotypes",cols=2)
-    ax=axes[0,0]
+def genealogies(book, all_profiles):
+    selected=[p for p in all_profiles if p["key"].startswith("onset50000/") and p["valid"][500]]
+    assert len(selected)==100
+    records=[]
+    for p in selected:
+        total=int(p["n"][500,3]);aa=int(p["n"][500,2])
+        assert total==int(p["n"][500,:3].sum())==10000 and aa>0
+        for t in (20000,50000):
+            recent=int(p["counts"][1,500,2,T.index(t)])
+            records.append(dict(key=p["key"],source="decoded",s=.005,T=t,af=p["af"][500],
+                mass=recent/total,aa_frac_recent=recent/aa,aa_pair_fraction=aa/total))
+    frame=pd.DataFrame(records);frame.to_csv(DATA/"decoded_carrier_score_components.csv",index=False)
+    np.testing.assert_allclose(frame.mass,frame.aa_frac_recent*frame.aa_pair_fraction,rtol=0,atol=1e-15)
+    fig,axes=canvas("Decoded carrier mass combines frequency and recency", "Gamma-SMC | 100 selected regions at s = 0.005 | each dot is one replicate",cols=2)
     for cutoff,color,label in ((20000,C["mass"],"T=20 kya"),(50000,C["all"],"T=50 kya")):
-        ax.scatter(focal.sample_af,focal[f"mass_{cutoff}"],s=12,color=color,alpha=.32,linewidths=0,label=label)
+        z=frame[frame["T"]==cutoff]
+        axes[0,0].scatter(z.af,z.mass,s=27,color=color,alpha=.65,linewidths=0,label=label)
+        axes[0,1].scatter(z.af,z.aa_frac_recent,s=27,color=color,alpha=.65,linewidths=0,label=label)
+    ax=axes[0,0]
     x=np.linspace(0,1,200)
     ax.plot(x,x*x,color="#172E41",ls="--",label="AF squared (approximation)",lw=1.5)
     percent(ax,"ALT/ALT carrier-mass score");ax.set_xlabel("Selected allele frequency")
     ax.xaxis.set_major_formatter(PercentFormatter(1,decimals=0));ax.set_xlim(0,1)
-    ax=axes[0,1]
-    lineage=focal.assign(category=np.minimum(focal.carrier_lineages_at_50k,3))
-    values=pd.crosstab(lineage.s,lineage.category,normalize="index").reindex(index=S,columns=[1,2,3],fill_value=0)
-    bottom=np.zeros(10)
-    for cat,color,label in ((1,C["mass"],"One branch"),(2,C["all"],"Two branches"),(3,C["ihs"],"Three or more")):
-        ax.bar(S,values[cat],bottom=bottom,width=.00068,color=color,label=label)
-        bottom+=values[cat].to_numpy()
-    percent(ax,"Selected regions (%)");scoeff(ax);ax.set_title("Carrier branches just before 50 kya")
-    h1,l1=axes[0,0].get_legend_handles_labels();h2,l2=ax.get_legend_handles_labels()
-    legend(fig,h1+h2,l1+l2,ncol=3)
-    fig.subplots_adjust(top=.68)
-    finish(book,fig,"13_carrier_genealogies","Why AF and carrier mass can be similar",
-        "Carrier mass equals the sampled ALT/ALT pair fraction times within-carrier frac_recent_T. AF squared approximates the first factor for random distinct pairs, with finite-panel and pair-sampling differences; it is not an exact upper bound. Branches are the sampled-carrier ancestral groups immediately below the 50-kya cutoff, verified against pairwise TMRCA, not a census of introgressing founders. The model has a strong archaic bottleneck.",
-        "When most carriers share recent ancestry by T=50 kya, weighting by coalescence adds less beyond AF.",category="backup")
+    ax=axes[0,1];percent(ax,"Decoded ALT/ALT frac_recent_T")
+    ax.set_xlabel("Selected allele frequency");ax.set_xlim(0,1)
+    ax.xaxis.set_major_formatter(PercentFormatter(1,decimals=0))
+    legend(fig,ncol=3)
+    finish(book,fig,"13_carrier_genealogies","Decoded carrier-score components",
+        "Both panels use Gamma-SMC decoded TMRCA at the focal selected allele in the 100 s=0.005 regions. Left: carrier mass; right: within-ALT/ALT frac_recent_T. The score is exactly the sampled ALT/ALT pair fraction times the right-panel quantity. AF squared approximates the pair fraction for random distinct pairs, with finite-panel and pair-sampling differences; it is not an exact bound.",
+        "Decoded carrier mass weights allele-pair abundance by the fraction of those same pairs called recent.",category="backup")
 
 
 def demography(book, cfg):
@@ -454,9 +477,9 @@ def demography(book, cfg):
 
 
 def pair_classes(book, all_profiles):
-    fig,axes=canvas("Recent coalescence among archaic ALT/ALT pairs", "Focal position | pairs pooled within each defined class | s=0.005 selected versus neutral",cols=2)
+    fig,axes=canvas("Gamma-SMC recency among archaic ALT/ALT pairs", "Decoded focal TMRCA | pairs pooled within each class | s=0.005 selected versus neutral")
     records=[]
-    for ax,source,src in zip(axes[0],("truth","decoded"),range(2)):
+    for ax,source,src in ((axes[0,0],"decoded",1),):
         for selected,style in ((True,"-"),(False,"--")):
             group=[p for p in all_profiles if p["key"].startswith("onset50000/")==selected and p["valid"][500]]
             counts=np.array([p["counts"][src,500] for p in group]).sum(axis=0)
@@ -467,19 +490,19 @@ def pair_classes(book, all_profiles):
                 ax.plot(np.array(T)/1000,values,ls=style,color=color,marker="o",label=f"{cohort}: {label}")
                 records.extend(dict(source=source,cohort=cohort,pair_class=label,T=t,frac_recent=float(v),regions=len(group),pairs=int(totals[cls])) for t,v in zip(T,values))
         percent(ax,"Within-class frac_recent_T")
-        ax.set(title=source.capitalize(),xlabel="TMRCA cutoff (kya)",xticks=[5,10,20,30,40,50])
+        ax.set(xlabel="TMRCA cutoff (kya)",xticks=[5,10,20,30,40,50])
     legend(fig,ncol=4)
     pd.DataFrame(records).to_csv(DATA/"pair_class_recency.csv",index=False)
     finish(book,fig,"15_pair_class_coalescence","Pair-class coalescence diagnostic",
-        "ALT/ALT and REF/REF are haplotype-pair classes at the focal archaic marker. Only regions with an assigned marker contribute to this within-class diagnostic: 100 selected and 169 neutral. Counts are pooled across pairs, so regions with larger classes contribute more weight; this is not a replicate-average or the unconditional neutral denominator used for FPR. REF/REF is a diagnostic and is not subtracted from the carrier score; ALT/REF is not scored.",
+        "All recency calls are Gamma-SMC decoded. ALT/ALT and REF/REF are haplotype-pair classes at the focal archaic marker. Only regions with an assigned marker contribute: 100 selected and 169 neutral. Counts are pooled across pairs, so regions with larger classes contribute more weight; this is not a replicate-average or the unconditional neutral denominator used for FPR. REF/REF is diagnostic and is not subtracted from the score; ALT/REF is not scored.",
         "The carrier score combines this within-ALT/ALT recency with the fraction of the complete pair panel that is ALT/ALT.",category="backup")
 
 
 def write_index():
     lines=["# EAS lab meeting figures - 21 September 2026", "",
         "15 figures in slide-sized 16:9 layout. Each has a 3199 x 1800 PNG and a vector PDF with editable text. The combined PDF has one figure per page; full captions and suggested speaking points are below.", "",
-        "The figures use the completed 1,000 neutral + 1,000 selected array (100 selected per s). Gamma-SMC decoding is available only for s=0.005 and the neutral cohort. Simulation generation and new Gamma-SMC decoding were not started for this figure request.", "",
-        "Suggested main narrative: 01 -> 02 -> 03 -> 04 -> 05 -> 07 -> 08 -> 09 -> 10. Figure 06 verifies FPR calibration; 11-15 are backup figures.", "",
+        "All primary TMRCA plots use Gamma-SMC decoded frac_recent_T. Decoding is available for 1,000 neutrals and 100 selected regions at s=0.005, so decoded power is restricted to that coefficient. AF and iHS use observed simulated genotypes and retain all 1,000 selected regions (100 per s). Figure 07 alone includes true TMRCA as an explicitly labeled validation comparison. No simulations or new decoding were started for this revision.", "",
+        "Suggested main narrative: 01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 08 -> 09 -> 10. Figure 07 is truth-versus-decoding validation; 11-15 are backup figures. Figures 03_a and 03_b remain deferred because actual trajectories were not recorded and replays were declined.", "",
         "All primary error rates are positional FPR, not FDR among discoveries. Tests at a pre-specified gene require the same statistic in a matching neutral interval. No maximum across unrelated positions or T cutoffs enters the primary p-values. The 100-kb iHS window is a separate endpoint.", ""]
     for item in FIGURES:
         lines.extend([f"## {item['number']:02d}. {item['title']} ({item['category']})", "",
@@ -507,6 +530,20 @@ def main():
     distance=table(ROOT/"eas_positional_distance_h400","metrics.csv")
     assert len(focal)==1000 and (focal.groupby("s").size()==100).all()
     assert (ihs.selected_regions==100).all() and (metrics.selected_regions==100).all()
+    decoded=metrics[metrics.source=="decoded"].copy()
+    decoded_paired=paired[paired.source=="decoded"].copy()
+    decoded_pooled=pooled[pooled.source=="decoded"].copy()
+    decoded_distance=distance[distance.source=="decoded"].copy()
+    assert sorted(decoded.s.unique())==[.005] and (decoded.selected_regions==100).all()
+    assert sorted(decoded_paired.s.unique())==sorted(decoded_pooled.s.unique())==[.005]
+    assert (decoded.neutral_positions==1000).all()
+    source_policy=dict(primary_tmrca="Gamma-SMC decoded posterior-mean TMRCA hard calls; frac_recent_T",
+        truth_comparison_figures=["07_truth_vs_decoding"], decoded_selection_coefficients=[.005],
+        decoded_selected_regions=100,decoded_neutral_regions=1000,
+        genotype_only_figures=["02_matched_position_null","03_allele_frequency_distribution","09_ihs_and_sweep_completion"],
+        missing_decoded_arms="s=0.001-0.004 and s=0.006-0.010; not substituted with truth",
+        figure13="decoded carrier-score components, not true-genealogy branch counts",
+        source_filter_checks="passed")
     ref=ROOT/"eas_allele_class_ablation"
     regions=table(ref,"regions.csv")
     methods=json.loads(checked(ref,"methods.json").read_text())
@@ -518,32 +555,36 @@ def main():
     cfg=json.loads((ROOT/"eas_q02_h400/manifest.json").read_text())["config"]
     for name,frame in (("positional_metrics",metrics),("focal_truth",focal),("ihs_metrics",ihs),("ihs_regions",ihs_regions),
                        ("paired_af_comparison",paired),("pooled_rank_metrics",pooled),("distance_metrics",distance),
-                       ("neutral_focal_af",neutral)):
+                       ("neutral_focal_af",neutral),("decoded_positional_metrics",decoded),
+                       ("decoded_paired_af_comparison",decoded_paired),("decoded_pooled_rank_metrics",decoded_pooled),
+                       ("decoded_distance_metrics",decoded_distance)):
         frame.to_csv(DATA/f"{name}.csv",index=False)
     pd.DataFrame(dict(key=region_keys,maximum_af=region_max)).to_csv(DATA/"neutral_region_max_af.csv",index=False)
     with PdfPages(OUT/"EAS_lab_meeting_figures.pdf",metadata={"Title":"EAS introgression selection - lab meeting figures", "CreationDate":DATE,"ModDate":DATE}) as book:
         design(book)
         local_null(book,neutral,region_max)
         allele_frequency(book,focal,neutral)
-        power(book,metrics,ihs)
-        time_power(book,metrics)
-        fpr(book,metrics)
+        power(book,decoded,ihs)
+        time_power(book,decoded)
+        fpr(book,decoded)
         decoding(book,metrics)
-        gain(book,metrics,paired)
+        gain(book,decoded,decoded_paired)
         ihs_comparison(book,ihs,ihs_regions)
-        spatial(book,distance)
+        spatial(book,decoded_distance)
         examples(book,neutral,region_max,region_keys,focal)
-        stringency(book,metrics,pooled)
-        genealogies(book,focal)
+        stringency(book,decoded,decoded_pooled)
+        genealogies(book,all_profiles)
         demography(book,cfg)
         pair_classes(book,all_profiles)
     write_index()
     (OUT/"layout_checks.json").write_text(json.dumps(LAYOUT,indent=2)+"\n")
+    (OUT/"plot_sources.json").write_text(json.dumps(source_policy,indent=2)+"\n")
     (OUT/"figure_provenance.json").write_text(json.dumps(dict(source_sha256=digest(Path(__file__)),
         inputs=INPUTS,config=cfg,matplotlib=matplotlib.__version__,numpy=np.__version__,
         seed_policy="No random sampling/jitter; original simulation seeds and pair seed retained.",
         simulations_started=False,gamma_smc_decoding_started=False,selected_regions=1000,neutral_regions=1000,
-        decoded_selected_regions=100,format="16:9; PNG 240 dpi; vector PDF, TrueType editable text"),indent=2)+"\n")
+        decoded_selected_regions=100,plot_source_policy=source_policy,
+        format="16:9; PNG 240 dpi; vector PDF, TrueType editable text"),indent=2)+"\n")
     print(json.dumps(dict(figures=len(FIGURES),destination=str(OUT),layout="passed")),flush=True)
 
 

@@ -1,0 +1,19 @@
+{
+  "primary_tmrca": "Gamma-SMC decoded posterior-mean TMRCA hard calls; frac_recent_T",
+  "truth_comparison_figures": [
+    "07_truth_vs_decoding"
+  ],
+  "decoded_selection_coefficients": [
+    0.005
+  ],
+  "decoded_selected_regions": 100,
+  "decoded_neutral_regions": 1000,
+  "genotype_only_figures": [
+    "02_matched_position_null",
+    "03_allele_frequency_distribution",
+    "09_ihs_and_sweep_completion"
+  ],
+  "missing_decoded_arms": "s=0.001-0.004 and s=0.006-0.010; not substituted with truth",
+  "figure13": "decoded carrier-score components, not true-genealogy branch counts",
+  "source_filter_checks": "passed"
+}
