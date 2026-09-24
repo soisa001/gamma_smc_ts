@@ -28,7 +28,8 @@ LDFLAGS_FF = -larb -lflint -lpthread -lgsl -lgslcblas
 %.o: %.cpp	
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-all: bin/gamma_smc
+# Bootstrap and CI need the native analysis helpers as well as the decoder.
+all: bin/gamma_smc bin/summarize_recent_rules bin/joint_pair_tmrca.so
 
 bin/gamma_smc: src/gamma_smc.o
 	mkdir -p bin
@@ -43,6 +44,10 @@ bin/summarize_recent_rules: src/summarize_recent_rules.o
 	$(CXX) -o $@ $< $(LDFLAGS) -lzstd
 
 src/summarize_recent_rules.o: src/recent_stats.h src/common.h
+
+bin/joint_pair_tmrca.so: cpp/joint_pair_tmrca.cpp
+	mkdir -p bin
+	$(CXX) -std=c++17 -O3 -shared -fPIC $< -o $@
 
 clean:
 	rm -f src/*.o
