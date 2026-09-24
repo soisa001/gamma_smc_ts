@@ -1,0 +1,66 @@
+{
+  "de_novo_enabled": false,
+  "focused_tests": {
+    "files": [
+      "tests/test_segregating_introgression.py",
+      "tests/test_origin_onset.py"
+    ],
+    "passed": 16
+  },
+  "inspected_layouts": [
+    "power_truth_alt_alt.png",
+    "allele_frequency.png"
+  ],
+  "output": "/mnt/d/phase2simselection/sim/segregating_introgression_h400",
+  "plot_validation": {
+    "checks": [
+      "100 targets and 1000 nulls per cell",
+      "distinct onset control groups",
+      "no embedded PDF raster images"
+    ],
+    "metric_cells": 546,
+    "pdf_count": 20,
+    "seed": 1729,
+    "synthetic": true
+  },
+  "production_preflight": {
+    "completed": [
+      {
+        "attempts": 6,
+        "focal_position": 5500840,
+        "sample_af": 1.0,
+        "task_id": "I50/onset50000_s0p030/rep0000"
+      },
+      {
+        "attempts": 1,
+        "focal_position": 5375513,
+        "sample_af": 0.0275,
+        "task_id": "I10/null/rep0000"
+      },
+      {
+        "attempts": 1,
+        "focal_position": 5675226,
+        "sample_af": 0.9375,
+        "task_id": "I10/onset10000_s0p030/rep0000"
+      }
+    ],
+    "preserved_rejections": [
+      {
+        "attempts": 17,
+        "task_id": "I50/null/rep0000"
+      }
+    ]
+  },
+  "small_validation": {
+    "audited_regions": 4,
+    "decoded_regions": 4,
+    "note": "Development smoke models, excluded from production; final pre-onset SLiM mutation metadata validated in full-size preflight.",
+    "output": "/mnt/d/phase2simselection/sim/segregating_introgression_validation_v2",
+    "pairs": 100,
+    "sample_diploids": 20,
+    "scored_length_bp": 100000,
+    "simulated_length_bp": 110000,
+    "simulated_regions": 4
+  },
+  "total_retained": 4600
+}

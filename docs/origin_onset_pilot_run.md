@@ -1,5 +1,8 @@
 # Focal origin/onset pilot: 10 targets against 1,000 nulls
 
+Superseded by [the segregating introgressed-allele experiment](segregating_introgression_run.md),
+with 100 targets per cell and no de novo arms. This document describes the stopped pilot.
+
 Authorized 2026-09-24. Configuration: `configs/origin_onset_pilot.json`.
 The design and biological assumptions are in `proposed_origin_onset_grid.md`.
 

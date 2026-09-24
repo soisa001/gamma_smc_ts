@@ -1,5 +1,9 @@
 # Proposed origin, onset, and TMRCA grid
 
+The active design is now [the segregating introgressed-allele experiment](segregating_introgression_run.md):
+100 targets per cell, natural focal choice at 50 or 10 kya, and de novo deferred.
+The earlier grid below is retained as history.
+
 Pilot authorized 2026-09-24: start with 10 test targets per cell and 1,000
 calibration nulls per matching specification. The initial design below is now
 implemented in `configs/origin_onset_pilot.json`; simulation, audit, decoding,

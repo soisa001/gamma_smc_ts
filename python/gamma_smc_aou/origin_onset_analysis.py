@@ -20,6 +20,14 @@ PAIR_LABELS = {"all pairs": "all_pairs", "alt/alt": "alt_alt"}
 ARMS = ("I50", "I10", "D50", "D10")
 
 
+def arms(cfg):
+    return tuple(f'I{t//1000}' for t in cfg['selection_onsets_years']) if cfg.get('focal_ascertainment') else ARMS
+
+
+def family_for_arm(arm, cfg):
+    return arm if cfg.get('focal_ascertainment') else ('I50' if arm.startswith('I') else arm)
+
+
 def rank_p(null, scores):
     null, scores = np.asarray(null, dtype=float), np.asarray(scores, dtype=float)
     if len(null) == 0 or np.isinf(null).any() or np.isinf(scores).any():
@@ -118,13 +126,17 @@ def plot_results(out, cfg, focal, metrics):
     cutoffs=cfg["tmrca_cutoffs_years"]
     coefficients=cfg["selection_coefficients"]
     s_labels=[f"{s:g}" for s in coefficients]
+    selected_arms = arms(cfg)
+    families = list(dict.fromkeys(family_for_arm(arm,cfg) for arm in selected_arms))
+    layout = (1,2) if len(selected_arms)==2 else (2,2)
+    figsize = (14,7) if len(selected_arms)==2 else (14,11)
     neutral=metrics[(metrics.role=="neutral_target") & (metrics.method!="AF")]
     fpr_max=max(10.,float(np.ceil(neutral.rate.max()*100/10)*10))
     for source in ("truth","decoded"):
         for method in PAIR_LABELS.values():
             selected=metrics[(metrics.source==source)&(metrics.method==method)&(metrics.role=="selected")]
-            fig,axes=plt.subplots(2,2,figsize=(14,11),layout="constrained")
-            for ax,arm in zip(axes.flat,ARMS):
+            fig,axes=plt.subplots(*layout,figsize=figsize,layout="constrained")
+            for ax,arm in zip(axes.flat,selected_arms):
                 z=selected[selected.arm==arm].pivot(index="s",columns="cutoff_years",values="rate")
                 values=z.reindex(index=coefficients,columns=cutoffs).to_numpy()*100
                 mesh=heatmap(ax,values,[t//1000 for t in cutoffs],s_labels,100,arm)
@@ -135,18 +147,18 @@ def plot_results(out, cfg, focal, metrics):
             save_figure(fig,directory,f"power_{source}_{method}")
 
             z=neutral[(neutral.source==source)&(neutral.method==method)].pivot(index="family",columns="cutoff_years",values="rate")
-            values=z.reindex(index=list(oo.FAMILIES),columns=cutoffs).to_numpy()*100
+            values=z.reindex(index=families,columns=cutoffs).to_numpy()*100
             fig,ax=plt.subplots(figsize=(11,7),layout="constrained")
-            mesh=heatmap(ax,values,[t//1000 for t in cutoffs],list(oo.FAMILIES),fpr_max,"Independent neutral targets")
+            mesh=heatmap(ax,values,[t//1000 for t in cutoffs],families,fpr_max,"Independent neutral targets")
             bar=fig.colorbar(mesh,ax=ax,fraction=.025,pad=.025,label="Neutral detection / FPR (%)")
             bar.solids.set_rasterized(False)
             fig.suptitle(f"{source.capitalize()} TMRCA | {method.replace('_',' ')}\n{cfg['target_replicates']} neutral targets; {cfg['null_replicates']} separate calibration nulls",fontsize=19)
             save_figure(fig,directory,f"fpr_{source}_{method}")
 
     af=focal[focal.method=="AF"]
-    fig,axes=plt.subplots(2,2,figsize=(14,11),layout="constrained")
-    for ax,arm in zip(axes.flat,ARMS):
-        family="I50" if arm.startswith("I") else arm
+    fig,axes=plt.subplots(*layout,figsize=figsize,layout="constrained")
+    for ax,arm in zip(axes.flat,selected_arms):
+        family=family_for_arm(arm,cfg)
         datasets=[af[(af.family==family)&(af.role=="neutral_target")].score.to_numpy()]
         datasets += [af[(af.arm==arm)&(af.role=="selected")&(af.s==s)].score.to_numpy() for s in coefficients]
         ax.boxplot(datasets,tick_labels=["0"]+s_labels,showfliers=True)
@@ -161,8 +173,8 @@ def plot_results(out, cfg, focal, metrics):
     save_figure(fig,directory,"allele_frequency")
 
     # One cutoff per page keeps all 12 coefficients legible at letter-page scale.
-    for arm in ARMS:
-        family="I50" if arm.startswith("I") else arm
+    for arm in selected_arms:
+        family=family_for_arm(arm,cfg)
         for cutoff in cutoffs:
             fig,axes=plt.subplots(2,2,figsize=(14,11),layout="constrained")
             for row,source in enumerate(("truth","decoded")):
@@ -187,7 +199,7 @@ def plot_results(out, cfg, focal, metrics):
 
     af_metrics=metrics[(metrics.method=="AF")&(metrics.role=="selected")]
     fig,ax=plt.subplots(figsize=(11,8.5),layout="constrained")
-    for arm in ARMS:
+    for arm in selected_arms:
         z=af_metrics[af_metrics.arm==arm].sort_values("s")
         ax.errorbar(z.s,z.rate*100,yerr=np.array([z.rate-z.ci_low,z.ci_high-z.rate])*100,marker="o",capsize=3,label=arm)
     ax.set(xlabel="Selection coefficient s",ylabel="AF-only focal detection (%)",ylim=(-3,103),title="AF-only power at p <= 0.05")
@@ -269,7 +281,7 @@ def analyze(root, cfg, plan):
         examples_root.symlink_to(root/"regions",target_is_directory=True)
     example_profiles(out,cfg,inventory[inventory.role!="null"])
     # Cohort trajectories: accepted population trajectories only; no lost-origin inference.
-    for arm in ARMS:
+    for arm in arms(cfg):
         group=inventory[(inventory.arm==arm)&(inventory.role=="selected")]
         fig,axes=plt.subplots(3,4,figsize=(18,13),layout="constrained")
         for ax,s in zip(axes.flat,cfg["selection_coefficients"]):
@@ -290,14 +302,14 @@ def analyze(root, cfg, plan):
         "All scores use the focal allele position and p<=0.05. Truth and decoded TMRCA are calibrated separately. "
         "ALT/ALT uses the raw within-class fraction, without carrier-mass weighting.\n\n"
         "Neutral detection rate is FPR among independent unselected targets, not mixed-prevalence discovery FDR. "
-        "The 1,000 calibration nulls are not test targets. I50 and I10 share introgressed controls. "
+        "The calibration nulls are not test targets. "
+        + ("I50 and I10 use distinct onset-ascertained controls. " if cfg.get('focal_ascertainment') else "I50 and I10 share introgressed controls. ") +
         "Missing ALT/ALT scores are NA and yield no discovery; tables include availability. "
         "Wilson intervals are conditional on the fitted null and omit null-estimation uncertainty. "
-        "The 10-target pilot changes in 10-percentage-point steps and cannot validate a 5% FPR precisely.\n\n"
+        f"The {cfg['target_replicates']}-target estimate changes in {100/cfg['target_replicates']:g}-percentage-point steps.\n\n"
         "Power is conditional on survival and sample observation; fixation is retained. "
         "All cutoffs are separate prespecified tests, not a best-cutoff or any-cutoff rule. "
-        "Introgressed simulations use SLiM Q=5; single-copy de novo simulations use Q=1. "
-        "Within-family controls share Q; across-origin numerical equivalence has not been established.\n")
+        f"Population scaling factors by origin: {cfg['scaling_by_origin']}.\n")
     (out/"README.md").write_text(report)
     files=[p for p in out.rglob('*') if p.is_file() and 'regions' not in p.relative_to(out).parts]
     oo.legacy.atomic_json(out/"complete.json",dict(schema="origin-analysis/v1",config=cfg,

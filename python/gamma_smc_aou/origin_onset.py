@@ -48,6 +48,9 @@ SIM_KEYS = (
 
 
 def tasks(cfg):
+    if cfg.get('focal_ascertainment'):
+        from .segregating_introgression import tasks as standing_tasks
+        return standing_tasks(cfg)
     result = []
     for rep in range(max(cfg["null_replicates"], cfg["target_replicates"])):
         for family, (origin, introduction) in FAMILIES.items():
@@ -166,7 +169,10 @@ def scalar(value):
 
 
 def simulation_identity(cfg, task, runtime):
-    return dict(contract=SIM_CONTRACT, parameters={k: cfg[k] for k in SIM_KEYS},
+    parameters = {k: cfg[k] for k in SIM_KEYS}
+    if cfg.get('focal_ascertainment'):
+        parameters.update(focal_ascertainment=cfg['focal_ascertainment'], prehistory=cfg['prehistory'])
+    return dict(contract=SIM_CONTRACT, parameters=parameters,
                 task=task, runtime=runtime)
 
 
@@ -193,7 +199,7 @@ def validate_trees(directory, cfg, record):
     assert carriers.dtype == np.bool_ and carriers.shape == (2 * cfg["sample_diploids"],)
     assert 0 < carriers.mean() <= 1 and float(carriers.mean()) == record["sample_af"]
     for name, length, position in (
-        ("simulation.trees", cfg["simulated_length_bp"], cfg["simulated_length_bp"] / 2),
+        ("simulation.trees", cfg["simulated_length_bp"], record.get('focal_position_original', cfg["simulated_length_bp"] / 2)),
         ("decoded_input.trees", cfg["scored_length_bp"], cfg["focal_position_bp"]),
     ):
         ts = tskit.load(directory / name)
@@ -201,6 +207,18 @@ def validate_trees(directory, cfg, record):
         focal = legacy.exact_focal_variant(ts, legacy.ordered_nodes(ts), position)
         assert focal is not None
         np.testing.assert_array_equal(focal["carriers"], carriers)
+    if cfg.get('focal_ascertainment'):
+        from .segregating_introgression import choose_focal
+        choice = record['focal_choice']
+        original = tskit.load(directory/'ascertainment.trees')
+        expected = {k:v for k,v in choice.items() if k != 'slim_mutation_id'}
+        assert choose_focal(original,cfg) == expected
+        assert record['crop_offset'] == choice['position']-cfg['focal_position_bp']
+        onset = tskit.load(directory/'onset.trees')
+        assert onset.num_samples == choice['onset_total_copies']
+        mutation = onset.mutation(choice['mutation_id'])
+        assert mutation.derived_state == choice['slim_mutation_id']
+        assert onset.at(choice['position']).num_samples(mutation.node) == choice['onset_alt_copies']
     return True
 
 
@@ -237,6 +255,9 @@ def maybe_reuse(cfg, task, directory, identity, legacy_root):
 
 
 def simulate(cfg, task, directory, identity, slim, legacy_root):
+    if cfg.get('focal_ascertainment'):
+        from .segregating_introgression import simulate as standing_simulate
+        return standing_simulate(cfg, task, directory, identity, slim)
     found = read_receipt(directory, "simulation.json", identity)
     if found:
         validate_trees(directory, cfg, found)
@@ -388,6 +409,18 @@ def initialise(cfg, out, slim, decoder):
     assert 1 <= cfg["workers"] <= 24 and cfg["memory_limit_gb"] > 0
     assert cfg["tmrca_cutoffs_years"] == sorted(set(cfg["tmrca_cutoffs_years"]))
     assert cfg["scaling_by_origin"]["de_novo_EAS"] == 1
+    if cfg.get('focal_ascertainment'):
+        from .segregating_introgression import SPEC
+        assert cfg['focal_ascertainment'] == SPEC
+        assert cfg['prehistory'] == 'DTWF_to_archaic_split_then_Hudson'
+        assert cfg['archaic_bottleneck_size'] == cfg['archaic_effective_size']
+        assert cfg['archaic_bottleneck_generations'] == 0
+        assert set(cfg['scaling_by_origin'].values()) == {1}
+        assert all(0 < t <= cfg['pulse_years'] for t in cfg['selection_onsets_years'])
+        import subprocess
+        slim_version = subprocess.run([slim,'-v'],capture_output=True,text=True,check=True)
+        if 'SLiM version 5.' not in slim_version.stdout + slim_version.stderr:
+            raise ValueError('The onset-state initialization requires SLiM 5 and pyslim 1.1')
     runtime = dict(versions={p: importlib.metadata.version(p) for p in ("msprime", "numpy", "pyslim", "stdpopsim", "tskit")},
                    slim_sha256=legacy.digest(slim))
     assert runtime["versions"]["stdpopsim"] == "0.3.0"
@@ -408,7 +441,9 @@ def initialise(cfg, out, slim, decoder):
     legacy.versioned_json(out / "manifest.json", dict(config=cfg, runtime=runtime, tasks=plan,
         python=sys.version, repo=str(REPO), output=str(out), slim=slim, decoder=decoder,
         pairs_sha256=legacy.digest(out / "pairs.tsv"), positions_sha256=legacy.digest(out / "positions.txt"),
-        source_sha256=legacy.digest(Path(__file__)), decoder_sha256=legacy.digest(decoder)))
+        source_sha256=legacy.digest(Path(__file__)), decoder_sha256=legacy.digest(decoder),
+        implementation_sha256={name:legacy.digest(Path(__file__).parent/name) for name in (
+            'origin_onset.py','origin_onset_analysis.py','segregating_introgression.py','fresh_power.py','pair_class_profiles.py')}))
     return runtime, plan
 
 
