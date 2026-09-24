@@ -1,8 +1,12 @@
 # Proposed origin, onset, and TMRCA grid
 
-Draft dated 2026-09-21. Planning only: no simulations, decoding, ancestry
+Draft updated 2026-09-24. Planning only: no simulations, decoding, ancestry
 replays, or trajectory replays are authorized by this document. The user
 confirmed that de novo means one new EAS ALT copy at selection onset.
+The user confirmed the final positive coefficient is 0.03 and specified
+100 independent targets versus 1,000 calibration nulls. For introgressed
+targets, both calibration nulls and unselected test targets use the same
+unselected archaic-allele specification; only their replicate identities differ.
 
 ## Review of the saved array
 
@@ -46,12 +50,12 @@ Source files: `python/gamma_smc_aou/fresh_power.py`,
 | D50 | One new EAS copy at 50 kya | 50 kya | 1/(2 N_EAS(50 kya)) in the simulated diploid population |
 | D10 | One new EAS copy at 10 kya | 10 kya | 1/(2 N_EAS(10 kya)) in the simulated diploid population |
 
-Proposed common positive s grid:
+Confirmed common positive s grid:
 
-`0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.010, 0.015, 0.020, 0.030, 0.040, 0.050`.
+`0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.010, 0.020, 0.030`.
 
-The higher coefficients are proposed additions, not an existing user-selected
-range. Use the same grid in all four treatments to make comparisons direct.
+Use the same 12 coefficients in all four treatments to make comparisons direct.
+The previously proposed 0.015, 0.040, and 0.050 are removed; 0.300 was a typo.
 Include s=0 matched controls. Keep h=0.5 and the same fitness convention.
 With 25-year generations, 50 kya is 2,000 generations and 10 kya is 400.
 Fivefold higher s is a rough duration-based comparison, not a promise of equal
@@ -65,24 +69,44 @@ Removing the background pulse entirely would be a separate demographic
 comparison, not an implicit change bundled with the focal-origin factor.
 
 For a first comparison matching the existing selected sample size, target
-100 observed surviving selected replicates per cell: 4 x 15 x 100 = 6,000.
+100 observed surviving selected replicates per cell: 4 x 12 x 100 = 4,800.
 Retain fixation and do not impose a terminal AF target. This is explicitly a
 conditional detection experiment, not power per mutation introduced.
 
-Three matched neutral focal-allele cohorts are needed: introgressed at 50 kya,
-de novo at 50 kya, and de novo at 10 kya, initially targeting 1,000 observed
-replicates each. I50 and I10 share the same s=0 process because there is no
-selection onset under neutrality. Match final observation ascertainment across
-selected and neutral cohorts; record allele age, origin, population, and
-initial copies rather than substituting a nearby unrelated SNP.
+Three matched neutral focal-allele families are retained: introgressed at 50 kya,
+de novo at 50 kya, and de novo at 10 kya. For EACH family, use 1,000 observed
+calibration nulls plus 100 additional independent observed s=0 test targets.
+The introgressed specification is explicitly confirmed by the user; the same
+matched-origin design carries forward to the previously requested de novo arms.
+I50 and I10 share the same s=0 family because there is no selection onset under
+neutrality. Share its calibration cohort and independent test cohort across s
+and the two introgressed onset arms; do not regenerate identical controls for
+each heatmap cell. Repeated use is not independent replication.
 
-Nominal retained total: 9,000 (6,000 selected + 3,000 neutral). Existing I50
-selected trees can potentially supply 1,000 of these, so up to 8,000 additional
+| Test | Targets | Reference for empirical p values |
+|---|---|---|
+| Selection detection | 100 selected focal alleles per positive-s cell | 1,000 matching unselected focal alleles |
+| Neutral detection/error | 100 additional unselected focal alleles per null family | The same 1,000 matching unselected focal alleles |
+
+For the introgressed comparison, every unselected focal allele in both rows is
+archaic and introduced by the same pulse. There is no ordinary non-archaic or
+no-introgression comparator in this updated design. Preserve matching simulation
+specifications, ascertainment, demographic history, pulse, and allele definition;
+use disjoint seeds and replicate identities for neutral targets and nulls.
+Match final observation ascertainment across selected and unselected cohorts;
+record allele age, origin, population, and initial copies rather than substituting
+a nearby unrelated SNP. Survival/observation conditioning remains the draft
+default, not a claim of detection per original introduction.
+
+Nominal retained total: 8,100 (4,800 selected + 3,000 calibration nulls + 300
+independent neutral test targets). Existing I50 selected trees can potentially
+supply 1,000 of these, so up to 7,100 additional
 retained regions would be needed. This is not an attempted-simulation budget:
 rare neutral de novo survivors can require many attempts. Reuse of individual
 neutral artifacts requires proof of matching focal identity and ascertainment;
 the existing 1,000 unconditional neutral regions do not satisfy that by default.
-Keep those existing neutrals as a separately labeled legacy calibration.
+Keep those existing neutrals only as a separately labeled historical reference
+unless their compatibility with the new focal-allele specification is verified.
 
 To test the specific hypothesis that a neutral de novo introduction rarely
 reaches high AF, also plan an unbiased fixed-attempt trajectory cohort with
@@ -91,7 +115,9 @@ phase, before examining comparative power. Record AF=0 for loss and distinguish
 population survival from observation in the 400-haplotype sample. Do not infer
 unconditional survival probabilities from accepted trees or from outer retry
 counts: the current SLiM survival-conditioning machinery also rejects internally.
-The 9,000 retained-tree count excludes this separately budgeted trajectory work.
+The 8,100 retained-tree count excludes this separately budgeted trajectory work.
+This optional attempted-origin study is not needed for the requested conditional
+focal comparison and is not included in its launch scope.
 
 ## Analysis grid (reuses each biological replicate)
 
@@ -100,16 +126,17 @@ The 9,000 retained-tree count excludes this separately budgeted trajectory work.
 | TMRCA threshold T | 10, 20, 30, 40, 50 kya |
 | Test cutoff | p<=0.05 only |
 | Pair population | All 10,000 manifest pairs; ALT/ALT subset defined by the focal allele |
-| Primary score source | Gamma-SMC decoded posterior-mean hard calls |
-| Validation source | True pairwise TMRCA, separately calibrated |
+| Score sources, reported separately | True pairwise TMRCA; Gamma-SMC decoded posterior-mean hard calls |
+| Source-specific calibration | Truth against truth nulls; decoded against decoded nulls |
 | Primary endpoint | Prespecified focal position, matched-position null |
 | Spatial diagnostic | Same pair identities across positions; display +/-500 kb, save full 10 Mb |
 | AF baseline | Focal ALT frequency, with its own matched neutral calibration |
 
-Thus there are 4 x 15 x 5 x 2 = 600 selected power cells for decoded TMRCA,
-plus 600 separately labeled truth-validation cells. These are repeated analyses
-of the same simulations, not 1,200 independent experiments or simulation jobs.
-AF has 60 selected cells and is not replicated artificially over T.
+Thus there are 4 x 12 x 5 x 2 = 480 selected power cells per source, or 960
+across the two separately reported sources. There are also 3 x 5 x 2 = 30
+neutral-detection cells per source. These are repeated analyses of the same
+simulations, not independent experiments or simulation jobs. AF has 48 selected
+cells and is not replicated artificially over T.
 
 For pair set C at coordinate z:
 
@@ -180,31 +207,43 @@ neutral calibration scores, using the conservative upper-tail empirical p:
 
 `p = (1 + number of calibration scores >= test score) / (n_calibration + 1)`.
 
-Use five fixed folds. For the new untuned scores, use 800 neutral calibration
-replicates and 200 held-out neutrals per fold; assign 100 selected replicates
-to five folds (20 each). The existing figure workflow used 400 calibration
-neutrals per fold; regenerate legacy comparisons under the same new rule before
-interpreting a change as biological. Never calibrate a neutral against itself.
-All methods share replicate folds. Raw-score differences determine separate
-null thresholds; p=0.05 stays fixed. Retain ties conservatively.
+Use all 1,000 calibration nulls to rank each of the 100 selected targets and
+each of the 100 independent neutral test targets. There is no 800/200 split
+and no cross-validation fold partition in this revised design. Never include
+a test target in its own reference cohort. Keep biological/ascertainment
+parameters identical between neutral targets and calibration nulls, and check
+that input identities and seeds are disjoint. Reuse the same cohort assignments
+for truth and decoded scores, all pairs and ALT/ALT, and every T.
+
+The existing figure workflow used 400 calibration neutrals per fold; regenerate
+legacy comparisons under the new 1,000-null rule before interpreting changes as
+biological. Minimum attainable p is 1/1001. Raw-score differences determine
+separate thresholds; p<=0.05 stays fixed. Retain ties conservatively. Missing
+ALT/ALT scores remain NA in exports; for ranks only, an unavailable reference
+score is a no-call outcome ordered below every finite score, retaining the
+1,000-null denominator. An unavailable target always has p=1. Report availability
+for nulls and targets and evaluable-only summaries alongside enrolled-cohort rates.
 
 - Detection/power: TP/N_selected, with NA pair scores treated as no discovery
   in the enrolled conditional cohort. Also give the evaluable-only denominator.
-- FPR: FP/N_neutral on held-out neutrals under the same eligibility rule.
-- Discovery false fraction: FP/(TP+FP) for a declared mixture; NA when there
-  are no discoveries. FDR formally averages that fraction over repeated
-  experiments, so identify finite-cohort estimates as estimates, not guarantees.
-- Standardized discovery-FDR estimate for comparison: use fixed selected
-  prevalence pi1=1/11 (100 selected per 1,000 neutral), separately for each s:
-  `(1-pi1)*FPR / ((1-pi1)*FPR + pi1*power)`.
-  This matches the cohort ratio and must not change as selected arms are added.
-  Do not pool all 15 selected arms against one neutral set to change prevalence.
+- Neutral detection/FPR: FP/100 among the independent unselected test targets,
+  using the same ascertainment and missing-pair rule as the selected targets.
+  Report the count as well as the percentage and uncertainty interval.
 
-At FPR=5% and power=80%, that 1:10 mixture gives approximately 38.5% false
-discoveries; p<=0.05 does not mean FDR<=5%. This is not a genome-wide FDR claim.
-Use separate labels for FPR and FDR, and show uncertainty. Replicate-level
-bootstrap of the full calibration/evaluation procedure can include null-fit
-uncertainty; pair-level resampling cannot replace independent simulations.
+Terminology: the user calls this neutral-only error experiment FDR. Its requested
+fraction of unselected targets detected is conventionally FPR, so plot it as
+"Neutral detection rate (FPR)" and explain the correspondence in captions.
+The 100 targets : 1,000 nulls ratio specifies testing and calibration cohort
+sizes, not disease/selection prevalence among tested loci. The earlier assumed
+pi1=1/11 mixed-discovery FDR calculation is removed. It must not be inferred
+from this calibration ratio. With only null test targets, any discoveries are
+all false: FDP=1 if there is a discovery (and conventionally 0 if there is none);
+the formal batch FDR is then the probability of at least one discovery, not FP/100.
+No separate mixed-prevalence FDR estimate is requested by this clarification.
+
+Replicate-level bootstrap of the full calibration/evaluation procedure can
+include null-fit uncertainty; pair-level resampling cannot replace independent
+simulations. With 100 neutral targets, the empirical rate changes in 1% steps.
 
 Treat all five T values as prespecified separate comparisons. Do not take the
 best T per replicate or call a replicate positive if any cell has p<=0.05
@@ -217,13 +256,14 @@ likewise be calibrated against the same window summary in neutral regions.
    copies, s, and cohort counts, including eligible and ineligible ALT/ALT tests.
 2. Two separate decoded detection heatmap figures: all pairs and raw ALT/ALT.
    Each has four treatment panels, rows=s and columns=T. Fixed scale 0-100%.
-   Repeat as explicitly labeled truth validation, without mixing score sources.
+   Repeat as separate true-TMRCA results, without mixing score sources.
 3. Held-out FPR panels with one common 0-10% scale across all treatments and
    methods. If any value exceeds 10%, expand the common scale globally; never
    clip it. A shared neutral arm should be labeled as shared, not independent
    evidence repeated across s. Show evaluable-only FPR as a diagnostic.
-4. Standardized FDR heatmaps with one fixed 0-100% scale across every treatment,
-   method, and T; pi1=1/11 in the caption. No-discovery cells are marked NA.
+4. The user's neutral-only error comparison is shown by figure 3, not a second
+   mixed-prevalence FDR heatmap. Include raw detected counts out of 100 and
+   confidence intervals alongside that shared-scale neutral-detection figure.
 5. AF distributions versus s, with matched s=0 controls, fixation fractions,
    common 0-100% AF axes, and AF-only detection curves at p<=0.05. Separately
    plot AF vs raw R_ALT_ALT, annotated with pair counts, to inspect redundancy
@@ -252,10 +292,11 @@ saved renders without displaying figures inline or emitting notebook plots.
 
 ## Future implementation phases and checks
 
-1. Finalize the draft design, especially the proposed high-s extension,
-   demographic-background assumption, and conditional vs attempted-origin
-   budgets. The accompanying CSV expands the biological cells only; it is
-   not a runnable simulation configuration.
+1. The positive-s grid and independent 100-target/1,000-null design are now
+   confirmed. Retain the documented demographic-background and survival/observation
+   defaults. The accompanying CSV expands biological cells and separates neutral
+   target and calibration roles; it is not a runnable simulation configuration.
+   Await an explicit run instruction; answering design questions is not a launch.
 2. After explicit authorization: implement/audit focal origin, matched nulls,
    event timing, single-copy semantics, survival bookkeeping, retained
    trajectories, and pair-availability behavior. Use focused synthetic tests
@@ -268,14 +309,14 @@ saved renders without displaying figures inline or emitting notebook plots.
    counts, vector outputs, and manifests.
 
 Keep study seed 20380101 and pair seed 1729. Extend new task seed identities
-with origin, introduction time, onset, s, replicate and attempt; preserve all
+with origin, introduction time, onset, s, cohort role, replicate and attempt; preserve all
 legacy seeds exactly. Include actual model/engine/scaling settings in cache
 identity, not just task labels. Cache validity depends on sample/pair manifests,
 scientific inputs, relevant output hashes and semantic correctness, not raw
 Git commit version. Log paths, all defaults, seeds, counts, losses, retries,
 versions, parameter hashes and reuse decisions. Verify readable trees, sample
 and position alignment, focal genotype/carrier equality, checksums, finite
-monotone scores, pair denominators, and separation of null calibration folds.
+monotone scores, pair denominators, and separation of calibration and test cohorts.
 
 New resource defaults: 4 total worker threads, 26 GB RAM. Do not inherit the
 old launcher's 20-worker/300-GB settings. No simulation command is supplied
