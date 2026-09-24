@@ -1,0 +1,129 @@
+{
+  "completed_and_decoded_cases": 5,
+  "verified_single_copy": true,
+  "verified_source_hashes": true,
+  "verified_focal_carriers": true,
+  "verified_de_novo_recency_bound": true,
+  "stopped_case": "D10 null small-panel check stopped after a completed unobserved population survivor; not a production failure",
+  "cases": [
+    {
+      "task_id": "I50/null/rep0000",
+      "arm": "I50",
+      "family": "I50",
+      "role": "null",
+      "s": 0.0,
+      "sample_af": 0.05
+    },
+    {
+      "task_id": "I50/onset10000_s0p030/rep0000",
+      "arm": "I10",
+      "family": "I50",
+      "role": "selected",
+      "s": 0.03,
+      "sample_af": 0.95
+    },
+    {
+      "task_id": "D50/null/rep0000",
+      "arm": "D50",
+      "family": "D50",
+      "role": "null",
+      "s": 0.0,
+      "sample_af": 0.05
+    },
+    {
+      "task_id": "D50/onset50000_s0p030/rep0000",
+      "arm": "D50",
+      "family": "D50",
+      "role": "selected",
+      "s": 0.03,
+      "sample_af": 1.0
+    },
+    {
+      "task_id": "D10/onset10000_s0p030/rep0000",
+      "arm": "D10",
+      "family": "D10",
+      "role": "selected",
+      "s": 0.03,
+      "sample_af": 0.55
+    }
+  ],
+  "validation_config": {
+    "population": "EAS",
+    "introgression_proportion": 0.02,
+    "pulse_years": 50000,
+    "selection_onset_years": 50000,
+    "selection_coefficients": [
+      0.001,
+      0.002,
+      0.003,
+      0.004,
+      0.005,
+      0.006,
+      0.007,
+      0.008,
+      0.009,
+      0.01,
+      0.02,
+      0.03
+    ],
+    "sample_diploids": 10,
+    "haplotype_pairs": 50,
+    "mutation_rate": 1.25e-08,
+    "recombination_rate": 1e-08,
+    "generation_time_years": 25,
+    "simulated_length_bp": 110000,
+    "scored_length_bp": 100000,
+    "focal_position_bp": 50000,
+    "stride_bp": 10000,
+    "tmrca_cutoffs_years": [
+      10000,
+      20000,
+      30000,
+      40000,
+      50000
+    ],
+    "alpha": 0.05,
+    "statistic": "frac_recent_T",
+    "recent_call": "mean",
+    "dominance": 0.5,
+    "archaic_split_years": 700000,
+    "archaic_effective_size": 3600,
+    "archaic_bottleneck_size": 10,
+    "archaic_bottleneck_generations": 100,
+    "slim_burn_in": 0.1,
+    "seed_base": 20380101,
+    "pairs_seed": 1729,
+    "maximum_sample_attempts": 100,
+    "decoder_scaled_mutation_rate": 0.00075,
+    "decoder_recombination_to_mutation_ratio": 0.8,
+    "decoder_cache_size": 1000,
+    "decoder_pair_block": 256,
+    "decoder_exp10": "accurate",
+    "decoder_backward_alignment": "fixed",
+    "storage_limit_bytes": 3000000000000,
+    "workers": 4,
+    "memory_limit_gb": 26,
+    "phlash_resource": "no_introgression_EAS_sim/resources/EAS.npz",
+    "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+    "schema": "gamma-smc.origin-onset-pilot/v1",
+    "target_replicates": 10,
+    "null_replicates": 1000,
+    "scaling_by_origin": {
+      "introgressed": 5,
+      "de_novo_EAS": 1
+    }
+  },
+  "focused_tests": {
+    "passed": 9,
+    "deselected": 8,
+    "command": "python -m pytest tests/test_origin_onset.py tests/test_fresh_power.py -q -k \"origin_onset or fixation_retained or vcf_exact_site_coordinates\""
+  },
+  "plot_qa": {
+    "source": "seeded synthetic data only",
+    "png_files": 30,
+    "pdf_files": 30,
+    "vector_only_pdf_check": true,
+    "full_selection_grid_layout_inspected": true,
+    "title_legend_overlap_fixed": true
+  }
+}

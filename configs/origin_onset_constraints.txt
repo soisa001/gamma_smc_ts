@@ -1,0 +1,6 @@
+# Match the saved I50 archive's simulation runtime for compatible reuse.
+msprime==1.4.2
+numpy==2.4.6
+pyslim==1.1.1
+stdpopsim==0.3.0
+tskit==1.0.3

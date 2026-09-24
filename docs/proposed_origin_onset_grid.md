@@ -1,10 +1,13 @@
 # Proposed origin, onset, and TMRCA grid
 
-Draft updated 2026-09-24. Planning only: no simulations, decoding, ancestry
-replays, or trajectory replays are authorized by this document. The user
-confirmed that de novo means one new EAS ALT copy at selection onset.
+Pilot authorized 2026-09-24: start with 10 test targets per cell and 1,000
+calibration nulls per matching specification. The initial design below is now
+implemented in `configs/origin_onset_pilot.json`; simulation, audit, decoding,
+and focal analysis are separate resumable phases. Existing trajectories are
+not replayed. The user confirmed that de novo means one new EAS ALT copy at
+selection onset.
 The user confirmed the final positive coefficient is 0.03 and specified
-100 independent targets versus 1,000 calibration nulls. For introgressed
+10 independent targets versus 1,000 calibration nulls. For introgressed
 targets, both calibration nulls and unselected test targets use the same
 unselected archaic-allele specification; only their replicate identities differ.
 
@@ -68,14 +71,14 @@ is placed on a randomly sampled EAS haplotype without an ancestry filter.
 Removing the background pulse entirely would be a separate demographic
 comparison, not an implicit change bundled with the focal-origin factor.
 
-For a first comparison matching the existing selected sample size, target
-100 observed surviving selected replicates per cell: 4 x 12 x 100 = 4,800.
+For this initial pilot, use 10 observed surviving selected replicates per cell:
+4 x 12 x 10 = 480. Replicate IDs and seeds are stable if expanded later.
 Retain fixation and do not impose a terminal AF target. This is explicitly a
 conditional detection experiment, not power per mutation introduced.
 
 Three matched neutral focal-allele families are retained: introgressed at 50 kya,
 de novo at 50 kya, and de novo at 10 kya. For EACH family, use 1,000 observed
-calibration nulls plus 100 additional independent observed s=0 test targets.
+calibration nulls plus 10 additional independent observed s=0 test targets.
 The introgressed specification is explicitly confirmed by the user; the same
 matched-origin design carries forward to the previously requested de novo arms.
 I50 and I10 share the same s=0 family because there is no selection onset under
@@ -85,8 +88,8 @@ each heatmap cell. Repeated use is not independent replication.
 
 | Test | Targets | Reference for empirical p values |
 |---|---|---|
-| Selection detection | 100 selected focal alleles per positive-s cell | 1,000 matching unselected focal alleles |
-| Neutral detection/error | 100 additional unselected focal alleles per null family | The same 1,000 matching unselected focal alleles |
+| Selection detection | 10 selected focal alleles per positive-s cell | 1,000 matching unselected focal alleles |
+| Neutral detection/error | 10 additional unselected focal alleles per null family | The same 1,000 matching unselected focal alleles |
 
 For the introgressed comparison, every unselected focal allele in both rows is
 archaic and introduced by the same pulse. There is no ordinary non-archaic or
@@ -98,9 +101,9 @@ record allele age, origin, population, and initial copies rather than substituti
 a nearby unrelated SNP. Survival/observation conditioning remains the draft
 default, not a claim of detection per original introduction.
 
-Nominal retained total: 8,100 (4,800 selected + 3,000 calibration nulls + 300
+Nominal retained total: 3,510 (480 selected + 3,000 calibration nulls + 30
 independent neutral test targets). Existing I50 selected trees can potentially
-supply 1,000 of these, so up to 7,100 additional
+supply 100 of these, so up to 3,410 additional
 retained regions would be needed. This is not an attempted-simulation budget:
 rare neutral de novo survivors can require many attempts. Reuse of individual
 neutral artifacts requires proof of matching focal identity and ascertainment;
@@ -115,7 +118,7 @@ phase, before examining comparative power. Record AF=0 for loss and distinguish
 population survival from observation in the 400-haplotype sample. Do not infer
 unconditional survival probabilities from accepted trees or from outer retry
 counts: the current SLiM survival-conditioning machinery also rejects internally.
-The 8,100 retained-tree count excludes this separately budgeted trajectory work.
+The 3,510 retained-tree count excludes this separately budgeted trajectory work.
 This optional attempted-origin study is not needed for the requested conditional
 focal comparison and is not included in its launch scope.
 
@@ -207,8 +210,8 @@ neutral calibration scores, using the conservative upper-tail empirical p:
 
 `p = (1 + number of calibration scores >= test score) / (n_calibration + 1)`.
 
-Use all 1,000 calibration nulls to rank each of the 100 selected targets and
-each of the 100 independent neutral test targets. There is no 800/200 split
+Use all 1,000 calibration nulls to rank each of the 10 selected targets and
+each of the 10 independent neutral test targets. There is no 800/200 split
 and no cross-validation fold partition in this revised design. Never include
 a test target in its own reference cohort. Keep biological/ascertainment
 parameters identical between neutral targets and calibration nulls, and check
@@ -226,24 +229,24 @@ for nulls and targets and evaluable-only summaries alongside enrolled-cohort rat
 
 - Detection/power: TP/N_selected, with NA pair scores treated as no discovery
   in the enrolled conditional cohort. Also give the evaluable-only denominator.
-- Neutral detection/FPR: FP/100 among the independent unselected test targets,
+- Neutral detection/FPR: FP/10 among the independent unselected test targets,
   using the same ascertainment and missing-pair rule as the selected targets.
   Report the count as well as the percentage and uncertainty interval.
 
 Terminology: the user calls this neutral-only error experiment FDR. Its requested
 fraction of unselected targets detected is conventionally FPR, so plot it as
 "Neutral detection rate (FPR)" and explain the correspondence in captions.
-The 100 targets : 1,000 nulls ratio specifies testing and calibration cohort
+The 10 targets : 1,000 nulls ratio specifies testing and calibration cohort
 sizes, not disease/selection prevalence among tested loci. The earlier assumed
 pi1=1/11 mixed-discovery FDR calculation is removed. It must not be inferred
 from this calibration ratio. With only null test targets, any discoveries are
 all false: FDP=1 if there is a discovery (and conventionally 0 if there is none);
-the formal batch FDR is then the probability of at least one discovery, not FP/100.
+the formal batch FDR is then the probability of at least one discovery, not FP/10.
 No separate mixed-prevalence FDR estimate is requested by this clarification.
 
 Replicate-level bootstrap of the full calibration/evaluation procedure can
 include null-fit uncertainty; pair-level resampling cannot replace independent
-simulations. With 100 neutral targets, the empirical rate changes in 1% steps.
+simulations. With 10 targets, both power and FPR change in 10-percentage-point steps. This pilot cannot precisely validate a nominal 5% FPR; report counts and wide intervals.
 
 Treat all five T values as prespecified separate comparisons. Do not take the
 best T per replicate or call a replicate positive if any cell has p<=0.05
@@ -262,7 +265,7 @@ likewise be calibrated against the same window summary in neutral regions.
    clip it. A shared neutral arm should be labeled as shared, not independent
    evidence repeated across s. Show evaluable-only FPR as a diagnostic.
 4. The user's neutral-only error comparison is shown by figure 3, not a second
-   mixed-prevalence FDR heatmap. Include raw detected counts out of 100 and
+   mixed-prevalence FDR heatmap. Include raw detected counts out of 10 and
    confidence intervals alongside that shared-scale neutral-detection figure.
 5. AF distributions versus s, with matched s=0 controls, fixation fractions,
    common 0-100% AF axes, and AF-only detection curves at p<=0.05. Separately
@@ -292,15 +295,15 @@ saved renders without displaying figures inline or emitting notebook plots.
 
 ## Future implementation phases and checks
 
-1. The positive-s grid and independent 100-target/1,000-null design are now
+1. The positive-s grid and independent 10-target/1,000-null pilot design are now
    confirmed. Retain the documented demographic-background and survival/observation
    defaults. The accompanying CSV expands biological cells and separates neutral
    target and calibration roles; it is not a runnable simulation configuration.
-   Await an explicit run instruction; answering design questions is not a launch.
-2. After explicit authorization: implement/audit focal origin, matched nulls,
+   The user has now explicitly authorized starting this pilot.
+2. Implement/audit focal origin, matched nulls,
    event timing, single-copy semantics, survival bookkeeping, retained
    trajectories, and pair-availability behavior. Use focused synthetic tests
-   and a separately authorized small feasibility/convergence run before scale.
+   and a small real end-to-end validation before scale. Across-origin Q=1/Q=5 convergence is not established by this pilot.
 3. Generate only missing compatible inputs, audit saved artifacts, then decode
    only missing compatible profiles. Do not combine simulation and decoding
    implicitly. Keep originals immutable and use separate output roots per
@@ -319,5 +322,4 @@ and position alignment, focal genotype/carrier equality, checksums, finite
 monotone scores, pair denominators, and separation of calibration and test cohorts.
 
 New resource defaults: 4 total worker threads, 26 GB RAM. Do not inherit the
-old launcher's 20-worker/300-GB settings. No simulation command is supplied
-while the user has asked to wait.
+old launcher's 20-worker/300-GB settings. The authorized launcher is `scripts/launch_origin_onset.sh`; see `docs/origin_onset_pilot_run.md` for setup, resume, and status commands.
