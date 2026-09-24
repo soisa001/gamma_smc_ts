@@ -102,9 +102,9 @@ a nearby unrelated SNP. Survival/observation conditioning remains the draft
 default, not a claim of detection per original introduction.
 
 Nominal retained total: 3,510 (480 selected + 3,000 calibration nulls + 30
-independent neutral test targets). Existing I50 selected trees can potentially
-supply 100 of these, so up to 3,410 additional
-retained regions would be needed. This is not an attempted-simulation budget:
+independent neutral test targets). Following the authorized Q=1 restart on
+2026-09-24, existing Q=5 I50 trees cannot supply this cohort. Only verified
+compatible Q=1 regions may be retained. This is not an attempted-simulation budget:
 rare neutral de novo survivors can require many attempts. Reuse of individual
 neutral artifacts requires proof of matching focal identity and ascertainment;
 the existing 1,000 unconditional neutral regions do not satisfy that by default.
@@ -196,12 +196,11 @@ if focal D10 ALT/ALT discrimination becomes an objective.
 Initial frequency 1/(2N) is also the convention in the
 [msprime sweep API](https://tskit.dev/msprime/docs/stable/api.html#msprime.SweepGenicSelection).
 The implementation must use the actual simulated population size at the event,
-not the sample size of 200 diploids. The existing SLiM scaling factor is 5:
-one copy in a reduced population is not literally one copy at original N.
-Use an explicitly validated single-copy implementation; Q=1 is the direct
-choice for new de novo arms. Before comparisons to the Q=5 legacy cohort,
-assess scaling accuracy in an authorized validation phase and record Q for
-every arm. Do not claim legacy numerical settings are interchangeable by fiat.
+not the sample size of 200 diploids. The user authorized removal of rescaling
+on 2026-09-24: all arms now use Q=1. One copy therefore means one original-size
+EAS genome. Q=5 archived introgressed trees cannot be reused in this cohort.
+The archaic bottleneck remains 10 diploids for 100 generations; its biological
+effect on diversity is separate from numerical rescaling.
 
 ## Calibration, detection, and false discoveries
 
@@ -303,7 +302,7 @@ saved renders without displaying figures inline or emitting notebook plots.
 2. Implement/audit focal origin, matched nulls,
    event timing, single-copy semantics, survival bookkeeping, retained
    trajectories, and pair-availability behavior. Use focused synthetic tests
-   and a small real end-to-end validation before scale. Across-origin Q=1/Q=5 convergence is not established by this pilot.
+   and a small real end-to-end validation before scale. The restarted pilot uses Q=1 throughout.
 3. Generate only missing compatible inputs, audit saved artifacts, then decode
    only missing compatible profiles. Do not combine simulation and decoding
    implicitly. Keep originals immutable and use separate output roots per

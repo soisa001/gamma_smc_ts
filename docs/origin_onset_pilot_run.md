@@ -11,11 +11,12 @@ The two de novo families differ in focal mutation birth time (50 or 10 kya),
 even though their background demographic history is the same. Their age-matched
 focal null distributions must not be pooled.
 
-The first ten existing selected I50 replicates at s=0.001--0.010 can supply
-100 regions after checksum, model, runtime, seed, and genotype verification.
-The old nearest-ordinary-variant neutral archive is not reused as a matched
-focal-allele control. Missing work is about 3,410 retained regions, plus rejected
-attempts needed for survival and sample observation.
+On 2026-09-24 the user requested removal of rescaling and a restart. Every arm
+now uses Q=1. The Q=5 introgressed archive is incompatible and is skipped.
+Completed Q=1 de novo pilot regions may be retained only after identity,
+checksum, seed, and focal-genotype verification. The old nearest-ordinary-variant
+neutral archive is not reused as a matched focal-allele control. The total
+remains 3,510 retained regions, plus rejected survival/observation attempts.
 
 All selected and unselected new regions go through the same SLiM focal-allele
 engine. Introgressed focal alleles are fixed in the archaic source before the
@@ -27,11 +28,11 @@ No neutral test target is a calibration replicate. Role enters the seed identity
 Default resources are four single-threaded workers and a 26-GB total worker
 address-space budget (6.5 GB per worker), with a 20-GB disk reserve and the
 existing 3-TB volume-use ceiling. Coordinator/runtime overhead is additional.
-Introgressed arms use the archived Q=5 scaling; de novo arms use Q=1 so one copy
-means one copy at the original population size. Within each comparison the
-null and target scaling match. Cross-origin numerical convergence is unproven.
-The Q=1 single-copy survival-conditioned nulls are substantially more expensive
-than the archived introgressed selected simulations; no completion ETA is assumed.
+All introgressed and de novo arms now use Q=1, so population sizes and event
+times are unscaled. The archaic bottleneck remains 10 diploids for 100 generations;
+removing numerical rescaling does not remove this biological diversity constraint.
+Seeds, ascertainment, cohort sizes, and all other biological parameters remain
+unchanged. Unscaled simulations cost more; no completion ETA is assumed.
 
 ## Phases and saved outputs
 
@@ -52,8 +53,11 @@ than the archived introgressed selected simulations; no completion ETA is assume
   phase from verified receipts. The study lock prevents concurrent runners.
 
 The output root on this host is
-`D:/phase2simselection/sim/origin_onset_pilot`, or
-`/mnt/d/phase2simselection/sim/origin_onset_pilot` in WSL.
+`D:/phase2simselection/sim/origin_onset_pilot_q1`, or
+`/mnt/d/phase2simselection/sim/origin_onset_pilot_q1` in WSL.
+The stopped mixed-Q pilot is preserved in `sim/origin_onset_pilot` with a
+stop receipt. `restart_receipt.json` in the new root records any verified Q=1
+copies, and `launch_receipt.json` records the new runner.
 Read `run_status.json` for the overall active phase and any failure, and
 `simulate_status.json`, `audit_status.json`, or `decode_status.json` for detailed
 progress. Region-level `status.json` and logs identify slow or failed tasks.
@@ -105,8 +109,8 @@ status cell is:
 ```bash
 %%bash
 set -euo pipefail
-cat /mnt/d/phase2simselection/sim/origin_onset_pilot/run_status.json
-cat /mnt/d/phase2simselection/sim/origin_onset_pilot/simulate_status.json
+cat /mnt/d/phase2simselection/sim/origin_onset_pilot_q1/run_status.json
+cat /mnt/d/phase2simselection/sim/origin_onset_pilot_q1/simulate_status.json
 ```
 
 Focused development validation uses `tests/test_origin_onset.py`, small real
@@ -131,8 +135,10 @@ checked for absence of embedded raster images. See
 `results/origin_onset_pilot_validation/validation_summary.json` for the validation
 parameters and checks. These validation scores do not enter production results.
 
-A full-size preflight reused an audited I50 s=0.001 region and generated an
+A full-size preflight for the original mixed-Q pilot reused an audited I50 s=0.001 region and generated an
 I50 s=0.02 region and matched introgressed null. The complete 3,510-region pilot
 was then launched in a hidden WSL process. `launch_receipt.json` in the output
 root records its process identities, resources, output path, and launch context.
-Live progress is in the status files, not a frozen count in this document.
+That mixed-Q launch was subsequently stopped at the user's request. The current
+Q=1 restart is isolated in the new output root above. Live progress is in the
+status files, not a frozen count in this document.

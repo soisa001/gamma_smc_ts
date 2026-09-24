@@ -46,11 +46,31 @@ def test_delayed_introgression_keeps_old_pulse_and_denovo_is_born_at_onset(cfg):
     ev = oo.events(cfg,delayed)
     assert ev[0].population == 'Neanderthal'
     assert ev[1].start_time == 400
-    assert ev[-1].start_time == 1995
+    assert ev[-1].start_time == 1999
     denovo = next(t for t in plan if t['family']=='D10' and t['role']=='selected')
     ev = oo.events(cfg,denovo)
     assert ev[0].population == 'EAS' and ev[0].time == 400
     assert ev[1].start_time == 400 and denovo['scaling_factor']==1
+
+
+def test_unscaled_plan_rejects_scaled_cache_and_skips_scaled_archive(cfg, tmp_path):
+    plan = oo.tasks(cfg)
+    assert {t['scaling_factor'] for t in plan} == {1}
+    task = next(t for t in plan if t['family']=='I50' and t['role']=='selected')
+    identity = oo.simulation_identity(cfg, task, {})
+    scaled_identity = oo.simulation_identity(cfg, dict(task, scaling_factor=5), {})
+    directory = tmp_path / 'destination'
+    directory.mkdir()
+    oo.legacy.atomic_json(directory/'simulation.json', dict(identity=scaled_identity, artifacts={}))
+    with pytest.raises(ValueError, match='identity'):
+        oo.read_receipt(directory, 'simulation.json', identity)
+    archive = tmp_path / 'archive'
+    source = archive / oo.legacy.task_id(dict(mode='selected', s=task['s'], replicate=task['replicate']))
+    source.mkdir(parents=True)
+    (source/'simulated.json').write_text('{}')
+    oo.legacy.atomic_json(archive/'manifest.json', dict(config=dict(slim_scaling_factor=5)))
+    assert oo.maybe_reuse(cfg, task, directory, identity, archive) is None
+    assert oo.seed_for(cfg, task) == oo.seed_for(cfg, dict(task, scaling_factor=5))
 
 
 def test_script_patch_restores_global_functions_on_error(cfg):

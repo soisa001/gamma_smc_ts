@@ -215,10 +215,12 @@ def maybe_reuse(cfg, task, directory, identity, legacy_root):
         return None
     manifest = json.loads((root / "manifest.json").read_text())
     old_cfg = manifest["config"]
+    if old_cfg["slim_scaling_factor"] != task["scaling_factor"]:
+        # An optional archive at another Q is not a compatible cache source.
+        return None
     for key in SIM_KEYS:
         if old_cfg[key] != cfg[key]:
             raise ValueError(f"Legacy reuse mismatch: {key}")
-    assert old_cfg["slim_scaling_factor"] == task["scaling_factor"]
     assert old_cfg["selection_onset_years"] == task["onset_years"]
     assert manifest["versions"] == identity["runtime"]["versions"]
     assert manifest["scientific_identity"]["slim_sha256"] == identity["runtime"]["slim_sha256"]

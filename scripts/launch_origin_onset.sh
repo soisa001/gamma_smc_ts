@@ -6,7 +6,7 @@ phase="${1:-plan}"
 if [ "$#" -gt 0 ]; then shift; fi
 uv_bin="${UV_BIN:-${HOME}/.local/bin/uv}"
 python_bin="${ORIGIN_PYTHON:-${repo_dir}/.venv-origin/bin/python}"
-out="${SIM_OUTPUT_DIR:-/mnt/d/phase2simselection/sim/origin_onset_pilot}"
+out="${SIM_OUTPUT_DIR:-/mnt/d/phase2simselection/sim/origin_onset_pilot_q1}"
 slim_bin="${SLIM_BIN:-/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native-stdpopsim/bin/slim}"
 native_dir="${GAMMA_NATIVE_DIR:-/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native}"
 export LD_LIBRARY_PATH="${native_dir}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"

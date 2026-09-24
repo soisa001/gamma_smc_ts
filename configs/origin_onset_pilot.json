@@ -60,7 +60,7 @@
   "target_replicates": 10,
   "null_replicates": 1000,
   "scaling_by_origin": {
-    "introgressed": 5,
+    "introgressed": 1,
     "de_novo_EAS": 1
   }
 }
