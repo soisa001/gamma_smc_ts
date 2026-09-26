@@ -110,8 +110,8 @@ without notebook or inline display.
 ## Run or resume
 
 Default output: `/mnt/d/phase2simselection/sim/segregating_introgression_h400`.
-Resources updated 2026-09-25 at the user's request: 10 single-threaded workers,
-200 GB total worker address-space limit (20 GB per worker), 20-GB
+Resources updated 2026-09-26 at the user's request: 20 single-threaded workers,
+200 GB total worker address-space limit (10 GB per worker), 20-GB
 disk reserve, and the existing 3-TB volume-use ceiling. A per-study lock prevents
 concurrent runners. SLiM 5 is required for pyslim 1.1 initialization metadata;
 the older predefined-focal runner uses a separate SLiM binary and remains intact.
