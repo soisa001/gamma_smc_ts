@@ -52,7 +52,7 @@
   "decoder_exp10": "accurate",
   "decoder_backward_alignment": "fixed",
   "storage_limit_bytes": 3000000000000,
-  "workers": 20,
+  "workers": 10,
   "memory_limit_gb": 200,
   "phlash_resource": "no_introgression_EAS_sim/resources/EAS.npz",
   "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
