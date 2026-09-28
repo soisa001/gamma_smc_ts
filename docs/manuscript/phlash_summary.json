@@ -1,0 +1,391 @@
+{
+  "artifact_relative_directory": "artifacts/aou-mvn",
+  "calendar_time_conversion_applied": false,
+  "numpy_version": "2.4.6",
+  "original_fit_metadata_available": false,
+  "populations": {
+    "AFR": {
+      "artifact_sha256": "b7bd5ddb1d7b154d91b9032f8a7fc23103709f12ffeb66123d068f305d636f86",
+      "artifact_size_bytes": 4045095,
+      "at_target_generations": {
+        "100": {
+          "median_ne": 55963.607421875,
+          "q025_ne": 50168.7041015625,
+          "q975_ne": 61922.4958984375,
+          "time_generations": 100.0
+        },
+        "1000": {
+          "median_ne": 20311.576171875,
+          "q025_ne": 18324.045751953126,
+          "q975_ne": 23858.879980468748,
+          "time_generations": 1000.1650390625
+        },
+        "10000": {
+          "median_ne": 16815.23046875,
+          "q025_ne": 15228.95078125,
+          "q975_ne": 18806.75458984375,
+          "time_generations": 9997.30859375
+        },
+        "2000": {
+          "median_ne": 20172.5322265625,
+          "q025_ne": 17390.9154296875,
+          "q975_ne": 22712.158300781248,
+          "time_generations": 1999.40087890625
+        },
+        "40000": {
+          "median_ne": 12650.08837890625,
+          "q025_ne": 12099.343310546876,
+          "q975_ne": 13292.9478515625,
+          "time_generations": 40000.0
+        },
+        "500": {
+          "median_ne": 41989.34375,
+          "q025_ne": 37525.36689453125,
+          "q975_ne": 46307.4912109375,
+          "time_generations": 500.01519775390625
+        }
+      },
+      "checks_passed": true,
+      "factor_reconstruction_max_abs_error": 7.204326113105508e-09,
+      "grid_max_generations": 40000,
+      "grid_min_generations": 100,
+      "maximum_of_pointwise_median": {
+        "median_ne": 58094.259765625,
+        "q025_ne": 51978.14990234375,
+        "q975_ne": 65712.20624999999,
+        "time_generations": 152.84254455566406
+      },
+      "mean_reconstruction_max_abs_error": 4.829641380155181e-07,
+      "minimum_of_pointwise_median": {
+        "median_ne": 12620.1787109375,
+        "q025_ne": 12061.720703125,
+        "q975_ne": 13204.386328125,
+        "time_generations": 36781.3359375
+      },
+      "num_fits": 100,
+      "num_time_points": 10000,
+      "sidecar_sha256": "3e4f3ecd092e7561d40ec8a8a27e35d2e8e967866287e12788a724ee8b5fad33",
+      "source_fit_directory": "/home/jupyter/phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/AFR"
+    },
+    "AMR": {
+      "artifact_sha256": "ad2839b58fc962293eff733aa0d15ab31d74c61252d0e7cfe9d49a0db319d1c6",
+      "artifact_size_bytes": 4086562,
+      "at_target_generations": {
+        "100": {
+          "median_ne": 41714.109375,
+          "q025_ne": 37632.54404296875,
+          "q975_ne": 49071.28837890624,
+          "time_generations": 100.0
+        },
+        "1000": {
+          "median_ne": 10116.8193359375,
+          "q025_ne": 7055.331616210938,
+          "q975_ne": 14963.854589843748,
+          "time_generations": 1000.1650390625
+        },
+        "10000": {
+          "median_ne": 7912.975341796875,
+          "q025_ne": 7129.176049804688,
+          "q975_ne": 10199.494702148437,
+          "time_generations": 9997.30859375
+        },
+        "2000": {
+          "median_ne": 4439.813720703125,
+          "q025_ne": 4044.737872314453,
+          "q975_ne": 5152.828247070312,
+          "time_generations": 1999.40087890625
+        },
+        "40000": {
+          "median_ne": 11990.9365234375,
+          "q025_ne": 11266.552807617187,
+          "q975_ne": 12868.031396484375,
+          "time_generations": 40000.0
+        },
+        "500": {
+          "median_ne": 26334.455078125,
+          "q025_ne": 20606.776708984376,
+          "q975_ne": 32233.27001953125,
+          "time_generations": 500.01519775390625
+        }
+      },
+      "checks_passed": true,
+      "factor_reconstruction_max_abs_error": 8.320191577371183e-09,
+      "grid_max_generations": 40000,
+      "grid_min_generations": 100,
+      "maximum_of_pointwise_median": {
+        "median_ne": 43540.923828125,
+        "q025_ne": 39310.58408203125,
+        "q975_ne": 49237.957617187494,
+        "time_generations": 138.3712158203125
+      },
+      "mean_reconstruction_max_abs_error": 4.80646420442099e-07,
+      "minimum_of_pointwise_median": {
+        "median_ne": 4425.183349609375,
+        "q025_ne": 4078.8182373046875,
+        "q975_ne": 5094.259680175781,
+        "time_generations": 2121.5966796875
+      },
+      "num_fits": 100,
+      "num_time_points": 10000,
+      "sidecar_sha256": "7609b370b83f31dd24a8bb9f4604ff5b071de34c7af346ae9a8b39b5dadc04fd",
+      "source_fit_directory": "/home/jupyter/phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/AMR"
+    },
+    "EAS": {
+      "artifact_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+      "artifact_size_bytes": 4110207,
+      "at_target_generations": {
+        "100": {
+          "median_ne": 37636.76171875,
+          "q025_ne": 33037.255078125,
+          "q975_ne": 44019.4734375,
+          "time_generations": 100.0
+        },
+        "1000": {
+          "median_ne": 3327.1744384765625,
+          "q025_ne": 3064.0597595214845,
+          "q975_ne": 3955.52915649414,
+          "time_generations": 1000.1650390625
+        },
+        "10000": {
+          "median_ne": 12120.78857421875,
+          "q025_ne": 10524.172045898438,
+          "q975_ne": 18929.92329101562,
+          "time_generations": 9997.30859375
+        },
+        "2000": {
+          "median_ne": 3632.1571044921875,
+          "q025_ne": 3206.733361816406,
+          "q975_ne": 3975.8137451171874,
+          "time_generations": 1999.40087890625
+        },
+        "40000": {
+          "median_ne": 13138.0869140625,
+          "q025_ne": 12105.026489257812,
+          "q975_ne": 14350.860693359375,
+          "time_generations": 40000.0
+        },
+        "500": {
+          "median_ne": 6222.2158203125,
+          "q025_ne": 5369.724072265625,
+          "q975_ne": 9189.914233398436,
+          "time_generations": 500.01519775390625
+        }
+      },
+      "checks_passed": true,
+      "factor_reconstruction_max_abs_error": 7.730672282879603e-09,
+      "grid_max_generations": 40000,
+      "grid_min_generations": 100,
+      "maximum_of_pointwise_median": {
+        "median_ne": 37669.69140625,
+        "q025_ne": 33040.27177734375,
+        "q975_ne": 44003.38271484375,
+        "time_generations": 104.78475189208984
+      },
+      "mean_reconstruction_max_abs_error": 4.79855321700029e-07,
+      "minimum_of_pointwise_median": {
+        "median_ne": 3139.2911376953125,
+        "q025_ne": 2958.803955078125,
+        "q975_ne": 3409.312744140625,
+        "time_generations": 1277.1629638671875
+      },
+      "num_fits": 100,
+      "num_time_points": 10000,
+      "sidecar_sha256": "ee17de91f125a6c20ac8388b84b993c4497875b412461cf3943bf4079a1640d5",
+      "source_fit_directory": "/home/jupyter/phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/EAS"
+    },
+    "EUR": {
+      "artifact_sha256": "515bd29113befdaec3699f24f82861656e35b7f6c9cb2844224ec2cdafef4ac6",
+      "artifact_size_bytes": 4101548,
+      "at_target_generations": {
+        "100": {
+          "median_ne": 42148.1875,
+          "q025_ne": 35088.43818359375,
+          "q975_ne": 51157.07431640625,
+          "time_generations": 100.0
+        },
+        "1000": {
+          "median_ne": 5720.507568359375,
+          "q025_ne": 4457.157055664063,
+          "q975_ne": 6247.076196289063,
+          "time_generations": 1000.1650390625
+        },
+        "10000": {
+          "median_ne": 15134.02392578125,
+          "q025_ne": 10043.307592773437,
+          "q975_ne": 17578.872460937495,
+          "time_generations": 9997.30859375
+        },
+        "2000": {
+          "median_ne": 4087.408935546875,
+          "q025_ne": 3838.2295043945314,
+          "q975_ne": 4564.0919921875,
+          "time_generations": 1999.40087890625
+        },
+        "40000": {
+          "median_ne": 12906.89990234375,
+          "q025_ne": 11982.9658203125,
+          "q975_ne": 13950.568212890625,
+          "time_generations": 40000.0
+        },
+        "500": {
+          "median_ne": 7369.11669921875,
+          "q025_ne": 6039.31220703125,
+          "q975_ne": 8192.704870605468,
+          "time_generations": 500.01519775390625
+        }
+      },
+      "checks_passed": true,
+      "factor_reconstruction_max_abs_error": 8.09029467030431e-09,
+      "grid_max_generations": 40000,
+      "grid_min_generations": 100,
+      "maximum_of_pointwise_median": {
+        "median_ne": 42546.58203125,
+        "q025_ne": 35135.24052734375,
+        "q975_ne": 50883.9134765625,
+        "time_generations": 109.53559112548828
+      },
+      "mean_reconstruction_max_abs_error": 4.8049854939336e-07,
+      "minimum_of_pointwise_median": {
+        "median_ne": 4076.523193359375,
+        "q025_ne": 3858.1015747070314,
+        "q975_ne": 4545.281713867187,
+        "time_generations": 1977.9517822265625
+      },
+      "num_fits": 100,
+      "num_time_points": 10000,
+      "sidecar_sha256": "a42d254960565d8c91487fb7de6e236928d788c1f9ab42c7267a010ff9534642",
+      "source_fit_directory": "/home/jupyter/phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/EUR"
+    },
+    "MID": {
+      "artifact_sha256": "cc4289d473d0345180afa1f58795598129dd1eaf0c2b3f0aede41fb4fc1d86f7",
+      "artifact_size_bytes": 4080494,
+      "at_target_generations": {
+        "100": {
+          "median_ne": 35026.57421875,
+          "q025_ne": 32570.781884765624,
+          "q975_ne": 40082.503124999996,
+          "time_generations": 100.0
+        },
+        "1000": {
+          "median_ne": 5917.38916015625,
+          "q025_ne": 5028.768347167968,
+          "q975_ne": 8449.110156249999,
+          "time_generations": 1000.1650390625
+        },
+        "10000": {
+          "median_ne": 9033.99560546875,
+          "q025_ne": 7895.984521484375,
+          "q975_ne": 12684.616674804683,
+          "time_generations": 9997.30859375
+        },
+        "2000": {
+          "median_ne": 4536.326171875,
+          "q025_ne": 4261.268212890625,
+          "q975_ne": 4982.3958984375,
+          "time_generations": 1999.40087890625
+        },
+        "40000": {
+          "median_ne": 12345.259765625,
+          "q025_ne": 11497.600219726562,
+          "q975_ne": 13140.793969726563,
+          "time_generations": 40000.0
+        },
+        "500": {
+          "median_ne": 28140.7080078125,
+          "q025_ne": 21683.896484375,
+          "q975_ne": 31543.11376953125,
+          "time_generations": 500.01519775390625
+        }
+      },
+      "checks_passed": true,
+      "factor_reconstruction_max_abs_error": 7.676449448323908e-09,
+      "grid_max_generations": 40000,
+      "grid_min_generations": 100,
+      "maximum_of_pointwise_median": {
+        "median_ne": 36883.02734375,
+        "q025_ne": 33491.3349609375,
+        "q975_ne": 41878.25439453125,
+        "time_generations": 195.7582550048828
+      },
+      "mean_reconstruction_max_abs_error": 4.823143893162296e-07,
+      "minimum_of_pointwise_median": {
+        "median_ne": 4289.4970703125,
+        "q025_ne": 3985.054315185547,
+        "q975_ne": 5064.091174316406,
+        "time_generations": 1545.2548828125
+      },
+      "num_fits": 100,
+      "num_time_points": 10000,
+      "sidecar_sha256": "a4e2fc55765829cba347d46dea6d544dfeb224d3d45f9a98f7c67352f8daf3bc",
+      "source_fit_directory": "/home/jupyter/phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/MID"
+    },
+    "SAS": {
+      "artifact_sha256": "27b0c1ac16145a390e03746a4f4ef9d80ad1ae915699eb06e3f7ebb4214628e6",
+      "artifact_size_bytes": 4086336,
+      "at_target_generations": {
+        "100": {
+          "median_ne": 34731.23046875,
+          "q025_ne": 29351.671240234376,
+          "q975_ne": 45003.19482421875,
+          "time_generations": 100.0
+        },
+        "1000": {
+          "median_ne": 4677.506591796875,
+          "q025_ne": 4164.219677734375,
+          "q975_ne": 5724.1810302734375,
+          "time_generations": 1000.1650390625
+        },
+        "10000": {
+          "median_ne": 10924.99560546875,
+          "q025_ne": 9708.352978515624,
+          "q975_ne": 16904.157861328124,
+          "time_generations": 9997.30859375
+        },
+        "2000": {
+          "median_ne": 4589.8076171875,
+          "q025_ne": 4235.814306640625,
+          "q975_ne": 4992.876538085938,
+          "time_generations": 1999.40087890625
+        },
+        "40000": {
+          "median_ne": 12801.0009765625,
+          "q025_ne": 11893.816967773437,
+          "q975_ne": 13984.811987304687,
+          "time_generations": 40000.0
+        },
+        "500": {
+          "median_ne": 10516.4853515625,
+          "q025_ne": 8659.561328125,
+          "q975_ne": 14408.489013671871,
+          "time_generations": 500.01519775390625
+        }
+      },
+      "checks_passed": true,
+      "factor_reconstruction_max_abs_error": 7.799504056493767e-09,
+      "grid_max_generations": 40000,
+      "grid_min_generations": 100,
+      "maximum_of_pointwise_median": {
+        "median_ne": 35480.904296875,
+        "q025_ne": 29411.934326171875,
+        "q975_ne": 45310.81337890624,
+        "time_generations": 116.9986343383789
+      },
+      "mean_reconstruction_max_abs_error": 4.826214965447662e-07,
+      "minimum_of_pointwise_median": {
+        "median_ne": 4175.61181640625,
+        "q025_ne": 3905.146759033203,
+        "q975_ne": 4551.423474121093,
+        "time_generations": 1435.4615478515625
+      },
+      "num_fits": 100,
+      "num_time_points": 10000,
+      "sidecar_sha256": "2151417b997905c1e212c6cccef7f0e02bc30f5a8d053d02edc4d8201dfdde5f",
+      "source_fit_directory": "/home/jupyter/phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/SAS"
+    }
+  },
+  "schema_version": 1,
+  "source_repository": "https://github.com/soisa001/phlash_ld",
+  "source_revision_reviewed": "70e177ea0e77fe38d408eb8042e13a44c94d15c9",
+  "summary_definition": "Pointwise median and linear 2.5th/97.5th percentiles of 100 resampling-fit posterior-median curves; nearest stored grid point to each target generation.",
+  "uncertainty": "Between-fit resampling spread; not pooled within-fit posterior uncertainty or simultaneous confidence bands."
+}

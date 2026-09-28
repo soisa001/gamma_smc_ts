@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 
 
@@ -31,6 +32,25 @@ def main() -> None:
     assert abs(summary["gamma_50k"]["threshold_coalescent_units"] - 0.0688) < 1e-12
     assert not summary["gamma_50k"]["validated_empirical_results_available"]
     assert sum(summary["lct"]["n_by_population"].values()) == 12238
+    demographic = json.loads((root / "phlash_summary.json").read_text(encoding="utf-8"))
+    populations = demographic["populations"]
+    assert set(populations) == {"AFR", "AMR", "EAS", "EUR", "MID", "SAS"}
+    assert sum(p["num_fits"] for p in populations.values()) == 600
+    assert not demographic["calendar_time_conversion_applied"]
+    draft = (root / "introgression_selection_draft.md").read_text(encoding="utf-8")
+    for name, population in populations.items():
+        assert population["checks_passed"]
+        assert population["num_time_points"] == 10000
+        assert population["grid_min_generations"] == 100
+        assert population["grid_max_generations"] == 40000
+        for point in population["at_target_generations"].values():
+            assert all(math.isfinite(value) for value in point.values())
+            assert 0 < point["q025_ne"] <= point["median_ne"] <= point["q975_ne"]
+        point = population["at_target_generations"]["2000"]
+        assert abs(point["time_generations"] - 2000) < 1
+        expected_row = (f"| {name} | {point['median_ne']:,.0f} | "
+                        f"{point['q025_ne']:,.0f}--{point['q975_ne']:,.0f} |")
+        assert expected_row in draft, f"PHLASH table differs from verified summary: {name}"
     print("Manuscript package checks passed; unresolved production fields remain explicitly marked.")
 
 

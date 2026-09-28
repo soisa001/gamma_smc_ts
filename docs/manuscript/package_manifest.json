@@ -3,10 +3,12 @@
   "schema_version": 1,
   "sha256": {
     ".gitattributes": "0de5c01ef7cca045477b50f0edf7b775da5a987b6902e5196df95d45f5b48a25",
-    "README.md": "17938e2cee426f6c839bdf64c0330398cad6dc17070c4a0b4eb2f2c7d2b4fd03",
-    "evidence_and_open_items.md": "686963f3c07800382cfa4edae67b25ea075a3cf6c1abb6ece296e804c73b87e1",
-    "introgression_selection_draft.md": "7fc2abf496453bc7fceded728aaed02a46254d4c6cc0c92d0b459e816915cbcb",
+    "README.md": "e1f8df9885d89e1d3efc118377e00879b17033aca742f0a132a190a5a4ae073a",
+    "evidence_and_open_items.md": "a03aba4496024eb5e22d0cb766bec9130916c37e8ab2c927e8b9268c7b9c656b",
+    "introgression_selection_draft.md": "1763d662977e6901985c04605787497b25bd7293f3e1c68784a6307d98f36a2f",
+    "phlash_summary.json": "0b35b1b98fb5e8512f46dd6c4c799c81d95a174a0d7a89a2ed6696079385f746",
+    "summarize_phlash.py": "2545f6380b695c0ee277412d4eacd6671d6b15a1489f89205265a8c87e874fef",
     "verified_summary.json": "689d4aa3eb8b1548e784eb01df856bd374397f5a5f08ae6299fdeeecb4dfce71",
-    "verify_draft.py": "89e3d925a63657f16c360a44e55985bbffc3c48ddf0a34e127be1c2164f2cf8d"
+    "verify_draft.py": "d9fd2ca0dce59e0ef7f18d58d485b4c172bcbd4048e340d19a6045e1d6529adf"
   }
 }

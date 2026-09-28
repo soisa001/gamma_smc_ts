@@ -1,4 +1,4 @@
-# Evidence audit for the introgression and selection manuscript
+# Evidence audit for the demography, introgression, and selection manuscript
 
 Reviewed 28 September 2026. Companion to `introgression_selection_draft.md`.
 
@@ -88,3 +88,36 @@ The oldest PDFs under `hmmix_aou_postdecode/results/paper/` were inspected as te
 ## Suggested use
 
 Use the main Methods as a detailed working section, subject to the recorded run values. The two SV Results subsections are supported by local supplied summaries, with their export-specific scope preserved. The introgression-landscape and 50k-selection Results paragraphs are structured fill-in text. The LCT paragraph is optional supporting material. Before journal submission, remove editorial notes only after replacing the corresponding fields and reconciling the run-specific choices above.
+
+## PHLASH addition: sources and independently verified results
+
+The demographic review extends beyond the original workspace inventory to two local checkouts of `git@github.com:soisa001/phlash_ld.git`:
+
+- `C:/Users/Lenovo/OneDrive/Documents/phlash_ld_opt_audit`, reviewed at `70e177ea0e77fe38d408eb8042e13a44c94d15c9`, contains the six published `artifacts/aou-mvn/<POP>.npz` files and adjacent JSON provenance. They were introduced by commit `7130ff5`. This is the primary artifact and implementation source for the addition.
+- `C:/Users/Lenovo/OneDrive/Documents/phlash_run`, reviewed at `ec38cb256e185a16d03acf0512eecb5dd5f23795`, provides a second implementation checkout and newer input/cache documentation. Its defaults must not be substituted for those of a historical fit.
+
+The method paper is [Terhorst (2025), Nature Genetics](https://doi.org/10.1038/s41588-025-02323-x). Study-specific LD extension and preprocessing details come from the local source, principally `scripts/aou_pipeline.py`, `scripts/run_aou_ld_bootstrap.sh`, `scripts/aou_mvn.py`, `scripts/fit_aou_mvn.py`, `src/phlash/mcmc.py`, `src/phlash/data.py`, and `src/phlash/ld/data.py`. The declared package version is 1.0.6; the repository revision also matters because this is a modified implementation.
+
+`summarize_phlash.py` directly re-read all six NPZ/JSON pairs using `allow_pickle=False`, checked ZIP CRCs and the sidecar's SHA-256/size, validated schema/population/dimensions and all finite positive histories, verified the exact shared float32 geometric grid, checked unique `fit000`--`fit099` source names, and reconstructed the saved log-space mean and covariance factor. It then calculated the pointwise median and linear 2.5th/97.5th percentiles across the 100 fit-level posterior medians. It did not deserialize original fit pickles, fit a model, access controlled buckets, or sample new demographies. The four-thread run used NumPy 2.4.6 and wrote `phlash_summary.json`; source NPZ and sidecar checksums are recorded there. No participant identifiers are included.
+
+The resulting Results table uses the nearest stored grid point to 2,000 generations, at 1,999.40087890625 generations, and rounds N_e to whole individuals. Other point summaries are retained at the nearest grid points to 100, 500, 1,000, 10,000, and 40,000 generations. Curve extrema are taken over the entire archived grid and do not estimate uncertainty in event timing. The main table is checked against this aggregate JSON by `verify_draft.py`; the portable verifier does not itself reopen the external source artifacts.
+
+The existing `artifacts/aou-mvn/plots` figures instead summarize 1,000 log-MVN draws produced with a downstream simulation seed schedule. Their bands are not the empirical percentiles across 100 fit-level histories. Neither those plots nor the simulated validation reports supply the demographic numbers newly added to this manuscript. No selection-simulation methods or results were added.
+
+### What the aggregate handoff establishes, and what remains unresolved
+
+| Item | Evidence / manuscript treatment |
+|---|---|
+| Six populations; 100 fit-level histories each; 10,000 points over 100--40,000 generations | Verified directly in all six artifacts and sidecars. |
+| Log-space mean/covariance representation; zero jitter; covariance rank at most 99 | Verified from arrays and reconstructed from the archived curves. |
+| Original input fits | Sidecars record `phlash_bootstrap_trial_1mb_2000i_200p/bootstrap/fits/<POP>/fit000.pkl` through `fit099.pkl`, with sizes/timestamps. They do not store fit-file hashes, original per-fit metadata, or sample manifests; source names alone do not establish run parameters. |
+| Mutation-rate scaling | Optimized launcher explicitly defaults to 1.29e-8; generic caller defaults to 1.25e-8. The actual value used for the archived fits remains unconfirmed. No rescaling was applied to the archived curves. |
+| Mask choice | The artifact checkout's executable generic caller defaults `--hardmask` to enabled and its launcher explicitly passes `--hardmask`. Its prose documentation describes disabled-by-default `--masking`, as does the newer checkout. Executable source takes precedence for the reviewed launcher, but the historical invocation is still required. |
+| Sample selection and seed | Code implements 100 unique samples per replicate, 100 replicates/population, repeated without-replacement subsampling with pool reset. Launcher seed defaults to 20260724. Historical sample counts, eligible pool sizes, and persisted seeds are absent from the handoff. This is not a claim of 10,000 distinct participants per population. |
+| HMM/AFS/LD fit settings | Draft records reviewed launcher settings, including LD weight 20, 200 particles, at most 2,000 iterations, 100-bp windows, and 1,000-window chunks plus warm-up. Confirm historical LD enablement, weights, HMM geometry, priors/parameterization, map version, and convergence from per-fit metadata and diagnostics. |
+| Sequence filtering and denominators | Code defines coding-gene/flank exclusions, chromosome trimming, mask rules and contig length thresholds. Retrieve `run_sanity.json`, `viable_contigs.tsv/json`, annotation/map hashes and retained-base totals for the actual fits. |
+| Uncertainty | Reported bands are between-fit quantiles of posterior medians. Within-fit posterior dispersion, sample-overlap dependence, and optimizer variability are not separately recoverable from the handoff. No calibrated coverage claim or simultaneous confidence band is made. |
+| Calendar time | Archive time is in generations. The draft gives the conditional conversion at 25 years/generation to relate 2,000 generations to the Gamma-SMC horizon. It does not establish a historical PHLASH plotting convention. |
+| Empirical model fit | Original AFS, LD, objective, held-out predictive-density and stopping diagnostics are needed to assess convergence and adequacy. Checksum/covariance checks are integrity tests, not demographic validation. |
+
+The original introgression/selection audit above retains its earlier source scope; this addition does not claim to refresh those analyses from later repository outputs.
