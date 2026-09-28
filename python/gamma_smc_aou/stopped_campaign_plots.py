@@ -155,13 +155,13 @@ def make_report(root,out,cfg,inventory,focal,metrics):
         data=[g[g.role=='neutral_target'].sample_af.to_numpy()]+[g[(g.role=='selected')&(g.s==s)].sample_af.to_numpy() for s in coeff]
         ax.boxplot(data,tick_labels=['0']+slabels,showfliers=True)
         null=g[g.role=='null'].sample_af
-        q1,median,q3=null.quantile([.25,.5,.75])
-        ax.axhspan(q1,q3,color='grey',alpha=.18,label='Calibration-null IQR'); ax.axhline(median,color='grey',ls='--',label='Calibration-null median')
+        median=null.median()
+        ax.axhline(median,color='grey',ls='--',label='Calibration-null median')
         ax.set(ylim=(-.02,1.03),title=family,xlabel='s (0 = independent neutral targets)',ylabel='Present-day sample ALT frequency')
         ax.tick_params(axis='x',rotation=60)
     h,l=axes[0].get_legend_handles_labels(); fig.legend(h,l,ncol=2,frameon=False,fontsize=14)
     fig.suptitle('Allele-frequency distributions | retained focal alleles',fontsize=22)
-    save(fig,'allele_frequency','Final sample AF, with matched calibration null median and interquartile range.')
+    save(fig,'allele_frequency','Final sample AF, with matched calibration null median.')
     # Frequency-only benchmark, calibrated exactly like the pair statistics.
     fig,axes=plt.subplots(1,2,figsize=(14,7.5),layout='constrained')
     for ax,family in zip(axes,families):
@@ -183,7 +183,7 @@ def make_report(root,out,cfg,inventory,focal,metrics):
                     ax.boxplot(data,tick_labels=['0']+slabels)
                     null=g[g.role=='null'].score.dropna()
                     if len(null):
-                        q1,median,q3=null.quantile([.25,.5,.75]); ax.axhspan(q1,q3,color='grey',alpha=.18,label='Null IQR'); ax.axhline(median,color='grey',ls='--',label='Null median')
+                        ax.axhline(null.median(),color='grey',ls='--',label='Null median')
                     ax.set(ylim=(-.03,1.03),title=f'{source} | {LABELS[method]}',xlabel='s (0 = neutral targets)',ylabel=f'Raw P(TMRCA < {cutoff//1000} kya)')
                     ax.tick_params(axis='x',rotation=60)
             h,l=axes[0,0].get_legend_handles_labels(); fig.legend(h,l,ncol=2,frameon=False,fontsize=14)

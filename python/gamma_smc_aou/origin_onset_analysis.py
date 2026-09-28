@@ -163,8 +163,7 @@ def plot_results(out, cfg, focal, metrics):
         datasets += [af[(af.arm==arm)&(af.role=="selected")&(af.s==s)].score.to_numpy() for s in coefficients]
         ax.boxplot(datasets,tick_labels=["0"]+s_labels,showfliers=True)
         null=af[(af.family==family)&(af.role=="null")].score
-        lo,median,hi=null.quantile([.25,.5,.75])
-        ax.axhspan(lo,hi,color="grey",alpha=.18,label="Null IQR")
+        median=null.median()
         ax.axhline(median,color="grey",ls="--",label="Null median")
         ax.set(ylim=(0,1.03),title=arm,xlabel="Selection coefficient (0 = neutral targets)",ylabel="Focal ALT frequency")
         ax.tick_params(axis="x",rotation=60)
@@ -186,8 +185,7 @@ def plot_results(out, cfg, focal, metrics):
                     ax.boxplot(datasets,tick_labels=["0"]+s_labels)
                     null=z[(z.family==family)&(z.role=="null")].score.dropna()
                     if len(null):
-                        lo,median,hi=null.quantile([.25,.5,.75])
-                        ax.axhspan(lo,hi,color="grey",alpha=.18,label="Null IQR")
+                        median=null.median()
                         ax.axhline(median,color="grey",ls="--",label="Null median")
                     ax.set(ylim=(-.03,1.03),title=f"{source} | {method.replace('_',' ')}",xlabel="s (0 = neutral targets)",ylabel="Raw frac_recent_T")
                     ax.tick_params(axis="x",rotation=60)
