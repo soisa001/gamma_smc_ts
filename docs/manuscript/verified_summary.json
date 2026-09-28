@@ -1,0 +1,192 @@
+{
+  "compact_sv": {
+    "allele_count_equals_containing_segments": 38219,
+    "allele_count_max": 541,
+    "allele_count_min": 1,
+    "annotation_field_nonempty": {
+      "ccre_ids": 26444,
+      "exon_gene_ids": 1213,
+      "gene_ids": 14116,
+      "intron_gene_ids": 12282
+    },
+    "called_allele_denominators_available": false,
+    "gzip_crc_and_rows_valid": true,
+    "length_bp_max": 17247,
+    "length_bp_min": 50,
+    "rows": 38219,
+    "singleton_percent": 82.46945236662393,
+    "singletons": 31519,
+    "sv_types": {
+      "DEL": 13069,
+      "INS": 25150
+    },
+    "unique_event_ids": 38219
+  },
+  "controlled_cloud_access": false,
+  "exclusive_sv": {
+    "annotated_table_matches_existing_sha256": true,
+    "eligible_haplotypes_values": [
+      24476
+    ],
+    "functional_classes": {
+      "CDS_overlap": 8,
+      "exon_nonCDS_overlap": 141,
+      "gene_nonexonic_overlap": 655,
+      "intergenic": 292
+    },
+    "mane_select_cds_events": 4,
+    "original_attachment_verification": {
+      "available": true,
+      "rows": 4706,
+      "sha256_matches_existing_manifest": true,
+      "source_mask_strata": 48,
+      "unique_events": 1096,
+      "unique_record_intervals": 626
+    },
+    "primary_callable_anchors": 601,
+    "primary_callable_and_all_three_flags_absent": 212,
+    "ranking_rows": 4706,
+    "source_mask_strata": 48,
+    "unique_events": 1096,
+    "unique_record_intervals": 626
+  },
+  "gamma_50k": {
+    "generation_years": 25,
+    "mu": 1.29e-08,
+    "theta": 0.00075,
+    "threshold_coalescent_units": 0.0688,
+    "threshold_generations": 2000,
+    "threshold_years": 50000,
+    "two_ne_generations": 29069.767441860466,
+    "validated_empirical_results_available": false
+  },
+  "gamma_legacy_placeholder": {
+    "not_valid_for_50k_results": true,
+    "ranking_statistic": "frac_recent_4500",
+    "rows": 17,
+    "rows_by_population": {
+      "AFR": 1,
+      "AMR": 4,
+      "EAS": 3,
+      "EUR": 5,
+      "MID": 3,
+      "SAS": 1
+    }
+  },
+  "inventory": {
+    "excluded_directory_names": [
+      ".git",
+      ".native",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".uvcache_linux",
+      ".venv",
+      ".venv-ihs",
+      ".venv-origin",
+      "__pycache__",
+      "ci-diagnosis-venv",
+      "gamma_smc_handoff",
+      "node_modules",
+      "sim"
+    ],
+    "local_files": 3432,
+    "source_files_hashed": 888
+  },
+  "lct": {
+    "haplotype_frequency_and_ld_identity_checks_passed": true,
+    "n_by_population": {
+      "AFR": 2641,
+      "AMR": 2070,
+      "EAS": 1312,
+      "EUR": 1858,
+      "MID": 416,
+      "OTH": 2745,
+      "SAS": 1196
+    },
+    "original_em_fit_recomputed": false,
+    "r2_by_population": {
+      "AFR": 0.28351783966174426,
+      "AMR": 0.33680059085890524,
+      "EAS": 0.006191698324255875,
+      "EUR": 0.60030632239356,
+      "MID": 0.10495267161290697,
+      "OTH": 0.42576649884488127,
+      "SAS": 0.2552411264097419
+    },
+    "signed_dprime_by_population": {
+      "AFR": -1.0,
+      "AMR": -0.9896564956842723,
+      "EAS": -1.0,
+      "EUR": -0.9951662813605449,
+      "MID": -1.0,
+      "OTH": -0.9952555178911603,
+      "SAS": -1.0
+    }
+  },
+  "repositories": {
+    "ci-native-fix": {
+      "branch": "",
+      "commit": "37d27cba40aacd51abdb9d009f25bd122cd698f7",
+      "tracked_files": 7826
+    },
+    "code": {
+      "branch": "AOU_run_opt",
+      "commit": "eba1c82d90e50fc3f09af835bf203fcf677dc200",
+      "tracked_files": 7852
+    },
+    "hmmix_aou_linuxtest": {
+      "branch": "refactor/postdecode-analysis",
+      "commit": "aa5c68438263161470bb3ddecde4339e3042228b",
+      "tracked_files": 278
+    },
+    "hmmix_aou_plan_inspection": {
+      "branch": "optimize/fastcore-prep_hardmask",
+      "commit": "09cbc34565be9e35a22ab0f9022535bd0e6a7e4f",
+      "tracked_files": 294
+    },
+    "hmmix_aou_postdecode": {
+      "branch": "refactor/postdecode-analysis",
+      "commit": "aa5c68438263161470bb3ddecde4339e3042228b",
+      "tracked_files": 278
+    }
+  },
+  "review_date": "2026-09-28",
+  "rng": "none",
+  "scope": "Local empirical manuscript evidence; selection simulations excluded",
+  "source_fingerprints": {
+    "hmmix_aou_plan_inspection/resources/loci/ad_hoc_sv_20260921.tsv.gz": {
+      "bytes": 1787236,
+      "sha256": "8504b0ef8a190b5507aba98806e942e30325a4d02d763dcf3279d362f3a3c5c5"
+    },
+    "hmmix_aou_postdecode/resources/selection/gamma_smc_selected_regions.placeholder.tsv": {
+      "bytes": 22221,
+      "sha256": "cf3f3cf766e5d8c28cd959f2ce53b4b53602423ba0ef59e9846fb1f1de03c0ff"
+    },
+    "lct_dprime_supplied_counts.tsv": {
+      "bytes": 1184,
+      "sha256": "a5e92befae1c890416bcc68905eae291ba7e5914d536c8a44eb54516763f8029"
+    },
+    "sv_exclusive_review_20260915/annotated_unique_events.tsv": {
+      "bytes": 742050,
+      "sha256": "82c0c530021e9ac947867b8a1f7a7f6cd291a5be04834285c91ba1dd2d5c8c39"
+    },
+    "sv_exclusive_review_20260915/overlap_details.json": {
+      "bytes": 722397,
+      "sha256": "c0561b065eaca13fe8951400543ddaeca225af156c4c5cea7a29dd30df9e1d0f"
+    },
+    "sv_exclusive_review_20260915/priority_candidates.tsv": {
+      "bytes": 2270,
+      "sha256": "8b06e5a304c1272cbc183ef22ac4a864224e822abf42f9ce025028ece0c6366b"
+    },
+    "sv_exclusive_review_20260915/refseq_crosscheck.json": {
+      "bytes": 639,
+      "sha256": "ef8b232a97969a55403656aa48ef8b22579d877571a6c85f99f30c85d9850011"
+    },
+    "sv_exclusive_review_20260915/summary.json": {
+      "bytes": 3233,
+      "sha256": "447c280b8a87fc912a51157cb813d7168ebcf4132d992283faf0b32d088a1b45"
+    }
+  },
+  "sv_export_event_id_intersection": 601,
+  "workers": 4
+}

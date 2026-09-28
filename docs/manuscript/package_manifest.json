@@ -1,0 +1,11 @@
+{
+  "review_date": "2026-09-28",
+  "schema_version": 1,
+  "sha256": {
+    "README.md": "17938e2cee426f6c839bdf64c0330398cad6dc17070c4a0b4eb2f2c7d2b4fd03",
+    "evidence_and_open_items.md": "686963f3c07800382cfa4edae67b25ea075a3cf6c1abb6ece296e804c73b87e1",
+    "introgression_selection_draft.md": "7fc2abf496453bc7fceded728aaed02a46254d4c6cc0c92d0b459e816915cbcb",
+    "verified_summary.json": "5aaad80ffa3637e060a2d7aa557c42d89cbefe1cc5bb5b4c1b6346b5f81c3bb5",
+    "verify_draft.py": "89e3d925a63657f16c360a44e55985bbffc3c48ddf0a34e127be1c2164f2cf8d"
+  }
+}
