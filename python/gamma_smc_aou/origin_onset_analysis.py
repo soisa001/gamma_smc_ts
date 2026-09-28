@@ -38,6 +38,16 @@ def rank_p(null, scores):
     return np.where(np.isnan(scores), 1.0, p)
 
 
+def upper_tail_boundary(null, alpha=0.05):
+    """AF must strictly exceed this order statistic to pass rank_p <= alpha."""
+    reference = np.sort(np.asarray(null, dtype=float))
+    if not len(reference) or not np.isfinite(reference).all() or not 0 < alpha < 1:
+        raise ValueError("Expected finite calibration scores and 0 < alpha < 1")
+    # Use the same division/comparison as rank_p, including discrete p-values.
+    allowed = np.flatnonzero((1 + np.arange(len(reference) + 1)) / (len(reference) + 1) <= alpha)
+    return float(reference[-(int(allowed[-1]) + 1)]) if len(allowed) else np.inf
+
+
 def wilson(k, n):
     if n == 0:
         return np.nan, np.nan
@@ -131,7 +141,7 @@ def plot_results(out, cfg, focal, metrics):
     layout = (1,2) if len(selected_arms)==2 else (2,2)
     figsize = (14,7) if len(selected_arms)==2 else (14,11)
     neutral=metrics[(metrics.role=="neutral_target") & (metrics.method!="AF")]
-    fpr_max=max(10.,float(np.ceil(neutral.rate.max()*100/10)*10))
+    fpr_max=100.
     for source in ("truth","decoded"):
         for method in PAIR_LABELS.values():
             selected=metrics[(metrics.source==source)&(metrics.method==method)&(metrics.role=="selected")]
@@ -163,8 +173,8 @@ def plot_results(out, cfg, focal, metrics):
         datasets += [af[(af.arm==arm)&(af.role=="selected")&(af.s==s)].score.to_numpy() for s in coefficients]
         ax.boxplot(datasets,tick_labels=["0"]+s_labels,showfliers=True)
         null=af[(af.family==family)&(af.role=="null")].score
-        median=null.median()
-        ax.axhline(median,color="grey",ls="--",label="Null median")
+        boundary=upper_tail_boundary(null,cfg['alpha'])
+        ax.axhline(boundary,color="grey",ls="--",label="Calibration-null 5% cutoff (exceed line)")
         ax.set(ylim=(0,1.03),title=arm,xlabel="Selection coefficient (0 = neutral targets)",ylabel="Focal ALT frequency")
         ax.tick_params(axis="x",rotation=60)
     handles,labels=axes.flat[0].get_legend_handles_labels()

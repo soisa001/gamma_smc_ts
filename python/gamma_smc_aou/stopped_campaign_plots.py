@@ -15,7 +15,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 import pandas as pd
 from . import origin_onset as oo
-from .origin_onset_analysis import heatmap
+from .origin_onset_analysis import heatmap, upper_tail_boundary
 
 LABELS={'all_pairs':'All sampled pairs','alt_alt':'ALT/ALT pairs'}
 
@@ -155,13 +155,12 @@ def make_report(root,out,cfg,inventory,focal,metrics):
         data=[g[g.role=='neutral_target'].sample_af.to_numpy()]+[g[(g.role=='selected')&(g.s==s)].sample_af.to_numpy() for s in coeff]
         ax.boxplot(data,tick_labels=['0']+slabels,showfliers=True)
         null=g[g.role=='null'].sample_af
-        median=null.median()
-        ax.axhline(median,color='grey',ls='--',label='Calibration-null median')
-        ax.set(ylim=(-.02,1.03),title=family,xlabel='s (0 = independent neutral targets)',ylabel='Present-day sample ALT frequency')
+        boundary=upper_tail_boundary(null,cfg['alpha'])
+        ax.axhline(boundary,color='grey',ls='--',label='Calibration-null 5% cutoff (exceed line)')
+        ax.set(ylim=(-.02,1.03),title=f'{family} | cutoff AF = {boundary:.4f}',xlabel='s (0 = independent neutral targets)',ylabel='Present-day sample ALT frequency')
         ax.tick_params(axis='x',rotation=60)
-    h,l=axes[0].get_legend_handles_labels(); fig.legend(h,l,ncol=2,frameon=False,fontsize=14)
-    fig.suptitle('Allele-frequency distributions | retained focal alleles',fontsize=22)
-    save(fig,'allele_frequency','Final sample AF, with matched calibration null median.')
+    h,l=axes[0].get_legend_handles_labels(); fig.legend(h,l,loc='outside upper center',ncol=1,frameon=False,fontsize=14)
+    save(fig,'allele_frequency','Present-day allele-frequency distributions for retained focal alleles. Dashed line: matched calibration-null upper 5% critical boundary; AF must strictly exceed the line for empirical p <= 0.05. Uses the exact finite-null order statistic rather than an interpolated 95th percentile; ties are conservative.')
     # Frequency-only benchmark, calibrated exactly like the pair statistics.
     fig,axes=plt.subplots(1,2,figsize=(14,7.5),layout='constrained')
     for ax,family in zip(axes,families):
@@ -272,7 +271,7 @@ def make_report(root,out,cfg,inventory,focal,metrics):
         '## Files','', '[Full figure and methods PDF](comprehensive_report.pdf)', '[Browsable report](index.html)','']
     lines += [f'- [{t}]({t})' for t in tables]
     lines += ['','## Provenance','', 'snapshot.json freezes the included task IDs and original configuration. Per-region truth/decoded receipts hash the source simulation receipt and pair manifest. Tree, carrier-mask and trajectory inputs are hash-checked; focal genotypes are independently compared with the carrier mask. This is a report-input audit, not a new full ascertainment re-audit.','',
-        'The original run remains stopped. Report processing never invokes SLiM or generates replacement nulls.']
+        'This report preserves the stopped snapshot even if simulation generation subsequently resumes. Report processing never invokes SLiM or generates replacement nulls.']
     (out/'README.md').write_text('\n'.join(lines)+'\n')
     parts=['<!doctype html><html><head><meta charset="utf-8"><title>Stopped simulation report</title>',
         '<style>body{max-width:1200px;margin:36px auto;padding:0 24px;font:18px/1.5 system-ui;color:#18212d}h1,h2{line-height:1.2}img{width:100%;height:auto}section{margin:3em 0}table{border-collapse:collapse;font-size:15px}td,th{padding:7px 12px;border:1px solid #ddd}a{color:#145ca1}.notice{padding:20px;background:#fff4d7;border-left:5px solid #d69625}</style></head><body>',

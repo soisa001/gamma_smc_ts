@@ -63,6 +63,11 @@ power/FPR with intervals and coverage, AF and retry summaries, representative
 IDs, calibration diagnostics, and unfinished task IDs. Provenance and output
 checksums accompany the bundle. Plots are saved to disk, not notebook output.
 Every FPR heatmap uses the same fixed 0–100% scale; power also uses 0–100%.
+Allele-frequency distribution plots show the matched calibration-null upper
+5% critical boundary instead of its median. A target must strictly exceed the
+line for empirical p<=0.05. This is an exact finite-null order statistic, not an
+interpolated 95th percentile; ties remain conservative. Calibration-null IQR
+shading is omitted. Other raw-fraction plots retain their null median lines.
 
 ## Reproduce or resume analysis only
 

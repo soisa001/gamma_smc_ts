@@ -3,6 +3,15 @@ import pandas as pd
 import tskit
 from io import StringIO
 from gamma_smc_aou.stopped_campaign_report import evaluate_available, truth_at_positions, examples
+from gamma_smc_aou.origin_onset_analysis import upper_tail_boundary, rank_p
+
+
+def test_af_critical_boundary_matches_empirical_calls_with_ties():
+    for n in [18, 19, 97, 98, 1000]:
+        null = np.round(np.linspace(0, 1, n), 1)
+        boundary = upper_tail_boundary(null)
+        scores = np.unique(np.concatenate([null, np.nextafter(null, np.inf), [0, 1]]))
+        np.testing.assert_array_equal(scores > boundary, rank_p(null, scores) <= .05)
 
 def test_actual_null_denominators_and_missing_pair_no_call():
     rows=[]
