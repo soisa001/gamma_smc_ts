@@ -121,3 +121,9 @@ The existing `artifacts/aou-mvn/plots` figures instead summarize 1,000 log-MVN d
 | Empirical model fit | Original AFS, LD, objective, held-out predictive-density and stopping diagnostics are needed to assess convergence and adequacy. Checksum/covariance checks are integrity tests, not demographic validation. |
 
 The original introgression/selection audit above retains its earlier source scope; this addition does not claim to refresh those analyses from later repository outputs.
+
+### Recombination-map citation and minibatch clarification
+
+The executable default URL is `https://hgdownload.soe.ucsc.edu/gbdb/hg38/recombRate/recombAvg.bw` (`scripts/aou_pipeline.py:359`). [UCSC track documentation](https://www.genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=recombRate2) identifies this as the paternal/maternal average from [Halldorsson et al. (2019)](https://doi.org/10.1126/science.aau1043). [UCSC conversion provenance](https://github.com/ucscGenomeBrowser/kent/blob/master/src/hg/makeDb/doc/hg38/recombRate.txt) links `recombAvg.bw` specifically to the paper's `aau1043_datas3.gz`. No historical local bigWig hash was recovered.
+
+The optimized launcher sets `MINIBATCH=5` and `LD_MINIBATCH=5` by default and passes them as `--hmm-minibatch-size` and `--ld-minibatch-size`. The HMM draws five individual-by-contig chunk rows with replacement; each row has 1,000 modeled 100-bp windows and 100 warm-up windows. The same minibatch serves all particles in an iteration. LD evaluates all five bins when its minibatch size equals the bin count. The generic caller instead defaults LD minibatching to three bins and leaves HMM minibatching to automatic selection; these generic settings should not replace the launcher settings. The archived fit metadata are still needed to confirm overrides.
