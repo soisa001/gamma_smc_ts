@@ -77,6 +77,11 @@ UPLOAD=1
 KEEP_INPUTS=0
 FORCE=0
 DRY_RUN=0
+# Scan only: decode, summarise and plot, but do not run the raw-posterior
+# candidate replay. The replay repeats the whole forward/backward pass to
+# re-materialise per-pair posteriors the scan already computed and
+# discarded, so it costs close to a second full decode.
+NO_CANDIDATES=0
 ALLOW_DIRTY=0
 MASK_MODE="default"
 MASK_SOURCE_SEMANTICS="excluded_intervals"
@@ -164,6 +169,10 @@ Run control:
   --keep-inputs             Retain staged chromosome BCFs after upload.
   --no-upload               Do not upload aggregate outputs or plots.
   --allow-dirty             Permit tracked local source changes.
+  --no-candidates           Scan only: skip the raw-posterior candidate
+                            replay and its figures. Roughly halves total
+                            decode time. The per-position summaries, bit
+                            matrices, plots and reports are unaffected.
   --dry-run                 Print resolved work without accessing GCS.
   -h, --help                Show this help.
 
@@ -248,6 +257,7 @@ while [[ $# -gt 0 ]]; do
         --keep-inputs) KEEP_INPUTS=1; shift ;;
         --no-upload) UPLOAD=0; shift ;;
         --allow-dirty) ALLOW_DIRTY=1; shift ;;
+        --no-candidates) NO_CANDIDATES=1; shift ;;
         --dry-run) DRY_RUN=1; shift ;;
         -h|--help) usage; exit 0 ;;
         *) die "unknown option: $1" ;;
@@ -456,6 +466,15 @@ for (( threshold_index = 0; threshold_index < N_THRESHOLDS; threshold_index++ ))
     fi
 done
 
+# A called fraction cannot exceed 1, so a screen of 1 selects no positions:
+# workbench-regions writes an empty region set, the existing empty-candidate
+# branch runs instead of the replay, and the completion contract stays
+# internally consistent. The plots and the report keep their own
+# per-threshold screens, so the scan figures are unchanged.
+if [[ "$NO_CANDIDATES" -eq 1 ]]; then
+    CANDIDATE_SIGNAL_FRACTION=1
+fi
+
 declare -a CHROMOSOMES=()
 if [[ "${CHR_SPEC,,}" == "all" ]]; then
     CHROMOSOMES=("${ALL_CHROMOSOMES[@]}")
@@ -521,7 +540,11 @@ print_plan() {
     echo "  screens: signal_fraction=${SIGNAL_FRACTION_LIST[*]}"
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
     echo "  pair draw: $N_RANDOM_PAIRS random haplotype pairs/pop, seed=$PAIRS_SEED, exclude_within=$EXCLUDE_WITHIN"
-    echo "  candidates: threshold=$CANDIDATE_THRESHOLD yr, fraction>$CANDIDATE_SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
+    if [[ "$NO_CANDIDATES" -eq 1 ]]; then
+        echo "  candidates: disabled (--no-candidates); scan, plots and report only"
+    else
+        echo "  candidates: threshold=$CANDIDATE_THRESHOLD yr, fraction>$CANDIDATE_SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
+    fi
     echo "  plot labels: top_n=$TOP_N, merge_gap=$PLOT_MERGE_GAP bp (display only), gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=${ZOOM_YMAX_LIST[*]}, label_min=${HIT_LABEL_MIN_FRACTION_LIST[*]}"
     echo "  gene annotation: $GENE_ANNOTATION_URI"
     echo "  ancestry: $ANCESTRY_URI (column ancestry_pred_other)"

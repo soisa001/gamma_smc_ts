@@ -24,6 +24,37 @@ def _runner_command(repo: Path, arguments: list[str]) -> tuple[list[str], Path]:
     return [bash, str(repo / "scripts" / "run_aou_workbench.sh"), *arguments], repo
 
 
+def test_scan_only_mode_disables_the_candidate_replay():
+    """--no-candidates must not disturb the scan, plots or report.
+
+    The replay repeats the entire forward/backward pass to re-materialise
+    per-pair posteriors the scan already computed, so skipping it is close to
+    halving the decode. It is implemented by raising the *region* screen to 1,
+    which nothing can exceed; the per-threshold plot and report screens stay
+    where the caller put them.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+    command, cwd = _runner_command(
+        repo,
+        ["-chr", "1", "-pops", "afr", "--dry-run", "--no-candidates",
+         "--n-random-pairs", "10000"],
+    )
+    completed = subprocess.run(
+        command, check=True, text=True, capture_output=True,
+        env=environment, cwd=cwd,
+    )
+    output = completed.stdout
+    assert "candidates: disabled (--no-candidates)" in output
+    assert "10000 random haplotype pairs/pop" in output
+    # Both thresholds still decoded, and the plot screens are untouched.
+    assert "thresholds=10000 50000 years" in output
+    assert "screens: signal_fraction=0.0397 0.1935" in output
+    assert "label_min=0.0397 0.1935" in output
+
+
 def test_runner_dry_run_resolves_case_insensitive_defaults():
     repo = Path(__file__).resolve().parents[1]
     environment = os.environ.copy()
