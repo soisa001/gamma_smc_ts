@@ -5,6 +5,8 @@ buckets, samples 100,000 arbitrary within-population haplotype pairs, validates
 every chromosome, uploads aggregate and pair-level candidate outputs, and
 makes separate plots for each population. It is CPU-only and runs
 populations/chromosomes sequentially while using 12 decoder threads by default.
+`--jobs N` decodes N populations of a chromosome at once instead; they share
+the one staged BCF, so concurrency there does not multiply the staged input.
 
 ## Fresh notebook cell
 
@@ -287,6 +289,7 @@ drawn for candidate regions.
 | Setting | Default |
 |---|---:|
 | decoder threads | 12 |
+| concurrent populations (`--jobs`) | 1 (serial), capped at the population count |
 | posterior call rule | `mean` |
 | output stride | 10,000 bp |
 | mutation rate | `1.25e-8` |
@@ -315,6 +318,28 @@ about 490 MB (plus about 122 MB while constructing it); a 10 kb cache would be
 about 4.9 GB (plus about 1.2 GB during construction). Cache size and stride are
 independent: the output grid is 10 kb while transition-cache segments stay at
 1 kb.
+
+## Concurrency
+
+The decode's serial cost per job -- reading the BCF, building the genotype
+matrix, constructing the ~490 MB flow-field cache -- does not shrink with
+`--threads`, and at small pair counts it is what dominates. Only running jobs
+side by side overlaps it.
+
+`--jobs N` therefore decodes N populations of a chromosome concurrently. That
+axis is chosen deliberately: populations of one chromosome share a single
+staged BCF, so `--jobs` never multiplies the staged input, and it caps
+naturally at the number of requested populations. Staging is done once under a
+lock, with a marker file so the siblings wait rather than repeat it; the contig
+name and length are re-derived per job because a background subshell cannot
+inherit them from whichever sibling staged.
+
+`--threads` and `--jobs` multiply, so divide them: `--jobs 4 --threads 4` keeps
+16 cores busy, and the run banner prints the product. Each population's output
+is captured and replayed in order once the chromosome finishes, so concurrent
+logs do not interleave. A population that fails does not abort its siblings;
+the chromosome fails after all of them finish, naming each failure and its exit
+code.
 
 ## Overrides and restart behavior
 

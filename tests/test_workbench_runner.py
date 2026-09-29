@@ -24,6 +24,77 @@ def _runner_command(repo: Path, arguments: list[str]) -> tuple[list[str], Path]:
     return [bash, str(repo / "scripts" / "run_aou_workbench.sh"), *arguments], repo
 
 
+def test_jobs_runs_populations_concurrently_and_caps_at_the_population_count():
+    """--jobs overlaps the serial per-job cost that threads cannot.
+
+    Populations of one chromosome share a single staged BCF, so concurrency
+    here does not multiply the staged input. More jobs than populations is
+    meaningless, so it is capped rather than accepted.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+
+    command, cwd = _runner_command(
+        repo, ["-chr", "1", "-pops", "all", "--dry-run",
+               "--jobs", "4", "--threads", "4"])
+    output = subprocess.run(command, check=True, text=True, capture_output=True,
+                            env=environment, cwd=cwd).stdout
+    assert "jobs=4 (=16 busy cores)" in output
+    assert "Note:" not in output
+
+    # Six populations requested, so sixteen jobs is capped to six.
+    command, cwd = _runner_command(
+        repo, ["-chr", "1", "-pops", "all", "--dry-run",
+               "--jobs", "16", "--threads", "2"])
+    output = subprocess.run(command, check=True, text=True, capture_output=True,
+                            env=environment, cwd=cwd).stdout
+    assert "exceeds the 6 requested population(s); using 6" in output
+    assert "jobs=6 (=12 busy cores)" in output
+
+    # The cap must be applied before the plan is printed, not after.
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+    cap = runner.index("JOBS > ${#POPULATIONS[@]}")
+    assert cap < runner.index("print_plan" + chr(10))
+
+
+def test_jobs_defaults_to_serial_and_rejects_nonsense():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+
+    command, cwd = _runner_command(repo, ["-chr", "1", "-pops", "afr", "--dry-run"])
+    output = subprocess.run(command, check=True, text=True, capture_output=True,
+                            env=environment, cwd=cwd).stdout
+    assert "jobs=1" in output          # unchanged behaviour unless asked for
+
+    for bad in ("0", "-2", "abc"):
+        command, cwd = _runner_command(
+            repo, ["-chr", "1", "-pops", "afr", "--dry-run", "--jobs", bad])
+        completed = subprocess.run(command, text=True, capture_output=True,
+                                   env=environment, cwd=cwd)
+        assert completed.returncode != 0, bad
+        assert "JOBS must be a positive integer" in completed.stderr
+
+
+def test_concurrent_staging_is_locked_and_failures_are_collected():
+    """Concurrency must not race on the shared BCF or swallow a failure."""
+    runner = (Path(__file__).resolve().parents[1]
+              / "scripts/run_aou_workbench.sh").read_text()
+    # One staging per chromosome, guarded, with a marker so siblings skip it.
+    assert "ensure_chromosome_staged() {" in runner
+    assert "flock 8" in runner
+    assert 'marker="$input_directory/.staged"' in runner
+    # Contig and length are re-derived per caller: a background subshell
+    # cannot inherit them from whichever sibling staged.
+    assert runner.count('"$BCFTOOLS" index -s "$local_input"') == 1
+    # Every population's status is inspected; none is allowed to fail silently.
+    assert 'echo $? > "$status_dir/$population.status"' in runner
+    assert "chromosome $chromosome failed for:" in runner
+
+
 def test_scan_only_mode_disables_the_candidate_replay():
     """--no-candidates must not disturb the scan, plots or report.
 

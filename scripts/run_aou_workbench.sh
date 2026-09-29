@@ -82,6 +82,12 @@ DRY_RUN=0
 # re-materialise per-pair posteriors the scan already computed and
 # discarded, so it costs close to a second full decode.
 NO_CANDIDATES=0
+# How many populations of one chromosome decode at the same time. The
+# serial per-job cost (BCF read, genotype matrix, flow-field cache) is
+# what dominates at small pair counts, and only concurrency overlaps it;
+# threads inside one process cannot. Populations share a single staged
+# BCF, so raising this does not multiply the staged input.
+JOBS="${AOU_GAMMA_JOBS:-1}"
 ALLOW_DIRTY=0
 MASK_MODE="default"
 MASK_SOURCE_SEMANTICS="excluded_intervals"
@@ -169,6 +175,10 @@ Run control:
   --keep-inputs             Retain staged chromosome BCFs after upload.
   --no-upload               Do not upload aggregate outputs or plots.
   --allow-dirty             Permit tracked local source changes.
+  --jobs N                  Populations decoded concurrently per
+                            chromosome; default 1, capped at the number
+                            of requested populations. Divide --threads
+                            by this so the two do not oversubscribe.
   --no-candidates           Scan only: skip the raw-posterior candidate
                             replay and its figures. Roughly halves total
                             decode time. The per-position summaries, bit
@@ -257,6 +267,7 @@ while [[ $# -gt 0 ]]; do
         --keep-inputs) KEEP_INPUTS=1; shift ;;
         --no-upload) UPLOAD=0; shift ;;
         --allow-dirty) ALLOW_DIRTY=1; shift ;;
+        --jobs) need_value "$@"; JOBS="$2"; shift 2 ;;
         --no-candidates) NO_CANDIDATES=1; shift ;;
         --dry-run) DRY_RUN=1; shift ;;
         -h|--help) usage; exit 0 ;;
@@ -317,7 +328,7 @@ for source_uri in "$ANCESTRY_URI" "$QC_EXCLUSIONS_URI" \
     [[ "$source_uri" == gs://* ]] || die "controlled input must be a gs:// URI: $source_uri"
 done
 
-for integer_setting in THREADS OUTPUT_STRIDE CACHE_SIZE PAIR_BLOCK TOP_N \
+for integer_setting in JOBS THREADS OUTPUT_STRIDE CACHE_SIZE PAIR_BLOCK TOP_N \
     N_RANDOM_PAIRS PROFILE_HALF_WIDTH VARIANT_HALF_WIDTH MIN_GENOTYPE_PAIRS; do
     value="${!integer_setting}"
     [[ "$value" =~ ^[1-9][0-9]*$ ]] || die "$integer_setting must be a positive integer"
@@ -535,7 +546,7 @@ print_plan() {
     echo "  mask mode: $MASK_MODE ($MASK_SOURCE_SEMANTICS)"
     echo "  local root: $LOCAL_ROOT"
     echo "  requester-pays billing project: ${BILLING_PROJECT:-<unset>}"
-    echo "  decoder: threads=$THREADS, theta=$THETA, rho/theta=$RHO_OVER_THETA"
+    echo "  decoder: threads=$THREADS, jobs=$JOBS (=$((JOBS * THREADS)) busy cores), theta=$THETA, rho/theta=$RHO_OVER_THETA"
     echo "  statistic: recent_call=$RECENT_CALL, thresholds=${THRESHOLD_LIST[*]} years (candidate: $CANDIDATE_THRESHOLD)"
     echo "  screens: signal_fraction=${SIGNAL_FRACTION_LIST[*]}"
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
@@ -565,6 +576,11 @@ print_plan() {
         done
     fi
 }
+
+if (( JOBS > ${#POPULATIONS[@]} )); then
+    echo "Note: --jobs $JOBS exceeds the ${#POPULATIONS[@]} requested population(s); using ${#POPULATIONS[@]}."
+    JOBS="${#POPULATIONS[@]}"
+fi
 
 print_plan
 if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -912,35 +928,74 @@ fi
     die "gene-label override table is absent or empty: $GENE_LABEL_OVERRIDES"
 GENE_LABEL_OVERRIDES="$(realpath -- "$GENE_LABEL_OVERRIDES")"
 
-for chromosome in "${CHROMOSOMES[@]}"; do
-    echo
-    echo "=== Full panel chromosome $chromosome ==="
-    input_uri="$(expand_template "$BCF_TEMPLATE" "PANEL" "$chromosome")"
-    index_uri="$(expand_template "$INDEX_TEMPLATE" "PANEL" "$chromosome" "$input_uri")"
-    mask_uri="$(expand_template "$MASK_TEMPLATE" "PANEL" "$chromosome")"
-    [[ "$input_uri" == gs://* ]] || die "BCF template did not resolve to gs://: $input_uri"
-    [[ "$index_uri" == gs://* ]] || die "index template did not resolve to gs://: $index_uri"
-    if [[ "$MASK_ENABLED" -eq 1 ]]; then
-        [[ "$mask_uri" == gs://* ]] || die \
-            "mask template did not resolve to gs://: $mask_uri"
-    fi
-    input_fingerprint="$(object_fingerprint "$input_uri")"
-    index_fingerprint="$(object_fingerprint "$index_uri")"
-    mask_fingerprint=""
-    if [[ "$MASK_ENABLED" -eq 1 ]]; then
-        mask_fingerprint="$(object_fingerprint "$mask_uri")"
+# Stage this chromosome's panel BCF, index and callable mask exactly once,
+# even when several populations decode concurrently. The lock makes the
+# first caller do the work and the rest wait for it; the marker records
+# that it is done. input_contig and sequence_length are re-derived on
+# every call because a background subshell cannot inherit them from
+# whichever sibling happened to stage.
+ensure_chromosome_staged() {
+    local marker="$input_directory/.staged"
+    mkdir -p "$input_directory"
+    exec 8>"$input_directory/.staging.lock"
+    flock 8
+    if [[ ! -f "$marker" ]]; then
+        check_staging_capacity "$input_uri" "$input_fingerprint" "$local_input" \
+            "$index_uri" "$index_fingerprint" "$local_index"
+        stage_object "$input_uri" "$local_input" "$input_fingerprint"
+        stage_object "$index_uri" "$local_index" "$index_fingerprint"
+        if [[ "$MASK_ENABLED" -eq 1 ]]; then
+            stage_object "$mask_uri" "$local_mask_source" "$mask_fingerprint"
+        fi
+        bcf_samples_temporary="${bcf_samples}.tmp.$$"
+        rm -f -- "$bcf_samples_temporary"
+        "$BCFTOOLS" query -l "$local_input" > "$bcf_samples_temporary"
+        [[ -s "$bcf_samples_temporary" ]] || die \
+            "bcftools found no samples in $local_input"
+        mv -f -- "$bcf_samples_temporary" "$bcf_samples"
     fi
 
-    input_directory="$LOCAL_ROOT/inputs/panel/chr$chromosome"
-    local_input="$input_directory/$(basename "$input_uri")"
-    local_index="$input_directory/$(basename "$index_uri")"
-    bcf_samples="$input_directory/chr$chromosome.bcf_samples.txt"
-    local_mask_source="$LOCAL_ROOT/inputs/masks/source/$(basename "$mask_uri")"
-    local_mask="$LOCAL_ROOT/inputs/masks/callable/chr$chromosome.callable.bed"
-    mask_audit="$LOCAL_ROOT/inputs/masks/callable/chr$chromosome.callable.audit.json"
-    input_staged=0
+    # Derived on every call, not just the one that staged: these are shell
+    # variables, and a background subshell cannot inherit them from whichever
+    # sibling happened to do the staging. Reading the index is cheap.
+    mapfile -t indexed_contigs < <("$BCFTOOLS" index -s "$local_input")
+    [[ "${#indexed_contigs[@]}" -eq 1 ]] || die \
+        "expected one indexed contig in $local_input; found ${#indexed_contigs[@]}"
+    IFS=$'\t ' read -r input_contig sequence_length n_records <<< \
+        "${indexed_contigs[0]}"
+    [[ "$sequence_length" =~ ^[1-9][0-9]*$ ]] || die \
+        "BCF index did not report a positive contig length: ${indexed_contigs[0]}"
+    normalized_contig="${input_contig#chr}"
+    normalized_contig="${normalized_contig#CHR}"
+    [[ "$normalized_contig" == "$chromosome" ]] || die \
+        "BCF contig $input_contig does not match requested chromosome $chromosome"
 
-    for population in "${POPULATIONS[@]}"; do
+    # The mask needs the contig and length above, so it is built after them
+    # but still under the lock, and only once.
+    if [[ ! -f "$marker" ]]; then
+        if [[ "$MASK_ENABLED" -eq 1 ]]; then
+            "$AOU" workbench-mask \
+                --hardmask "$local_mask_source" \
+                --source-semantics "$MASK_SOURCE_SEMANTICS" \
+                --contig "$input_contig" \
+                --sequence-length "$sequence_length" \
+                --output "$local_mask" \
+                --audit-output "$mask_audit"
+            if [[ "$UPLOAD" -eq 1 ]]; then
+                rsync_files "$OUTPUT_PREFIX/shared/masks" \
+                    "$local_mask" "$mask_audit"
+            fi
+        fi
+        : > "$marker"
+    fi
+    flock -u 8
+    exec 8>&-
+}
+
+# One population of one chromosome, end to end. Run directly when
+# --jobs 1, or in a background subshell otherwise.
+run_population() {
+    local population="$1"
         echo
         echo "--- $population chromosome $chromosome ---"
         population_summary_dir="$LOCAL_ROOT/results/$population/chromosomes"
@@ -1101,47 +1156,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             continue
         fi
 
-        if [[ "$input_staged" -eq 0 ]]; then
-            check_staging_capacity "$input_uri" "$input_fingerprint" "$local_input" \
-                "$index_uri" "$index_fingerprint" "$local_index"
-            stage_object "$input_uri" "$local_input" "$input_fingerprint"
-            stage_object "$index_uri" "$local_index" "$index_fingerprint"
-            if [[ "$MASK_ENABLED" -eq 1 ]]; then
-                stage_object "$mask_uri" "$local_mask_source" "$mask_fingerprint"
-            fi
-            mkdir -p "$input_directory"
-            bcf_samples_temporary="${bcf_samples}.tmp.$$"
-            rm -f -- "$bcf_samples_temporary"
-            "$BCFTOOLS" query -l "$local_input" > "$bcf_samples_temporary"
-            [[ -s "$bcf_samples_temporary" ]] || die \
-                "bcftools found no samples in $local_input"
-            mv -f -- "$bcf_samples_temporary" "$bcf_samples"
-            mapfile -t indexed_contigs < <("$BCFTOOLS" index -s "$local_input")
-            [[ "${#indexed_contigs[@]}" -eq 1 ]] || die \
-                "expected one indexed contig in $local_input; found ${#indexed_contigs[@]}"
-            IFS=$'\t ' read -r input_contig sequence_length n_records <<< \
-                "${indexed_contigs[0]}"
-            [[ "$sequence_length" =~ ^[1-9][0-9]*$ ]] || die \
-                "BCF index did not report a positive contig length: ${indexed_contigs[0]}"
-            normalized_contig="${input_contig#chr}"
-            normalized_contig="${normalized_contig#CHR}"
-            [[ "$normalized_contig" == "$chromosome" ]] || die \
-                "BCF contig $input_contig does not match requested chromosome $chromosome"
-            if [[ "$MASK_ENABLED" -eq 1 ]]; then
-                "$AOU" workbench-mask \
-                    --hardmask "$local_mask_source" \
-                    --source-semantics "$MASK_SOURCE_SEMANTICS" \
-                    --contig "$input_contig" \
-                    --sequence-length "$sequence_length" \
-                    --output "$local_mask" \
-                    --audit-output "$mask_audit"
-                if [[ "$UPLOAD" -eq 1 ]]; then
-                    rsync_files "$OUTPUT_PREFIX/shared/masks" \
-                        "$local_mask" "$mask_audit"
-                fi
-            fi
-            input_staged=1
-        fi
+        ensure_chromosome_staged
 
         safe_clear_run "$population_summary_dir" \
             "$summary" "$run_json" "$pairs_manifest" "$sample_list" \
@@ -1289,7 +1304,69 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 "$candidate_positions" "$candidate_directory" \
                 "$completion"
         fi
+}
+
+for chromosome in "${CHROMOSOMES[@]}"; do
+    echo
+    echo "=== Full panel chromosome $chromosome ==="
+    input_uri="$(expand_template "$BCF_TEMPLATE" "PANEL" "$chromosome")"
+    index_uri="$(expand_template "$INDEX_TEMPLATE" "PANEL" "$chromosome" "$input_uri")"
+    mask_uri="$(expand_template "$MASK_TEMPLATE" "PANEL" "$chromosome")"
+    [[ "$input_uri" == gs://* ]] || die "BCF template did not resolve to gs://: $input_uri"
+    [[ "$index_uri" == gs://* ]] || die "index template did not resolve to gs://: $index_uri"
+    if [[ "$MASK_ENABLED" -eq 1 ]]; then
+        [[ "$mask_uri" == gs://* ]] || die \
+            "mask template did not resolve to gs://: $mask_uri"
+    fi
+    input_fingerprint="$(object_fingerprint "$input_uri")"
+    index_fingerprint="$(object_fingerprint "$index_uri")"
+    mask_fingerprint=""
+    if [[ "$MASK_ENABLED" -eq 1 ]]; then
+        mask_fingerprint="$(object_fingerprint "$mask_uri")"
+    fi
+
+    input_directory="$LOCAL_ROOT/inputs/panel/chr$chromosome"
+    local_input="$input_directory/$(basename "$input_uri")"
+    local_index="$input_directory/$(basename "$index_uri")"
+    bcf_samples="$input_directory/chr$chromosome.bcf_samples.txt"
+    local_mask_source="$LOCAL_ROOT/inputs/masks/source/$(basename "$mask_uri")"
+    local_mask="$LOCAL_ROOT/inputs/masks/callable/chr$chromosome.callable.bed"
+    mask_audit="$LOCAL_ROOT/inputs/masks/callable/chr$chromosome.callable.audit.json"
+    status_dir="$LOCAL_ROOT/tmp/jobs/chr$chromosome"
+    rm -rf -- "$status_dir"
+    mkdir -p "$status_dir"
+    launched=0
+    for population in "${POPULATIONS[@]}"; do
+        if (( JOBS <= 1 )); then
+            run_population "$population"
+            continue
+        fi
+        (
+            set +e
+            ( run_population "$population" ) \
+                > "$status_dir/$population.log" 2>&1
+            echo $? > "$status_dir/$population.status"
+        ) &
+        launched=$((launched + 1))
+        if (( launched % JOBS == 0 )); then
+            wait
+        fi
     done
+    if (( JOBS > 1 )); then
+        wait
+        chromosome_failures=()
+        for population in "${POPULATIONS[@]}"; do
+            # run_population already emits its own header into the log.
+            if [[ -s "$status_dir/$population.log" ]]; then
+                cat "$status_dir/$population.log"
+            fi
+            population_status="$(cat "$status_dir/$population.status" 2>/dev/null || echo 1)"
+            [[ "$population_status" == "0" ]] || \
+                chromosome_failures+=("$population(exit $population_status)")
+        done
+        (( ${#chromosome_failures[@]} == 0 )) || die \
+            "chromosome $chromosome failed for: ${chromosome_failures[*]}"
+    fi
 
     if [[ "$KEEP_INPUTS" -eq 0 ]]; then
         rm -f -- "$local_input" "$local_index" "$bcf_samples" \
