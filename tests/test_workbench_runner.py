@@ -46,7 +46,13 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "recent_call=mean" in output
     assert "stride=10000 bp, cache=1000 bp" in output
     assert "100000 random haplotype pairs/pop, seed=1729, exclude_within=0" in output
-    assert "candidates: fraction>0.02, merge_gap=20000 bp" in output
+    # The screen is derived per threshold as 3x its neutral P(T<t); at the
+    # default 10,000-year candidate threshold and 2Ne = 30,000 that is 0.0397.
+    assert (
+        "candidates: threshold=10000 yr, fraction>0.0397, merge_gap=20000 bp"
+    ) in output
+    assert "thresholds=10000 50000 years (candidate: 10000)" in output
+    assert "screens: signal_fraction=0.0397 0.1935" in output
     assert "aou_lr_phase2_v1.chr1.bubble.split.bcf" in output
     assert "ancestry_preds.tsv (column ancestry_pred_other)" in output
     assert "flagged_samples.tsv" in output
@@ -55,8 +61,8 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "mask mode: default (excluded_intervals)" in output
     assert "gencode.v50.basic.annotation.gtf.gz" in output
     assert (
-        "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, zoom_ymax=0.04, "
-        "label_min=0.02"
+        "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, "
+        "zoom_ymax=0.0794 0.3870, label_min=0.0397 0.1935"
     ) in output
 
 
@@ -183,7 +189,9 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
     assert '--gene-annotation "$local_gene_annotation"' in runner
     assert '--gene-label-overrides "$GENE_LABEL_OVERRIDES"' in runner
     assert '--plot-merge-gap "$PLOT_MERGE_GAP"' in runner
-    assert '--hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"' in runner
+    assert '--hit-label-min-fraction "$threshold_label_min"' in runner
+    assert '--all-threshold-years "${THRESHOLD_LIST[@]}"' in runner
+    assert "workbench-split" in runner
     assert "gene_list.tsv" in (repo / "python/gamma_smc_aou/workbench.py").read_text()
     assert (
         "raw_scan_windows.tsv.gz"

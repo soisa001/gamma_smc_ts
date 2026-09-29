@@ -29,9 +29,19 @@ GENE_LABEL_OVERRIDES="${AOU_GAMMA_GENE_LABEL_OVERRIDES:-$REPO/resources/gamma_sm
 THREADS="${AOU_GAMMA_THREADS:-12}"
 THETA="${AOU_GAMMA_THETA:-0.00075}"
 RHO_OVER_THETA="${AOU_GAMMA_RHO_OVER_THETA:-0.8}"
-MUTATION_RATE="${AOU_GAMMA_MUTATION_RATE:-1.29e-8}"
+MUTATION_RATE="${AOU_GAMMA_MUTATION_RATE:-1.25e-8}"
 GENERATION_TIME="${AOU_GAMMA_GENERATION_TIME:-25}"
-THRESHOLD_YEARS="${AOU_GAMMA_THRESHOLD_YEARS:-4500}"
+# One decode evaluates every threshold from the same posteriors. 10,000 years
+# is the EPAS1-like recent-adaptation scale; 50,000 years places the signal at
+# the onset of archaic introgression. At 25 years/generation and
+# 2Ne = theta/(2*mu) = 30,000 their neutral P(T<t) are 1.32% and 6.45%, so each
+# threshold needs its own candidate screen (see SIGNAL_FRACTION below).
+THRESHOLD_YEARS="${AOU_GAMMA_THRESHOLD_YEARS:-10000,50000}"
+# Which threshold drives the per-chromosome candidate replay and the
+# completion contract. Empty means the first decoded threshold. Only one
+# threshold is replayed: the raw-posterior pass is the expensive step and
+# candidate positions are threshold-specific.
+CANDIDATE_THRESHOLD="${AOU_GAMMA_CANDIDATE_THRESHOLD:-}"
 RECENT_CALL="${AOU_GAMMA_RECENT_CALL:-mean}"
 OUTPUT_STRIDE="${AOU_GAMMA_OUTPUT_STRIDE:-10000}"
 CACHE_SIZE="${AOU_GAMMA_CACHE_SIZE:-1000}"
@@ -39,7 +49,13 @@ PAIR_BLOCK="${AOU_GAMMA_PAIR_BLOCK:-256}"
 N_RANDOM_PAIRS="${AOU_GAMMA_N_RANDOM_PAIRS:-100000}"
 PAIRS_SEED="${AOU_GAMMA_PAIRS_SEED:-1729}"
 EXCLUDE_WITHIN=0
-SIGNAL_FRACTION="${AOU_GAMMA_SIGNAL_FRACTION:-0.02}"
+# Per-threshold candidate screen. One value applies to every threshold; a
+# comma list must have one entry per threshold, in the same order. The neutral
+# P(T<t) rises steeply with the threshold, so a single value cannot be right
+# for both defaults: 0.02 sits above the 1.32% neutral mean at 10,000 years but
+# well below the 6.45% mean at 50,000 years, where it would flag essentially
+# every window. Calibrate these from a chr1 pilot rather than trusting them.
+SIGNAL_FRACTION="${AOU_GAMMA_SIGNAL_FRACTION:-}"
 MERGE_GAP="${AOU_GAMMA_MERGE_GAP:-20000}"
 PROFILE_HALF_WIDTH="${AOU_GAMMA_PROFILE_HALF_WIDTH:-500000}"
 VARIANT_HALF_WIDTH="${AOU_GAMMA_VARIANT_HALF_WIDTH:-100000}"
@@ -49,8 +65,13 @@ BACKWARD_ALIGNMENT="${AOU_GAMMA_BACKWARD_ALIGNMENT:-fixed}"
 TOP_N="${AOU_GAMMA_TOP_N:-100}"
 PLOT_MERGE_GAP="${AOU_GAMMA_PLOT_MERGE_GAP:-${AOU_GAMMA_HIT_BIN_SIZE:-1000000}}"
 GENE_CONTEXT_FLANK="${AOU_GAMMA_GENE_CONTEXT_FLANK:-500000}"
-ZOOM_YMAX="${AOU_GAMMA_ZOOM_YMAX:-0.04}"
-HIT_LABEL_MIN_FRACTION="${AOU_GAMMA_HIT_LABEL_MIN_FRACTION:-0.02}"
+# Per-threshold, same broadcast rule as SIGNAL_FRACTION. The detail figure
+# clips at this ceiling, so it has to sit above the threshold's neutral mean
+# or every point is clipped.
+ZOOM_YMAX="${AOU_GAMMA_ZOOM_YMAX:-}"
+# Per-threshold, same broadcast rule as SIGNAL_FRACTION. Defaults to the
+# threshold's own candidate screen when left empty.
+HIT_LABEL_MIN_FRACTION="${AOU_GAMMA_HIT_LABEL_MIN_FRACTION:-}"
 MASK_ENABLED=1
 UPLOAD=1
 KEEP_INPUTS=0
@@ -98,9 +119,15 @@ Decoder parameters:
   --threads N               Default: 12
   --theta X                 Default: 0.00075
   --rho-over-theta X        Default: 0.8
-  --mutation-rate X         Default: 1.29e-8
+  --mutation-rate X         Default: 1.25e-8
   --generation-time X       Default: 25
-  --threshold-years X       Default: 4500
+  --threshold-years LIST    Up to 5 comma-separated thresholds in years,
+                            all evaluated from one decode. The first is
+                            aliased to mean_p_tmrca_lt_threshold.
+                            Default: 10000,50000
+  --candidate-threshold X   Which threshold drives the per-chromosome
+                            candidate replay and completion contract;
+                            default: the first threshold
   --recent-call RULE        Default: mean (mean or median)
   --output-at-stride N      Default: 10000 bp
   --cache-size N            Default: 1000 bp
@@ -113,12 +140,20 @@ Decoder parameters:
                             default: 1000000 bp
   --hit-bin-size N          Deprecated alias for --plot-merge-gap
   --gene-context-flank N    List protein-coding genes within +/-500000 bp
-  --zoom-ymax X             Separate genome plot y ceiling; default: 0.04
-  --hit-label-min-fraction X
-                            Label candidate peaks strictly above X; default: 0.02
+  --zoom-ymax LIST          Separate genome plot y ceiling, per threshold
+                            (one value, or one per threshold);
+                            default: 2x --signal-fraction
+  --hit-label-min-fraction LIST
+                            Label candidate peaks strictly above X, per
+                            threshold; default: the threshold's own
+                            --signal-fraction
 
 Candidate analysis:
-  --signal-fraction X       Strict screen threshold; default: 0.02
+  --signal-fraction LIST    Strict screen threshold, per threshold (one
+                            value, or one per threshold). Default: 3x the
+                            threshold's neutral P(T<t), which is 1.32% at
+                            10000 yr and 6.45% at 50000 yr on the default
+                            time scale
   --merge-gap N             Merge signal-window gaps up to 20000 bp
   --profile-half-width N    Pair-TMRCA profile +/-500000 bp around each peak
   --variant-half-width N    Rank variants +/-100000 bp around each peak
@@ -180,6 +215,7 @@ while [[ $# -gt 0 ]]; do
         --mutation-rate) need_value "$@"; MUTATION_RATE="$2"; shift 2 ;;
         --generation-time) need_value "$@"; GENERATION_TIME="$2"; shift 2 ;;
         --threshold-years) need_value "$@"; THRESHOLD_YEARS="$2"; shift 2 ;;
+        --candidate-threshold) need_value "$@"; CANDIDATE_THRESHOLD="$2"; shift 2 ;;
         --recent-call) need_value "$@"; RECENT_CALL="${2,,}"; shift 2 ;;
         --output-at-stride) need_value "$@"; OUTPUT_STRIDE="$2"; shift 2 ;;
         --cache-size) need_value "$@"; CACHE_SIZE="$2"; shift 2 ;;
@@ -282,12 +318,143 @@ done
     "PLOT_MERGE_GAP must be a nonnegative integer"
 [[ "$GENE_CONTEXT_FLANK" =~ ^[0-9]+$ ]] || die \
     "GENE_CONTEXT_FLANK must be a nonnegative integer"
-awk -v value="$SIGNAL_FRACTION" 'BEGIN { exit !(value >= 0 && value <= 1) }' || \
-    die "SIGNAL_FRACTION must be in [0,1]"
-awk -v value="$ZOOM_YMAX" 'BEGIN { exit !(value > 0 && value <= 1) }' || \
-    die "ZOOM_YMAX must be in (0,1]"
 [[ "$RECENT_CALL" =~ ^(mean|median)$ ]] || die \
     "--recent-call must be mean or median"
+
+# --- thresholds -----------------------------------------------------------
+# Up to MAX_THRESHOLDS thresholds are decoded in one pass; the extra cost per
+# threshold is one table lookup per pair per position, against a full second
+# decode if they were run separately.
+MAX_THRESHOLDS=5
+declare -a THRESHOLD_LIST=()
+IFS=', ' read -r -a requested_thresholds <<< "$THRESHOLD_YEARS"
+for threshold in "${requested_thresholds[@]}"; do
+    [[ -n "$threshold" ]] || continue
+    [[ "$threshold" =~ ^[0-9]+(\.[0-9]+)?$ ]] || die \
+        "threshold must be a positive number: $threshold"
+    awk -v value="$threshold" 'BEGIN { exit !(value > 0) }' || die \
+        "threshold must be greater than zero: $threshold"
+    # Canonicalize to the decoder's own column suffix so that 10000 and
+    # 10000.0 cannot both be requested and collide on frac_recent_10000.
+    threshold="$(awk -v v="$threshold" 'BEGIN {
+        if (v == int(v)) { printf "%d", v } else { s = sprintf("%.6f", v);
+            sub(/0+$/, "", s); sub(/\.$/, "", s); printf "%s", s }
+    }')"
+    for seen in "${THRESHOLD_LIST[@]}"; do
+        [[ "$seen" != "$threshold" ]] || die \
+            "duplicate threshold after canonicalization: $threshold"
+    done
+    THRESHOLD_LIST+=("$threshold")
+done
+(( ${#THRESHOLD_LIST[@]} >= 1 )) || die \
+    "--threshold-years needs at least one positive value"
+(( ${#THRESHOLD_LIST[@]} <= MAX_THRESHOLDS )) || die \
+    "at most $MAX_THRESHOLDS thresholds are supported; got ${#THRESHOLD_LIST[@]}"
+N_THRESHOLDS="${#THRESHOLD_LIST[@]}"
+
+if [[ -z "$CANDIDATE_THRESHOLD" ]]; then
+    CANDIDATE_THRESHOLD="${THRESHOLD_LIST[0]}"
+else
+    candidate_known=0
+    for threshold in "${THRESHOLD_LIST[@]}"; do
+        [[ "$threshold" != "$CANDIDATE_THRESHOLD" ]] || candidate_known=1
+    done
+    (( candidate_known == 1 )) || die \
+        "--candidate-threshold $CANDIDATE_THRESHOLD is not one of: ${THRESHOLD_LIST[*]}"
+fi
+
+# Expand a scalar to one value per threshold, or validate a supplied list.
+# Usage: broadcast_setting NAME "csv" "lo" "hi"  -> sets the array NAME_LIST
+broadcast_setting() {
+    local name="$1" spec="$2" lo="$3" hi="$4"
+    local -a parsed=()
+    local entry
+    IFS=', ' read -r -a parsed <<< "$spec"
+    local -a cleaned=()
+    for entry in "${parsed[@]}"; do
+        [[ -n "$entry" ]] || continue
+        awk -v value="$entry" -v lo="$lo" -v hi="$hi" \
+            'BEGIN { exit !(value + 0 == value && value >= lo && value <= hi) }' || \
+            die "$name value out of range [$lo,$hi]: $entry"
+        cleaned+=("$entry")
+    done
+    (( ${#cleaned[@]} >= 1 )) || die "$name needs at least one value"
+    if (( ${#cleaned[@]} == 1 )); then
+        local single="${cleaned[0]}"
+        cleaned=()
+        local index
+        for (( index = 0; index < N_THRESHOLDS; index++ )); do
+            cleaned+=("$single")
+        done
+    fi
+    (( ${#cleaned[@]} == N_THRESHOLDS )) || die \
+        "$name needs 1 or $N_THRESHOLDS values, got ${#cleaned[@]}"
+    eval "${name}_LIST=(\"\${cleaned[@]}\")"
+}
+
+# Neutral P(T < t) for a constant-size standard coalescent on the decoder's
+# own time scale, 2Ne = theta / (2*mu) generations. The screens below are
+# anchored to this because the neutral mean rises steeply with the threshold:
+# a fixed fraction that is a sensible screen at 4,500 years sits *below* the
+# neutral mean at 50,000 years, where it would flag nearly every window.
+neutral_recent_fraction() {
+    awk -v years="$1" -v theta="$THETA" -v mu="$MUTATION_RATE" \
+        -v generation="$GENERATION_TIME" 'BEGIN {
+            two_ne = theta / (2 * mu)
+            printf "%.6f", 1 - exp(-(years / generation) / two_ne)
+        }'
+}
+
+declare -a SIGNAL_FRACTION_LIST=()
+declare -a ZOOM_YMAX_LIST=()
+declare -a HIT_LABEL_MIN_FRACTION_LIST=()
+
+# Default screen: three times the threshold's neutral mean. That multiple
+# reproduces the historical 4,500-year default (0.02 against a 0.0060 neutral
+# mean) and extends it to any threshold instead of hardcoding one number.
+# It is a descriptive screen, not a calibrated p-value -- set it from a chr1
+# pilot once the empirical upper tail is known.
+if [[ -n "$SIGNAL_FRACTION" ]]; then
+    broadcast_setting SIGNAL_FRACTION "$SIGNAL_FRACTION" 0 1
+else
+    for threshold in "${THRESHOLD_LIST[@]}"; do
+        SIGNAL_FRACTION_LIST+=("$(awk \
+            -v neutral="$(neutral_recent_fraction "$threshold")" 'BEGIN {
+                value = 3 * neutral
+                if (value > 1) { value = 1 }
+                printf "%.4f", value
+            }')")
+    done
+fi
+
+# Default detail-plot ceiling: twice the screen, matching the historical 0.04
+# against a 0.02 screen. Below the neutral mean every point would clip.
+if [[ -n "$ZOOM_YMAX" ]]; then
+    broadcast_setting ZOOM_YMAX "$ZOOM_YMAX" 0.0000001 1
+else
+    for fraction in "${SIGNAL_FRACTION_LIST[@]}"; do
+        ZOOM_YMAX_LIST+=("$(awk -v value="$fraction" 'BEGIN {
+            value = 2 * value
+            if (value > 1) { value = 1 }
+            printf "%.4f", value
+        }')")
+    done
+fi
+
+if [[ -n "$HIT_LABEL_MIN_FRACTION" ]]; then
+    broadcast_setting HIT_LABEL_MIN_FRACTION "$HIT_LABEL_MIN_FRACTION" 0 1
+else
+    HIT_LABEL_MIN_FRACTION_LIST=("${SIGNAL_FRACTION_LIST[@]}")
+fi
+
+# The candidate replay and the completion contract use the candidate
+# threshold's screen.
+CANDIDATE_SIGNAL_FRACTION="${SIGNAL_FRACTION_LIST[0]}"
+for (( threshold_index = 0; threshold_index < N_THRESHOLDS; threshold_index++ )); do
+    if [[ "${THRESHOLD_LIST[$threshold_index]}" == "$CANDIDATE_THRESHOLD" ]]; then
+        CANDIDATE_SIGNAL_FRACTION="${SIGNAL_FRACTION_LIST[$threshold_index]}"
+    fi
+done
 
 declare -a CHROMOSOMES=()
 if [[ "${CHR_SPEC,,}" == "all" ]]; then
@@ -350,11 +517,12 @@ print_plan() {
     echo "  local root: $LOCAL_ROOT"
     echo "  requester-pays billing project: ${BILLING_PROJECT:-<unset>}"
     echo "  decoder: threads=$THREADS, theta=$THETA, rho/theta=$RHO_OVER_THETA"
-    echo "  statistic: recent_call=$RECENT_CALL, threshold=$THRESHOLD_YEARS years"
+    echo "  statistic: recent_call=$RECENT_CALL, thresholds=${THRESHOLD_LIST[*]} years (candidate: $CANDIDATE_THRESHOLD)"
+    echo "  screens: signal_fraction=${SIGNAL_FRACTION_LIST[*]}"
     echo "  grid/cache: stride=$OUTPUT_STRIDE bp, cache=$CACHE_SIZE bp"
     echo "  pair draw: $N_RANDOM_PAIRS random haplotype pairs/pop, seed=$PAIRS_SEED, exclude_within=$EXCLUDE_WITHIN"
-    echo "  candidates: fraction>$SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
-    echo "  plot labels: top_n=$TOP_N, merge_gap=$PLOT_MERGE_GAP bp (display only), gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=$ZOOM_YMAX, label_min=$HIT_LABEL_MIN_FRACTION"
+    echo "  candidates: threshold=$CANDIDATE_THRESHOLD yr, fraction>$CANDIDATE_SIGNAL_FRACTION, merge_gap=$MERGE_GAP bp, profile=+/-$PROFILE_HALF_WIDTH bp, variants=+/-$VARIANT_HALF_WIDTH bp"
+    echo "  plot labels: top_n=$TOP_N, merge_gap=$PLOT_MERGE_GAP bp (display only), gene_flank=+/-$GENE_CONTEXT_FLANK bp, zoom_ymax=${ZOOM_YMAX_LIST[*]}, label_min=${HIT_LABEL_MIN_FRACTION_LIST[*]}"
     echo "  gene annotation: $GENE_ANNOTATION_URI"
     echo "  ancestry: $ANCESTRY_URI (column ancestry_pred_other)"
     echo "  QC exclusions: $QC_EXCLUSIONS_URI"
@@ -369,7 +537,9 @@ print_plan() {
         for population in "${POPULATIONS[@]}"; do
             echo "  $population output: $OUTPUT_PREFIX/$population/{chromosomes,plots}/"
         done
-        echo "  combined report: $OUTPUT_PREFIX/summary/{scope}/"
+        for threshold in "${THRESHOLD_LIST[@]}"; do
+            echo "  t$threshold statistics/plots/report: $OUTPUT_PREFIX/t$threshold/"
+        done
     fi
 }
 
@@ -801,7 +971,8 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             --rho-over-theta "$RHO_OVER_THETA"
             --mutation-rate "$MUTATION_RATE"
             --generation-time "$GENERATION_TIME"
-            --threshold-years "$THRESHOLD_YEARS"
+            --threshold-years "$CANDIDATE_THRESHOLD"
+            --all-threshold-years "${THRESHOLD_LIST[@]}"
             --recent-call "$RECENT_CALL"
             --output-at-stride "$OUTPUT_STRIDE"
             --cache-size "$CACHE_SIZE"
@@ -809,7 +980,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             --pair-block "$PAIR_BLOCK"
             --n-random-pairs "$N_RANDOM_PAIRS"
             --pairs-seed "$PAIRS_SEED"
-            --signal-fraction "$SIGNAL_FRACTION"
+            --signal-fraction "$CANDIDATE_SIGNAL_FRACTION"
             --merge-gap "$MERGE_GAP"
             --profile-half-width "$PROFILE_HALF_WIDTH"
             --variant-half-width "$VARIANT_HALF_WIDTH"
@@ -985,7 +1156,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             --rho-over-theta "$RHO_OVER_THETA"
             --mutation-rate "$MUTATION_RATE"
             --generation-time "$GENERATION_TIME"
-            --threshold-years "$THRESHOLD_YEARS"
+            --threshold-years "${THRESHOLD_LIST[@]}"
             --recent-call "$RECENT_CALL"
             --no-output-at-hets
             --output-at-stride "$OUTPUT_STRIDE"
@@ -1018,8 +1189,8 @@ for chromosome in "${CHROMOSOMES[@]}"; do
             --sequence-length "$sequence_length" \
             --output "$candidate_regions" \
             --positions-output "$candidate_positions" \
-            --threshold-years "$THRESHOLD_YEARS" \
-            --minimum-fraction "$SIGNAL_FRACTION" \
+            --threshold-years "$CANDIDATE_THRESHOLD" \
+            --minimum-fraction "$CANDIDATE_SIGNAL_FRACTION" \
             --merge-gap "$MERGE_GAP" \
             --output-at-stride "$OUTPUT_STRIDE" \
             --profile-half-width "$PROFILE_HALF_WIDTH"
@@ -1040,7 +1211,7 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 --rho-over-theta "$RHO_OVER_THETA"
                 --mutation-rate "$MUTATION_RATE"
                 --generation-time "$GENERATION_TIME"
-                --threshold-years "$THRESHOLD_YEARS"
+                --threshold-years "${THRESHOLD_LIST[@]}"
                 --recent-call "$RECENT_CALL"
                 --no-output-at-hets
                 --output-at-stride -1
@@ -1070,11 +1241,11 @@ for chromosome in "${CHROMOSOMES[@]}"; do
                 --contig "$input_contig" \
                 --output-dir "$candidate_directory" \
                 --mutation-rate "$MUTATION_RATE" \
-                --threshold-years "$THRESHOLD_YEARS" \
+                --threshold-years "$CANDIDATE_THRESHOLD" \
                 --profile-half-width "$PROFILE_HALF_WIDTH" \
                 --variant-half-width "$VARIANT_HALF_WIDTH" \
                 --minimum-genotype-pairs "$MIN_GENOTYPE_PAIRS" \
-                --minimum-fraction "$SIGNAL_FRACTION" \
+                --minimum-fraction "$CANDIDATE_SIGNAL_FRACTION" \
                 --merge-gap "$MERGE_GAP"
             rm -f -- "$candidate_raw" "${candidate_raw}.meta"
         else
@@ -1110,66 +1281,101 @@ else
     plot_scope="${plot_scope%_}"
 fi
 
-for population in "${POPULATIONS[@]}"; do
-    population_summary_dir="$LOCAL_ROOT/results/$population/chromosomes"
-    population_plot_dir="$LOCAL_ROOT/results/$population/plots/$plot_scope"
-    mkdir -p "$population_plot_dir"
-    plot_args=(
-        workbench-plot
-        --population "$population"
-        --summary-dir "$population_summary_dir"
+# Every threshold was evaluated from the same decode. Each one now gets its
+# own self-contained scan summary, population plots, and combined report under
+# results_t<threshold>/, so the per-threshold statistics never have to be
+# picked back out of the multi-threshold file by hand.
+#
+# The headline statistic in these outputs is frac_recent_<threshold>: the
+# fraction of sampled pairs whose posterior-mean TMRCA falls below the
+# threshold, which is the Gamma-SMC paper's statistic under --recent-call mean.
+# mean_p_lt_<threshold> (the averaged posterior CDF) travels alongside it.
+for (( threshold_index = 0; threshold_index < N_THRESHOLDS; threshold_index++ )); do
+    threshold="${THRESHOLD_LIST[$threshold_index]}"
+    threshold_signal="${SIGNAL_FRACTION_LIST[$threshold_index]}"
+    threshold_zoom="${ZOOM_YMAX_LIST[$threshold_index]}"
+    threshold_label_min="${HIT_LABEL_MIN_FRACTION_LIST[$threshold_index]}"
+    threshold_root="$LOCAL_ROOT/results_t$threshold"
+    threshold_remote="$OUTPUT_PREFIX/t$threshold"
+
+    echo
+    echo "=== Threshold $threshold years (screen >$threshold_signal) ==="
+
+    for population in "${POPULATIONS[@]}"; do
+        population_summary_dir="$LOCAL_ROOT/results/$population/chromosomes"
+        threshold_summary_dir="$threshold_root/$population/chromosomes"
+        mkdir -p "$threshold_summary_dir"
+        for chromosome in "${CHROMOSOMES[@]}"; do
+            "$AOU" workbench-split \
+                --summary "$population_summary_dir/chr$chromosome.gamma_smc.tsv" \
+                --threshold-years "$threshold" \
+                --output "$threshold_summary_dir/chr$chromosome.gamma_smc.tsv" \
+                >/dev/null
+        done
+
+        population_plot_dir="$threshold_root/$population/plots/$plot_scope"
+        mkdir -p "$population_plot_dir"
+        plot_args=(
+            workbench-plot
+            --population "$population"
+            --summary-dir "$threshold_summary_dir"
+            --chromosomes "${CHROMOSOMES[@]}"
+            --output-dir "$population_plot_dir"
+            --threshold-years "$threshold"
+            --top-n "$TOP_N"
+            --signal-fraction "$threshold_signal"
+        )
+        if [[ "${CHR_SPEC,,}" == "all" ]]; then
+            plot_args+=(--whole-genome)
+        fi
+        "$AOU" "${plot_args[@]}"
+
+        if [[ "$UPLOAD" -eq 1 ]]; then
+            remote_plot_dir="$threshold_remote/$population/plots/$plot_scope"
+            rsync_directory "$population_plot_dir" "$remote_plot_dir" \
+                --exclude='^plot_manifest[.]json$'
+            # The manifest commits the complete plot artifact set.
+            rsync_single_file "$population_plot_dir/plot_manifest.json" \
+                "$remote_plot_dir"
+            rsync_directory "$threshold_summary_dir" \
+                "$threshold_remote/$population/chromosomes"
+        fi
+    done
+
+    report_dir="$threshold_root/summary/$plot_scope"
+    report_args=(
+        workbench-report
+        --results-root "$threshold_root"
+        --populations "${POPULATIONS[@]}"
         --chromosomes "${CHROMOSOMES[@]}"
-        --output-dir "$population_plot_dir"
-        --threshold-years "$THRESHOLD_YEARS"
+        --output-dir "$report_dir"
+        --threshold-years "$threshold"
+        --signal-fraction "$threshold_signal"
+        --merge-gap "$MERGE_GAP"
         --top-n "$TOP_N"
-        --signal-fraction "$SIGNAL_FRACTION"
+        --gene-annotation "$local_gene_annotation"
+        --gene-label-overrides "$GENE_LABEL_OVERRIDES"
+        --plot-merge-gap "$PLOT_MERGE_GAP"
+        --gene-context-flank "$GENE_CONTEXT_FLANK"
+        --zoom-ymax "$threshold_zoom"
+        --hit-label-min-fraction "$threshold_label_min"
     )
     if [[ "${CHR_SPEC,,}" == "all" ]]; then
-        plot_args+=(--whole-genome)
+        report_args+=(--whole-genome)
     fi
-    "$AOU" "${plot_args[@]}"
+    "$AOU" "${report_args[@]}"
 
     if [[ "$UPLOAD" -eq 1 ]]; then
-        remote_plot_dir="$OUTPUT_PREFIX/$population/plots/$plot_scope"
-        rsync_directory "$population_plot_dir" "$remote_plot_dir" \
-            --exclude='^plot_manifest\.json$'
-        # The manifest commits the complete plot artifact set.
-        rsync_single_file "$population_plot_dir/plot_manifest.json" \
-            "$remote_plot_dir"
+        remote_report_dir="$threshold_remote/summary/$plot_scope"
+        rsync_directory "$report_dir" "$remote_report_dir" \
+            --exclude='^run_report_manifest[.]json$'
+        # The report manifest is synchronized only after all report artifacts.
+        rsync_single_file "$report_dir/run_report_manifest.json" \
+            "$remote_report_dir"
     fi
 done
 
-report_dir="$LOCAL_ROOT/results/summary/$plot_scope"
-report_args=(
-    workbench-report
-    --results-root "$LOCAL_ROOT/results"
-    --populations "${POPULATIONS[@]}"
-    --chromosomes "${CHROMOSOMES[@]}"
-    --output-dir "$report_dir"
-    --threshold-years "$THRESHOLD_YEARS"
-    --signal-fraction "$SIGNAL_FRACTION"
-    --merge-gap "$MERGE_GAP"
-    --top-n "$TOP_N"
-    --gene-annotation "$local_gene_annotation"
-    --gene-label-overrides "$GENE_LABEL_OVERRIDES"
-    --plot-merge-gap "$PLOT_MERGE_GAP"
-    --gene-context-flank "$GENE_CONTEXT_FLANK"
-    --zoom-ymax "$ZOOM_YMAX"
-    --hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"
-)
-if [[ "${CHR_SPEC,,}" == "all" ]]; then
-    report_args+=(--whole-genome)
-fi
-"$AOU" "${report_args[@]}"
-
-if [[ "$UPLOAD" -eq 1 ]]; then
-    remote_report_dir="$OUTPUT_PREFIX/summary/$plot_scope"
-    rsync_directory "$report_dir" "$remote_report_dir" \
-        --exclude='^run_report_manifest\.json$'
-    # The report manifest is synchronized only after all report artifacts.
-    rsync_single_file "$report_dir/run_report_manifest.json" \
-        "$remote_report_dir"
-fi
-
 echo
-echo "All requested Gamma-SMC scans, population plots, and the combined report are complete."
+echo "Gamma-SMC scan complete for thresholds: ${THRESHOLD_LIST[*]} years."
+echo "Per-threshold statistics, plots, and reports: $LOCAL_ROOT/results_t<threshold>/"
+echo "Decode artifacts and the $CANDIDATE_THRESHOLD-year candidate analysis: $LOCAL_ROOT/results/"

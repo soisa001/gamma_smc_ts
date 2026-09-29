@@ -144,7 +144,52 @@ For each chromosome, the output directory receives:
 - `chrN.decode.log`: wall-time and peak-memory log;
 - `chrN.complete.json`: input fingerprints, provenance commit, exact settings,
   and SHA-256 hashes for required outputs, sample list/audit, pair manifest, and
-  callable mask.
+  callable mask. It records both the candidate threshold and the full decoded
+  threshold list, so adding or removing a threshold invalidates the cached
+  decode rather than silently reusing one that lacks the new column.
+
+## Per-threshold outputs
+
+Every threshold is evaluated from the same decode: the cost of an extra
+threshold is one table lookup per pair per position plus one bit per
+pair/position, against a full second decode if they were run separately. The
+per-chromosome artifacts above therefore hold every threshold's columns at
+once.
+
+Each threshold then gets its own self-contained tree, locally under
+`results_t<threshold>/` and in GCS under `<output-prefix>/t<threshold>/`:
+
+- `{POP}/chromosomes/chrN.gamma_smc.tsv`: the single-threshold view of the
+  scan. It keeps the historical five-column prefix, and
+  `mean_p_tmrca_lt_threshold` is rewritten to *this* threshold's mean
+  probability. The combined file aliases that column to the first threshold
+  only, so reading the combined file for any later threshold would report the
+  first threshold's soft probability under the wrong label.
+- `{POP}/plots/{scope}/`: this threshold's chromosome and whole-genome scans.
+- `summary/{scope}/`: this threshold's combined report, candidate loci and
+  gene labels.
+
+The headline statistic in these outputs is `frac_recent_<threshold>`: the
+fraction of sampled pairs whose **posterior-mean TMRCA** is below the
+threshold, which is the Gamma-SMC paper's statistic under the default
+`--recent-call mean`. The averaged posterior CDF, `mean_p_lt_<threshold>`,
+travels alongside it in every file but does not drive the screen or the plots.
+
+The expensive raw-posterior candidate replay runs for **one** threshold only,
+since candidate positions are threshold-specific. That is the first threshold
+unless `--candidate-threshold` selects another, and it is the threshold
+recorded in the completion contract.
+
+`--signal-fraction`, `--zoom-ymax` and `--hit-label-min-fraction` each accept
+either one value, applied to every threshold, or one value per threshold in
+the same order. Left unset, the screen defaults to three times that
+threshold's neutral `P(T<t)` — the multiple that reproduces the historical
+4,500-year default of 0.02 — and the plot ceiling to twice the screen. A
+single fixed fraction cannot serve both defaults: 0.02 sits above the 1.32%
+neutral mean at 10,000 years but well below the 6.45% mean at 50,000 years,
+where it would flag essentially every window and send the candidate replay
+genome-wide. These are descriptive screens, not calibrated p-values; set them
+from a chr1 pilot once the empirical upper tail is known.
 
 Completed chromosome trees are uploaded with checksum-based `gcloud storage
 rsync`, so reruns scan but do not recopy unchanged objects. Candidate artifacts
@@ -244,15 +289,16 @@ drawn for candidate regions.
 | decoder threads | 12 |
 | posterior call rule | `mean` |
 | output stride | 10,000 bp |
-| mutation rate | `1.29e-8` |
+| mutation rate | `1.25e-8` |
 | transition cache | 1,000 bp |
 | scaled mutation rate (`theta`) | `0.00075` |
 | recombination/theta ratio | `0.8` |
-| recent threshold | 4,500 years |
+| recent thresholds | 10,000 and 50,000 years (up to 5, one decode) |
+| candidate threshold | the first threshold |
 | generation time | 25 years |
 | pair mode | 100,000 distinct unordered haplotype pairs per population |
 | pair seed | `1729` |
-| signal screen | `frac_recent_4500 > 0.02` (configurable) |
+| signal screen | `frac_recent_<t> >` 3x that threshold's neutral P(T<t) (configurable) |
 | signal merge gap | 20,000 bp |
 | candidate profile | peak +/-500,000 bp |
 | variant search | peak +/-100,000 bp |

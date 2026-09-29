@@ -9,8 +9,17 @@ summary reports
 
 `mean_p_tmrca_lt_threshold = mean_i P(T_i < threshold | sequence data)`.
 
-The default threshold is 4,500 years, which is 180 generations at the default
-25 years/generation.
+The default thresholds are 10,000 and 50,000 years, which are 400 and 2,000
+generations at the default 25 years/generation. 10,000 years is the
+EPAS1-like recent-adaptation scale; 50,000 years places the signal at the
+onset of archaic introgression. Up to five thresholds are evaluated from a
+single decode, and each one gets its own statistics file, plots and report.
+The first threshold is the one aliased to `mean_p_tmrca_lt_threshold`.
+
+Their neutral expectations differ by a factor of five, so their candidate
+screens are not interchangeable. On the default time scale
+(`2Ne = theta/(2*mu) = 30,000` generations), `1 - exp(-(t/g)/2Ne)` is 1.32%
+at 10,000 years against 6.45% at 50,000 years.
 The Gamma posterior CDF is used, not a hard threshold of posterior mean TMRCA.
 The summary also contains mean posterior TMRCA in generations. Indels and SVs
 are intentionally excluded from inference and can be joined back by genomic
@@ -52,12 +61,12 @@ per-population chromosome/whole-genome plots, use
 [`WORKBENCH_RUNNER.md`](WORKBENCH_RUNNER.md). The Workbench runner defaults to
 restart-safe per-population reports plus a combined population figure, and to
 12 decoder threads, the posterior-mean call rule, a 10 kb output stride, a 1 kb
-transition cache, and mutation rate `1.29e-8`.
+transition cache, and mutation rate `1.25e-8`.
 
 Run one pair for every diploid. `theta` is the Gamma-SMC scaled mutation rate;
 `mu` is needed to convert its coalescent time scale back to generations.
-The requested defaults are `theta=0.00075` and `mu=1.29e-8`, which imply
-`2Ne = theta/(2*mu) = 29,070` generations. Confirm that time scale for the
+The requested defaults are `theta=0.00075` and `mu=1.25e-8`, which imply
+`2Ne = theta/(2*mu) = 30,000` generations. Confirm that time scale for the
 empirical analysis; the matched simulation study instead derives theta as
 `4*Ne*mu`, so its decoder and simulation are internally consistent.
 
@@ -66,7 +75,7 @@ gamma-smc-aou decode \
   --executable bin/gamma_smc \
   --input AFR.phased.bcf --input-format vcf \
   --output AFR.within.tsv \
-  --theta 0.00075 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
+  --theta 0.00075 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
   --recent-call mean --no-output-at-hets --output-at-stride 10000 \
   --threads 12 --cache-size 1000
 ```
@@ -95,7 +104,7 @@ at every heterozygous site, and uses `--output_at_stride 10000`:
 ```bash
 scripts/aou.sh decode-container \
   --input AFR.phased.vcf.gz --output AFR.within.stride10000.tsv \
-  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
+  --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
   --generation-time 25 --threshold-years 4500 --output-at-stride 10000
 ```
 
@@ -175,7 +184,7 @@ for chrom in $(seq 1 22); do
     --input AFR.chr${chrom}.phased.bcf --input-format vcf \
     --output scan/chr${chrom}.tsv \
     --bitmatrix scan/chr${chrom}.bits \
-    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.29e-8 \
+    --theta 0.0005 --rho-over-theta 0.8 --mutation-rate 1.25e-8 \
     --generation-time 25 --threshold-years 4500 10000 \
     --no-output-at-hets --output-at-stride 10000 \
     --n-random-pairs 100000 --pairs-seed 1729 \
@@ -392,8 +401,15 @@ will limit 32 threads.
 Budget the bit matrix from its raw size, not the compressed size in the
 benchmark: a neutral simulation has almost no recent coalescence, so its bits
 are nearly all zero and compress ~220x, which real data will not. Raw is
-`n_pairs x n_positions x n_thresholds / 8` — 6.2 GB for chr1 and 77.5 GB
-genome-wide at 100,000 pairs and two thresholds.
+`n_pairs x n_positions x n_thresholds / 8`. At 100,000 pairs, the 10 kb stride
+and two thresholds that is **0.62 GB for chr1** (24,896 output positions) and
+**7.8 GB genome-wide** (310,000 positions). Per added threshold, add half of
+those figures.
+
+Compression falls off as the threshold rises, because the bits stop being
+mostly zero: the neutral fraction set is `1 - exp(-(t/g)/2Ne)`, which is 0.60%
+at 4,500 years but 6.4% at 50,000 years on the default time scale. Size the
+disk from the raw figure above and treat any compression as headroom.
 
 ### Output agreement
 
@@ -506,11 +522,11 @@ Only three things, since the rates now have reference defaults:
 |---|---|---|
 | `--input_format` | `auto` | required for `/dev/stdin` |
 | `--allow_unphased` | off | not recommended for haplotype scans |
-| `--recent_threshold_years` | `4500` | comma-separated for several |
-| `--generation_time` | `25` | 4500 years = 180 generations |
+| `--recent_threshold_years` | `10000,50000` | comma-separated, up to 5 |
+| `--generation_time` | `25` | 10,000 years = 400 generations |
 | `--scaled_mutation_rate` / `-m` | `0.00075` | the paper's value; fixed, not per-file |
 | `--scaled_recombination_rate` / `-r` | `0.0006` | rho/theta = 0.8 |
-| `--unscaled_mutation_rate` | `1.29e-8` | requested project default; with theta 0.00075 gives 2Ne = 29,070 generations |
+| `--unscaled_mutation_rate` | `1.25e-8` | requested project default; with theta 0.00075 gives 2Ne = 30,000 generations |
 | `--estimate_mutation_rate` | off | estimating theta rescales the time axis per file |
 | `--recent_call` | `median` | `median`, `mean`, or `prob` |
 | `--recent_call_probability` | `0.5` | only read by `--recent_call prob` |
@@ -591,7 +607,7 @@ not used. A constant demography is the baseline:
 ```bash
 gamma-smc-aou simulate --output-dir sims/AFR/region_001 \
   --replicates 1000 --diploids 2000 --length 1000000 \
-  --ne 10000 --mutation-rate 1.29e-8 --recombination-rate 1e-8 \
+  --ne 10000 --mutation-rate 1.25e-8 --recombination-rate 1e-8 \
   --save-trees --seed 1729 --workers 20
 ```
 

@@ -731,14 +731,35 @@ class CachedPairwiseGammaSMC {
     // Output
     // ----------------------------------------------------------------------
 
+    // Canonical column suffix for a threshold. Integral thresholds print as
+    // plain integers; anything else prints fixed to six decimals with trailing
+    // zeros stripped. Never scientific notation.
+    //
+    // This used to fall through to the stream's default formatting, which is
+    // %g at six *significant* digits. That diverged from the Python readers
+    // (bitmatrix._format_threshold, workbench.threshold_suffix), which use the
+    // full decimal value: 1234567.5 was written as "1.23457e+06" here and
+    // looked up as "1234567.5" there, so the reader missed a column the
+    // decoder had written. %g is also lossy enough to collide -- 1234567.1 and
+    // 1234567.2 both render as "1.23457e+06", which would have given two
+    // distinct thresholds the same column name. Keep this in step with the two
+    // Python implementations.
     static string format_threshold(double years) {
         std::ostringstream stream;
         if (years == std::floor(years) && std::fabs(years) < 1e15) {
             stream << (long long) years;
-        } else {
-            stream << years;
+            return stream.str();
         }
-        return stream.str();
+        stream << std::fixed << std::setprecision(6) << years;
+        string text = stream.str();
+        const size_t last_significant = text.find_last_not_of('0');
+        if (last_significant == string::npos) {
+            return text;
+        }
+        const size_t end = (text[last_significant] == '.')
+            ? last_significant
+            : last_significant + 1;
+        return text.substr(0, end);
     }
 
     void output_raw_header() {

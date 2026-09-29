@@ -224,5 +224,15 @@ def to_frame(
 
 
 def _format_threshold(years: float) -> str:
-    """Match the C++ column suffix: integral thresholds print without a point."""
-    return str(int(years)) if float(years).is_integer() else str(years)
+    """Match the C++ column suffix exactly.
+
+    Integral thresholds print without a point; anything else prints fixed to
+    six decimals with trailing zeros stripped, never in scientific notation.
+    Kept identical to ``format_threshold`` in ``src/gamma_smc.h`` and to
+    ``workbench.threshold_suffix`` so a bit-matrix recount lines up with the
+    decoder's own summary columns.
+    """
+    value = float(years)
+    if value.is_integer() and abs(value) < 1e15:
+        return str(int(value))
+    return f"{value:.6f}".rstrip("0").rstrip(".")
