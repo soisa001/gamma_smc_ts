@@ -24,7 +24,7 @@ MASK_TEMPLATE="${AOU_GAMMA_MASK_TEMPLATE:-}"
 ANCESTRY_URI="${AOU_GAMMA_ANCESTRY_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/ancestry/ancestry_preds.tsv}"
 QC_EXCLUSIONS_URI="${AOU_GAMMA_QC_EXCLUSIONS_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/qc/flagged_samples.tsv}"
 RELATEDNESS_EXCLUSIONS_URI="${AOU_GAMMA_RELATEDNESS_EXCLUSIONS_URI:-gs://vwb-aou-datasets-controlled/v9/wgs/short_read/snpindel/aux/relatedness/relatedness_flagged_samples.tsv}"
-GENE_ANNOTATION_URI="${AOU_GAMMA_GENE_ANNOTATION_URI:-https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_50/gencode.v50.basic.annotation.gtf.gz}"
+GENE_ANNOTATION_URI="${AOU_GAMMA_GENE_ANNOTATION_URI:-https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.refGene.gtf.gz}"
 GENE_LABEL_OVERRIDES="${AOU_GAMMA_GENE_LABEL_OVERRIDES:-$REPO/resources/gamma_smc_2pct_gene_label_overrides.tsv}"
 THREADS="${AOU_GAMMA_THREADS:-12}"
 THETA="${AOU_GAMMA_THETA:-0.00075}"
@@ -114,7 +114,7 @@ Cloud and local paths:
   --qc-exclusions-uri URI   Default: v9 QC flagged_samples.tsv
   --relatedness-exclusions-uri URI
                             Default: v9 relatedness_flagged_samples.tsv
-  --gene-annotation-uri URI Default: GENCODE v50 basic GRCh38 GTF
+  --gene-annotation-uri URI Default: UCSC refGene GTF for hg38
   --gene-label-overrides PATH
                             Curated population/GRCh38 plot-label overrides;
                             default: resources/gamma_smc_2pct_gene_label_overrides.tsv
@@ -685,7 +685,7 @@ stage_gene_annotation() {
             return 0
         fi
         command -v curl >/dev/null 2>&1 || die \
-            "curl is required to stage the GENCODE gene annotation"
+            "curl is required to stage the refGene gene annotation"
         mkdir -p "$(dirname "$destination")"
         rm -f -- "$temporary"
         echo "Staging $uri"

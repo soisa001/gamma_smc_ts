@@ -90,7 +90,7 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "relatedness_flagged_samples.tsv" in output
     assert "hardmask.hg38.v4.over99.bed" in output
     assert "mask mode: default (excluded_intervals)" in output
-    assert "gencode.v50.basic.annotation.gtf.gz" in output
+    assert "hg38.refGene.gtf.gz" in output
     assert (
         "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, "
         "zoom_ymax=0.0794 0.3870, label_min=0.0397 0.1935"

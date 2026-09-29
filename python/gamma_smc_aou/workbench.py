@@ -2200,8 +2200,22 @@ def _gtf_attributes(value: str) -> dict[str, str]:
     return attributes
 
 
+# A refGene symbol can carry transcripts at two unrelated loci on one
+# chromosome. Taking the union there would invent a gene spanning the gap, so
+# above this width the longest single transcript is used instead. The widest
+# real human genes are around 2.3 Mb (CNTNAP2, DMD).
+MAX_GENE_SPAN_BP = 3_000_000
+
+
 def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
-    """Read GRCh38 GENCODE GTF genes into 0-based half-open coordinates."""
+    """Read a UCSC refGene GTF into 0-based half-open gene spans.
+
+    refGene is a transcript-level track: it has no ``gene`` feature and no
+    ``gene_type``, and its ``gene_id`` is already a gene symbol rather than an
+    accession. Protein-coding is therefore ``transcript_id`` beginning ``NM_``
+    (``NR_`` is non-coding RNA), and a gene's span is the union of its coding
+    transcripts.
+    """
     path = Path(path)
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"gene annotation is absent or empty: {path}")
@@ -2216,7 +2230,7 @@ def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
             if not line or line.startswith("#"):
                 continue
             fields = line.rstrip("\n").split("\t")
-            if len(fields) != 9 or fields[2] != "gene":
+            if len(fields) != 9 or fields[2] != "transcript":
                 continue
             chromosome_label = fields[0].removeprefix("chr")
             if not chromosome_label.isdigit():
@@ -2225,29 +2239,76 @@ def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
             if chromosome not in AUTOSOMES:
                 continue
             attributes = _gtf_attributes(fields[8])
-            gene_type = attributes.get("gene_type", attributes.get("gene_biotype", ""))
-            if gene_type != "protein_coding":
+            transcript = attributes.get("transcript_id", "")
+            if not transcript.startswith("NM_"):
                 continue
-            gene_name = attributes.get("gene_name")
-            gene_id = attributes.get("gene_id")
-            if not gene_name or not gene_id:
+            symbol = attributes.get("gene_name") or attributes.get("gene_id")
+            if not symbol:
                 continue
             rows.append(
                 {
                     "chromosome": chromosome,
                     "gene_start_0based": int(fields[3]) - 1,
                     "gene_end_0based_exclusive": int(fields[4]),
-                    "gene_name": gene_name,
-                    "gene_id": gene_id,
-                    "gene_type": gene_type,
+                    "gene_name": symbol,
                 }
             )
-    genes = pd.DataFrame(rows)
-    if genes.empty:
+    transcripts = pd.DataFrame(rows)
+    if transcripts.empty:
         raise ValueError("gene annotation contains no autosomal protein-coding genes")
+
+    grouped = transcripts.groupby(["chromosome", "gene_name"], sort=False)
+    genes = grouped.agg(
+        gene_start_0based=("gene_start_0based", "min"),
+        gene_end_0based_exclusive=("gene_end_0based_exclusive", "max"),
+    ).reset_index()
+
+    # Symbols whose union is implausibly wide sit at two loci; keep their
+    # longest single transcript rather than the span bridging both.
+    oversized = genes.loc[
+        genes["gene_end_0based_exclusive"] - genes["gene_start_0based"]
+        > MAX_GENE_SPAN_BP,
+        ["chromosome", "gene_name"],
+    ]
+    if not oversized.empty:
+        keys = set(map(tuple, oversized.to_numpy()))
+        split = transcripts.loc[
+            [tuple(row) in keys for row in
+             transcripts[["chromosome", "gene_name"]].to_numpy()]
+        ].copy()
+        split["span"] = (
+            split["gene_end_0based_exclusive"] - split["gene_start_0based"]
+        )
+        longest = (
+            split.sort_values("span", ascending=False)
+            .drop_duplicates(["chromosome", "gene_name"], keep="first")
+            .drop(columns="span")
+        )
+        genes = pd.concat(
+            [
+                genes.loc[
+                    [tuple(row) not in keys for row in
+                     genes[["chromosome", "gene_name"]].to_numpy()]
+                ],
+                longest,
+            ],
+            ignore_index=True,
+        )
+
+    genes["gene_id"] = genes["gene_name"]
+    genes["gene_type"] = "protein_coding"
     if genes.duplicated(["gene_id", "chromosome"]).any():
         raise ValueError("gene annotation contains duplicate autosomal gene records")
-    return genes.sort_values(
+    return genes[
+        [
+            "chromosome",
+            "gene_start_0based",
+            "gene_end_0based_exclusive",
+            "gene_name",
+            "gene_id",
+            "gene_type",
+        ]
+    ].sort_values(
         ["chromosome", "gene_start_0based", "gene_end_0based_exclusive", "gene_name"]
     ).reset_index(drop=True)
 

@@ -685,12 +685,12 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
                 chromosome_root / f"chr{chromosome}.gamma_smc.tsv", chromosome
             )
 
-    gene_annotation = tmp_path / "gencode.test.gtf"
+    gene_annotation = tmp_path / "refGene.test.gtf"
     gene_annotation.write_text(
-        "##description: test GRCh38 annotation\n"
+        "##description: test GRCh38 refGene annotation\n"
         + "".join(
-            f"chr{chromosome}\ttest\tgene\t1\t50000\t.\t+\t.\t"
-            f'gene_id "ENSG{chromosome:011d}.1"; gene_type "protein_coding"; '
+            f"chr{chromosome}\trefGene\ttranscript\t1\t50000\t.\t+\t.\t"
+            f'gene_id "GENE{chromosome}"; transcript_id "NM_{chromosome:06d}"; '
             f'gene_name "GENE{chromosome}";\n'
             for chromosome in workbench.AUTOSOMES
         ),
@@ -821,8 +821,8 @@ def test_workbench_run_report_counts_regions_and_is_idempotent(tmp_path, monkeyp
 def test_candidate_plot_loci_keep_every_region_before_readability_merge(tmp_path):
     annotation = tmp_path / "genes.gtf"
     annotation.write_text(
-        "chr5\ttest\tgene\t1\t2000\t.\t+\t.\t"
-        'gene_id "ENSG5.1"; gene_type "protein_coding"; gene_name "GENE5";\n',
+        "chr5\trefGene\ttranscript\t1\t2000\t.\t+\t.\t"
+        'gene_id "GENE5"; transcript_id "NM_000005"; gene_name "GENE5";\n',
         encoding="utf-8",
     )
     genes = workbench._load_protein_coding_genes(annotation)
@@ -898,10 +898,10 @@ def test_bundled_gene_label_overrides_are_valid_and_complete():
 def test_ranked_gene_list_merges_top_windows_with_at_most_one_megabase_gap(tmp_path):
     annotation = tmp_path / "genes.gtf"
     annotation.write_text(
-        "chr1\ttest\tgene\t1500001\t1600000\t.\t+\t.\t"
-        'gene_id "ENSG1.1"; gene_type "protein_coding"; gene_name "GENE_A";\n'
-        "chr1\ttest\tgene\t5400001\t5500000\t.\t+\t.\t"
-        'gene_id "ENSG2.1"; gene_type "protein_coding"; gene_name "GENE_B";\n',
+        "chr1\trefGene\ttranscript\t1500001\t1600000\t.\t+\t.\t"
+        'gene_id "GENE_A"; transcript_id "NM_000001"; gene_name "GENE_A";\n'
+        "chr1\trefGene\ttranscript\t5400001\t5500000\t.\t+\t.\t"
+        'gene_id "GENE_B"; transcript_id "NM_000002"; gene_name "GENE_B";\n',
         encoding="utf-8",
     )
     genes = workbench._load_protein_coding_genes(annotation)
@@ -938,3 +938,56 @@ def test_ranked_gene_list_merges_top_windows_with_at_most_one_megabase_gap(tmp_p
     assert first["maximum_joined_gap_bp"] == 600_000
     assert first["probable_gene"] == "GENE_A"
     assert hits.iloc[1]["probable_gene"] == "GENE_B"
+
+
+def test_refgene_loader_unions_coding_transcripts_and_skips_noncoding(tmp_path):
+    """refGene is transcript-level: no gene feature, no gene_type.
+
+    A gene's span is the union of its NM_ transcripts; NR_ is non-coding RNA
+    and must not appear, and gene_id is already a symbol.
+    """
+    annotation = tmp_path / "refGene.gtf"
+    annotation.write_text(
+        # Two coding transcripts of one gene -> one union span.
+        "chr1\trefGene\ttranscript\t1001\t2000\t.\t+\t.\t"
+        'gene_id "AAA"; transcript_id "NM_1"; gene_name "AAA";\n'
+        "chr1\trefGene\ttranscript\t1500\t3000\t.\t+\t.\t"
+        'gene_id "AAA"; transcript_id "NM_2"; gene_name "AAA";\n'
+        # Non-coding: dropped.
+        "chr1\trefGene\ttranscript\t9001\t9500\t.\t-\t.\t"
+        'gene_id "LINC1"; transcript_id "NR_9"; gene_name "LINC1";\n'
+        # Exon rows must be ignored; only transcript rows define the span.
+        "chr1\trefGene\texon\t1001\t1100\t.\t+\t.\t"
+        'gene_id "AAA"; transcript_id "NM_1"; exon_number "1"; gene_name "AAA";\n'
+        # A sex chromosome is out of scope.
+        "chrX\trefGene\ttranscript\t1\t500\t.\t+\t.\t"
+        'gene_id "XG"; transcript_id "NM_X"; gene_name "XG";\n',
+        encoding="utf-8",
+    )
+    genes = workbench._load_protein_coding_genes(annotation)
+    assert genes["gene_name"].tolist() == ["AAA"]
+    row = genes.iloc[0]
+    assert row["gene_start_0based"] == 1000        # 1-based 1001 -> 0-based
+    assert row["gene_end_0based_exclusive"] == 3000
+    assert row["gene_id"] == "AAA"                 # symbol, not an accession
+    assert row["gene_type"] == "protein_coding"
+
+
+def test_refgene_loader_splits_a_symbol_spanning_two_loci(tmp_path):
+    """A symbol at two distant loci must not become one giant gene."""
+    annotation = tmp_path / "refGene.gtf"
+    far = workbench.MAX_GENE_SPAN_BP + 1_000_000
+    annotation.write_text(
+        "chr2\trefGene\ttranscript\t1001\t2000\t.\t+\t.\t"
+        'gene_id "DUP"; transcript_id "NM_1"; gene_name "DUP";\n'
+        f"chr2\trefGene\ttranscript\t{far}\t{far + 500}\t.\t+\t.\t"
+        'gene_id "DUP"; transcript_id "NM_2"; gene_name "DUP";\n',
+        encoding="utf-8",
+    )
+    genes = workbench._load_protein_coding_genes(annotation)
+    assert len(genes) == 1
+    span = (genes.iloc[0]["gene_end_0based_exclusive"]
+            - genes.iloc[0]["gene_start_0based"])
+    assert span <= workbench.MAX_GENE_SPAN_BP
+    # GTF 1001-2000 inclusive is 0-based [1000, 2000): the longer transcript.
+    assert span == 1000

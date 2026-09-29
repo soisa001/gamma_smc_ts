@@ -99,7 +99,7 @@ The complete default controlled-input and output layout is:
 | Plot outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/plots/{scope}/` |
 | Combined report | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/summary/{scope}/` |
 | Callable-mask QC | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/shared/masks/` |
-| Gene labels | GENCODE v50 basic GRCh38 GTF from `ftp.ebi.ac.uk` (staged once locally) |
+| Gene labels | UCSC refGene GTF for hg38 from `hgdownload.soe.ucsc.edu` (staged once locally) |
 
 `WORKSPACE_BUCKET` overrides this default bucket, and `--output-prefix` or
 `AOU_GAMMA_OUTPUT_PREFIX` overrides the complete results prefix.

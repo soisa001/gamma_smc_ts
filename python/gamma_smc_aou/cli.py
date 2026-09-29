@@ -1069,7 +1069,7 @@ def parser() -> argparse.ArgumentParser:
     )
     workbench_report.add_argument(
         "--gene-annotation",
-        help="GRCh38 GENCODE GTF[.gz] used for candidate-locus gene labels",
+        help="GRCh38 UCSC refGene GTF[.gz] used for candidate-locus gene labels",
     )
     workbench_report.add_argument(
         "--gene-label-overrides",
