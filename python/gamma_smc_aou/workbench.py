@@ -393,11 +393,35 @@ def contract_sha256(contract: dict) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+# Settings recorded for provenance but deliberately excluded from the reuse
+# decision, because they cannot change the decoded output:
+#   threads, pair_block - "Thread count and --pair_block give bit-identical
+#   output" (AOU_WORKFLOW.md). They are scheduling choices. Keeping them in
+#   the key forced a full re-decode whenever the machine, --threads or --jobs
+#   changed, discarding work that was byte-for-byte reusable.
+CACHE_IRRELEVANT_DECODER_SETTINGS = ("threads", "pair_block")
+
+
 def cache_contract_sha256(contract: dict) -> str:
-    """Hash decode-relevant inputs/settings without tying reuse to Git HEAD."""
+    """Hash the settings that change the decode, and only those.
+
+    Reuse must not hinge on Git HEAD (a plot-only commit would invalidate
+    every chromosome) nor on scheduling knobs that leave the output
+    bit-identical. Everything that does affect the result - rates,
+    thresholds, call rule, stride, cache size, pair selection, masks, inputs
+    - stays in the key, and output integrity is enforced separately by the
+    per-artifact SHA-256 checks, which this does not touch.
+    """
     cache_contract = {
         key: value for key, value in contract.items() if key != "code_commit"
     }
+    decoder = cache_contract.get("decoder")
+    if isinstance(decoder, dict):
+        cache_contract["decoder"] = {
+            key: value
+            for key, value in decoder.items()
+            if key not in CACHE_IRRELEVANT_DECODER_SETTINGS
+        }
     return contract_sha256(cache_contract)
 
 
@@ -986,7 +1010,12 @@ def _assert_float(command: list[str], flag: str, expected: float) -> None:
         raise ValueError(f"run command {flag}={observed}; expected {expected}")
 
 
-def validate_run_json(run_json_path: str | Path, contract: dict) -> dict:
+def validate_run_json(
+    run_json_path: str | Path,
+    contract: dict,
+    *,
+    recorded_contract: dict | None = None,
+) -> dict:
     path = Path(run_json_path)
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"run metadata is absent or empty: {path}")
@@ -1041,12 +1070,18 @@ def validate_run_json(run_json_path: str | Path, contract: dict) -> dict:
             "run command thresholds do not match the contract: "
             f"command {thresholds}, contract {expected_thresholds}"
         )
+    # Scheduling settings are checked against the contract that describes the
+    # decode which actually produced this file, not against what is being
+    # requested now. They are outside the cache key, so the two legitimately
+    # differ when the same outputs are reused at a different thread count;
+    # the recorded command must still match what was recorded.
+    recorded_decoder = (recorded_contract or contract)["decoder"]
     exact_values = {
         "--recent_call": str(decoder["recent_call"]),
         "--output_at_stride": str(decoder["stride_bp"]),
         "--cache_size": str(decoder["cache_size_bp"]),
-        "--threads": str(decoder["threads"]),
-        "--pair_block": str(decoder["pair_block"]),
+        "--threads": str(recorded_decoder["threads"]),
+        "--pair_block": str(recorded_decoder["pair_block"]),
         "--exp10": str(decoder["exp10"]),
         "--backward_alignment": str(decoder["backward_alignment"]),
     }
@@ -1528,16 +1563,20 @@ def validate_workbench_completion(
         raise ValueError("completion contract payload is absent or malformed")
     if completion.get("contract_sha256") != contract_sha256(stored_contract):
         raise ValueError("completion contract payload hash is corrupt")
-    stored_cache_digest = completion.get("cache_contract_sha256")
-    if stored_cache_digest is None:
-        stored_cache_digest = cache_contract_sha256(stored_contract)
+    # Recomputed from the stored contract rather than read from the record:
+    # the payload was just verified intact above, and recomputing means a
+    # completion written under an older, stricter key rule still validates
+    # instead of forcing a needless re-decode.
+    stored_cache_digest = cache_contract_sha256(stored_contract)
     if stored_cache_digest != cache_contract_sha256(contract):
         raise ValueError("completion contract does not match requested inputs/settings")
     summary_frame, _ = validate_summary(
         summary_path,
         threshold_years=contract["decoder"]["threshold_years"],
     )
-    validate_run_json(run_json_path, contract)
+    validate_run_json(
+        run_json_path, contract, recorded_contract=stored_contract
+    )
     pairs_manifest_path = Path(contract["pairs_manifest"])
     expected_samples = read_sample_list(contract["sample_selection"]["sample_list"])
     decoder = contract["decoder"]

@@ -79,6 +79,10 @@ def test_zoom_plot_labels_only_peaks_above_two_percent_horizontally(
     assert axis.get_ylim() == pytest.approx((0.0, 0.04))
 
 
+def NL_JOIN(rows):
+    return chr(10).join(rows) + chr(10)
+
+
 def _contract(
     tmp_path: Path,
     *,
@@ -260,6 +264,119 @@ def test_completion_contract_detects_changed_output(tmp_path):
 
     summary.write_text(summary.read_text(encoding="utf-8") + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="summary hash"):
+        workbench.validate_workbench_completion(
+            summary_path=summary,
+            run_json_path=run_json,
+            completion_path=completion_path,
+            contract=contract,
+        )
+
+
+def test_completion_is_reused_when_only_threads_or_pair_block_change(tmp_path):
+    """Scheduling knobs must not invalidate a decode.
+
+    Thread count and pair block give bit-identical output, so re-decoding
+    because the machine or --jobs changed throws away reusable work. The
+    run JSON still records what actually ran, and is checked against that.
+    """
+    contract, summary, run_json, pairs = _contract(tmp_path, with_mask=True)
+    completion_path = tmp_path / "chr1.complete.json"
+    workbench.write_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=contract,
+    )
+    assert contract["decoder"]["threads"] == 12
+
+    # The same work requested at a different thread count and pair block.
+    requested = copy.deepcopy(contract)
+    requested["decoder"]["threads"] = 4
+    requested["decoder"]["pair_block"] = 64
+    workbench.validate_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=requested,
+    )
+
+    # Anything that does change the decode must still invalidate.
+    for field, value in (("stride_bp", 1000), ("cache_size_bp", 500),
+                         ("theta", 0.0005), ("recent_call", "median"),
+                         ("exp10", "fast")):
+        changed = copy.deepcopy(contract)
+        changed["decoder"][field] = value
+        with pytest.raises(ValueError, match="does not match requested"):
+            workbench.validate_workbench_completion(
+                summary_path=summary,
+                run_json_path=run_json,
+                completion_path=completion_path,
+                contract=changed,
+            )
+
+
+def test_relaxed_cache_key_does_not_weaken_output_integrity(tmp_path):
+    """Reuse got cheaper; the completeness guarantees did not move.
+
+    A truncated or edited output must still be caught, including when the
+    thread count differs from the one that produced it.
+    """
+    contract, summary, run_json, pairs = _contract(tmp_path, with_mask=True)
+    completion_path = tmp_path / "chr1.complete.json"
+    workbench.write_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=contract,
+    )
+    requested = copy.deepcopy(contract)
+    requested["decoder"]["threads"] = 4
+
+    # Baseline: reused cleanly.
+    workbench.validate_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=requested,
+    )
+
+    # A truncated summary is still rejected.
+    original = summary.read_text(encoding="utf-8")
+    summary.write_text(NL_JOIN(original.splitlines()[:-1]), encoding="utf-8")
+    with pytest.raises(ValueError):
+        workbench.validate_workbench_completion(
+            summary_path=summary,
+            run_json_path=run_json,
+            completion_path=completion_path,
+            contract=requested,
+        )
+    summary.write_text(original, encoding="utf-8")
+
+    # An edited pair manifest is still rejected.
+    pairs.write_text(pairs.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="pair-manifest hash"):
+        workbench.validate_workbench_completion(
+            summary_path=summary,
+            run_json_path=run_json,
+            completion_path=completion_path,
+            contract=requested,
+        )
+
+
+def test_completion_payload_tampering_is_still_detected(tmp_path):
+    """The stored cache digest is recomputed, so the payload check matters."""
+    contract, summary, run_json, pairs = _contract(tmp_path, with_mask=True)
+    completion_path = tmp_path / "chr1.complete.json"
+    workbench.write_workbench_completion(
+        summary_path=summary,
+        run_json_path=run_json,
+        completion_path=completion_path,
+        contract=contract,
+    )
+    record = json.loads(completion_path.read_text(encoding="utf-8"))
+    record["contract"]["decoder"]["theta"] = 0.5      # payload edited
+    completion_path.write_text(json.dumps(record), encoding="utf-8")
+    with pytest.raises(ValueError, match="payload hash is corrupt"):
         workbench.validate_workbench_completion(
             summary_path=summary,
             run_json_path=run_json,

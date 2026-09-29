@@ -200,12 +200,22 @@ not delete unmatched remote objects, and it synchronizes `chrN.complete.json`
 only after the chromosome payload succeeds. Plot and combined-report manifests
 use the same commit-marker-last rule.
 
-Decode cache compatibility deliberately excludes the raw Git commit. It is
-based on the semantic input/settings contract and is then verified against the
-exact SHA-256 hashes of the BCF-ordered sample list and pair manifest plus every
-required output. Consequently, a plot-only commit reuses legacy chromosome
-completions, while a changed cohort, pair draw, input, mask, or decoder setting
-does not. The runner also performs one locked uv synchronization up front and
+Decode cache compatibility deliberately excludes the raw Git commit, the
+decoder thread count and the pair block. It is based on the semantic
+input/settings contract and is then verified against the exact SHA-256 hashes
+of the BCF-ordered sample list and pair manifest plus every required output.
+Consequently, a plot-only commit reuses legacy chromosome completions, as does
+a rerun at a different `--threads`, `--pair-block` or `--jobs`; a changed
+cohort, pair draw, input, mask, or result-affecting decoder setting does not.
+
+Thread count and pair block are excluded because they give bit-identical
+output, so they are scheduling choices rather than decode settings; keeping
+them in the key forced a full re-decode whenever the machine or the
+concurrency changed, discarding work that was byte-for-byte reusable. They are
+still recorded in the contract for provenance, the run JSON is still checked
+against the settings that actually produced it, and none of the output
+integrity checks are relaxed: a truncated summary, an edited pair manifest or
+a tampered completion payload is rejected exactly as before. The runner also performs one locked uv synchronization up front and
 uses `uv run --no-sync` for its per-chromosome subcommands.
 
 Each population gets chromosome PNG/PDF scans, a chromosome summary table, and
