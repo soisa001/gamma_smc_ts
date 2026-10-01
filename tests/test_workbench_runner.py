@@ -24,6 +24,108 @@ def _runner_command(repo: Path, arguments: list[str]) -> tuple[list[str], Path]:
     return [bash, str(repo / "scripts" / "run_aou_workbench.sh"), *arguments], repo
 
 
+def test_jobs_runs_populations_concurrently_and_caps_at_the_population_count():
+    """--jobs overlaps the serial per-job cost that threads cannot.
+
+    Populations of one chromosome share a single staged BCF, so concurrency
+    here does not multiply the staged input. More jobs than populations is
+    meaningless, so it is capped rather than accepted.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+
+    command, cwd = _runner_command(
+        repo, ["-chr", "1", "-pops", "all", "--dry-run",
+               "--jobs", "4", "--threads", "4"])
+    output = subprocess.run(command, check=True, text=True, capture_output=True,
+                            env=environment, cwd=cwd).stdout
+    assert "jobs=4 (=16 busy cores)" in output
+    assert "Note:" not in output
+
+    # Six populations requested, so sixteen jobs is capped to six.
+    command, cwd = _runner_command(
+        repo, ["-chr", "1", "-pops", "all", "--dry-run",
+               "--jobs", "16", "--threads", "2"])
+    output = subprocess.run(command, check=True, text=True, capture_output=True,
+                            env=environment, cwd=cwd).stdout
+    assert "exceeds the 6 requested population(s); using 6" in output
+    assert "jobs=6 (=12 busy cores)" in output
+
+    # The cap must be applied before the plan is printed, not after.
+    runner = (repo / "scripts/run_aou_workbench.sh").read_text()
+    cap = runner.index("JOBS > ${#POPULATIONS[@]}")
+    assert cap < runner.index("print_plan" + chr(10))
+
+
+def test_jobs_defaults_to_serial_and_rejects_nonsense():
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+
+    command, cwd = _runner_command(repo, ["-chr", "1", "-pops", "afr", "--dry-run"])
+    output = subprocess.run(command, check=True, text=True, capture_output=True,
+                            env=environment, cwd=cwd).stdout
+    assert "jobs=1" in output          # unchanged behaviour unless asked for
+
+    for bad in ("0", "-2", "abc"):
+        command, cwd = _runner_command(
+            repo, ["-chr", "1", "-pops", "afr", "--dry-run", "--jobs", bad])
+        completed = subprocess.run(command, text=True, capture_output=True,
+                                   env=environment, cwd=cwd)
+        assert completed.returncode != 0, bad
+        assert "JOBS must be a positive integer" in completed.stderr
+
+
+def test_concurrent_staging_is_locked_and_failures_are_collected():
+    """Concurrency must not race on the shared BCF or swallow a failure."""
+    runner = (Path(__file__).resolve().parents[1]
+              / "scripts/run_aou_workbench.sh").read_text()
+    # One staging per chromosome, guarded, with a marker so siblings skip it.
+    assert "ensure_chromosome_staged() {" in runner
+    assert "flock 8" in runner
+    assert 'marker="$input_directory/.staged"' in runner
+    # Contig and length are re-derived per caller: a background subshell
+    # cannot inherit them from whichever sibling staged.
+    assert runner.count('"$BCFTOOLS" index -s "$local_input"') == 1
+    # Every population's status is inspected; none is allowed to fail silently.
+    assert 'echo $? > "$status_dir/$population.status"' in runner
+    assert "chromosome $chromosome failed for:" in runner
+
+
+def test_scan_only_mode_disables_the_candidate_replay():
+    """--no-candidates must not disturb the scan, plots or report.
+
+    The replay repeats the entire forward/backward pass to re-materialise
+    per-pair posteriors the scan already computed, so skipping it is close to
+    halving the decode. It is implemented by raising the *region* screen to 1,
+    which nothing can exceed; the per-threshold plot and report screens stay
+    where the caller put them.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    environment = os.environ.copy()
+    environment["WORKSPACE_BUCKET"] = "gs://test-workspace"
+    environment["GOOGLE_PROJECT"] = "test-billing-project"
+    command, cwd = _runner_command(
+        repo,
+        ["-chr", "1", "-pops", "afr", "--dry-run", "--no-candidates",
+         "--n-random-pairs", "10000"],
+    )
+    completed = subprocess.run(
+        command, check=True, text=True, capture_output=True,
+        env=environment, cwd=cwd,
+    )
+    output = completed.stdout
+    assert "candidates: disabled (--no-candidates)" in output
+    assert "10000 random haplotype pairs/pop" in output
+    # Both thresholds still decoded, and the plot screens are untouched.
+    assert "thresholds=10000 50000 years" in output
+    assert "screens: signal_fraction=0.0397 0.1935" in output
+    assert "label_min=0.0397 0.1935" in output
+
+
 def test_runner_dry_run_resolves_case_insensitive_defaults():
     repo = Path(__file__).resolve().parents[1]
     environment = os.environ.copy()
@@ -46,17 +148,23 @@ def test_runner_dry_run_resolves_case_insensitive_defaults():
     assert "recent_call=mean" in output
     assert "stride=10000 bp, cache=1000 bp" in output
     assert "100000 random haplotype pairs/pop, seed=1729, exclude_within=0" in output
-    assert "candidates: fraction>0.02, merge_gap=20000 bp" in output
+    # The screen is derived per threshold as 3x its neutral P(T<t); at the
+    # default 10,000-year candidate threshold and 2Ne = 30,000 that is 0.0397.
+    assert (
+        "candidates: threshold=10000 yr, fraction>0.0397, merge_gap=20000 bp"
+    ) in output
+    assert "thresholds=10000 50000 years (candidate: 10000)" in output
+    assert "screens: signal_fraction=0.0397 0.1935" in output
     assert "aou_lr_phase2_v1.chr1.bubble.split.bcf" in output
     assert "ancestry_preds.tsv (column ancestry_pred_other)" in output
     assert "flagged_samples.tsv" in output
     assert "relatedness_flagged_samples.tsv" in output
     assert "hardmask.hg38.v4.over99.bed" in output
     assert "mask mode: default (excluded_intervals)" in output
-    assert "gencode.v50.basic.annotation.gtf.gz" in output
+    assert "hg38.refGene.gtf.gz" in output
     assert (
-        "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, zoom_ymax=0.04, "
-        "label_min=0.02"
+        "merge_gap=1000000 bp (display only), gene_flank=+/-500000 bp, "
+        "zoom_ymax=0.0794 0.3870, label_min=0.0397 0.1935"
     ) in output
 
 
@@ -183,7 +291,9 @@ def test_runner_locks_reports_and_checksum_syncs_outputs():
     assert '--gene-annotation "$local_gene_annotation"' in runner
     assert '--gene-label-overrides "$GENE_LABEL_OVERRIDES"' in runner
     assert '--plot-merge-gap "$PLOT_MERGE_GAP"' in runner
-    assert '--hit-label-min-fraction "$HIT_LABEL_MIN_FRACTION"' in runner
+    assert '--hit-label-min-fraction "$threshold_label_min"' in runner
+    assert '--all-threshold-years "${THRESHOLD_LIST[@]}"' in runner
+    assert "workbench-split" in runner
     assert "gene_list.tsv" in (repo / "python/gamma_smc_aou/workbench.py").read_text()
     assert (
         "raw_scan_windows.tsv.gz"

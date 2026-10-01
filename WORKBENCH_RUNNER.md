@@ -5,6 +5,8 @@ buckets, samples 100,000 arbitrary within-population haplotype pairs, validates
 every chromosome, uploads aggregate and pair-level candidate outputs, and
 makes separate plots for each population. It is CPU-only and runs
 populations/chromosomes sequentially while using 12 decoder threads by default.
+`--jobs N` decodes N populations of a chromosome at once instead; they share
+the one staged BCF, so concurrency there does not multiply the staged input.
 
 ## Fresh notebook cell
 
@@ -99,7 +101,7 @@ The complete default controlled-input and output layout is:
 | Plot outputs | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/{POP}/plots/{scope}/` |
 | Combined report | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/summary/{scope}/` |
 | Callable-mask QC | `gs://rw-migration-aou-rw-fa99430f/gamma_smc/results/shared/masks/` |
-| Gene labels | GENCODE v50 basic GRCh38 GTF from `ftp.ebi.ac.uk` (staged once locally) |
+| Gene labels | UCSC refGene GTF for hg38 from `hgdownload.soe.ucsc.edu` (staged once locally) |
 
 `WORKSPACE_BUCKET` overrides this default bucket, and `--output-prefix` or
 `AOU_GAMMA_OUTPUT_PREFIX` overrides the complete results prefix.
@@ -144,7 +146,52 @@ For each chromosome, the output directory receives:
 - `chrN.decode.log`: wall-time and peak-memory log;
 - `chrN.complete.json`: input fingerprints, provenance commit, exact settings,
   and SHA-256 hashes for required outputs, sample list/audit, pair manifest, and
-  callable mask.
+  callable mask. It records both the candidate threshold and the full decoded
+  threshold list, so adding or removing a threshold invalidates the cached
+  decode rather than silently reusing one that lacks the new column.
+
+## Per-threshold outputs
+
+Every threshold is evaluated from the same decode: the cost of an extra
+threshold is one table lookup per pair per position plus one bit per
+pair/position, against a full second decode if they were run separately. The
+per-chromosome artifacts above therefore hold every threshold's columns at
+once.
+
+Each threshold then gets its own self-contained tree, locally under
+`results_t<threshold>/` and in GCS under `<output-prefix>/t<threshold>/`:
+
+- `{POP}/chromosomes/chrN.gamma_smc.tsv`: the single-threshold view of the
+  scan. It keeps the historical five-column prefix, and
+  `mean_p_tmrca_lt_threshold` is rewritten to *this* threshold's mean
+  probability. The combined file aliases that column to the first threshold
+  only, so reading the combined file for any later threshold would report the
+  first threshold's soft probability under the wrong label.
+- `{POP}/plots/{scope}/`: this threshold's chromosome and whole-genome scans.
+- `summary/{scope}/`: this threshold's combined report, candidate loci and
+  gene labels.
+
+The headline statistic in these outputs is `frac_recent_<threshold>`: the
+fraction of sampled pairs whose **posterior-mean TMRCA** is below the
+threshold, which is the Gamma-SMC paper's statistic under the default
+`--recent-call mean`. The averaged posterior CDF, `mean_p_lt_<threshold>`,
+travels alongside it in every file but does not drive the screen or the plots.
+
+The expensive raw-posterior candidate replay runs for **one** threshold only,
+since candidate positions are threshold-specific. That is the first threshold
+unless `--candidate-threshold` selects another, and it is the threshold
+recorded in the completion contract.
+
+`--signal-fraction`, `--zoom-ymax` and `--hit-label-min-fraction` each accept
+either one value, applied to every threshold, or one value per threshold in
+the same order. Left unset, the screen defaults to three times that
+threshold's neutral `P(T<t)` — the multiple that reproduces the historical
+4,500-year default of 0.02 — and the plot ceiling to twice the screen. A
+single fixed fraction cannot serve both defaults: 0.02 sits above the 1.32%
+neutral mean at 10,000 years but well below the 6.45% mean at 50,000 years,
+where it would flag essentially every window and send the candidate replay
+genome-wide. These are descriptive screens, not calibrated p-values; set them
+from a chr1 pilot once the empirical upper tail is known.
 
 Completed chromosome trees are uploaded with checksum-based `gcloud storage
 rsync`, so reruns scan but do not recopy unchanged objects. Candidate artifacts
@@ -153,12 +200,22 @@ not delete unmatched remote objects, and it synchronizes `chrN.complete.json`
 only after the chromosome payload succeeds. Plot and combined-report manifests
 use the same commit-marker-last rule.
 
-Decode cache compatibility deliberately excludes the raw Git commit. It is
-based on the semantic input/settings contract and is then verified against the
-exact SHA-256 hashes of the BCF-ordered sample list and pair manifest plus every
-required output. Consequently, a plot-only commit reuses legacy chromosome
-completions, while a changed cohort, pair draw, input, mask, or decoder setting
-does not. The runner also performs one locked uv synchronization up front and
+Decode cache compatibility deliberately excludes the raw Git commit, the
+decoder thread count and the pair block. It is based on the semantic
+input/settings contract and is then verified against the exact SHA-256 hashes
+of the BCF-ordered sample list and pair manifest plus every required output.
+Consequently, a plot-only commit reuses legacy chromosome completions, as does
+a rerun at a different `--threads`, `--pair-block` or `--jobs`; a changed
+cohort, pair draw, input, mask, or result-affecting decoder setting does not.
+
+Thread count and pair block are excluded because they give bit-identical
+output, so they are scheduling choices rather than decode settings; keeping
+them in the key forced a full re-decode whenever the machine or the
+concurrency changed, discarding work that was byte-for-byte reusable. They are
+still recorded in the contract for provenance, the run JSON is still checked
+against the settings that actually produced it, and none of the output
+integrity checks are relaxed: a truncated summary, an edited pair manifest or
+a tampered completion payload is rejected exactly as before. The runner also performs one locked uv synchronization up front and
 uses `uv run --no-sync` for its per-chromosome subcommands.
 
 Each population gets chromosome PNG/PDF scans, a chromosome summary table, and
@@ -242,17 +299,19 @@ drawn for candidate regions.
 | Setting | Default |
 |---|---:|
 | decoder threads | 12 |
+| concurrent populations (`--jobs`) | 1 (serial), capped at the population count |
 | posterior call rule | `mean` |
 | output stride | 10,000 bp |
-| mutation rate | `1.29e-8` |
+| mutation rate | `1.25e-8` |
 | transition cache | 1,000 bp |
 | scaled mutation rate (`theta`) | `0.00075` |
 | recombination/theta ratio | `0.8` |
-| recent threshold | 4,500 years |
+| recent thresholds | 10,000 and 50,000 years (up to 5, one decode) |
+| candidate threshold | the first threshold |
 | generation time | 25 years |
 | pair mode | 100,000 distinct unordered haplotype pairs per population |
 | pair seed | `1729` |
-| signal screen | `frac_recent_4500 > 0.02` (configurable) |
+| signal screen | `frac_recent_<t> >` 3x that threshold's neutral P(T<t) (configurable) |
 | signal merge gap | 20,000 bp |
 | candidate profile | peak +/-500,000 bp |
 | variant search | peak +/-100,000 bp |
@@ -269,6 +328,28 @@ about 490 MB (plus about 122 MB while constructing it); a 10 kb cache would be
 about 4.9 GB (plus about 1.2 GB during construction). Cache size and stride are
 independent: the output grid is 10 kb while transition-cache segments stay at
 1 kb.
+
+## Concurrency
+
+The decode's serial cost per job -- reading the BCF, building the genotype
+matrix, constructing the ~490 MB flow-field cache -- does not shrink with
+`--threads`, and at small pair counts it is what dominates. Only running jobs
+side by side overlaps it.
+
+`--jobs N` therefore decodes N populations of a chromosome concurrently. That
+axis is chosen deliberately: populations of one chromosome share a single
+staged BCF, so `--jobs` never multiplies the staged input, and it caps
+naturally at the number of requested populations. Staging is done once under a
+lock, with a marker file so the siblings wait rather than repeat it; the contig
+name and length are re-derived per job because a background subshell cannot
+inherit them from whichever sibling staged.
+
+`--threads` and `--jobs` multiply, so divide them: `--jobs 4 --threads 4` keeps
+16 cores busy, and the run banner prints the product. Each population's output
+is captured and replayed in order once the chromosome finishes, so concurrent
+logs do not interleave. A population that fails does not abort its siblings;
+the chromosome fails after all of them finish, naming each failure and its exit
+code.
 
 ## Overrides and restart behavior
 

@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from .container_decoder import DEFAULT_IMAGE, run_container_decoder
 from .decoder import run_within_decoder
 from .defaults import DEFAULT_CACHE_SIZE, DEFAULT_OUTPUT_STRIDE
+from .workbench import threshold_suffix
 from .selection import run_slim_recent_sweep, within_individual_tmrca_grid
 from .spatial_scan import (
     _plot_null_spatial_calibration,
@@ -206,8 +207,10 @@ def _plot_decoded_center_calibration(
     plt.close(fig)
 
 
-def _threshold_suffix(years: float) -> str:
-    return str(int(years)) if float(years).is_integer() else str(years)
+# Column suffixes must match what the decoder wrote, so there is exactly
+# one implementation of this rule. The local copy this replaced used
+# str(float), which diverges from the C++ for non-integral thresholds.
+_threshold_suffix = threshold_suffix
 
 
 def _calibration_column(calibration_statistic: str, threshold_years: float) -> str:

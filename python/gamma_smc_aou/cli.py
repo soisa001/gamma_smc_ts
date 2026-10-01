@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -34,6 +35,8 @@ from .defaults import (
     DEFAULT_OUTPUT_STRIDE,
     DEFAULT_RECOMBINATION_TO_MUTATION_RATIO,
     DEFAULT_SCALED_MUTATION_RATE,
+    DEFAULT_THRESHOLD_YEARS,
+    MAX_THRESHOLDS,
 )
 from .high_af_study import finalize_high_af_selected, prepare_high_af_selected
 from .decoder import run_within_decoder
@@ -54,7 +57,9 @@ from .workbench import (
     build_workbench_callable_mask,
     build_workbench_sample_list,
     build_workbench_contract,
+    parse_threshold_years,
     plot_workbench_population,
+    split_summary_by_threshold,
     summarize_workbench_run,
     validate_workbench_completion,
     write_workbench_completion,
@@ -64,6 +69,24 @@ from .workbench_candidates import (
     build_candidate_regions,
     write_empty_candidate_analysis,
 )
+
+
+def _threshold_year(value: str) -> float:
+    """argparse type for a single threshold in years.
+
+    The workbench subcommands derive column names from this, so a bad value
+    used to surface much later as a missing ``frac_recent_*`` column rather
+    than as a usage error.
+    """
+    try:
+        years = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not a number: {value!r}") from None
+    if not math.isfinite(years):
+        raise argparse.ArgumentTypeError(f"must be finite: {value!r}")
+    if years <= 0:
+        raise argparse.ArgumentTypeError(f"must be positive: {value!r}")
+    return years
 
 
 def _histories(path: str | None):
@@ -211,7 +234,7 @@ def command_decode(args):
         scaled_mutation_rate=args.theta,
         recombination_to_mutation_ratio=args.rho_over_theta,
         mutation_rate=args.mutation_rate,
-        threshold_years=args.threshold_years,
+        threshold_years=parse_threshold_years(args.threshold_years),
         generation_time=args.generation_time,
         input_format=args.input_format,
         raw_output=args.raw_output,
@@ -314,6 +337,7 @@ def _workbench_contract_from_args(args) -> dict:
         mutation_rate=args.mutation_rate,
         generation_time=args.generation_time,
         threshold_years=args.threshold_years,
+        threshold_years_all=args.all_threshold_years,
         recent_call=args.recent_call,
         stride=args.output_at_stride,
         cache_size=args.cache_size,
@@ -445,6 +469,15 @@ def command_workbench_report(args):
             "candidate region(s)"
         )
     print(f"  total: {result['total_regions']} candidate region(s)")
+
+
+def command_workbench_split(args):
+    destination = split_summary_by_threshold(
+        args.summary,
+        args.threshold_years,
+        args.output,
+    )
+    print(destination)
 
 
 def command_workbench_regions(args):
@@ -786,8 +819,13 @@ def parser() -> argparse.ArgumentParser:
         "--threshold-years",
         type=float,
         nargs="+",
-        default=[4500],
-        help="one or more thresholds, e.g. --threshold-years 4500 10000",
+        default=list(DEFAULT_THRESHOLD_YEARS),
+        help=(
+            f"one to {MAX_THRESHOLDS} thresholds in years, evaluated from the "
+            "same decode, e.g. --threshold-years 10000 50000. The first is "
+            "aliased to mean_p_tmrca_lt_threshold. Default: "
+            + " ".join(str(int(y)) for y in DEFAULT_THRESHOLD_YEARS)
+        ),
     )
     decode.add_argument(
         "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
@@ -937,7 +975,23 @@ def parser() -> argparse.ArgumentParser:
     workbench_validate.add_argument(
         "--generation-time", type=float, default=DEFAULT_GENERATION_TIME
     )
-    workbench_validate.add_argument("--threshold-years", type=float, default=4500)
+    workbench_validate.add_argument(
+        "--threshold-years",
+        type=_threshold_year,
+        default=DEFAULT_THRESHOLD_YEARS[0],
+    )
+    workbench_validate.add_argument(
+        "--all-threshold-years",
+        type=_threshold_year,
+        nargs="+",
+        default=None,
+        help=(
+            "every threshold this chromosome was decoded with, in decode "
+            "order. Recorded in the completion contract so that changing "
+            "the threshold set invalidates the cached decode. Defaults to "
+            "--threshold-years alone."
+        ),
+    )
     workbench_validate.add_argument(
         "--recent-call", choices=["mean", "median"], default="mean"
     )
@@ -977,7 +1031,11 @@ def parser() -> argparse.ArgumentParser:
         "--chromosomes", type=int, choices=AUTOSOMES, nargs="+", required=True
     )
     workbench_plot.add_argument("--output-dir", required=True)
-    workbench_plot.add_argument("--threshold-years", type=float, default=4500)
+    workbench_plot.add_argument(
+        "--threshold-years",
+        type=_threshold_year,
+        default=DEFAULT_THRESHOLD_YEARS[0],
+    )
     workbench_plot.add_argument("--whole-genome", action="store_true")
     workbench_plot.add_argument("--top-n", type=int, default=100)
     workbench_plot.add_argument("--signal-fraction", type=float, default=0.02)
@@ -995,7 +1053,11 @@ def parser() -> argparse.ArgumentParser:
         "--chromosomes", type=int, choices=AUTOSOMES, nargs="+", required=True
     )
     workbench_report.add_argument("--output-dir", required=True)
-    workbench_report.add_argument("--threshold-years", type=float, default=4500)
+    workbench_report.add_argument(
+        "--threshold-years",
+        type=_threshold_year,
+        default=DEFAULT_THRESHOLD_YEARS[0],
+    )
     workbench_report.add_argument("--signal-fraction", type=float, default=0.02)
     workbench_report.add_argument("--merge-gap", type=int, default=20_000)
     workbench_report.add_argument("--whole-genome", action="store_true")
@@ -1007,7 +1069,7 @@ def parser() -> argparse.ArgumentParser:
     )
     workbench_report.add_argument(
         "--gene-annotation",
-        help="GRCh38 GENCODE GTF[.gz] used for candidate-locus gene labels",
+        help="GRCh38 UCSC refGene GTF[.gz] used for candidate-locus gene labels",
     )
     workbench_report.add_argument(
         "--gene-label-overrides",
@@ -1033,6 +1095,19 @@ def parser() -> argparse.ArgumentParser:
     )
     workbench_report.set_defaults(func=command_workbench_report)
 
+    workbench_split = commands.add_parser(
+        "workbench-split",
+        help="write the single-threshold view of a multi-threshold scan summary",
+    )
+    workbench_split.add_argument("--summary", required=True)
+    workbench_split.add_argument(
+        "--threshold-years",
+        type=_threshold_year,
+        default=DEFAULT_THRESHOLD_YEARS[0],
+    )
+    workbench_split.add_argument("--output", required=True)
+    workbench_split.set_defaults(func=command_workbench_split)
+
     workbench_regions = commands.add_parser(
         "workbench-regions",
         help="merge strict-threshold recent-coalescence windows and select positions",
@@ -1045,7 +1120,11 @@ def parser() -> argparse.ArgumentParser:
     workbench_regions.add_argument("--sequence-length", type=int, required=True)
     workbench_regions.add_argument("--output", required=True)
     workbench_regions.add_argument("--positions-output", required=True)
-    workbench_regions.add_argument("--threshold-years", type=float, default=4500)
+    workbench_regions.add_argument(
+        "--threshold-years",
+        type=_threshold_year,
+        default=DEFAULT_THRESHOLD_YEARS[0],
+    )
     workbench_regions.add_argument("--minimum-fraction", type=float, default=0.02)
     workbench_regions.add_argument("--merge-gap", type=int, default=20_000)
     workbench_regions.add_argument(
@@ -1074,7 +1153,11 @@ def parser() -> argparse.ArgumentParser:
     workbench_candidates.add_argument(
         "--mutation-rate", type=float, default=DEFAULT_MUTATION_RATE
     )
-    workbench_candidates.add_argument("--threshold-years", type=float, default=4500)
+    workbench_candidates.add_argument(
+        "--threshold-years",
+        type=_threshold_year,
+        default=DEFAULT_THRESHOLD_YEARS[0],
+    )
     workbench_candidates.add_argument("--profile-half-width", type=int, default=500_000)
     workbench_candidates.add_argument("--variant-half-width", type=int, default=100_000)
     workbench_candidates.add_argument("--minimum-genotype-pairs", type=int, default=20)

@@ -15,6 +15,7 @@ import pandas as pd
 import zstandard
 from scipy.stats import t
 
+from .defaults import DEFAULT_MUTATION_RATE
 from .workbench import (
     CANDIDATE_REGION_COLUMNS,
     POPULATIONS,
@@ -687,7 +688,7 @@ def analyze_candidate_regions(
     population: str,
     chromosome: int,
     output_dir: str | Path,
-    mutation_rate: float = 1.29e-8,
+    mutation_rate: float = DEFAULT_MUTATION_RATE,
     threshold_years: float = 4500,
     profile_half_width: int = 500_000,
     variant_half_width: int = 100_000,

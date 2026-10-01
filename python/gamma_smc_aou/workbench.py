@@ -4,6 +4,7 @@ import gzip
 import hashlib
 import json
 import os
+from collections.abc import Sequence
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,6 +17,7 @@ import pandas as pd
 from matplotlib.ticker import PercentFormatter
 
 from . import bitmatrix as bitmatrix_reader
+from .defaults import DEFAULT_THRESHOLD_YEARS, MAX_THRESHOLDS
 
 
 AUTOSOMES = tuple(range(1, 23))
@@ -138,11 +140,142 @@ GENE_LABEL_EVIDENCE_LEVELS = {
 
 
 def threshold_suffix(years: float) -> str:
-    return str(int(years)) if float(years).is_integer() else str(years)
+    """Canonical column suffix for a threshold, byte-identical to the C++.
+
+    The rule is shared with ``format_threshold`` in ``src/gamma_smc.h`` and
+    with ``bitmatrix._format_threshold``: integral thresholds print as plain
+    integers, anything else prints fixed to six decimals with trailing zeros
+    stripped. Never scientific notation.
+
+    The C++ used to fall through to the stream's default ``%g``, which is six
+    *significant* digits, so 1234567.5 became ``1.23457e+06`` where Python
+    produced ``1234567.5`` -- the reader then looked up a column the decoder
+    never wrote. Worse, ``%g`` is lossy enough to collide: 1234567.1 and
+    1234567.2 both round to ``1.23457e+06``, so two distinct thresholds would
+    have written the same column name and silently overwritten each other.
+    """
+    value = float(years)
+    if value.is_integer() and abs(value) < 1e15:
+        return str(int(value))
+    return f"{value:.6f}".rstrip("0").rstrip(".")
 
 
 def called_fraction_column(threshold_years: float) -> str:
     return f"frac_recent_{threshold_suffix(threshold_years)}"
+
+
+def mean_probability_column(threshold_years: float) -> str:
+    return f"mean_p_lt_{threshold_suffix(threshold_years)}"
+
+
+def recent_count_column(threshold_years: float) -> str:
+    return f"n_recent_{threshold_suffix(threshold_years)}"
+
+
+def parse_threshold_years(values, *, maximum: int = MAX_THRESHOLDS) -> list[float]:
+    """Validate a threshold list and return it in the decoder's own order.
+
+    Rejects empty lists, non-finite and non-positive values, more than
+    ``maximum`` entries, and any pair that would format to the same column
+    suffix. Order is preserved because the decoder aliases
+    ``mean_p_tmrca_lt_threshold`` to the *first* threshold.
+    """
+    if values is None:
+        raise ValueError("at least one --threshold-years value is required")
+    if isinstance(values, (str, bytes)) or not hasattr(values, "__iter__"):
+        values = [values]
+    parsed: list[float] = []
+    for raw in values:
+        try:
+            years = float(raw)
+        except (TypeError, ValueError) as error:
+            raise ValueError(f"threshold is not a number: {raw!r}") from error
+        if not np.isfinite(years):
+            raise ValueError(f"threshold must be finite: {raw!r}")
+        if years <= 0:
+            raise ValueError(f"threshold must be positive: {raw!r}")
+        parsed.append(years)
+    if not parsed:
+        raise ValueError("at least one --threshold-years value is required")
+    if len(parsed) > maximum:
+        raise ValueError(
+            f"at most {maximum} thresholds are supported; got {len(parsed)}"
+        )
+    suffixes = [threshold_suffix(years) for years in parsed]
+    duplicates = sorted({s for s in suffixes if suffixes.count(s) > 1})
+    if duplicates:
+        raise ValueError(
+            "thresholds must have distinct column suffixes; "
+            f"these collide: {duplicates}"
+        )
+    return parsed
+
+
+def _contract_thresholds(decoder: dict) -> list[float]:
+    """Decoded thresholds recorded in a completion contract, in decode order.
+
+    Completion records written before multi-threshold support carry only the
+    scalar ``threshold_years``; treat those as a single-threshold decode so an
+    existing chromosome still validates and is not needlessly recomputed.
+    """
+    recorded = decoder.get("threshold_years_all")
+    if not recorded:
+        return [float(decoder["threshold_years"])]
+    return [float(value) for value in recorded]
+
+
+def split_summary_by_threshold(
+    summary_path: str | Path,
+    threshold_years: float,
+    output_path: str | Path,
+) -> Path:
+    """Write the single-threshold view of a multi-threshold summary.
+
+    The decoder emits every threshold's block into one TSV and aliases
+    ``mean_p_tmrca_lt_threshold`` to the *first* threshold only. Downstream
+    consumers read that alias, so pointing them at the combined file for any
+    threshold other than the first would report the first threshold's soft
+    probability under the label of whichever threshold was requested. This
+    rewrites the alias for the requested threshold and drops the other
+    thresholds' blocks, so each per-threshold file is self-consistent and
+    keeps the historical five-column prefix.
+    """
+    source = Path(summary_path)
+    if not source.is_file() or source.stat().st_size == 0:
+        raise ValueError(f"summary is absent or empty: {source}")
+    frame = pd.read_csv(source, sep="\t")
+
+    suffix = threshold_suffix(threshold_years)
+    called = called_fraction_column(threshold_years)
+    soft = mean_probability_column(threshold_years)
+    counted = recent_count_column(threshold_years)
+    missing = [
+        column
+        for column in (counted, called, soft)
+        if column not in frame.columns
+    ]
+    if missing:
+        raise ValueError(
+            f"{source} has no block for threshold {suffix}; missing {missing}. "
+            "Decode with this threshold before splitting."
+        )
+
+    view = pd.DataFrame(
+        {
+            "position_0based": frame["position_0based"],
+            "position_1based": frame["position_1based"],
+            "n_pairs": frame["n_pairs"],
+            SOFT_COLUMN: frame[soft],
+            TMRCA_COLUMN: frame[TMRCA_COLUMN],
+            counted: frame[counted],
+            called: frame[called],
+            soft: frame[soft],
+        }
+    )
+    destination = Path(output_path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_frame(destination, view)
+    return destination
 
 
 def sha256_file(path: str | Path) -> str:
@@ -260,11 +393,35 @@ def contract_sha256(contract: dict) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+# Settings recorded for provenance but deliberately excluded from the reuse
+# decision, because they cannot change the decoded output:
+#   threads, pair_block - "Thread count and --pair_block give bit-identical
+#   output" (AOU_WORKFLOW.md). They are scheduling choices. Keeping them in
+#   the key forced a full re-decode whenever the machine, --threads or --jobs
+#   changed, discarding work that was byte-for-byte reusable.
+CACHE_IRRELEVANT_DECODER_SETTINGS = ("threads", "pair_block")
+
+
 def cache_contract_sha256(contract: dict) -> str:
-    """Hash decode-relevant inputs/settings without tying reuse to Git HEAD."""
+    """Hash the settings that change the decode, and only those.
+
+    Reuse must not hinge on Git HEAD (a plot-only commit would invalidate
+    every chromosome) nor on scheduling knobs that leave the output
+    bit-identical. Everything that does affect the result - rates,
+    thresholds, call rule, stride, cache size, pair selection, masks, inputs
+    - stays in the key, and output integrity is enforced separately by the
+    per-artifact SHA-256 checks, which this does not touch.
+    """
     cache_contract = {
         key: value for key, value in contract.items() if key != "code_commit"
     }
+    decoder = cache_contract.get("decoder")
+    if isinstance(decoder, dict):
+        cache_contract["decoder"] = {
+            key: value
+            for key, value in decoder.items()
+            if key not in CACHE_IRRELEVANT_DECODER_SETTINGS
+        }
     return contract_sha256(cache_contract)
 
 
@@ -608,6 +765,7 @@ def build_workbench_contract(
     exp10: str,
     backward_alignment: str,
     code_commit: str,
+    threshold_years_all: Sequence[float] | None = None,
     mask_source_semantics: str | None = None,
     bitmatrix: str | Path | None = None,
     candidate_regions: str | Path | None = None,
@@ -664,6 +822,22 @@ def build_workbench_contract(
     if normalized_mask_semantics not in {"excluded_intervals", "included_intervals"}:
         raise ValueError(
             "mask source semantics must be excluded_intervals or included_intervals"
+        )
+    # One decode evaluates every threshold. `threshold_years` stays the single
+    # threshold that drives this chromosome's candidate screen, so existing
+    # readers are unchanged; `threshold_years_all` records the full decoded set
+    # so that adding or removing a threshold invalidates the completion cache
+    # instead of silently reusing a decode that lacks the new column.
+    decoded_thresholds = parse_threshold_years(
+        list(threshold_years_all) if threshold_years_all else [threshold_years]
+    )
+    if not any(
+        np.isclose(float(threshold_years), value, rtol=0, atol=1e-12)
+        for value in decoded_thresholds
+    ):
+        raise ValueError(
+            f"candidate threshold {threshold_years} is not among the decoded "
+            f"thresholds {decoded_thresholds}"
         )
     return {
         "schema_version": 1,
@@ -734,6 +908,7 @@ def build_workbench_contract(
             "mutation_rate": float(mutation_rate),
             "generation_time": float(generation_time),
             "threshold_years": float(threshold_years),
+            "threshold_years_all": [float(value) for value in decoded_thresholds],
             "recent_call": recent_call,
             "stride_bp": int(stride),
             "cache_size_bp": int(cache_size),
@@ -835,7 +1010,12 @@ def _assert_float(command: list[str], flag: str, expected: float) -> None:
         raise ValueError(f"run command {flag}={observed}; expected {expected}")
 
 
-def validate_run_json(run_json_path: str | Path, contract: dict) -> dict:
+def validate_run_json(
+    run_json_path: str | Path,
+    contract: dict,
+    *,
+    recorded_contract: dict | None = None,
+) -> dict:
     path = Path(run_json_path)
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"run metadata is absent or empty: {path}")
@@ -881,16 +1061,27 @@ def validate_run_json(run_json_path: str | Path, contract: dict) -> dict:
     _assert_float(command, "--unscaled_mutation_rate", decoder["mutation_rate"])
     _assert_float(command, "--generation_time", decoder["generation_time"])
     thresholds = _command_value(command, "--recent_threshold_years").split(",")
-    if len(thresholds) != 1 or not np.isclose(
-        float(thresholds[0]), decoder["threshold_years"], rtol=0, atol=1e-12
+    expected_thresholds = _contract_thresholds(decoder)
+    if len(thresholds) != len(expected_thresholds) or not all(
+        np.isclose(float(observed), expected, rtol=0, atol=1e-12)
+        for observed, expected in zip(thresholds, expected_thresholds)
     ):
-        raise ValueError("run command threshold does not match the contract")
+        raise ValueError(
+            "run command thresholds do not match the contract: "
+            f"command {thresholds}, contract {expected_thresholds}"
+        )
+    # Scheduling settings are checked against the contract that describes the
+    # decode which actually produced this file, not against what is being
+    # requested now. They are outside the cache key, so the two legitimately
+    # differ when the same outputs are reused at a different thread count;
+    # the recorded command must still match what was recorded.
+    recorded_decoder = (recorded_contract or contract)["decoder"]
     exact_values = {
         "--recent_call": str(decoder["recent_call"]),
         "--output_at_stride": str(decoder["stride_bp"]),
         "--cache_size": str(decoder["cache_size_bp"]),
-        "--threads": str(decoder["threads"]),
-        "--pair_block": str(decoder["pair_block"]),
+        "--threads": str(recorded_decoder["threads"]),
+        "--pair_block": str(recorded_decoder["pair_block"]),
         "--exp10": str(decoder["exp10"]),
         "--backward_alignment": str(decoder["backward_alignment"]),
     }
@@ -1165,10 +1356,15 @@ def validate_workbench_bitmatrix(
     if metadata.get("recent_call") != decoder["recent_call"]:
         raise ValueError("bit-matrix call rule does not match the contract")
     thresholds = metadata.get("thresholds_years", [])
-    if len(thresholds) != 1 or not np.isclose(
-        float(thresholds[0]), decoder["threshold_years"], rtol=0, atol=1e-12
+    expected_thresholds = _contract_thresholds(decoder)
+    if len(thresholds) != len(expected_thresholds) or not all(
+        np.isclose(float(observed), expected, rtol=0, atol=1e-12)
+        for observed, expected in zip(thresholds, expected_thresholds)
     ):
-        raise ValueError("bit-matrix threshold does not match the contract")
+        raise ValueError(
+            "bit-matrix thresholds do not match the contract: "
+            f"bit matrix {list(thresholds)}, contract {expected_thresholds}"
+        )
     expected_two_ne = decoder["theta"] / (2.0 * decoder["mutation_rate"])
     # The native decoder represents scaled_mutation_rate as a C++ float and
     # derives 2Ne from that actual value. Permit that single-precision input
@@ -1367,16 +1563,20 @@ def validate_workbench_completion(
         raise ValueError("completion contract payload is absent or malformed")
     if completion.get("contract_sha256") != contract_sha256(stored_contract):
         raise ValueError("completion contract payload hash is corrupt")
-    stored_cache_digest = completion.get("cache_contract_sha256")
-    if stored_cache_digest is None:
-        stored_cache_digest = cache_contract_sha256(stored_contract)
+    # Recomputed from the stored contract rather than read from the record:
+    # the payload was just verified intact above, and recomputing means a
+    # completion written under an older, stricter key rule still validates
+    # instead of forcing a needless re-decode.
+    stored_cache_digest = cache_contract_sha256(stored_contract)
     if stored_cache_digest != cache_contract_sha256(contract):
         raise ValueError("completion contract does not match requested inputs/settings")
     summary_frame, _ = validate_summary(
         summary_path,
         threshold_years=contract["decoder"]["threshold_years"],
     )
-    validate_run_json(run_json_path, contract)
+    validate_run_json(
+        run_json_path, contract, recorded_contract=stored_contract
+    )
     pairs_manifest_path = Path(contract["pairs_manifest"])
     expected_samples = read_sample_list(contract["sample_selection"]["sample_list"])
     decoder = contract["decoder"]
@@ -2039,8 +2239,22 @@ def _gtf_attributes(value: str) -> dict[str, str]:
     return attributes
 
 
+# A refGene symbol can carry transcripts at two unrelated loci on one
+# chromosome. Taking the union there would invent a gene spanning the gap, so
+# above this width the longest single transcript is used instead. The widest
+# real human genes are around 2.3 Mb (CNTNAP2, DMD).
+MAX_GENE_SPAN_BP = 3_000_000
+
+
 def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
-    """Read GRCh38 GENCODE GTF genes into 0-based half-open coordinates."""
+    """Read a UCSC refGene GTF into 0-based half-open gene spans.
+
+    refGene is a transcript-level track: it has no ``gene`` feature and no
+    ``gene_type``, and its ``gene_id`` is already a gene symbol rather than an
+    accession. Protein-coding is therefore ``transcript_id`` beginning ``NM_``
+    (``NR_`` is non-coding RNA), and a gene's span is the union of its coding
+    transcripts.
+    """
     path = Path(path)
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"gene annotation is absent or empty: {path}")
@@ -2055,7 +2269,7 @@ def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
             if not line or line.startswith("#"):
                 continue
             fields = line.rstrip("\n").split("\t")
-            if len(fields) != 9 or fields[2] != "gene":
+            if len(fields) != 9 or fields[2] != "transcript":
                 continue
             chromosome_label = fields[0].removeprefix("chr")
             if not chromosome_label.isdigit():
@@ -2064,29 +2278,76 @@ def _load_protein_coding_genes(path: str | Path) -> pd.DataFrame:
             if chromosome not in AUTOSOMES:
                 continue
             attributes = _gtf_attributes(fields[8])
-            gene_type = attributes.get("gene_type", attributes.get("gene_biotype", ""))
-            if gene_type != "protein_coding":
+            transcript = attributes.get("transcript_id", "")
+            if not transcript.startswith("NM_"):
                 continue
-            gene_name = attributes.get("gene_name")
-            gene_id = attributes.get("gene_id")
-            if not gene_name or not gene_id:
+            symbol = attributes.get("gene_name") or attributes.get("gene_id")
+            if not symbol:
                 continue
             rows.append(
                 {
                     "chromosome": chromosome,
                     "gene_start_0based": int(fields[3]) - 1,
                     "gene_end_0based_exclusive": int(fields[4]),
-                    "gene_name": gene_name,
-                    "gene_id": gene_id,
-                    "gene_type": gene_type,
+                    "gene_name": symbol,
                 }
             )
-    genes = pd.DataFrame(rows)
-    if genes.empty:
+    transcripts = pd.DataFrame(rows)
+    if transcripts.empty:
         raise ValueError("gene annotation contains no autosomal protein-coding genes")
+
+    grouped = transcripts.groupby(["chromosome", "gene_name"], sort=False)
+    genes = grouped.agg(
+        gene_start_0based=("gene_start_0based", "min"),
+        gene_end_0based_exclusive=("gene_end_0based_exclusive", "max"),
+    ).reset_index()
+
+    # Symbols whose union is implausibly wide sit at two loci; keep their
+    # longest single transcript rather than the span bridging both.
+    oversized = genes.loc[
+        genes["gene_end_0based_exclusive"] - genes["gene_start_0based"]
+        > MAX_GENE_SPAN_BP,
+        ["chromosome", "gene_name"],
+    ]
+    if not oversized.empty:
+        keys = set(map(tuple, oversized.to_numpy()))
+        split = transcripts.loc[
+            [tuple(row) in keys for row in
+             transcripts[["chromosome", "gene_name"]].to_numpy()]
+        ].copy()
+        split["span"] = (
+            split["gene_end_0based_exclusive"] - split["gene_start_0based"]
+        )
+        longest = (
+            split.sort_values("span", ascending=False)
+            .drop_duplicates(["chromosome", "gene_name"], keep="first")
+            .drop(columns="span")
+        )
+        genes = pd.concat(
+            [
+                genes.loc[
+                    [tuple(row) not in keys for row in
+                     genes[["chromosome", "gene_name"]].to_numpy()]
+                ],
+                longest,
+            ],
+            ignore_index=True,
+        )
+
+    genes["gene_id"] = genes["gene_name"]
+    genes["gene_type"] = "protein_coding"
     if genes.duplicated(["gene_id", "chromosome"]).any():
         raise ValueError("gene annotation contains duplicate autosomal gene records")
-    return genes.sort_values(
+    return genes[
+        [
+            "chromosome",
+            "gene_start_0based",
+            "gene_end_0based_exclusive",
+            "gene_name",
+            "gene_id",
+            "gene_type",
+        ]
+    ].sort_values(
         ["chromosome", "gene_start_0based", "gene_end_0based_exclusive", "gene_name"]
     ).reset_index(drop=True)
 
