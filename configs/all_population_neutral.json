@@ -1,0 +1,90 @@
+{
+  "schema": "gamma-smc.all-population-neutral/v1",
+  "parameters": {
+    "population": "EAS",
+    "introgression_proportion": 0.02,
+    "pulse_years": 50000,
+    "selection_onset_years": 50000,
+    "selection_coefficients": [],
+    "sample_diploids": 200,
+    "haplotype_pairs": 10000,
+    "mutation_rate": 1.25E-08,
+    "recombination_rate": 1E-08,
+    "generation_time_years": 25,
+    "simulated_length_bp": 11000000,
+    "scored_length_bp": 10000000,
+    "focal_position_bp": 5000000,
+    "stride_bp": 10000,
+    "tmrca_cutoffs_years": [
+      10000,
+      20000,
+      30000,
+      40000,
+      50000
+    ],
+    "alpha": 0.05,
+    "statistic": "frac_recent_T",
+    "recent_call": "mean",
+    "dominance": 0.5,
+    "archaic_split_years": 500000,
+    "archaic_effective_size": 3600,
+    "archaic_bottleneck_size": 3600,
+    "archaic_bottleneck_generations": 0,
+    "slim_burn_in": 0.1,
+    "seed_base": 20380101,
+    "pairs_seed": 1729,
+    "maximum_sample_attempts": 10000,
+    "decoder_scaled_mutation_rate": 0.00075,
+    "decoder_recombination_to_mutation_ratio": 0.8,
+    "decoder_cache_size": 1000,
+    "decoder_pair_block": 256,
+    "decoder_exp10": "accurate",
+    "decoder_backward_alignment": "fixed",
+    "storage_limit_bytes": 3000000000000,
+    "workers": 20,
+    "memory_limit_gb": 200,
+    "phlash_resource": "no_introgression_EAS_sim/resources/EAS.npz",
+    "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+    "schema": "gamma-smc.all-population-neutral/v1",
+    "target_replicates": 0,
+    "null_replicates": 1000,
+    "scaling_by_origin": {
+      "introgressed": 1,
+      "de_novo_EAS": 1
+    },
+    "focal_ascertainment": "nearest-archaic-segregating-at-onset/v1",
+    "selection_onsets_years": [
+      50000
+    ],
+    "prehistory": "DTWF_to_archaic_split_then_Hudson",
+    "worker_memory_budget_gb": 180
+  },
+  "populations": {
+    "AFR": {
+      "phlash_resource": "resources/phlash/AFR.npz",
+      "phlash_sha256": "b7bd5ddb1d7b154d91b9032f8a7fc23103709f12ffeb66123d068f305d636f86"
+    },
+    "AMR": {
+      "phlash_resource": "resources/phlash/AMR.npz",
+      "phlash_sha256": "ad2839b58fc962293eff733aa0d15ab31d74c61252d0e7cfe9d49a0db319d1c6"
+    },
+    "EAS": {
+      "phlash_resource": "no_introgression_EAS_sim/resources/EAS.npz",
+      "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+    },
+    "EUR": {
+      "phlash_resource": "resources/phlash/EUR.npz",
+      "phlash_sha256": "515bd29113befdaec3699f24f82861656e35b7f6c9cb2844224ec2cdafef4ac6"
+    },
+    "MID": {
+      "phlash_resource": "resources/phlash/MID.npz",
+      "phlash_sha256": "cc4289d473d0345180afa1f58795598129dd1eaf0c2b3f0aede41fb4fc1d86f7"
+    },
+    "SAS": {
+      "phlash_resource": "resources/phlash/SAS.npz",
+      "phlash_sha256": "27b0c1ac16145a390e03746a4f4ef9d80ad1ae915699eb06e3f7ebb4214628e6"
+    }
+  },
+  "reuse_eas_root": "/mnt/d/phase2simselection/sim/segregating_introgression_h400",
+  "reuse_eas_report": "/mnt/d/phase2simselection/sim/segregating_introgression_h400/report_20260928"
+}

@@ -70,6 +70,8 @@ def tasks(cfg):
 def seed_for(cfg, task, attempt=0):
     identity = [SIM_CONTRACT, cfg["seed_base"], task["family"], task["role"],
                 task["onset_years"], task["s"], task["replicate"], attempt]
+    if cfg['population'] != 'EAS':
+        identity += ['population', cfg['population']]
     return int(legacy.canonical_hash(identity)[:16], 16) % (2**31 - 2) + 1
 
 

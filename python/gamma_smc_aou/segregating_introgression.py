@@ -20,6 +20,7 @@ import tskit
 
 from . import fresh_power as fp
 from .selection import _sample_diploids
+from .eas_sweep_models import load_phlash_npz
 
 SPEC = "nearest-archaic-segregating-at-onset/v1"
 
@@ -46,7 +47,8 @@ def stage_seed(seed, stage):
 
 
 def history(cfg):
-    artifact = fp.load_phlash_eas_npz(fp.REPO / cfg['phlash_resource'], expected_sha256=cfg['phlash_sha256'])
+    artifact = load_phlash_npz(fp.REPO / cfg['phlash_resource'], expected_sha256=cfg['phlash_sha256'],
+                              expected_population=cfg['population'])
     return fp.build_eas_demography_models(artifact)['median']
 
 
@@ -59,14 +61,15 @@ def population_sizes(cfg, times):
 def demography(cfg):
     h = history(cfg)
     dem = msprime.Demography()
-    dem.add_population(name='EAS', initial_size=float(h.ne[0]))
+    population = cfg['population']
+    dem.add_population(name=population, initial_size=float(h.ne[0]))
     dem.add_population(name='Neanderthal', initial_size=cfg['archaic_effective_size'])
     for t, ne in zip(h.time_generations[1:], h.ne[1:]):
-        dem.add_population_parameters_change(time=float(t), initial_size=float(ne), population='EAS')
-    dem.add_mass_migration(time=cfg['pulse_years']/cfg['generation_time_years'], source='EAS',
+        dem.add_population_parameters_change(time=float(t), initial_size=float(ne), population=population)
+    dem.add_mass_migration(time=cfg['pulse_years']/cfg['generation_time_years'], source=population,
                            dest='Neanderthal', proportion=cfg['introgression_proportion'])
     dem.add_mass_migration(time=cfg['archaic_split_years']/cfg['generation_time_years'], source='Neanderthal',
-                           dest='EAS', proportion=1)
+                           dest=population, proportion=1)
     dem.sort_events()
     dem.validate()
     return dem
@@ -116,7 +119,7 @@ def choose_focal(ts, cfg):
                     onset_alt_copies=int(carriers), onset_total_copies=ts.num_samples,
                     onset_af=carriers/ts.num_samples, distance_bp=abs(site.position-center),
                     eligible_window=[low, high], sites_inspected=inspected,
-                    rule='nearest archaic-origin biallelic EAS polymorphism; ties use lower coordinate')
+                    rule=f"nearest archaic-origin biallelic {cfg['population']} polymorphism; ties use lower coordinate")
     return None
 
 
@@ -125,16 +128,17 @@ def onset_ancestry(cfg, task, seed):
     size = int(population_sizes(cfg, [age])[0])
     split = cfg['archaic_split_years']/cfg['generation_time_years']
     dem = demography(cfg)
-    samples = [msprime.SampleSet(size, population='EAS', time=age, ploidy=2)]
+    population = cfg['population']
+    samples = [msprime.SampleSet(size, population=population, time=age, ploidy=2)]
     if task['ascertainment_years'] == cfg['pulse_years']:
         # Ancient samples activate after same-time demographic events in msprime.
         # Represent the post-pulse cohort explicitly, without shifting its date:
         # each of the 2N haplotypes draws its source with probability q.
         count = np.random.default_rng(stage_seed(seed,'pulse_allocation')).binomial(2*size, cfg['introgression_proportion'])
-        samples = [msprime.SampleSet(2*size-count, population='EAS', time=age, ploidy=1)]
+        samples = [msprime.SampleSet(2*size-count, population=population, time=age, ploidy=1)]
         if count:
             samples.append(msprime.SampleSet(count, population='Neanderthal', time=age, ploidy=1))
-        dem.events = [e for e in dem.events if not (isinstance(e,msprime.MassMigration) and e.source=='EAS')]
+        dem.events = [e for e in dem.events if not (isinstance(e,msprime.MassMigration) and e.source==population)]
     # All diploid genomes alive at onset are needed for a forward WF restart.
     return msprime.sim_ancestry(samples=samples,
         demography=dem, sequence_length=cfg['simulated_length_bp'], recombination_rate=cfg['recombination_rate'],

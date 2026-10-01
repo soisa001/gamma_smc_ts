@@ -94,7 +94,7 @@ def _float_list(values: np.ndarray) -> list[float]:
 
 @dataclass(frozen=True)
 class PhlashEasArtifact:
-    """Validated EAS PHLASH bootstrap artifact and its pointwise quantiles."""
+    """Validated population PHLASH artifact; legacy class name retained."""
 
     path: Path
     expected_sha256: str
@@ -143,7 +143,14 @@ def load_phlash_eas_npz(
     *,
     expected_sha256: str,
 ) -> PhlashEasArtifact:
-    """Load and validate a tracked ``phlash.aou.log-ne-mvn/v1`` EAS artifact.
+    """Load a hash-verified EAS artifact; retain the original EAS-only contract."""
+    return load_phlash_npz(path, expected_sha256=expected_sha256, expected_population=EAS_POPULATION)
+
+
+def load_phlash_npz(
+    path: str | Path, *, expected_sha256: str, expected_population: str,
+) -> PhlashEasArtifact:
+    """Load and validate a tracked ``phlash.aou.log-ne-mvn/v1`` population artifact.
 
     The caller must supply the tracked file digest.  This makes artifact identity
     an explicit run input rather than an assumption based on a local filename.
@@ -198,9 +205,9 @@ def load_phlash_eas_npz(
         raise ValueError(
             f"PHLASH artifact schema is {schema!r}; expected {PHLASH_MVN_SCHEMA!r}"
         )
-    if population != EAS_POPULATION:
+    if population != expected_population:
         raise ValueError(
-            f"PHLASH artifact population is {population!r}; expected {EAS_POPULATION!r}"
+            f"PHLASH artifact population is {population!r}; expected {expected_population!r}"
         )
     if time.ndim != 1 or time.size < 2:
         raise ValueError("time must be a one-dimensional array of length at least two")
@@ -328,13 +335,13 @@ def build_eas_demography_models(
         time = np.concatenate(([0.0], artifact.time_generations.astype(np.float64)))
         ne = np.concatenate(([float(source_ne[0])], source_ne.astype(np.float64)))
         msprime_model = _piecewise_msprime_demography(
-            time, ne, population=EAS_POPULATION
+            time, ne, population=artifact.population
         )
         stdpopsim_model = stdpopsim.DemographicModel(
-            id=f"PhlashEAS{label.capitalize()}",
-            description=f"PHLASH EAS pointwise {probability:g} quantile",
+            id=f"Phlash{artifact.population}{label.capitalize()}",
+            description=f"PHLASH {artifact.population} pointwise {probability:g} quantile",
             long_description=(
-                "Single-population piecewise-constant EAS history constructed "
+                f"Single-population piecewise-constant {artifact.population} history constructed "
                 "from pointwise quantiles of tracked PHLASH bootstrap fits."
             ),
             generation_time=GENERATION_TIME_YEARS,
@@ -344,7 +351,7 @@ def build_eas_demography_models(
         )
         record = {
             "schema": "gamma-smc.eas-demography/v1",
-            "population": EAS_POPULATION,
+            "population": artifact.population,
             "trajectory_label": label,
             "pointwise_bootstrap_quantile": probability,
             "time_units": "generations",
