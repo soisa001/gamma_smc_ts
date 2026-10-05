@@ -145,10 +145,25 @@ def compute_one(payload):
             ts.write_vcf(stream,individuals=diploid_individuals(ts),
                 position_transform=lambda x: np.asarray(x,dtype=np.int64)+1)
         vcf_sha256=oo.legacy.digest(vcf)
+        decoder_mask = None
+        recombination_ratio = cfg['decoder_recombination_to_mutation_ratio']
+        if cfg.get('genomic_region'):
+            from .segregating_introgression import rate_map
+            offset = sim['crop_offset']
+            end = offset + cfg['scored_length_bp']
+            mutation_map = rate_map(cfg, 'mutation').slice(left=offset, right=end, trim=True)
+            decoder_mask = dest/'simulation_callable.bed'
+            with decoder_mask.open('w') as stream:
+                for left, right, rate in zip(mutation_map.position[:-1], mutation_map.position[1:], mutation_map.rate):
+                    if rate > 0:
+                        stream.write(f'1\t{int(left)}\t{int(right)}\n')
+            # The native decoder currently accepts a scalar recombination rate.
+            # Record/use the cropped region's mean, while simulation retains hotspots.
+            recombination_ratio = float(rate_map(cfg, 'recombination').slice(left=offset, right=end, trim=True).mean_rate / cfg['mutation_rate'])
         result = run_within_decoder(oo.REPO/'bin/gamma_smc',vcf,dest/'native_mean.tsv',input_format='vcf',
             raw_output=raw,threshold_years=cfg['tmrca_cutoffs_years'],generation_time=cfg['generation_time_years'],
             mutation_rate=cfg['mutation_rate'],scaled_mutation_rate=cfg['decoder_scaled_mutation_rate'],
-            recombination_to_mutation_ratio=cfg['decoder_recombination_to_mutation_ratio'],
+            recombination_to_mutation_ratio=recombination_ratio, mask=decoder_mask,
             output_at_stride=-1,output_at_hets=False,only_within=False,
             output_positions_file=position_path,pairs_file=root/'pairs.tsv',
             vcf_position_transform='one_based',recent_call='mean',threads=1,
@@ -156,6 +171,10 @@ def compute_one(payload):
             exp10=cfg['decoder_exp10'],backward_alignment=cfg['decoder_backward_alignment'],
             extra_args=['--no_recent_probability'])
         result.update(source_tree=str(tree_path),vcf_sha256=vcf_sha256,vcf_position_transform='one_based')
+        if decoder_mask is not None:
+            result.update(simulation_mask_sha256=oo.legacy.digest(decoder_mask),
+                recombination_model='cropped-region arithmetic mean; simulation uses full map',
+                recombination_to_mutation_ratio=recombination_ratio)
         temporary.cleanup()
         for channel in ('stdout','stderr'):
             (dest/f'decoder.{channel}.log').write_text(result.pop(channel))

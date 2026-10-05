@@ -22,6 +22,7 @@ tszip = ["tszip>=0.2"]
 test = ["pytest>=8"]
 ihs = ["scikit-allel==1.3.13"]
 selection = ["pyslim>=1.1.1", "stdpopsim==0.3.0"]
+genomic = ["pyBigWig==0.3.25"]
 
 [project.scripts]
 gamma-smc-aou = "gamma_smc_aou.cli:main"

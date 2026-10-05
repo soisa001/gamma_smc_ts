@@ -11,6 +11,8 @@ from pathlib import Path
 import subprocess
 import time
 import warnings
+from functools import lru_cache
+from types import SimpleNamespace
 
 import msprime
 import numpy as np
@@ -47,9 +49,48 @@ def stage_seed(seed, stage):
 
 
 def history(cfg):
+    if cfg.get('demographic_draw'):
+        spec = cfg['demographic_draw']
+        return _draw_history(spec['path'], spec['sha256'])
     artifact = load_phlash_npz(fp.REPO / cfg['phlash_resource'], expected_sha256=cfg['phlash_sha256'],
                               expected_population=cfg['population'])
     return fp.build_eas_demography_models(artifact)['median']
+
+
+@lru_cache(maxsize=4)
+def _draw_history(path, sha256):
+    assert fp.digest(Path(path)) == sha256, 'Demographic draw is corrupt'
+    with np.load(path, allow_pickle=False) as d:
+        time, ne = d['time_generations'], d['ne']
+    assert time.ndim == ne.ndim == 1 and len(time) == len(ne)
+    assert time[0] > 0 and np.all(np.diff(time) > 0)
+    assert np.all(np.isfinite(ne) & (ne > 0))
+    return SimpleNamespace(time_generations=np.r_[0., time], ne=np.r_[ne[0], ne])
+
+
+@lru_cache(maxsize=4)
+def _region_maps(path, sha256):
+    assert fp.digest(Path(path)) == sha256, 'Genomic rate map is corrupt'
+    with np.load(path, allow_pickle=False) as d:
+        result = {k: d[k] for k in d.files}
+    return result
+
+
+def rate_map(cfg, kind, protected_site=None):
+    """Keep biological mutation exposure separate from downstream analysis masks."""
+    if cfg.get('genomic_region'):
+        spec = cfg['genomic_region']
+        data = _region_maps(spec['path'], spec['sha256'])
+        positions, rates = data[kind+'_position'], data[kind+'_rate']
+    else:
+        positions = np.array([0, cfg['simulated_length_bp']])
+        rates = np.array([cfg[kind+'_rate']])
+    if protected_site is not None:
+        original = positions
+        positions = np.unique(np.r_[positions, protected_site, protected_site+1])
+        rates = rates[np.searchsorted(original, positions[:-1], side='right')-1].copy()
+        rates[positions[:-1] == protected_site] = 0
+    return msprime.RateMap(position=positions, rate=rates)
 
 
 def population_sizes(cfg, times):
@@ -141,7 +182,7 @@ def onset_ancestry(cfg, task, seed):
         dem.events = [e for e in dem.events if not (isinstance(e,msprime.MassMigration) and e.source==population)]
     # All diploid genomes alive at onset are needed for a forward WF restart.
     return msprime.sim_ancestry(samples=samples,
-        demography=dem, sequence_length=cfg['simulated_length_bp'], recombination_rate=cfg['recombination_rate'],
+        demography=dem, sequence_length=cfg['simulated_length_bp'], recombination_rate=rate_map(cfg, 'recombination'),
         model=[msprime.DiscreteTimeWrightFisher(duration=split-age+1), msprime.StandardCoalescent()],
         record_migrations=True, random_seed=stage_seed(seed, 'ancestry'))
 
@@ -149,7 +190,7 @@ def onset_ancestry(cfg, task, seed):
 def initial_state(cfg, task, seed, directory):
     age = int(task['ascertainment_years']/cfg['generation_time_years'])
     initial = onset_ancestry(cfg, task, seed)
-    initial = msprime.sim_mutations(initial, rate=cfg['mutation_rate'],
+    initial = msprime.sim_mutations(initial, rate=rate_map(cfg, 'mutation'),
         model=msprime.SLiMMutationModel(type=0, slim_generation=age+1), random_seed=stage_seed(seed, 'onset_mutations'))
     focal = choose_focal(initial, cfg)
     if focal is None:
@@ -212,6 +253,12 @@ def slim_script(cfg, task, directory, focal):
         if sizes[index] != sizes[index-1]:
             schedule.append(f'{index+1} early() {{ p0.setSubpopulationSize({sizes[index]}); }}')
     quoted = lambda name: json.dumps(str((directory/name).resolve()))
+    recombination = str(cfg['recombination_rate'])
+    if cfg.get('genomic_region'):
+        rm = rate_map(cfg, 'recombination')
+        rates = ','.join(format(float(r), '.17g') for r in rm.rate)
+        ends = ','.join(str(int(p)-1) for p in rm.position[1:])
+        recombination = f'c({rates}), c({ends})'
     script = f'''// Unscaled WF: Q=1. Natural focal polymorphism chosen before selection.
 initialize() {{
     initializeSLiMOptions(keepPedigrees=T);
@@ -222,7 +269,7 @@ initialize() {{
     m2.convertToSubstitution = F;
     initializeGenomicElementType("g1", m0, 1.0);
     initializeGenomicElement(g1, 0, {cfg['simulated_length_bp']-1});
-    initializeRecombinationRate({cfg['recombination_rate']});
+    initializeRecombinationRate({recombination});
 }}
 1 late() {{
     sim.readFromPopulationFile({quoted('onset.trees')});
@@ -335,11 +382,9 @@ def finalize(cfg,task,directory,identity,seed,attempts,focal):
     # Existing mutations are one realized neutral history. Add mutations only
     # during the forward interval, and protect the chosen site's allele identity.
     pos = focal['position']
-    positions = [0, pos, pos+1, cfg['simulated_length_bp']]
-    rates = [cfg['mutation_rate'], 0, cfg['mutation_rate']]
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=msprime.TimeUnitsMismatchWarning)
-        sampled = msprime.sim_mutations(sampled, rate=msprime.RateMap(position=positions, rate=rates),
+        sampled = msprime.sim_mutations(sampled, rate=rate_map(cfg, 'mutation', protected_site=pos),
             end_time=age, model=msprime.SLiMMutationModel(type=0, next_id=pyslim.next_slim_mutation_id(sampled), slim_generation=age+1),
             keep=True, random_seed=stage_seed(seed, 'forward_mutations'))
     sampled = pyslim.convert_alleles(pyslim.generate_nucleotides(sampled, seed=stage_seed(seed, 'nucleotides')))

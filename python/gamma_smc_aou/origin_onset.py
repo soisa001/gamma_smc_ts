@@ -174,6 +174,9 @@ def simulation_identity(cfg, task, runtime):
     parameters = {k: cfg[k] for k in SIM_KEYS}
     if cfg.get('focal_ascertainment'):
         parameters.update(focal_ascertainment=cfg['focal_ascertainment'], prehistory=cfg['prehistory'])
+    for key in ('demographic_draw', 'genomic_region'):
+        if key in cfg:
+            parameters[key] = cfg[key]
     return dict(contract=SIM_CONTRACT, parameters=parameters,
                 task=task, runtime=runtime)
 
