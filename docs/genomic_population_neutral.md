@@ -124,3 +124,10 @@ Across all grid points, typical (median absolute relative) differences in the
 median curve are 0.3–1.8%; typical differences in 95% band edges are 0.7–3.6%.
 Localized edge differences reach about 22%, especially away from the recent
 bottleneck. The Gaussian approximation is therefore close overall, not exact.
+
+The actual first-100-history subset was also plotted and visually checked at
+`used_history_diagnostics/`. Its typical median differences are 0.6–1.6%, and
+typical band-edge differences are 1.0–3.8%; localized edge differences reach
+30%. These are differences across time points, not confidence levels or errors
+in the MVN sampler. Both the empirical non-Gaussian fit distribution and finite
+draw counts can contribute.
