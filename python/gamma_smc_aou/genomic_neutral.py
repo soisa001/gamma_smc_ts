@@ -21,10 +21,11 @@ from . import segregating_introgression as si
 VERSION='mapped-regions-phlash-mvn/v1'
 
 
-def initialise(root, resources, histories, n_histories, replicates, workers, slim):
+def initialise(root, resources, histories, n_histories, replicates, workers, slim, worker_memory_budget_gb=180):
     assert 1<=workers<=20 and replicates % n_histories == 0
+    assert 0 < worker_memory_budget_gb <= 180
     study=json.loads((oo.REPO/'configs/all_population_neutral.json').read_text())
-    study['parameters'].update(null_replicates=replicates,workers=workers,mutation_rate=1.29e-8,
+    study['parameters'].update(null_replicates=replicates,workers=workers,worker_memory_budget_gb=worker_memory_budget_gb,mutation_rate=1.29e-8,
         decoder_recombination_model='cropped_region_mean', decoder_recombination_to_mutation_ratio=1e-8/1.29e-8)
     study.update(reuse_eas_root=str(root/'no_legacy_reuse'),reuse_eas_report=str(root/'no_legacy_reuse'))
     configs=pn.configs(study)
@@ -108,6 +109,8 @@ def main():
     p.add_argument('--n-histories',type=int,default=100)
     p.add_argument('--replicates',type=int,default=1000)
     p.add_argument('--workers',type=int,default=20)
+    p.add_argument('--worker-memory-budget-gb',type=float,default=180,
+                   help='Aggregate worker address-space allowance, divided by workers; at most 180 GB')
     p.add_argument('--slim',required=True)
     p.add_argument('--phase',choices=('plan','simulate','decode','run','report'),default='plan')
     p.add_argument('--limit',type=int,help='Execute only the first N planned tasks; leave the full manifest intact')
@@ -119,7 +122,7 @@ def main():
     import fcntl
     with (args.out/'study.lock').open('w') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        study,configs,runtime,decoder,plan=initialise(args.out,args.regions,args.histories,args.n_histories,args.replicates,args.workers,args.slim)
+        study,configs,runtime,decoder,plan=initialise(args.out,args.regions,args.histories,args.n_histories,args.replicates,args.workers,args.slim,args.worker_memory_budget_gb)
         if args.phase=='plan':
             print(json.dumps(dict(planned=len(plan),workers=args.workers,output=str(args.out))),flush=True)
             return
@@ -135,7 +138,8 @@ def main():
         failure=False
         def status(state):
             oo.legacy.atomic_json(args.out/'run_status.json',dict(state=state,pid=os.getpid(),workers=args.workers,
-                memory_limit_gb=200,worker_memory_budget_gb=180,total_planned=len(plan),scheduled=len(planned),
+                memory_limit_gb=200,worker_memory_budget_gb=args.worker_memory_budget_gb,
+                per_worker_address_space_gb=args.worker_memory_budget_gb/args.workers,total_planned=len(plan),scheduled=len(planned),
                 completed=len(results),failed=[r for r in results if r['state']=='failed'],active=list(active.values()),updated=time.time()))
         with ProcessPoolExecutor(max_workers=args.workers) as pool:
             def submit():

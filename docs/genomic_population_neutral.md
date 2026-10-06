@@ -113,6 +113,16 @@ Per-task stdout/stderr, retry reasons, exact seeds, input/output hashes, model
 scripts and native decoder commands are retained. `run_status.json` reports
 live tasks and failures. A lock prevents two runners using the same campaign.
 
+On October 6, after an AFR tree-simplification allocation failure under the
+9-GB per-worker limit, the campaign resumed with eight workers and a 160-GB
+worker budget (20 GB per worker). This reserves 40 GB of the 200-GB planning cap
+for paused campaigns and other overhead. Resource settings do not change the
+scientific cache identity, seeds or existing completed results:
+
+```bash
+bash scripts/run_genomic_neutral.sh run --workers 8 --worker-memory-budget-gb 160
+```
+
 Validation on October 5: 25 existing relevant tests and four new map/history/CDF
 tests passed. A separate small end-to-end run exercised variable recombination,
 mutation masking, focal ascertainment, cropping, truth scoring and the fixed
