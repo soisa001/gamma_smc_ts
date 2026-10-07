@@ -1,0 +1,7 @@
+population,completed_regions,distinct_histories,minimum_regions_per_history,maximum_regions_per_history,complete_ten_region_histories
+AFR,88,88,1,1,0
+AMR,90,90,1,1,0
+EAS,89,89,1,1,0
+EUR,90,90,1,1,0
+MID,89,89,1,1,0
+SAS,89,89,1,1,0

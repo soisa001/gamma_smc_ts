@@ -45,7 +45,10 @@ def read_record(path):
         frame['population']=pop
         frame['task_id']=task['id']
         frames.append(frame[frame.cutoff_years.isin([10000,50000])])
-    return pd.concat(frames),dict(path=str(path),sha256=digest(path),population=pop,task_id=task['id'])
+    parameters=record['identity']['simulation']['parameters']
+    return pd.concat(frames),dict(path=str(path),sha256=digest(path),population=pop,task_id=task['id'],
+        sample_af=record['sample_af'],onset_af=record['onset_af'],attempts=record['attempts'],
+        history_id=parameters.get('demographic_draw',{}).get('history_id'))
 
 
 def ecdf(values):
@@ -98,6 +101,10 @@ def panel(ax, scores, cuts, pop, source, method, time):
         ax.text(.97,.04,f'{len(available)} available',transform=ax.transAxes,ha='right',fontsize=13)
     ax.set(xlim=(0,100),ylim=(0,102),xticks=range(0,101,20),yticks=range(0,101,20))
     ax.xaxis.set_major_formatter(PercentFormatter(100,decimals=0))
+    if method=='all_pairs' and time==10000:
+        upper=max(1.,float(np.ceil(115*selected.score.max())))
+        ax.set(xlim=(0,upper),xticks=np.linspace(0,upper,5))
+        ax.xaxis.set_major_formatter(PercentFormatter(100,decimals=1 if upper<=5 else 0))
     ax.yaxis.set_major_formatter(PercentFormatter(100,decimals=0))
     ax.grid(alpha=.18)
     ax.spines[['top','right']].set_visible(False)
@@ -107,9 +114,16 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--reuse-snapshot',action='store_true',help='Redraw the existing frozen receipt list, not newly completed simulations')
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
-    paths=sorted(args.root.glob('*/regions/I50/null/rep*/calibration.json'))
+    if args.reuse_snapshot:
+        old=json.loads((args.out/'manifest.json').read_text())
+        paths=[Path(r['path']) for r in old['source_receipts']]
+        for path,record in zip(paths,old['source_receipts']):
+            assert digest(path)==record['sha256'],f'Changed frozen receipt: {path}'
+    else:
+        paths=sorted(args.root.glob('*/regions/I50/null/rep*/calibration.json'))
     with ThreadPoolExecutor(max_workers=4) as pool:
         data=list(pool.map(read_record,paths))
     scores=pd.concat([d[0] for d in data],ignore_index=True)
@@ -161,7 +175,7 @@ Each observation is one prespecified focal site from an independent retained
 neutral region, not every position within the 10-Mb region. Focal alleles are
 archaic-derived, segregating immediately after the 2% pulse at 50 kya, and
 observed today; subsequent fixation is retained. No new simulations or decoding
-were run. Both simulation campaigns remain paused.
+were run by this reporting script. The simulation runner is not modified.
 
 The four main numbers are percentages of pairs with TMRCA below 10,000 or
 50,000 years, not TMRCA ages. The blue step is the focal population ECDF; gray
@@ -190,11 +204,31 @@ PNG and editable vector PDF outputs share the same figure code.
 '''
     (args.out/'README.md').write_text(explanation)
     counts=scores.groupby('population').task_id.nunique().reindex(POPULATIONS)
+    history_rows=[]
+    for pop in POPULATIONS:
+        histories=[d[1]['history_id'] for d in data if d[1]['population']==pop and d[1]['history_id'] is not None]
+        sizes=pd.Series(histories,dtype=int).value_counts()
+        history_rows.append(dict(population=pop,completed_regions=int(counts[pop]),distinct_histories=len(sizes),
+            minimum_regions_per_history=int(sizes.min()) if len(sizes) else 0,
+            maximum_regions_per_history=int(sizes.max()) if len(sizes) else 0,
+            complete_ten_region_histories=int((sizes==10).sum())))
+    pd.DataFrame(history_rows).to_csv(args.out/'history_coverage.csv',index=False)
+    if any(row['distinct_histories'] for row in history_rows):
+        explanation+='''
+This snapshot uses the mapped-autosomal-region MVN-demography campaign. The
+CDFs pool completed regions. Demographic-history CDF bands are not inferred
+from singleton histories; history_coverage.csv reports replication. Completion
+order can favor faster histories, so incomplete-cohort tails remain provisional.
+'''
+        (args.out/'README.md').write_text(explanation)
     manifest=dict(schema='population-null-ecdf/v1',regions=int(counts.sum()),counts=counts.to_dict(),
         percentiles='numpy quantile method=inverted_cdf; available scores',provisional=True,
         source_receipts=[d[1] for d in data],script_sha256=digest(Path(__file__)),figure_count=len(names),
         simulations_started=False)
-    files=[p for p in args.out.iterdir() if p.suffix in ('.pdf','.png','.csv','.md')]
+    base_names={f'{name}{suffix}' for name in names for suffix in ('.pdf','.png')}
+    base_names.update(('null_cdf_all.pdf','null_scores_10k_50k.csv','cutoffs_all_methods.csv','history_coverage.csv','README.md'))
+    base_names.update(f'four_cutoffs_{source}_{method}.csv' for source in ('decoded','truth') for method in ('all_pairs','alt_alt'))
+    files=sorted(p for p in args.out.iterdir() if p.name in base_names)
     manifest['outputs']={p.name:dict(bytes=p.stat().st_size,sha256=digest(p)) for p in files}
     (args.out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     with zipfile.ZipFile(args.out/'null_cdf_bundle.zip','w',compression=zipfile.ZIP_DEFLATED) as archive:
