@@ -1,6 +1,9 @@
 # Preserve the byte identity of checksummed replicated-campaign artifacts.
 introgression_EAS_sim/replicate_study_n10/** -text -diff
 
+# The frozen null report is a binary PDF, including its checksummed font streams.
+docs/results/genomic_null_first100_20261007/*.pdf -text -diff
+
 # Preserve byte-exact focused-campaign contracts across Windows and Linux.
 # These sources and calibration artifacts are SHA-256-bound by frozen plans.
 .gitattributes -text

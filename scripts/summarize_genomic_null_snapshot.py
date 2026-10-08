@@ -36,12 +36,13 @@ def main():
     args=p.parse_args()
     out=args.snapshot
     manifest=json.loads((out/'manifest.json').read_text())
+    assert manifest['schema']=='population-null-ecdf/v2','Use the empirical inclusive-tail CDF snapshot'
     # Verify the existing snapshot before extending it; do not read new scores.
     for name,spec in manifest['outputs'].items():
         assert sha(out/name)==spec['sha256'],name
     source=pd.DataFrame(manifest['source_receipts'])
-    scores=pd.read_csv(out/'null_scores_10k_50k.csv')
-    cuts=pd.read_csv(out/'cutoffs_all_methods.csv')
+    scores=pd.read_csv(out/'null_scores_10k_50k.csv',float_precision='round_trip')
+    cuts=pd.read_csv(out/'cutoffs_all_methods.csv',float_precision='round_trip')
     coverage=pd.read_csv(out/'history_coverage.csv')
     status=json.loads((args.campaign/'run_status.json').read_text())
     source[['population','task_id','history_id','sample_af','onset_af','attempts']].to_csv(out/'focal_allele_frequencies.csv',index=False)
@@ -84,12 +85,13 @@ def main():
         t=Table(rows,colWidths=widths,repeatRows=1,hAlign='LEFT')
         t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e4eef7')),
             ('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),('FONTNAME',(0,1),(-1,-1),'Helvetica'),
-            ('FONTSIZE',(0,0),(-1,-1),12),('LEADING',(0,0),(-1,-1),15),('BOTTOMPADDING',(0,0),(-1,-1),8),
-            ('TOPPADDING',(0,0),(-1,-1),8),('LINEBELOW',(0,0),(-1,0),.7,colors.HexColor('#607d95')),
+            ('FONTSIZE',(0,0),(-1,-1),12),('LEADING',(0,0),(-1,-1),15),('BOTTOMPADDING',(0,0),(-1,-1),6),
+            ('TOPPADDING',(0,0),(-1,-1),6),('LINEBELOW',(0,0),(-1,0),.7,colors.HexColor('#607d95')),
             ('LINEBELOW',(0,1),(-1,-1),.3,colors.HexColor('#ccd5dd')),('ALIGN',(1,0),(-1,-1),'RIGHT')]))
         story.append(t)
     n=manifest['regions']
-    text('Genomic null calibration: interim results','TitleLarge')
+    text('Genomic null calibration: first 100 per population' if manifest.get('first_per_population')==100
+         else 'Genomic null calibration: interim results','TitleLarge')
     text(f'{args.report_date} | Frozen snapshot: <b>{n:,} / 6,000</b> completed simulations ({n/6000:.1%}). '
          f'Target: 1,000 per population. Live runner at report generation: {status["state"]}; '
          f'{status["workers"]} workers; {len(status["failed"])} reported failures.')
@@ -102,34 +104,51 @@ def main():
         r=primary.loc[pop]
         rows.append([pop,str(int(r.null_n))]+[f'{r[k]:.2f}%' for k in ('T10k_top5_pct','T10k_top1_pct','T50k_top5_pct','T50k_top1_pct')])
     table(rows,[86,47,136,136,136,136])
-    text('These percentiles are provisional','SubLarge')
-    small=primary.index[primary.null_n<99].tolist()
-    if small:
-        text(f'Fewer than 99 nulls are available for {", ".join(small)}, so <b>p &lt;= 0.01 cannot yet be attained</b> for those populations under '
-             'p = (1 + number of null scores at least as large as the target) / (n + 1). '
-             'Their displayed top-1% percentile is the sample maximum, not a validated p = 0.01 threshold.')
-    else:
-        text('The finite-null p-value grid supports p &lt;= 0.01, but score saturation and ties can still prevent rejection. '
-             'Use exact_p_attainable and the strict boundary columns in the cutoff CSV.')
+    text('Empirical p-values: ties included, no +1 adjustment','SubLarge')
+    text('<b>p = number of null scores greater than or equal to the observation / n.</b> '
+         'With n = 100, p &lt;= 0.05 requires strictly exceeding the 95th-percentile boundary; '
+         'p &lt;= 0.01 requires strictly exceeding the 99th-percentile boundary. Equality does not reject.')
+    text('The p-value grid has 0.01 steps. The 99th percentile is the second-largest null score, '
+         'so the 1% tail is still imprecisely estimated. An observation above every null has empirical p = 0, '
+         'which does not establish zero population tail probability.')
     history_note=('Every represented history currently has one completed region; ten are planned per history. '
                   if (coverage.maximum_regions_per_history==1).all() else 'History replication counts are supplied in history_coverage.csv. ')
-    text('Pooled CDFs are shown without demographic confidence bands. '+history_note+'Completed runs may favor faster histories.')
+    text('Pooled CDFs are shown without demographic confidence bands. '+history_note+
+         'This report freezes the prespecified cohort; later completed replicates are excluded.')
     story.append(PageBreak())
-    text('Exact p-value boundaries and interpretation','TitleLarge')
+    text('True TMRCA and allele-pair availability','TitleLarge')
     text('For the decoded all-pairs statistic, reject at p &lt;= 0.05 only when the target score is <b>strictly greater</b> '
-         'than the boundary below. Equality does not reject. These boundaries can differ from descriptive percentiles.')
-    rows=[['Population','10 kya boundary','50 kya boundary','Smallest possible p']]
-    for pop in POPS:
-        g=cuts[(cuts.population==pop)&(cuts.source=='decoded')&(cuts.method=='all_pairs')&(cuts.alpha==.05)].set_index('tmrca_years')
-        rows.append([pop,f'{g.loc[10000,"exact_p_boundary_pct"]:.2f}%',f'{g.loc[50000,"exact_p_boundary_pct"]:.2f}%',f'{g.loc[10000,"minimum_p"]:.4f}'])
-    table(rows,[120,180,180,197])
-    text('True TMRCA: descriptive percentiles for all pairs','SubLarge')
+         'than the top-5% value on the previous page. The true-TMRCA boundaries below use the same rule.')
+    text('True TMRCA: all sampled haplotype pairs','SubLarge')
     truth=pd.read_csv(out/'four_cutoffs_truth_all_pairs.csv').set_index('population')
     rows=[['Population','Nulls','10 kya: top 5%','10 kya: top 1%','50 kya: top 5%','50 kya: top 1%']]
     for pop in POPS:
         r=truth.loc[pop]
         rows.append([pop,str(int(r.null_n))]+[f'{r[k]:.2f}%' for k in ('T10k_top5_pct','T10k_top1_pct','T50k_top5_pct','T50k_top1_pct')])
     table(rows,[86,47,136,136,136,136])
+    text('ALT/ALT availability and saturation at 50 kya','SubLarge')
+    rows=[['Population','Available / n','Missing','p at 100%: true','p at 100%: decoded']]
+    for pop in POPS:
+        g=cuts[(cuts.population==pop)&(cuts.method=='alt_alt')&(cuts.tmrca_years==50000)&(cuts.alpha==.05)].set_index('source')
+        r=g.loc['truth']
+        rows.append([pop,f'{int(r.available_n)} / {int(r.null_n)}',str(int(r.missing_n)),
+                     f'{g.loc["truth","p_at_score_one"]:.2f}',f'{g.loc["decoded","p_at_score_one"]:.2f}'])
+    table(rows,[110,120,85,162,200])
+    text('At a target score of 100%, p is the fraction of null scores also equal to 100%. '
+         'This table counts ties in the numerator. If every null equals the target, p = 1.')
+    story.append(PageBreak())
+    text('Raw ALT/ALT fractions: empirical cutoffs','TitleLarge')
+    text('Percentages of carrier pairs; no carrier-mass weighting. The denominator remains all 100 null simulations. '
+         'Undefined null carrier-pair scores are retained below finite support; undefined targets are no-calls. '
+         'Available-only percentiles and tied counts are separately labeled in the full cutoff CSV.')
+    for mode in ('decoded','truth'):
+        text(f'{mode.capitalize()} TMRCA: ALT/ALT pairs','SubLarge')
+        wide=pd.read_csv(out/f'four_cutoffs_{mode}_alt_alt.csv').set_index('population')
+        rows=[['Population','Nulls','10 kya: top 5%','10 kya: top 1%','50 kya: top 5%','50 kya: top 1%']]
+        for pop in POPS:
+            r=wide.loc[pop]
+            rows.append([pop,str(int(r.null_n))]+[f'{r[k]:.2f}%' for k in ('T10k_top5_pct','T10k_top1_pct','T50k_top5_pct','T50k_top1_pct')])
+        table(rows,[86,47,136,136,136,136])
     story.append(PageBreak())
     text('Model, allele frequencies and limitations','TitleLarge')
     text('Neutral archaic-derived alleles, segregating immediately after 2% introgression at 50 kya and observed in the present sample '
@@ -140,11 +159,11 @@ def main():
          'Assembly gaps and missing map coverage are masked; the HMMix strict mask is not used.')
     text('True versus decoded and ALT/ALT results','SubLarge')
     text('The following pages include allele-frequency distributions, separate true/decoded CDFs, and all-pairs/ALT-ALT comparisons. '
-         'ALT/ALT scores use raw carrier-pair fractions. Undefined carrier-pair scores are excluded from displayed CDFs and descriptive '
-         'percentiles; exact tests retain them in the null denominator as no-calls. See the CSVs for availability and saturation flags.')
+         'ALT/ALT scores use raw carrier-pair fractions. Null no-calls remain below finite score support in the CDF and percentile '
+         'denominator. See the CSVs for available counts, tied fractions and p at each cutoff.')
     text('This campaign contains calibration nulls only. It does not supply new selected-treatment power or independent neutral-target FPR estimates.')
     saturated=cuts[(cuts.method=='alt_alt')&(cuts.tmrca_years==50000)&(cuts.alpha==.05)]
-    if (saturated.exact_p_status=='bounded_score_or_ties').all():
+    if (~saturated.empirical_p_attainable).all():
         text('<b>ALT/ALT at 50 kya is saturated:</b> every population has a 100% upper-tail boundary for both true and decoded TMRCA. '
              'Even a target score of 100% cannot reject at p &lt;= 0.05 with these nulls.')
     text('Focal ALT frequencies among retained nulls','SubLarge')
@@ -161,7 +180,8 @@ def main():
     writer.close()
     notes=dict(snapshot_regions=n,counts=manifest['counts'],live_run_status=status,
         history_coverage=coverage.to_dict('records'),simulations_changed=False,
-        contents='Executive tables, exact p boundaries, AF distributions, 32 true/decoded all-pairs/ALT-ALT CDF pages',
+        p_definition=manifest['p_definition'],
+        contents='Inclusive empirical tail tables, tied fractions, AF distributions, 32 true/decoded all-pairs/ALT-ALT CDF pages',
         source_snapshot_manifest_sha256=sha(out/'manifest.json'),script_sha256=sha(Path(__file__)),
         report_pages=len(PdfReader(out/'genomic_null_report.pdf').pages))
     files=sorted(f for f in out.iterdir() if f.suffix in ('.pdf','.png','.csv','.md','.json') and f.name!='report_manifest.json')

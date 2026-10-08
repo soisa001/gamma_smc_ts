@@ -141,3 +141,40 @@ typical band-edge differences are 1.0–3.8%; localized edge differences reach
 30%. These are differences across time points, not confidence levels or errors
 in the MVN sampler. Both the empirical non-Gaussian fit distribution and finite
 draw counts can contribute.
+
+## First 100 per population: reporting convention (October 7, 2026)
+
+The milestone report uses exactly `rep0000` through `rep0099` in each of the
+six populations, with all 600 completed receipts required. Later replicates
+are excluded even if already complete. The report does not modify the runner.
+
+At the user's request, its empirical p-value is `count(null >= observed) / n`,
+without an add-one adjustment. Ties count: if all nulls equal the observed
+score, p is 1. For 100 nulls, the 95th and 99th nearest-rank percentiles are
+sorted scores 95 and 99. The target must strictly exceed the corresponding
+boundary to attain p <= 0.05 or p <= 0.01. At score 1, the p-value is the
+fraction of nulls also equal to 1. The 1% tail remains imprecisely estimated
+with only 100 nulls; a zero empirical tail is not zero population probability.
+
+The existing no-call denominator convention is retained: undefined null
+ALT/ALT scores stay in n below finite score support, and an undefined target
+is a no-call. The main percentiles and CDFs use that same denominator;
+available-only percentiles are separately labeled in the CSV. Valid/missing
+counts and tied fractions are exported. Earlier reports using an add-one
+correction remain historical artifacts; live scoring code is unchanged.
+
+From the configured Linux/WSL checkout, using the existing uv environment:
+
+```bash
+report_root="${GENOMIC_OUTPUT_DIR:-../sim/genome_neutral_20261005}"
+uv --no-config run --no-project --python .venv-origin/bin/python python \
+  scripts/plot_population_null_cdfs.py --root "$report_root/campaign" \
+  --out "$report_root/first_100_each" --first-per-population 100
+uv --no-config run --no-project --python .venv-origin/bin/python python \
+  scripts/summarize_genomic_null_snapshot.py --campaign "$report_root/campaign" \
+  --snapshot "$report_root/first_100_each" --report-date 2026-10-07
+```
+
+The companion PDF builder additionally requires `pypdf` and `reportlab`,
+installed with `uv pip` into that environment. Use `--reuse-snapshot` with the
+CDF script when redrawing an existing frozen receipt list.

@@ -7,6 +7,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
+import math
 from pathlib import Path
 import zipfile
 import numpy as np
@@ -18,7 +19,7 @@ matplotlib.rcParams.update({'pdf.fonttype':42,'ps.fonttype':42,'font.size':17,
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.ticker import PercentFormatter
-from gamma_smc_aou.population_neutral import POPULATIONS, critical_summary
+from gamma_smc_aou.population_neutral import POPULATIONS
 
 
 def digest(path):
@@ -31,6 +32,7 @@ def read_record(path):
     task = record['task']
     assert task['role']=='null' and task['s']==0 and task['ascertainment_years']==50000
     root = path.parents[5]
+    assert path == root/pop/'regions'/task['id']/'calibration.json'
     frames = []
     for source in ('truth','decoded'):
         score_path = root/pop/'scores'/'regions'/task['id']/(source+'.csv')
@@ -53,8 +55,36 @@ def read_record(path):
 
 def ecdf(values):
     x=np.sort(np.asarray(values,dtype=float))
+    n=len(x)
+    assert n and not np.isinf(x).any()
     x=x[np.isfinite(x)]
-    return np.r_[0,x,1]*100,np.r_[0,np.arange(1,len(x)+1)/len(x),1]*100
+    missing=n-len(x)
+    return np.r_[0,x,1]*100,np.r_[missing/n,(missing+np.arange(1,len(x)+1))/n,1]*100
+
+
+def empirical_p(values, target):
+    """Inclusive empirical tail; null no-calls stay in n, target no-call is NaN."""
+    values=np.asarray(values,dtype=float)
+    assert len(values) and not np.isinf(values).any()
+    if not np.isfinite(target):
+        return np.nan
+    return float(np.count_nonzero(values>=target)/len(values))
+
+
+def empirical_summary(values, alpha):
+    values=np.asarray(values,dtype=float)
+    assert len(values) and not np.isinf(values).any() and 0<alpha<1
+    finite=values[np.isfinite(values)]
+    reference=np.sort(np.where(np.isnan(values),-np.inf,values))
+    q=float(reference[math.ceil((1-alpha)*len(values))-1])
+    allowed=int(np.flatnonzero(np.arange(len(values)+1)/len(values)<=alpha)[-1])
+    boundary=float(reference[-allowed-1])
+    return dict(empirical_percentile_pct=q*100,empirical_p_boundary_pct=boundary*100,
+        available_only_percentile_pct=float(np.quantile(finite,1-alpha,method='inverted_cdf'))*100 if len(finite) else np.nan,
+        p_at_cutoff=empirical_p(values,q),tied_n=int(np.count_nonzero(values==q)),
+        tied_fraction=float(np.count_nonzero(values==q)/len(values)),
+        p_at_score_one=empirical_p(values,1.),p_grid_step=1/len(values),
+        empirical_p_attainable=empirical_p(values,1.)<=alpha)
 
 
 def summaries(scores):
@@ -62,29 +92,23 @@ def summaries(scores):
     for key,g in scores.groupby(['population','source','method','cutoff_years']):
         available=g.score.dropna().to_numpy()
         for alpha in (.05,.01):
-            q=float(np.quantile(available,1-alpha,method='inverted_cdf')) if len(available) else np.nan
-            exact=critical_summary(g.score,alpha)
-            boundary=exact['critical_score']
-            possible=exact['rejection_possible_for_bounded_score']
-            reason=('available' if possible else 'insufficient_null_count' if len(g)+1 < 1/alpha else 'bounded_score_or_ties')
+            summary=empirical_summary(g.score,alpha)
             rows.append(dict(zip(['population','source','method','tmrca_years'],key),
                 alpha=alpha,null_n=len(g),available_n=len(available),missing_n=len(g)-len(available),
-                empirical_percentile_pct=q*100,
-                exact_p_boundary_pct=boundary*100 if np.isfinite(boundary) else np.nan,
-                exact_p_attainable=possible,exact_p_status=reason,
-                minimum_p=1/(len(g)+1),decision='finite score strictly greater than boundary',provisional=True))
+                **summary,p_definition='count(null >= observed) / n; no add-one adjustment',
+                decision='finite score strictly greater than boundary; missing target is no call',provisional=True))
     return pd.DataFrame(rows)
 
 
 def panel(ax, scores, cuts, pop, source, method, time):
     selected=scores[(scores.source==source)&(scores.method==method)&(scores.cutoff_years==time)]
     for other in POPULATIONS:
-        values=selected[selected.population==other].score.dropna()
+        values=selected[selected.population==other].score
         if len(values):
             ax.step(*ecdf(values),where='post',color='#c5c4ba',lw=1.2,zorder=1)
     group=selected[selected.population==pop]
     available=group.score.dropna()
-    if len(available): ax.step(*ecdf(available),where='post',color='#2074c9',lw=2.8,zorder=3)
+    if len(group): ax.step(*ecdf(group.score),where='post',color='#2074c9',lw=2.8,zorder=3)
     info=cuts[(cuts.population==pop)&(cuts.source==source)&(cuts.method==method)&(cuts.tmrca_years==time)]
     labels=[]
     for alpha in (.05,.01):
@@ -95,7 +119,7 @@ def panel(ax, scores, cuts, pop, source, method, time):
         if np.isfinite(q):
             ax.plot(q,level,'o',color='#ed733c',mec='white',ms=8,zorder=4)
             ax.vlines(q,0,level,color='#ed733c',lw=.8,ls=':',alpha=.6)
-        labels.append(f'Top {alpha*100:.0f}%: {q:.2f}%')
+        labels.append(f'{100*(1-alpha):.0f}th: {q:.2f}%')
     ax.set_title(f'{pop} | n = {len(group)}\n'+ '    '.join(labels),fontsize=16,loc='left',pad=10)
     if len(available)!=len(group):
         ax.text(.97,.04,f'{len(available)} available',transform=ax.transAxes,ha='right',fontsize=13)
@@ -104,7 +128,7 @@ def panel(ax, scores, cuts, pop, source, method, time):
     if method=='all_pairs' and time==10000:
         upper=max(1.,float(np.ceil(115*selected.score.max())))
         ax.set(xlim=(0,upper),xticks=np.linspace(0,upper,5))
-        ax.xaxis.set_major_formatter(PercentFormatter(100,decimals=1 if upper<=5 else 0))
+        ax.xaxis.set_major_formatter(PercentFormatter(100,decimals=1 if upper % 4 else 0))
     ax.yaxis.set_major_formatter(PercentFormatter(100,decimals=0))
     ax.grid(alpha=.18)
     ax.spines[['top','right']].set_visible(False)
@@ -115,6 +139,7 @@ def main():
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--reuse-snapshot',action='store_true',help='Redraw the existing frozen receipt list, not newly completed simulations')
+    parser.add_argument('--first-per-population',type=int,help='Require and use exactly replicates 0 through N-1 in every population')
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
     if args.reuse_snapshot:
@@ -124,6 +149,14 @@ def main():
             assert digest(path)==record['sha256'],f'Changed frozen receipt: {path}'
     else:
         paths=sorted(args.root.glob('*/regions/I50/null/rep*/calibration.json'))
+    if args.first_per_population is not None:
+        assert args.first_per_population>0
+        expected={args.root/pop/'regions/I50/null'/f'rep{rep:04d}'/'calibration.json'
+                  for pop in POPULATIONS for rep in range(args.first_per_population)}
+        assert expected.issubset(set(paths)),f'Missing required receipts: {sorted(expected-set(paths))}'
+        if args.reuse_snapshot:
+            assert set(paths)==expected,'Frozen snapshot differs from requested cohort'
+        paths=sorted(expected)
     with ThreadPoolExecutor(max_workers=4) as pool:
         data=list(pool.map(read_record,paths))
     scores=pd.concat([d[0] for d in data],ignore_index=True)
@@ -140,8 +173,8 @@ def main():
             wide.insert(0,'null_n',subset.groupby('population').null_n.first())
             wide.insert(1,'available_n',subset.groupby('population').available_n.first())
             wide.to_csv(args.out/f'four_cutoffs_{source}_{method}.csv')
-    notes=('PROVISIONAL completed subset | step CDF; descriptive empirical percentiles\n'
-           'Blue: focal population; gray: other populations. Percentiles are not finite-null p-value boundaries.')
+    notes=('Empirical p = count(null >= observed) / n; ties count; no +1 adjustment\n'
+           'Blue: focal population; gray: others. Null no-calls remain in n, below finite support.')
     names=[]
     with PdfPages(args.out/'null_cdf_all.pdf') as combined:
         def save(fig,name):
@@ -169,7 +202,7 @@ def main():
                     fig.suptitle(title,fontsize=23)
                     fig.supxlabel(notes,fontsize=13)
                     save(fig,f'cdf_{pop}_{source}_{method}')
-    explanation='''# Provisional neutral CDFs: completed simulations only
+    explanation='''# Empirical neutral CDFs: frozen completed cohort
 
 Each observation is one prespecified focal site from an independent retained
 neutral region, not every position within the 10-Mb region. Focal alleles are
@@ -179,24 +212,28 @@ were run by this reporting script. The simulation runner is not modified.
 
 The four main numbers are percentages of pairs with TMRCA below 10,000 or
 50,000 years, not TMRCA ages. The blue step is the focal population ECDF; gray
-steps are the other populations. Orange markers give descriptive 95th and 99th
+steps are the other populations. Orange markers give empirical 95th and 99th
 percentiles using the inverse empirical CDF (nearest-rank order statistic).
 They are placed on the nominal 95%/99% guides; a finite ECDF can jump past these
 levels. No smoothing or fitted tail model is used. Missing ALT/ALT pair classes
-are excluded from the displayed CDF and their counts are reported.
+remain in the denominator below finite score support; their CDF mass appears
+at the left edge. These are no-calls, not biological zero scores.
 
-The descriptive percentiles are NOT the exact significance thresholds.
-cutoffs_all_methods.csv separately reports conservative p=(1+#null>=score)/(n+1)
-boundaries for p<=0.05 and p<=0.01; a finite target score must strictly exceed
-the boundary. Missing null pair classes remain in that test's denominator,
-matching the campaign convention. Fewer than 19 nulls cannot attain p<=0.05;
-fewer than 99 cannot attain p<=0.01. Saturation at score=1 can also prevent
-rejection. Unsupported thresholds are flagged, never replaced with percentiles.
+The user's specified p-value is count(null >= observed) / n, without any +1
+adjustment. Ties count. Undefined targets are no-calls. With n=100, p<=0.05
+requires strictly exceeding sorted score 95; p<=0.01 requires strictly
+exceeding sorted score 99. Equality at those boundaries does not reject.
+The primary percentiles use all n nulls, with null no-calls below finite
+support. Available-only percentiles are separately labeled in the CSV.
+The CSV also exports tied counts/fractions, p at the cutoff and p at score 1.
+When all null scores equal the observation, p=1. At score 1, p is the fraction
+of null scores equal to 1. Saturation can prevent rejection at either level.
 
-All populations are below the planned 1,000 retained nulls. Small-sample tail
-percentiles often equal the observed maximum. Completed trajectories may be
-biased toward faster runs. These plots are provisional descriptions, not a
-finished null calibration. The all-pairs decoded tables/figures are the primary
+All populations are below the planned 1,000 retained nulls. With 100 nulls,
+the p grid has 0.01 steps and the 99th percentile is the second-largest score;
+the 1% tail is imprecisely estimated. A zero empirical tail is possible and
+does not establish zero population probability. These plots are provisional
+calibration results. The all-pairs decoded tables/figures are the primary
 view; truth and ALT/ALT are supplied separately.
 
 All source calibration receipts and truth/decoded score-file hashes were checked.
@@ -221,8 +258,10 @@ from singleton histories; history_coverage.csv reports replication. Completion
 order can favor faster histories, so incomplete-cohort tails remain provisional.
 '''
         (args.out/'README.md').write_text(explanation)
-    manifest=dict(schema='population-null-ecdf/v1',regions=int(counts.sum()),counts=counts.to_dict(),
-        percentiles='numpy quantile method=inverted_cdf; available scores',provisional=True,
+    manifest=dict(schema='population-null-ecdf/v2',regions=int(counts.sum()),counts=counts.to_dict(),
+        first_per_population=args.first_per_population,
+        p_definition='count(null >= observed) / n; no add-one adjustment',
+        percentiles='nearest rank; all nulls; missing nulls below finite support',provisional=True,
         source_receipts=[d[1] for d in data],script_sha256=digest(Path(__file__)),figure_count=len(names),
         simulations_started=False)
     base_names={f'{name}{suffix}' for name in names for suffix in ('.pdf','.png')}
