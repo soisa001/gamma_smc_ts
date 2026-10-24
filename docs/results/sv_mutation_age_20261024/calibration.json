@@ -1,0 +1,156 @@
+[
+  {
+    "calibration_regions": 40,
+    "log_padding": 0.850995631208356,
+    "mask_radius": 0,
+    "method": "composite_tempered",
+    "prior": "uniform",
+    "temperature": 100.0,
+    "training_events": 137,
+    "training_grid": [
+      {
+        "loss": 231.86539407692754,
+        "prior": "uniform",
+        "temperature": 1.0
+      },
+      {
+        "loss": 232.69524465575745,
+        "prior": "log_uniform",
+        "temperature": 1.0
+      },
+      {
+        "loss": 85.06855287476988,
+        "prior": "uniform",
+        "temperature": 3.0
+      },
+      {
+        "loss": 85.88295082688263,
+        "prior": "log_uniform",
+        "temperature": 3.0
+      },
+      {
+        "loss": 34.09987580695841,
+        "prior": "uniform",
+        "temperature": 10.0
+      },
+      {
+        "loss": 34.87100703697223,
+        "prior": "log_uniform",
+        "temperature": 10.0
+      },
+      {
+        "loss": 19.92065891575231,
+        "prior": "uniform",
+        "temperature": 30.0
+      },
+      {
+        "loss": 20.625064356670354,
+        "prior": "log_uniform",
+        "temperature": 30.0
+      },
+      {
+        "loss": 15.381173720923112,
+        "prior": "uniform",
+        "temperature": 100.0
+      },
+      {
+        "loss": 15.990284024374317,
+        "prior": "log_uniform",
+        "temperature": 100.0
+      }
+    ]
+  },
+  {
+    "calibration_regions": 40,
+    "feature_mode": "full",
+    "log_padding": 0.3656254991400125,
+    "mask_radius": 0,
+    "neighbors": 25,
+    "training_events": 137
+  },
+  {
+    "calibration_regions": 40,
+    "feature_mode": "frequency_only",
+    "log_padding": 0.40935136979666886,
+    "mask_radius": 0,
+    "neighbors": 25,
+    "training_events": 137
+  },
+  {
+    "calibration_regions": 40,
+    "log_padding": 1.015021558184431,
+    "mask_radius": 1000,
+    "method": "composite_tempered",
+    "prior": "uniform",
+    "temperature": 100.0,
+    "training_events": 137,
+    "training_grid": [
+      {
+        "loss": 272.53947444928383,
+        "prior": "uniform",
+        "temperature": 1.0
+      },
+      {
+        "loss": 273.4932331662207,
+        "prior": "log_uniform",
+        "temperature": 1.0
+      },
+      {
+        "loss": 98.53318892227708,
+        "prior": "uniform",
+        "temperature": 3.0
+      },
+      {
+        "loss": 99.46955756189655,
+        "prior": "log_uniform",
+        "temperature": 3.0
+      },
+      {
+        "loss": 38.04933031042848,
+        "prior": "uniform",
+        "temperature": 10.0
+      },
+      {
+        "loss": 38.94001767955452,
+        "prior": "log_uniform",
+        "temperature": 10.0
+      },
+      {
+        "loss": 21.161939853735593,
+        "prior": "uniform",
+        "temperature": 30.0
+      },
+      {
+        "loss": 21.981820560837324,
+        "prior": "log_uniform",
+        "temperature": 30.0
+      },
+      {
+        "loss": 15.694623380836362,
+        "prior": "uniform",
+        "temperature": 100.0
+      },
+      {
+        "loss": 16.405947295278388,
+        "prior": "log_uniform",
+        "temperature": 100.0
+      }
+    ]
+  },
+  {
+    "calibration_regions": 40,
+    "feature_mode": "full",
+    "log_padding": 0.3656254991400125,
+    "mask_radius": 1000,
+    "neighbors": 25,
+    "training_events": 137
+  },
+  {
+    "calibration_regions": 40,
+    "feature_mode": "frequency_only",
+    "log_padding": 0.40935136979666886,
+    "mask_radius": 1000,
+    "neighbors": 25,
+    "training_events": 137
+  }
+]

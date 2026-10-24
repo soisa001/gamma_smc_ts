@@ -1,0 +1,87 @@
+{
+  "study": "sv-mutation-age-pilot/v1",
+  "date": "2026-10-24",
+  "source_code_sha256": "708afe3ef82a1be66d8cc6128be2d623886c8099209a8b7591dd57d9708cc3f8",
+  "config_sha256": "50e4bce461978aeefc224a5d1df2b82d8bfbb7d8de693dfc9a72b471b9863ebd",
+  "simulated_regions": 160,
+  "events": 277,
+  "test_events": 72,
+  "source": "synthetic data only",
+  "files": [
+    {
+      "file": "metrics.tsv",
+      "sha256": "9f8fd8cefd328260768edfaad2b94aea8924f2a54a7965f149f671712d9a6749",
+      "bytes": 13879
+    },
+    {
+      "file": "metric_bootstrap.tsv",
+      "sha256": "6d3e670b0ca396ff9f8dd6d83fa5ca8b2bdeeeada72a1516121a3214209aa2c4",
+      "bytes": 12228
+    },
+    {
+      "file": "oracle_summary.tsv",
+      "sha256": "c406921ce4a20a98a8398ea62e38ebbe604d16faeb7603378159a8a3f86bdffa",
+      "bytes": 384
+    },
+    {
+      "file": "oracle_bounds.tsv",
+      "sha256": "da84b4580a25fa4306b538b741486d36177a1f6d99fd3fc492d166dcaec96204",
+      "bytes": 44841
+    },
+    {
+      "file": "truth_summary.tsv",
+      "sha256": "ef26c74da802f36b156cdcc2db54e5b2ad3d9c3354fd57a40667953588b215e5",
+      "bytes": 33159
+    },
+    {
+      "file": "predictions.tsv",
+      "sha256": "8974b5371f8125ccb99ee4ca259650c7904e7801c5d442a1d92c0232dd0c795a",
+      "bytes": 977945
+    },
+    {
+      "file": "features.tsv",
+      "sha256": "9df25415399aac2f5a42025964725333578272c19af13137c68735ea7d58d462",
+      "bytes": 209288
+    },
+    {
+      "file": "calibration.json",
+      "sha256": "f44f156a4c0398a23e50f40cc0f4a2c099e05a689e84a0a8ad10031b6d437245",
+      "bytes": 3432
+    },
+    {
+      "file": "analysis_config.json",
+      "sha256": "f502255e0991989c83389a23cdd35b3486d25944ba2862c16bf5f3dae8d38d05",
+      "bytes": 1332
+    },
+    {
+      "file": "age_estimates.png",
+      "sha256": "e22d37f0dc6acf6313bbe91b15325a75b852f6f7892d1fb89c37fd5f0c662198",
+      "bytes": 347225
+    },
+    {
+      "file": "age_estimates.pdf",
+      "sha256": "30e05f4dbabf0efe4c6dae69d1887eeafa20c8b88c84f880ff145cf87510ae3d",
+      "bytes": 24808
+    },
+    {
+      "file": "interval_calibration.png",
+      "sha256": "dc4effc33a1cb51b78de872548fdecfccfd65abe41c020ab6ca53828ad46515b",
+      "bytes": 94209
+    },
+    {
+      "file": "interval_calibration.pdf",
+      "sha256": "be4abd84db4423f7f7b7c1cc9467ec1e33123b0fecf1635fdde7b9116b49bade",
+      "bytes": 13909
+    },
+    {
+      "file": "oracle_age_bounds.png",
+      "sha256": "4dbd10f920687bda0f542b5308771e67c56c9b0a04a66fa411401f915338ee31",
+      "bytes": 180611
+    },
+    {
+      "file": "oracle_age_bounds.pdf",
+      "sha256": "1c8ec8f1b3059ad25b4c6fb78591240cc96f5cb28edcc7da5d9aa1385b1375d7",
+      "bytes": 16340
+    }
+  ]
+}
