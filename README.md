@@ -1,5 +1,8 @@
 # Getting Started
 
+For adding HiPhase singleton SNVs to an existing phased SV/SNV panel while
+preserving every original record, see the [physical phase-block lookup workflow](docs/singleton_phasing.md).
+
 For the current immediate-onset introgression simulation statistic, see the
 [archaic ALT/ALT signal](docs/archaic_alt_alt_signal.md): the within-carrier
 `frac_recent_T` weighted by the fraction of all pairs that are ALT/ALT.

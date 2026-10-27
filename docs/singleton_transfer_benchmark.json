@@ -1,0 +1,80 @@
+{
+  "all_expected_phases_correct": true,
+  "cached_jobs": 0,
+  "input_MB_per_second": 7.701815412764718,
+  "input_bytes_uncompressed": 53400092,
+  "kind": "synthetic correctness and parser throughput ONLY",
+  "note": "Short synthetic GT:PS records; not real compressed-file, biological-accuracy, or full-cohort runtime evidence.",
+  "parameters": {
+    "anchors": 40,
+    "contigs": 4,
+    "samples": 12000,
+    "singletons": 100,
+    "workers": 4
+  },
+  "seed": 1729,
+  "wall_seconds": 6.933442200068384,
+  "contig_summaries": [
+    {
+      "contig": "chr1",
+      "final_counts": {
+        "physical": 80,
+        "unresolved": 20
+      },
+      "preservation": {
+        "added_records": 100,
+        "exact_record_preservation": true,
+        "preserved_records": 40,
+        "scaffold_record_sha256": "6433455ad5366932ec21bab4612b274915ae8a061bcdcfae8bde0b187cd0a06b"
+      },
+      "process_peak_memory_mib": 40.10546875
+    },
+    {
+      "contig": "chr2",
+      "final_counts": {
+        "physical": 80,
+        "unresolved": 20
+      },
+      "preservation": {
+        "added_records": 100,
+        "exact_record_preservation": true,
+        "preserved_records": 40,
+        "scaffold_record_sha256": "8f4a1173b93821cb8adec16dbca62d05e7f8e8126bb7befedb1ca40ba5286676"
+      },
+      "process_peak_memory_mib": 40.65625
+    },
+    {
+      "contig": "chr3",
+      "final_counts": {
+        "physical": 80,
+        "unresolved": 20
+      },
+      "preservation": {
+        "added_records": 100,
+        "exact_record_preservation": true,
+        "preserved_records": 40,
+        "scaffold_record_sha256": "1b8359f727c9a24990d32f19cd75748b1c7fb83c184c795c3aaf3749141da030"
+      },
+      "process_peak_memory_mib": 40.55078125
+    },
+    {
+      "contig": "chr4",
+      "final_counts": {
+        "physical": 80,
+        "unresolved": 20
+      },
+      "preservation": {
+        "added_records": 100,
+        "exact_record_preservation": true,
+        "preserved_records": 40,
+        "scaffold_record_sha256": "a2a6ccf26e9a20c55c76d94aea7f91a5436fe06b0113d89152f73e6bd691581f"
+      },
+      "process_peak_memory_mib": 39.78515625
+    }
+  ],
+  "environment": {
+    "os": "Windows",
+    "python": "3.12",
+    "date": "2026-10-27"
+  }
+}
