@@ -71,11 +71,19 @@ errors in the existing panel are not corrected by this procedure.
 - This does **not** merge 12,000 per-sample HiPhase VCFs or infer reference calls
   from absence in those files. If the 3 TB input is per-sample, a separate joint
   genotyping/merge policy and singleton-discovery stage are needed first.
-- Default: four parallel chromosome workers, declared total budget 26 GB, seed
+- The chr1 staging runner defaults to four chunks within one chromosome, with
+  1 Mb overlap on each side. The core CLI retains `--chunks-per-chrom 1` for
+  compatibility; add `--chunks-per-chrom 4` to parallelize within a chromosome.
+  Missing flanks query the other completed chunk indexes by sample/PS, without
+  another HiPhase scan, so overlap is not a maximum anchor-search distance.
+  Disjoint core intervals own candidate positions and prevent duplicate output.
+- Default: four worker processes, declared total budget 26 GB, seed
   1729 (the lookup itself is deterministic and uses no RNG). `--memory-gb` records
   the intended allocation; it is not an OS memory cap. Enforce memory in Slurm or
-  VM provisioning. A one-chromosome pilot uses one active worker. Use at most 24
-  workers locally; a larger authorized VM may use up to 32, bounded by job count.
+  VM provisioning. A one-chromosome pilot uses up to four active workers when
+  four chunks are requested. Use at most 24
+  workers locally; a larger authorized VM may use up to 32, bounded by chunk/job
+  count. Chunked chromosomes run sequentially to avoid nested worker pools.
 - Genotypes are streamed by coordinate; informative anchor positions are stored
   in SQLite, with a bounded in-memory update batch. Each singleton uses two
   indexed predecessor/successor lookups on `(sample, PS, position)`. There is no
@@ -99,7 +107,7 @@ cd "$REPO"
 [[ "$(git branch --show-current)" == AOU_run_opt ]]
 git pull --ff-only origin AOU_run_opt
 uv run --no-project --python 3.12 --with pytest \
-  python -m pytest tests/test_phase_singletons.py -q
+  python -m pytest tests/test_phase_singletons.py tests/test_singleton_chunks.py -q
 ```
 
 Use the following only on the machine where approved inputs already reside.
@@ -122,7 +130,8 @@ uv run --no-project --python 3.12 scripts/make_singleton_manifest.py \
 uv run --no-project --python 3.12 scripts/phase_singletons.py \
   --manifest /approved/local/singletons/manifest.json \
   --out /approved/local/singletons/results \
-  --workers 4 --memory-gb 26 --min-anchors 2
+  --workers 4 --chunks-per-chrom 4 --overlap-bp 1000000 \
+  --memory-gb 26 --min-anchors 2
 ```
 
 Start with a representative chromosome or pre-extracted representative contig
@@ -131,7 +140,9 @@ buffered complete physical blocks; cutting off anchors at interval edges lowers
 the apparent transfer rate. Run selected full chromosomes when possible. After
 the pilot, expand `--contigs` and reuse the same output directory. Adding unrelated
 jobs does not require rescanning the HiPhase file for already prepared contigs.
-Do not split a physical block across parallel arbitrary windows.
+Use the supplied chunking mode when splitting a chromosome. Independent external
+windows without access to neighboring anchor indexes cannot recover flanks
+outside their inputs.
 
 For Slurm, request `--cpus-per-task=4 --mem=26G` around the same command. If data
 staging is needed in a controlled environment, the separate approved staging
@@ -140,7 +151,7 @@ operation should use `gcloud storage rsync SOURCE DEST --billing-project
 
 ## Outputs, evidence, and restart behavior
 
-Each contig directory contains:
+With `--chunks-per-chrom 1`, each contig directory contains:
 
 | File | Meaning |
 |---|---|
@@ -152,13 +163,29 @@ Each contig directory contains:
 | `workflow.log` | Start/completion/failure messages, decode commands, parameters, progress |
 | `prepare.done.json`, `done.json` | Atomic completion records with output SHA-256 checksums |
 
+With chunking enabled, `augmented.vcf.gz` remains the final output. The additions
+are compact `added_singletons.jsonl.gz` records (eight site fields, carrier index,
+phased carrier GT and background GT); there is no cohort-wide additions VCF.
+`chunk_NNN` directories hold per-chunk `anchors.sqlite`, compact candidates,
+additions, exclusions, logs, `extract.done.json` and `phase.done.json`. Root-level
+`chunks.json` records the cores/halos. Root-level `audit.json` includes each
+chunk's timings, counts, cross-chunk lookups and cache reuse. Extraction and phase
+assignment use separate parallel phases; the final panel merge is a single pass,
+followed by a separate read-only preservation check. Every core's original-panel
+hash is checked against extraction, then the full output is independently audited.
+Both input headers must declare matching positive contig lengths for chunking.
+
 Added records carry `SP_METHOD`, `SP_REASON`, `SP_ANCHORS`, `SP_LEFT_POS`,
 `SP_RIGHT_POS`, `SP_SOURCE_PS`, and `SP_SOURCE_GT`. The last two retain the carrier's
 original HiPhase evidence. `SP_ANCHORS` counts only observations at the selected
 nearest flank coordinates. Exclusion reasons distinguish no physical PS, no
 informative anchor, missing left/right anchor, and conflicting nearest anchors.
 Old FORMAT/PS and FORMAT/PQ are removed from **added** records because they describe
-the old physical coordinate system. Other new-record fields are retained. No
+the old physical coordinate system. In the original one-chunk mode, other
+new-record fields are retained. In chunked mode, additions use FORMAT/GT only:
+noncarriers become `0|0` for ALT singletons or `1|1` for reference-minor singletons;
+the carrier's source GT/PS remain in INFO. Missing genotypes are still rejected
+when establishing singleton status, not imputed. No
 field of an original panel record is changed. `anchors.sqlite` sample indices
 refer to the ordered manifest. These artifacts may contain controlled data and
 must stay with the input data.
@@ -184,7 +211,9 @@ tabix -f -p vcf "$DST"
 Cache decisions use manifest/sample identity, input paths/sizes/mtime, semantic
 algorithm version and relevant parameters, plus SHA-256 verification of generated
 artifacts. A new repository commit or worker-count change is not a cache key.
-Preparation is reusable across downstream failures and unrelated manifest edits.
+Preparation is reusable across downstream failures. In the original one-chunk
+mode it is also reusable across unrelated manifest edits; chunk extraction caches
+currently include the complete manifest identity.
 Algorithm version 2 invalidates version 1's block-consensus caches, since both the
 anchor selection and exclusion policy changed.
 Inputs are hashed logically during their normal scan, and source identity is
@@ -197,7 +226,7 @@ is no longer running. Failed runs never produce a new successful completion mark
 
 ## Local validation, 2026-10-27
 
-The focused suite passes 29 tests covering phase flips, same orientation,
+The original focused suite passes 29 tests covering phase flips, same orientation,
 reference-minor singletons, exclusion of SV anchors, expansion past homozygotes,
 nearest-flank agreement/conflict, distant disagreements, tied-coordinate conflicts,
 missing left/right flanks, sample/PS isolation, unsupported calls, duplicate/sort errors,
@@ -205,12 +234,25 @@ sample/header mismatches, truncated gzip, original-record preservation, corrupt-
 output repair, CLI/manifest generation, cache reuse, stale completion invalidation,
 and randomized orientations.
 
+Nine additional chunk tests check serial-equivalent decisions at boundaries,
+halos of zero/10/2000 bases, remote flanks, empty cores, tied anchors, random PS
+blocks, sparse reference-minor reconstruction and corrupted intermediate repair.
+The staging suite adds 10 tests, including default four-chunk dispatch.
+
 The synthetic cohort-width benchmark uses 12,000 samples, four chromosome jobs,
 160 shared markers bracketing 400 new singleton sites. It checks that all 320
 supported phases match truth, all 80 deliberately unphased targets are excluded,
 and all 160 original records survive exactly. Updated measured runtime,
 per-worker peak memory, and counts are recorded in
 [singleton_transfer_benchmark.json](singleton_transfer_benchmark.json).
+
+A separate single-chromosome chunk benchmark uses all 12,000 samples, 80 panel
+markers and 400 candidate sites distributed across the coordinate span. All 320
+supported calls match truth, all 80 unphased targets are excluded, and all 80
+panel records survive. It ran in 8.84 seconds with four processes and a 10 kb halo;
+all 320 accepted candidates required a lookup outside their local halo. Results
+are in [singleton_chunk_benchmark.json](singleton_chunk_benchmark.json). The input
+is unindexed synthetic VCF; it validates behavior, not indexed BCF speedup.
 
 This is a short parser/correctness benchmark with artificial GT:PS fields, not a
 biological accuracy estimate or full-genome timing extrapolation. No user callset
@@ -222,9 +264,13 @@ failed). SHAPEIT is neither required nor invoked.
 
 Physical transfer removes the statistical-phasing compute stage. Reading and
 parsing the 3 TB HiPhase file, scanning the 50 GB panel, writing new cohort-wide
-records, and verifying output now dominate. The implementation makes **one full
-HiPhase pass**; it rereads only the extracted singleton spool and the much smaller
-panel/output for assignment and verification. Each contig is processed separately.
+records, and verifying output now dominate. The one-chunk implementation makes
+one full HiPhase pass. Chunked indexed reads cover the chromosome once plus halo
+overlap; missing flanks use the SQLite indexes rather than rereading HiPhase.
+For four equal cores and 1 Mb halos, the internal boundaries add about 6 Mb of
+coordinate coverage (roughly 2.4% of GRCh38 chr1), though variant/byte overhead
+depends on local density. The sparse candidate/addition files avoid intermediate
+cohort-wide genotype rows. Only the final merge reconstructs those rows.
 
 **A runtime forecast cannot be obtained from 3 TB compressed input alone.** Site
 count, genotype-field width, compression ratio, shared heterozygosity, anchor count,
@@ -251,12 +297,17 @@ in the research report. Disk keeps accruing costs while retained, including when
 the VM is stopped.
 
 Four TiB is only a price example and may be too small. Peak disk includes staged
-inputs plus the complete raw singleton-candidate spool during preparation,
+inputs plus the raw singleton-candidate spool during preparation,
 accepted singleton output, the augmented panel, SQLite evidence, excluded-candidate
 audit, and any later BGZF copy. A conservative first estimate is
 `input_HiPhase + 2*panel + candidate_spool + 2*added_singleton_size + SQLite + audit + headroom`; add another
 `panel + added_singleton_size` while retaining a BGZF copy. Do not provision based
-only on the input's 3 TB size.
+only on the input's 3 TB size. That formula describes the original full-row
+intermediates. For chunked sparse mode use
+`staged_inputs + augmented_panel + compact_candidates/additions/audits + chunk_SQLite_indexes + headroom`,
+plus the temporary/replacement output and any later BGZF copy. Sparse files scale
+with candidate count rather than candidate count times sample count; anchor
+indexes and the final cohort-wide output can still be large.
 
 For the pilot, record sample count, shared variants, singleton candidates,
 compressed input/output bytes, `prepare_seconds`, total elapsed time, and peak

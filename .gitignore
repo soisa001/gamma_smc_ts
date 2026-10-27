@@ -11,6 +11,7 @@ __pycache__/
 .native/
 .native-stdpopsim/
 .tools/
+.tmp/singleton_chunk_benchmark/
 .wsl-tools/
 *.egg-info/
 sim_results/**/truth_summaries/

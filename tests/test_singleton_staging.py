@@ -73,6 +73,9 @@ def test_dry_run_calls_no_tools_and_creates_no_files(tmp_path, monkeypatch, caps
     assert plan["chromosome"] == "chr1"
     assert plan["active_chromosome_workers"] == 1
     assert plan["workers"] == 4
+    assert plan["active_chunk_workers"] == 4
+    assert plan["chunks_per_chrom"] == 4
+    assert plan["overlap_bp"] == 1000000
     assert plan["uploads"] is False
     assert not root.exists()
 
@@ -150,4 +153,7 @@ def test_prepare_and_run_use_local_staging_without_cloud_calls(tmp_path, monkeyp
     assert not any("gcloud" in cmd[0] for cmd in calls)
     assert any("make_singleton_manifest.py" in " ".join(cmd) for cmd in calls)
     assert any("phase_singletons.py" in " ".join(cmd) for cmd in calls)
+    phase_cmd = next(cmd for cmd in calls if "phase_singletons.py" in " ".join(cmd))
+    assert phase_cmd[phase_cmd.index("--chunks-per-chrom") + 1] == "4"
+    assert phase_cmd[phase_cmd.index("--overlap-bp") + 1] == "1000000"
     assert not (tmp_path / ".runner.lock").exists()

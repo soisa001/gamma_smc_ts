@@ -173,6 +173,8 @@ def plan(args):
         "staging_commands": [sync_command(args.gcloud, uri, args.root / "inputs" / name, args.billing_project or "$GOOGLE_PROJECT") for name, uri in source_paths(args.chrom).items()],
         "output": str(args.root / "results" / args.chrom / "augmented.vcf.gz"),
         "workers": args.workers, "active_chromosome_workers": 1,
+        "chunks_per_chrom": args.chunks_per_chrom, "overlap_bp": args.overlap_bp,
+        "active_chunk_workers": min(args.workers, args.chunks_per_chrom),
         "io_threads": args.io_threads, "memory_gb": args.memory_gb,
         "gcloud_processes": 1, "gcloud_threads_per_process": args.io_threads,
         "min_anchors": args.min_anchors, "seed": ph.SEED, "uploads": False,
@@ -191,13 +193,15 @@ def main(argv=None):
     local_bcftools = next((p for p in (repo / ".native/bin/bcftools", repo / ".tools/singleton-native/bin/bcftools") if p.is_file()), None)
     parser.add_argument("--bcftools", default=os.environ.get("BCFTOOLS_BIN") or (str(local_bcftools) if local_bcftools else "bcftools"))
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--chunks-per-chrom", type=int, default=4)
+    parser.add_argument("--overlap-bp", type=int, default=1000000)
     parser.add_argument("--io-threads", type=int, default=4, help="gcloud download threads and index-creation threads; does not parallelize phasing")
     parser.add_argument("--memory-gb", type=float, default=26)
     parser.add_argument("--min-anchors", type=int, choices=(1, 2), default=2)
     parser.add_argument("--scratch-reserve-gb", type=float, default=64, help="Minimum free space in addition to objects needing staging; not full-run sizing")
     parser.add_argument("--dry-run", action="store_true", help="Print resolved commands/paths with no tool/cloud calls or filesystem writes")
     args = parser.parse_args(argv)
-    if not 1 <= args.workers <= 32 or not 1 <= args.io_threads <= 32 or args.memory_gb <= 0 or args.scratch_reserve_gb < 0:
+    if not 1 <= args.workers <= 32 or not 1 <= args.io_threads <= 32 or args.memory_gb <= 0 or args.scratch_reserve_gb < 0 or not 1 <= args.chunks_per_chrom <= 32 or args.overlap_bp < 0:
         parser.error("Invalid resource setting")
     args.root = args.root.resolve()
     if args.dry_run:
@@ -236,7 +240,8 @@ def main(argv=None):
             print(f"Manifest ready: {manifest}")
             return
         command([sys.executable, scripts / "phase_singletons.py", "--manifest", manifest, "--out", args.root / "results",
-                 "--workers", str(args.workers), "--memory-gb", str(args.memory_gb), "--min-anchors", str(args.min_anchors), "--bcftools", args.bcftools])
+                 "--workers", str(args.workers), "--chunks-per-chrom", str(args.chunks_per_chrom), "--overlap-bp", str(args.overlap_bp),
+                 "--memory-gb", str(args.memory_gb), "--min-anchors", str(args.min_anchors), "--bcftools", args.bcftools])
         print(f"Local output: {args.root / 'results' / args.chrom / 'augmented.vcf.gz'}")
     except BaseException:
         logging.exception("Runner failed; completed stages can be reused on restart")

@@ -41,7 +41,8 @@ UV="${UV:-$REPO/.tools/uv-bin/uv}"
 "$UV" run --no-project --python 3.12 scripts/run_singleton_chr.py \
   --chrom chr1 --root "$ROOT" --phase all \
   --billing-project "$GOOGLE_PROJECT" \
-  --workers 4 --io-threads 4 --memory-gb 26 --min-anchors 2
+  --workers 4 --chunks-per-chrom 4 --overlap-bp 1000000 \
+  --io-threads 4 --memory-gb 26 --min-anchors 2
 ```
 
 The lightweight bootstrap reuses an available `bcftools`, including the existing
@@ -102,8 +103,14 @@ With the root in the cell above, the requested output is:
 /home/jupyter/singleton_transfer_chr1/results/chr1/augmented.vcf.gz
 ```
 
-The same directory contains `added_singletons.vcf.gz`,
-`excluded_singletons.tsv.gz`, `anchors.sqlite`, `audit.json`, and workflow logs.
+The same directory contains compact `added_singletons.jsonl.gz`,
+`excluded_singletons.tsv.gz`, `chunks.json`, `audit.json`, and workflow logs.
+Each `chunk_000` through `chunk_003` directory contains its own `anchors.sqlite`,
+compact candidate/addition files, extraction/phasing completion markers and log.
+Only the final merge expands a sparse carrier into a cohort-wide row. Added
+records use FORMAT/GT only: noncarriers are `0|0`, or `1|1` for reference-minor
+singletons; the carrier gets the transferred phase. Carrier source GT/PS remain
+in INFO. Original panel records retain every field, including FORMAT annotations.
 The root contains `manifest.json`, `staging.json`, `runner.log`, and the staged
 inputs in `inputs/hiphase` and `inputs/scaffold`. All are local to the VM. No upload
 command is implemented. The output is ordinary gzip VCF; see the
@@ -113,27 +120,50 @@ command is implemented. The output is ordinary gzip VCF; see the
 
 | Setting | Actual behavior |
 |---|---|
-| `--workers 4` | Up to four **separate chromosome processes** in the underlying multi-chromosome workflow |
-| This chr1 runner | Exactly one chromosome job, so only **one phasing worker** is active |
-| Within chr1 | Python parsing, nearest-anchor lookup, and output generation are serial; there is no native multithreaded phasing kernel |
+| `--workers 4 --chunks-per-chrom 4` | Four **process workers within chr1**, each owning approximately one quarter of the coordinate span |
+| `--overlap-bp 1000000` | Read a 1 Mb anchor halo on each side; only the disjoint core owns singleton output |
+| Extraction | Each worker streams its indexed panel/HiPhase regions into its own SQLite anchor index and sparse candidate file |
+| Phase assignment | After all indexes are complete, workers independently resolve their candidates; missing local flanks query other chunks' indexes |
+| Final insertion | One streaming merge writes the augmented panel, followed by an independent preservation audit |
+| `--chunks-per-chrom 1` | Original whole-chromosome implementation; only one active worker for chr1 and full-format addition intermediates |
 | `--io-threads 4` | Up to four gcloud transfer threads in one process; also used to create a missing CSI |
 | `--memory-gb 26` | Recorded total application allocation, not an OS-enforced memory limit |
 
-BCF decoding runs as separate bcftools subprocesses feeding the Python worker;
-that is not four-way parallel phasing. Increasing `--workers` will not accelerate
-chr1. The two input files are staged sequentially, with parallel transfer threads
+BCF decoding runs as separate bcftools subprocesses feeding each Python worker.
+The phasing code uses multiprocessing, not a native multithreaded kernel. Four
+workers do not promise fourfold speedup: disk bandwidth, VCF decoding, unequal
+variant density and the serial merge/audit limit scaling. Two roughly equal
+coordinate intervals can have different workloads. The two input files are staged sequentially, with parallel transfer threads
 within each rsync invocation. gcloud concurrency overrides are per subprocess,
 not persistent changes to the user's gcloud configuration. [gcloud concurrency
 properties](https://docs.cloud.google.com/sdk/gcloud/reference/config/set).
 
-Later, the core manifest can contain multiple chromosomes, making `--workers 4`
-useful. Parallelizing a single chromosome would require a separate implementation
-that preserves access to flanking anchors across partition boundaries; this runner
-does not split chr1 into arbitrary windows.
+The cross-chunk lookup uses the carrier's same HiPhase PS and the nearest
+informative SNV in the required direction. It does not scan the input again or
+stop at the configured overlap. Duplicate halo copies of an anchor are never
+double-counted. This keeps the whole-chromosome decision rule intact even with
+zero overlap. Conflicting informative flanks still exclude the candidate.
+
+If the core manifest later contains multiple chromosomes with chunking enabled,
+chromosomes run sequentially, each using the same bounded worker pool size. There
+is no nested four-chromosome-by-four-chunk process multiplication. With chunking
+disabled, the original parallelism across chromosomes remains available. The
+underlying CLI defaults to one chunk for compatibility; this chr1 runner defaults
+to four. Plain unindexed VCF is supported for tests but each worker must read it
+sequentially; use the staged indexed BCFs for actual parallel region reads.
 
 ## Validation status
 
-The local focused suite contains 29 phasing tests and 10 staging-control tests.
+The local focused suite contains 29 original phasing tests, 9 chunk tests and 10
+staging-control tests (48 total). Chunk tests compare serial and parallel
+decisions, including exact boundaries, empty cores, zero/large halos, remote
+flanks, conflicting/tied anchors, random phase blocks, reference-minor calls and
+corrupt intermediate repair. A 12,000-sample synthetic single-chromosome run used
+four workers, retained all 80 panel records, correctly phased 320 candidates and
+excluded 80 deliberately unphased candidates in 8.84 seconds. All 320 accepted
+candidates exercised cross-chunk lookup. See
+[the benchmark record](singleton_chunk_benchmark.json); this is not a real-data
+runtime forecast or a BCF throughput measurement.
 The staging tests mock cloud and bcftools calls and cover exact chr1 selection,
 download direction, CRC mismatch detection, restart reuse/repair, missing indexes,
 permission errors, changing source generations, disk preflight, and local-only

@@ -86,14 +86,14 @@ def peak_memory_mib():
 
 
 @contextmanager
-def text_input(path, bcftools="bcftools", contig=None):
+def text_input(path, bcftools="bcftools", contig=None, region=None):
     """Indexed BCF/VCF via bcftools; ordinary VCF/gzip works on Windows too."""
     path = Path(path)
     indexed = any(Path(str(path) + ext).exists() for ext in (".csi", ".tbi"))
     if path.suffix == ".bcf" or (contig and indexed):
         cmd = [bcftools, "view", "--no-version", "-Ov"]
         if contig:
-            cmd += ["-r", contig, "--regions-overlap", "0"]
+            cmd += ["-r", f"{contig}:{region[0]}-{region[1]}" if region else contig, "--regions-overlap", "0"]
         cmd.append(str(path))
         logging.info("VCF decode command: %s", json.dumps(cmd))
         # Never capture unbounded stderr in memory or risk a full pipe deadlock.
@@ -115,8 +115,8 @@ def text_input(path, bcftools="bcftools", contig=None):
 
 
 class VCF:
-    def __init__(self, handle, contig):
-        self.handle, self.contig = handle, contig
+    def __init__(self, handle, contig, region=None):
+        self.handle, self.contig, self.region = handle, contig, region
         self.meta = []
         for line in handle:
             line = line.rstrip("\r\n")
@@ -146,6 +146,8 @@ class VCF:
             if pos < last or pos < 1:
                 raise ValueError("VCF is not sorted by POS")
             last = pos
+            if self.region and not self.region[0] <= pos <= self.region[1]:
+                continue
             yield row, raw
 
 
@@ -304,7 +306,7 @@ def anchor_decision(left, right, min_anchors):
     return ("AGREEING_FLANKS" if len(selected) == 2 else "ONE_SIDED_ANCHOR"), counts
 
 
-def prepare(job, directory, args, expected_samples):
+def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=False):
     """One HiPhase pass; disk-backed block evidence, then candidate-only pass."""
     stats = Counter()
     started = time.monotonic()
@@ -322,8 +324,9 @@ def prepare(job, directory, args, expected_samples):
         db.commit()
         pending.clear()
 
-    with text_input(job["scaffold"], args.bcftools, job["contig"]) as sf, text_input(job["hiphase"], args.bcftools, job["contig"]) as hf:
-        scaffold, hiphase = VCF(sf, job["contig"]), VCF(hf, job["contig"])
+    region, core = job.get("region"), job.get("core")
+    with text_input(job["scaffold"], args.bcftools, job["contig"], region) as sf, text_input(job["hiphase"], args.bcftools, job["contig"], region) as hf:
+        scaffold, hiphase = VCF(sf, job["contig"], region), VCF(hf, job["contig"], region)
         if scaffold.samples != hiphase.samples or scaffold.samples != expected_samples:
             raise ValueError("Sample identity/order differs from the manifest or between inputs")
         header = merged_header(scaffold, hiphase)
@@ -334,13 +337,16 @@ def prepare(job, directory, args, expected_samples):
         scaffold_hash, hiphase_hash = hashlib.sha256(), hashlib.sha256()
         sg = iter(groups(scaffold))
         current = next(sg, None)
-        with gzip.open(directory / "raw_candidates.vcf.gz", "wt", encoding="utf-8", newline="\n") as candidates:
-            write_header(candidates, hiphase)
+        candidate_name = "raw_candidates.jsonl.gz" if sparse else "raw_candidates.vcf.gz"
+        with gzip.open(directory / candidate_name, "wt", encoding="utf-8", newline="\n") as candidates:
+            if not sparse:
+                write_header(candidates, hiphase)
 
             def save_scaffold(group):
                 for row, raw in group[1]:
-                    scaffold_hash.update((raw + "\n").encode())
-                    stats["scaffold_records"] += 1
+                    if not core or core[0] <= int(row[1]) <= core[1]:
+                        scaffold_hash.update((raw + "\n").encode())
+                        stats["scaffold_records"] += 1
                     cs = calls(row)
                     if any(hetero(c) and not c[1] for c in cs):
                         raise ValueError(f"Unphased scaffold heterozygote at {key(row)}")
@@ -377,14 +383,20 @@ def prepare(job, directory, args, expected_samples):
                         if len(pending) >= 50000:
                             flush()
                         continue
+                    if core and not core[0] <= pos <= core[1]:
+                        continue  # Halo records supply anchors, never candidates.
                     if not snv(row):
                         stats["excluded_non_biallelic_snv"] += 1
                         continue
                     cs = calls(row)
                     if row[6] not in ("PASS", "."):
                         stats["excluded_filtered_snv"] += 1
-                    elif singleton(cs) is not None:
-                        candidates.write(raw + "\n")
+                    elif (carrier := singleton(cs)) is not None:
+                        if sparse:
+                            background = "0|0" if sum(sum(c[0]) for c in cs) == 1 else "1|1"
+                            candidates.write(json.dumps({"row": row[:9] + [row[9 + carrier]], "carrier": carrier, "background": background}, separators=(",", ":")) + "\n")
+                        else:
+                            candidates.write(raw + "\n")
                         stats["singleton_candidates"] += 1
                     else:
                         stats["excluded_non_singleton_or_incomplete_diploid"] += 1
@@ -397,40 +409,73 @@ def prepare(job, directory, args, expected_samples):
                 save_scaffold(current)
                 current = next(sg, None)
         flush()
-        if not stats["scaffold_records"] or not stats["hiphase_records"]:
+        if not core and (not stats["scaffold_records"] or not stats["hiphase_records"]):
             raise ValueError("An input has no records for the requested contig")
         if not stats["shared_anchor_sites"]:
-            logging.warning("No exact shared SNV anchors; candidates will be excluded. Check build/allele representations.")
-        with text_input(directory / "raw_candidates.vcf.gz") as raw_handle, gzip.open(directory / "added_singletons.vcf.gz", "wt", encoding="utf-8", newline="\n") as output, gzip.open(directory / "excluded_singletons.tsv.gz", "wt", encoding="utf-8", newline="\n") as excluded:
-            raw_vcf = VCF(raw_handle, job["contig"])
-            output.write(header)
-            excluded.write("chrom\tpos\tref\talt\tsample\tsource_ps\treason\tleft_pos\tright_pos\tsame\tflipped\n")
-            for row, _ in raw_vcf.records():
-                cs = calls(row)
-                carrier = singleton(cs)
-                alleles, phased, ps = cs[carrier]
-                left, right = nearest_anchors(db, carrier, ps, int(row[1])) if phased and ps != "." else (None, None)
-                if not phased or ps == ".":
-                    reason = "NO_PHYSICAL_PS"
-                    counts = (0, 0)
-                else:
-                    reason, counts = anchor_decision(left, right, args.min_anchors)
-                if reason in ("AGREEING_FLANKS", "ONE_SIDED_ANCHOR"):
-                    if counts[1]:
-                        alleles = alleles[::-1]
-                    gt = "|".join(map(str, alleles))
-                    output.write("\t".join(annotate(row, carrier, gt, "PHYSICAL", reason, counts, left, right)) + "\n")
-                    stats["physical"] += 1
-                else:
-                    excluded.write("\t".join(map(str, [row[0], row[1], row[3], row[4], expected_samples[carrier], ps, reason, left[0] if left else ".", right[0] if right else ".", *counts])) + "\n")
-                    stats["excluded"] += 1
-                stats[reason.lower()] += 1
+            logging.warning("No local exact shared SNV anchors; other chunk indexes will be queried." if defer_phase else
+                            "No exact shared SNV anchors; candidates will be excluded. Check build/allele representations.")
     stats["anchor_positions"] = db.execute("SELECT count(*) FROM anchors").fetchone()[0]
     db.close()
     stats["prepare_seconds"] = time.monotonic() - started
     stats["scaffold_record_sha256"] = scaffold_hash.hexdigest()
     stats["hiphase_record_sha256"] = hiphase_hash.hexdigest()
+    if not defer_phase:
+        stats.update(resolve_candidates(job, directory, args, expected_samples, sparse))
     return dict(stats)
+
+
+def resolve_candidates(job, directory, args, expected_samples, sparse=False, other_indexes=()):
+    """Resolve compact candidates; indexes in other chunks close halo boundaries."""
+    stats = Counter()
+    paths = [directory / "anchors.sqlite", *other_indexes]
+    databases = [sqlite3.connect(Path(p).resolve().as_uri() + "?mode=ro", uri=True) for p in paths]
+    try:
+        for db in databases:
+            db.execute("PRAGMA cache_size=-8192")
+        candidate_name = "raw_candidates.jsonl.gz" if sparse else "raw_candidates.vcf.gz"
+        addition_name = "added_singletons.jsonl.gz" if sparse else "added_singletons.vcf.gz"
+        with text_input(directory / candidate_name) as raw_handle, gzip.open(directory / addition_name, "wt", encoding="utf-8", newline="\n") as output, gzip.open(directory / "excluded_singletons.tsv.gz", "wt", encoding="utf-8", newline="\n") as excluded:
+            if sparse:
+                candidates = (json.loads(line) for line in raw_handle)
+            else:
+                candidates = ({"row": row, "carrier": singleton(calls(row))} for row, _ in VCF(raw_handle, job["contig"]).records())
+                output.write((directory / "merged.header.vcf").read_text(encoding="utf-8"))
+            excluded.write("chrom\tpos\tref\talt\tsample\tsource_ps\treason\tleft_pos\tright_pos\tsame\tflipped\n")
+            for candidate in candidates:
+                row, carrier = candidate["row"], candidate["carrier"]
+                row_carrier = 0 if sparse else carrier
+                alleles, phased, ps = calls(row)[row_carrier]
+                left, right = nearest_anchors(databases[0], carrier, ps, int(row[1])) if phased and ps != "." else (None, None)
+                if phased and ps != "." and (left is None or right is None) and other_indexes:
+                    stats["cross_chunk_lookups"] += 1
+                    # Every index contains a complete contiguous interval. A flank
+                    # found locally is already nearest. Missing flanks need all
+                    # other indexes; overlapping copies are selected, not summed.
+                    pairs = [nearest_anchors(db, carrier, ps, int(row[1])) for db in databases[1:]]
+                    if left is None:
+                        left = max((a for a, _ in pairs if a is not None), default=None, key=lambda a: a[0])
+                    if right is None:
+                        right = min((b for _, b in pairs if b is not None), default=None, key=lambda b: b[0])
+                if not phased or ps == ".":
+                    reason, counts = "NO_PHYSICAL_PS", (0, 0)
+                else:
+                    reason, counts = anchor_decision(left, right, args.min_anchors)
+                if reason in ("AGREEING_FLANKS", "ONE_SIDED_ANCHOR"):
+                    gt = "|".join(map(str, alleles[::-1] if counts[1] else alleles))
+                    annotated = annotate(row, row_carrier, gt, "PHYSICAL", reason, counts, left, right)
+                    if sparse:
+                        output.write(json.dumps({"fields": annotated[:8], "carrier": carrier, "gt": gt, "background": candidate["background"]}, separators=(",", ":")) + "\n")
+                    else:
+                        output.write("\t".join(annotated) + "\n")
+                    stats["physical"] += 1
+                else:
+                    excluded.write("\t".join(map(str, [row[0], row[1], row[3], row[4], expected_samples[carrier], ps, reason, left[0] if left else ".", right[0] if right else ".", *counts])) + "\n")
+                    stats["excluded"] += 1
+                stats[reason.lower()] += 1
+    finally:
+        for db in databases:
+            db.close()
+    return stats
 
 
 def finalize(job, directory, args, expected_samples, stats):
@@ -563,13 +608,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--out", required=True, type=Path)
-    parser.add_argument("--workers", type=int, default=4, help="Parallel chromosome jobs; each job streams one contig")
+    parser.add_argument("--workers", type=int, default=4, help="Maximum worker processes: chunks when enabled, otherwise chromosomes")
+    parser.add_argument("--chunks-per-chrom", type=int, default=1, help="Disjoint coordinate cores per chromosome; chr1 runner defaults to 4")
+    parser.add_argument("--overlap-bp", type=int, default=1000000, help="Anchor halo on each side; missing flanks query other chunk indexes")
     parser.add_argument("--memory-gb", type=float, default=26, help="Declared TOTAL scheduler memory budget, not an OS-enforced cap")
     parser.add_argument("--min-anchors", type=int, choices=(1, 2), default=2, help="2 requires agreeing left/right SNVs; 1 explicitly permits a single-sided anchor")
     parser.add_argument("--bcftools", default="bcftools")
     parser.add_argument("--seed", type=int, default=SEED)
     args = parser.parse_args(argv)
-    if args.workers < 1 or args.workers > 32 or args.min_anchors < 1 or args.memory_gb <= 0:
+    if args.workers < 1 or args.workers > 32 or args.min_anchors < 1 or args.memory_gb <= 0 or not 1 <= args.chunks_per_chrom <= 32 or args.overlap_bp < 0:
         parser.error("Invalid resource or anchor-threshold parameter")
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     if not manifest.get("genome_build") or not manifest.get("jobs") or not manifest.get("samples"):
@@ -597,7 +644,10 @@ def main(argv=None):
     del params["manifest"], params["out"]
     manifest_hash = hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
     payloads = [(job, str(args.out.resolve()), params, samples, manifest_hash) for job in jobs]
-    if args.workers == 1 or len(jobs) == 1:
+    if args.chunks_per_chrom > 1:
+        from singleton_chunks import job_run as chunk_job_run
+        results = [chunk_job_run(p) for p in payloads]
+    elif args.workers == 1 or len(jobs) == 1:
         results = [job_run(p) for p in payloads]
     else:
         with ProcessPoolExecutor(max_workers=min(args.workers, len(jobs))) as pool:
