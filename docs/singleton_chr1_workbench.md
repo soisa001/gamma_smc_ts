@@ -15,8 +15,9 @@ override `--genome-build` if appropriate. No coordinates are lifted or transform
 
 ## Setup and run
 
-Run this cell on the Workbench VM that has bucket access and `GOOGLE_PROJECT`
-configured. It pulls code, installs missing public tools, stages chr1, creates a
+Run this cell on the Workbench VM with existing gcloud bucket access. No
+`GOOGLE_PROJECT` variable or account/billing override is required by the runner.
+It pulls code, installs missing public tools, stages chr1, creates a
 local sample manifest, then runs the nearest-flanking-SNV transfer. It does not
 upload results or push anything to GitHub.
 
@@ -26,7 +27,6 @@ set -euo pipefail
 REPO=/home/jupyter/gamma_smc_ts
 ROOT="$HOME/singleton_phased/working"
 VCFS="$HOME/singleton_phased/vcfs"
-: "${GOOGLE_PROJECT:?GOOGLE_PROJECT must identify the billing project}"
 
 if [[ ! -d "$REPO/.git" ]]; then
   git clone --branch AOU_run_opt \
@@ -41,7 +41,6 @@ UV="$(command -v uv || true)"
 UV="${UV:-$REPO/.tools/uv-bin/uv}"
 "$UV" run --no-project --python 3.12 scripts/run_singleton_chr.py \
   --chrom chr1 --root "$ROOT" --vcf-dir "$VCFS" --phase all \
-  --billing-project "$GOOGLE_PROJECT" \
   --workers 4 --chunks-per-chrom 4 --overlap-bp 1000000 \
   --io-threads 4 --memory-gb 26 --min-anchors 2
 ```
@@ -73,8 +72,13 @@ validated local files to create the ordered cohort manifest. `--phase run` uses
 validated local files, recreates the small manifest, and runs phasing. `all`
 performs the complete sequence. The `prepare` and `run` modes make no GCS calls.
 
-Staging uses `gcloud storage rsync SOURCE_DIRECTORY LOCAL_DIRECTORY
---billing-project "$GOOGLE_PROJECT"` with an exact filename exclusion filter.
+Staging uses `gcloud storage rsync SOURCE_DIRECTORY LOCAL_DIRECTORY` with an exact
+filename exclusion filter. It inherits gcloud's existing account and configuration.
+An explicit `--billing-project PROJECT_ID` is optional and, when supplied, is
+forwarded to rsync and object-metadata requests. The runner does not infer a
+billing override from `GOOGLE_PROJECT`. A Requester Pays bucket may still require
+a billing project through gcloud configuration or that optional flag; the storage
+service enforces that requirement. [Requester Pays documentation](https://docs.cloud.google.com/storage/docs/requester-pays).
 The chr1 filter excludes chr10 and all other chromosomes. It never deletes
 unmatched destination files. Source size, generation, and CRC32C are read before
 staging and checked again afterward. Every newly staged BCF/CSI is verified
@@ -164,8 +168,8 @@ sequentially; use the staged indexed BCFs for actual parallel region reads.
 
 ## Validation status
 
-The local focused suite contains 29 original phasing tests, 9 chunk tests and 10
-staging-control tests (48 total). Chunk tests compare serial and parallel
+The local focused suite contains 29 original phasing tests, 9 chunk tests and 13
+staging-control tests (51 total). Chunk tests compare serial and parallel
 decisions, including exact boundaries, empty cores, zero/large halos, remote
 flanks, conflicting/tied anchors, random phase blocks, reference-minor calls and
 corrupt intermediate repair. A 12,000-sample synthetic single-chromosome run used

@@ -161,3 +161,36 @@ def test_prepare_and_run_use_local_staging_without_cloud_calls(tmp_path, monkeyp
     assert phase_cmd[phase_cmd.index("--overlap-bp") + 1] == "1000000"
     assert not (tmp_path / ".runner.lock").exists()
     assert published == [Path.home() / "singleton_phased/vcfs"]
+
+
+@pytest.mark.parametrize("environment,override", [(None, None), ("unrelated-project", None), ("unrelated-project", "explicit-billing")])
+def test_staging_uses_gcloud_configuration_unless_billing_explicit(tmp_path, monkeypatch, environment, override):
+    if environment is None:
+        monkeypatch.delenv("GOOGLE_PROJECT", raising=False)
+    else:
+        monkeypatch.setenv("GOOGLE_PROJECT", environment)
+    invocations = []
+    monkeypatch.setattr(runner.shutil, "which", lambda executable: executable)
+    def fake_command(cmd, **kwargs):
+        invocations.append(cmd)
+        return json.dumps({"size": 100, "generation": "1", "crc32c": "synthetic"})
+    monkeypatch.setattr(runner, "command", fake_command)
+    def fake_stage(cfg):
+        assert cfg.billing_project == override
+        uri = runner.source_paths(cfg.chrom)["hiphase"]
+        runner.describe(cfg.gcloud, uri, cfg.billing_project)
+        runner.command(runner.sync_command(cfg.gcloud, uri, tmp_path / "inputs", cfg.billing_project))
+        return {}
+    monkeypatch.setattr(runner, "stage", fake_stage)
+    argv = ["--phase", "stage", "--root", str(tmp_path)]
+    if override:
+        argv += ["--billing-project", override]
+    runner.main(argv)
+    storage = [cmd for cmd in invocations if cmd[1] == "storage"]
+    assert len(storage) == 2
+    for cmd in storage:
+        assert "--account" not in cmd and "--project" not in cmd
+        if override:
+            assert cmd[-2:] == ["--billing-project", override]
+        else:
+            assert "--billing-project" not in cmd

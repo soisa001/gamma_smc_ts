@@ -237,7 +237,8 @@ and randomized orientations.
 Nine additional chunk tests check serial-equivalent decisions at boundaries,
 halos of zero/10/2000 bases, remote flanks, empty cores, tied anchors, random PS
 blocks, sparse reference-minor reconstruction and corrupted intermediate repair.
-The staging suite adds 10 tests, including default four-chunk dispatch.
+The staging suite adds 13 tests, including default four-chunk dispatch and staging
+without a forced billing/account override.
 
 The synthetic cohort-width benchmark uses 12,000 samples, four chromosome jobs,
 160 shared markers bracketing 400 new singleton sites. It checks that all 320

@@ -33,14 +33,14 @@ def source_paths(chrom):
     }
 
 
-def sync_command(gcloud, uri, dest, billing_project):
+def sync_command(gcloud, uri, dest, billing_project=None):
     parent, name = uri.rsplit("/", 1)
     # rsync takes a DIRECTORY source. Exclude everything except this exact BCF
     # and its optional CSI, so chr1 never downloads chr10 or another chromosome.
     exclude = rf"^(?!{re.escape(name)}(?:\.csi)?$).*"
     return [gcloud, "storage", "rsync", parent + "/", str(dest),
-            "--exclude", exclude, "--checksums-only", "--do-not-decompress",
-            "--billing-project", billing_project]
+            "--exclude", exclude, "--checksums-only", "--do-not-decompress"] + (
+                ["--billing-project", billing_project] if billing_project else [])
 
 
 def command(cmd, capture=False, env=None):
@@ -51,8 +51,10 @@ def command(cmd, capture=False, env=None):
     return result.stdout if capture else None
 
 
-def describe(gcloud, uri, billing_project, optional=False):
-    cmd = [gcloud, "storage", "objects", "describe", uri, "--raw", "--format=json", "--billing-project", billing_project]
+def describe(gcloud, uri, billing_project=None, optional=False):
+    cmd = [gcloud, "storage", "objects", "describe", uri, "--raw", "--format=json"]
+    if billing_project:
+        cmd += ["--billing-project", billing_project]
     try:
         data = json.loads(command(cmd, capture=True))
     except subprocess.CalledProcessError as error:
@@ -197,7 +199,8 @@ def plan(args):
         "chromosome": args.chrom, "phase": args.phase, "genome_build": args.genome_build,
         "root": str(args.root), "source_bcf": source_paths(args.chrom),
         "optional_source_indexes": {k: v + ".csi" for k, v in source_paths(args.chrom).items()},
-        "staging_commands": [sync_command(args.gcloud, uri, args.root / "inputs" / name, args.billing_project or "$GOOGLE_PROJECT") for name, uri in source_paths(args.chrom).items()],
+        "staging_commands": [sync_command(args.gcloud, uri, args.root / "inputs" / name, args.billing_project) for name, uri in source_paths(args.chrom).items()],
+        "billing_project_override": args.billing_project,
         "output": str(args.vcf_dir / f"{args.chrom}.singleton_phased.vcf.gz"),
         "working_output": str(args.root / "results" / args.chrom / "augmented.vcf.gz"),
         "workers": args.workers, "active_chromosome_workers": 1,
@@ -216,7 +219,7 @@ def main(argv=None):
     parser.add_argument("--vcf-dir", type=Path, default=Path.home() / "singleton_phased" / "vcfs", help="Final local VCF directory; created as needed")
     parser.add_argument("--phase", choices=("all", "stage", "prepare", "run"), default="all")
     parser.add_argument("--genome-build", default="GRCh38")
-    parser.add_argument("--billing-project", default=os.environ.get("GOOGLE_PROJECT", ""))
+    parser.add_argument("--billing-project", default=None, help="Optional billing override; otherwise use existing gcloud configuration")
     parser.add_argument("--gcloud", default="gcloud")
     repo = Path(__file__).resolve().parents[1]
     local_bcftools = next((p for p in (repo / ".native/bin/bcftools", repo / ".tools/singleton-native/bin/bcftools") if p.is_file()), None)
@@ -240,8 +243,6 @@ def main(argv=None):
     for executable in ([args.gcloud] if args.phase in ("all", "stage") else []) + [args.bcftools]:
         if shutil.which(executable) is None:
             parser.error(f"Required executable unavailable: {executable}. Run in the authorized VM with gcloud and bcftools installed.")
-    if args.phase in ("all", "stage") and not args.billing_project:
-        parser.error("Set GOOGLE_PROJECT or --billing-project for requester-pays staging")
     args.root.mkdir(parents=True, exist_ok=True)
     logging.basicConfig(filename=args.root / "runner.log", level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", force=True)
     lock = args.root / ".runner.lock"
