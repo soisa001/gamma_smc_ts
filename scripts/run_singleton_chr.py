@@ -165,13 +165,41 @@ def staged_paths(args):
     return paths
 
 
+def publish_local_vcf(args):
+    """Expose the validated result in vcfs/, reusing disk blocks when possible."""
+    directory = args.root / "results" / args.chrom
+    source = directory / "augmented.vcf.gz"
+    expected = json.loads((directory / "done.json").read_text())["artifacts"]["augmented.vcf.gz"]
+    if ph.digest(source) != expected:
+        raise ValueError("Completed VCF checksum mismatch")
+    args.vcf_dir.mkdir(parents=True, exist_ok=True)
+    target = args.vcf_dir / f"{args.chrom}.singleton_phased.vcf.gz"
+    if target.is_file() and ph.digest(target) == expected:
+        logging.info("Validated existing local VCF: %s", target)
+        return target
+    temporary = target.with_name(target.name + f".partial.{os.getpid()}")
+    try:
+        try:
+            os.link(source, temporary)
+        except OSError:
+            shutil.copyfile(source, temporary)
+        if ph.digest(temporary) != expected:
+            raise ValueError("Local VCF copy checksum mismatch")
+        os.replace(temporary, target)
+    finally:
+        temporary.unlink(missing_ok=True)
+    logging.info("LOCAL OUTPUT %s", json.dumps({"source": str(source), "output": str(target), "sha256": expected}))
+    return target
+
+
 def plan(args):
     return {
         "chromosome": args.chrom, "phase": args.phase, "genome_build": args.genome_build,
         "root": str(args.root), "source_bcf": source_paths(args.chrom),
         "optional_source_indexes": {k: v + ".csi" for k, v in source_paths(args.chrom).items()},
         "staging_commands": [sync_command(args.gcloud, uri, args.root / "inputs" / name, args.billing_project or "$GOOGLE_PROJECT") for name, uri in source_paths(args.chrom).items()],
-        "output": str(args.root / "results" / args.chrom / "augmented.vcf.gz"),
+        "output": str(args.vcf_dir / f"{args.chrom}.singleton_phased.vcf.gz"),
+        "working_output": str(args.root / "results" / args.chrom / "augmented.vcf.gz"),
         "workers": args.workers, "active_chromosome_workers": 1,
         "chunks_per_chrom": args.chunks_per_chrom, "overlap_bp": args.overlap_bp,
         "active_chunk_workers": min(args.workers, args.chunks_per_chrom),
@@ -184,7 +212,8 @@ def plan(args):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chrom", choices=[f"chr{i}" for i in range(1, 23)], default="chr1")
-    parser.add_argument("--root", type=Path, default=Path.home() / "singleton_transfer_chr1")
+    parser.add_argument("--root", type=Path, default=Path.home() / "singleton_phased" / "working", help="Working directory for staged inputs, intermediates and logs")
+    parser.add_argument("--vcf-dir", type=Path, default=Path.home() / "singleton_phased" / "vcfs", help="Final local VCF directory; created as needed")
     parser.add_argument("--phase", choices=("all", "stage", "prepare", "run"), default="all")
     parser.add_argument("--genome-build", default="GRCh38")
     parser.add_argument("--billing-project", default=os.environ.get("GOOGLE_PROJECT", ""))
@@ -203,7 +232,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if not 1 <= args.workers <= 32 or not 1 <= args.io_threads <= 32 or args.memory_gb <= 0 or args.scratch_reserve_gb < 0 or not 1 <= args.chunks_per_chrom <= 32 or args.overlap_bp < 0:
         parser.error("Invalid resource setting")
-    args.root = args.root.resolve()
+    args.root = args.root.expanduser().resolve()
+    args.vcf_dir = args.vcf_dir.expanduser().resolve()
     if args.dry_run:
         print(json.dumps(plan(args), indent=2))
         return
@@ -242,7 +272,7 @@ def main(argv=None):
         command([sys.executable, scripts / "phase_singletons.py", "--manifest", manifest, "--out", args.root / "results",
                  "--workers", str(args.workers), "--chunks-per-chrom", str(args.chunks_per_chrom), "--overlap-bp", str(args.overlap_bp),
                  "--memory-gb", str(args.memory_gb), "--min-anchors", str(args.min_anchors), "--bcftools", args.bcftools])
-        print(f"Local output: {args.root / 'results' / args.chrom / 'augmented.vcf.gz'}")
+        print(f"Local output: {publish_local_vcf(args)}")
     except BaseException:
         logging.exception("Runner failed; completed stages can be reused on restart")
         raise

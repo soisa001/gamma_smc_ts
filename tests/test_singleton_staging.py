@@ -76,6 +76,7 @@ def test_dry_run_calls_no_tools_and_creates_no_files(tmp_path, monkeypatch, caps
     assert plan["active_chunk_workers"] == 4
     assert plan["chunks_per_chrom"] == 4
     assert plan["overlap_bp"] == 1000000
+    assert plan["output"] == str(Path.home() / "singleton_phased/vcfs/chr1.singleton_phased.vcf.gz")
     assert plan["uploads"] is False
     assert not root.exists()
 
@@ -148,6 +149,8 @@ def test_prepare_and_run_use_local_staging_without_cloud_calls(tmp_path, monkeyp
     monkeypatch.setattr(runner.shutil, "which", lambda executable: executable)
     monkeypatch.setattr(runner, "staged_paths", lambda cfg: paths)
     monkeypatch.setattr(runner, "stage", lambda *a: pytest.fail("unexpected cloud staging"))
+    published = []
+    monkeypatch.setattr(runner, "publish_local_vcf", lambda cfg: published.append(cfg.vcf_dir) or cfg.vcf_dir / "chr1.singleton_phased.vcf.gz")
     monkeypatch.setattr(runner, "command", lambda cmd, **kwargs: calls.append(list(map(str, cmd))) or "test version")
     runner.main(["--root", str(tmp_path), "--phase", "run"])
     assert not any("gcloud" in cmd[0] for cmd in calls)
@@ -157,3 +160,4 @@ def test_prepare_and_run_use_local_staging_without_cloud_calls(tmp_path, monkeyp
     assert phase_cmd[phase_cmd.index("--chunks-per-chrom") + 1] == "4"
     assert phase_cmd[phase_cmd.index("--overlap-bp") + 1] == "1000000"
     assert not (tmp_path / ".runner.lock").exists()
+    assert published == [Path.home() / "singleton_phased/vcfs"]

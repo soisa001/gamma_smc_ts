@@ -24,7 +24,8 @@ upload results or push anything to GitHub.
 %%bash
 set -euo pipefail
 REPO=/home/jupyter/gamma_smc_ts
-ROOT=/home/jupyter/singleton_transfer_chr1
+ROOT="$HOME/singleton_phased/working"
+VCFS="$HOME/singleton_phased/vcfs"
 : "${GOOGLE_PROJECT:?GOOGLE_PROJECT must identify the billing project}"
 
 if [[ ! -d "$REPO/.git" ]]; then
@@ -39,7 +40,7 @@ bash scripts/bootstrap_singleton_tools.sh
 UV="$(command -v uv || true)"
 UV="${UV:-$REPO/.tools/uv-bin/uv}"
 "$UV" run --no-project --python 3.12 scripts/run_singleton_chr.py \
-  --chrom chr1 --root "$ROOT" --phase all \
+  --chrom chr1 --root "$ROOT" --vcf-dir "$VCFS" --phase all \
   --billing-project "$GOOGLE_PROJECT" \
   --workers 4 --chunks-per-chrom 4 --overlap-bp 1000000 \
   --io-threads 4 --memory-gb 26 --min-anchors 2
@@ -61,7 +62,8 @@ cd /home/jupyter/gamma_smc_ts
 UV="$(command -v uv || true)"
 UV="${UV:-$PWD/.tools/uv-bin/uv}"
 "$UV" run --no-project --python 3.12 scripts/run_singleton_chr.py \
-  --chrom chr1 --root /home/jupyter/singleton_transfer_chr1 --dry-run
+  --chrom chr1 --root "$HOME/singleton_phased/working" \
+  --vcf-dir "$HOME/singleton_phased/vcfs" --dry-run
 ```
 
 ## Staging and restarts
@@ -100,10 +102,18 @@ space; retain headroom. Staged inputs are retained for restart and future analys
 With the root in the cell above, the requested output is:
 
 ```text
-/home/jupyter/singleton_transfer_chr1/results/chr1/augmented.vcf.gz
+~/singleton_phased/vcfs/chr1.singleton_phased.vcf.gz
 ```
 
-The same directory contains compact `added_singletons.jsonl.gz`,
+Both directories are created as needed. `--root` defaults to
+`~/singleton_phased/working`; `--vcf-dir` defaults to `~/singleton_phased/vcfs`.
+The runner checks the completed VCF checksum, then creates the final named file
+atomically. It uses a hard link on the same filesystem to avoid storing a second
+large VCF, or a checksum-verified copy when hard links are unavailable. Treat
+generated VCFs as immutable. A matching existing final file is reused on restart.
+
+The working directory `~/singleton_phased/working/results/chr1` contains the
+internal `augmented.vcf.gz`, compact `added_singletons.jsonl.gz`,
 `excluded_singletons.tsv.gz`, `chunks.json`, `audit.json`, and workflow logs.
 Each `chunk_000` through `chunk_003` directory contains its own `anchors.sqlite`,
 compact candidate/addition files, extraction/phasing completion markers and log.
@@ -111,7 +121,7 @@ Only the final merge expands a sparse carrier into a cohort-wide row. Added
 records use FORMAT/GT only: noncarriers are `0|0`, or `1|1` for reference-minor
 singletons; the carrier gets the transferred phase. Carrier source GT/PS remain
 in INFO. Original panel records retain every field, including FORMAT annotations.
-The root contains `manifest.json`, `staging.json`, `runner.log`, and the staged
+The working root contains `manifest.json`, `staging.json`, `runner.log`, and the staged
 inputs in `inputs/hiphase` and `inputs/scaffold`. All are local to the VM. No upload
 command is implemented. The output is ordinary gzip VCF; see the
 [core workflow guide](singleton_phasing.md) for a later BGZF/indexing step.
