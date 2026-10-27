@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import json
+import shutil
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -141,6 +143,29 @@ def test_plan_payload_binds_base_without_changing_base_files():
     assert payload["paths"]["results_subdir"] != base.DEFAULT_RESULTS_SUBDIR
     assert len(payload["base_bundle"]["cells"]) == 4
     assert len(payload["cells"]) == 4
+    published = json.loads((result_dir / "analysis_completion.json").read_text())
+    assert payload["base_bundle"]["implementation"] == published["contract"]["implementation"]
+    assert payload["implementation"]["base"] == base._implementation_contract(ROOT)
+
+
+def test_base_bundle_rejects_changed_demography_schedule(monkeypatch):
+    schedule = base._schedule_table(ROOT)
+    schedule.loc[0, "diploid_n"] += 1
+    monkeypatch.setattr(base, "_schedule_table", lambda root: schedule)
+    with pytest.raises(ValueError, match="demography schedules"):
+        sensitivity._base_bundle_contract(_production_plan())
+
+
+def test_base_bundle_rejects_corrupt_published_output(tmp_path):
+    campaign = tmp_path / base.DEFAULT_CAMPAIGN_DIR
+    result_dir = campaign / base.DEFAULT_RESULTS_SUBDIR
+    shutil.copytree(CAMPAIGN / base.DEFAULT_RESULTS_SUBDIR, result_dir)
+    summary = result_dir / base.ANALYSIS_OUTPUT_NAMES["summary"]
+    with summary.open("ab") as handle:
+        handle.write(b"corruption\n")
+    plan = SensitivityPlan(repo_root=tmp_path, campaign_dir=campaign)
+    with pytest.raises(ValueError, match="cached natural-final-AF output failed: summary"):
+        sensitivity._base_bundle_contract(plan)
 
 
 def test_bound_base_bundle_rejects_even_manifest_only_tampering():

@@ -247,11 +247,17 @@ def _base_bundle_contract(plan: SensitivityPlan) -> dict[str, Any]:
     if completion.get("schema") != base.ANALYSIS_SCHEMA:
         raise ValueError("base analysis schema is incompatible")
 
-    current_implementation = base._implementation_contract(root)
-    if base._canonical_sha256(recorded_contract.get("implementation")) != (
-        base._canonical_sha256(current_implementation)
+    # This is a published input, not a cache produced by today's source tree.
+    # Keep its producer provenance, and check compatibility using the actual
+    # demography and cell design. Current source hashes are recorded separately
+    # in the sensitivity plan's implementation contract.
+    recorded_implementation = recorded_contract.get("implementation")
+    if not isinstance(recorded_implementation, Mapping):
+        raise ValueError("base analysis completion has no implementation provenance")
+    if recorded_contract["table_payload_sha256"]["schedules"] != (
+        base._frame_tsv_sha256(base._schedule_table(root))
     ):
-        raise ValueError("base implementation no longer matches its published bundle")
+        raise ValueError("base bundle demography schedules do not match the current design")
     expected_cells = _base_cells_expected(plan)
     if base._canonical_sha256(recorded_contract.get("cells")) != (
         base._canonical_sha256(expected_cells)
@@ -306,7 +312,7 @@ def _base_bundle_contract(plan: SensitivityPlan) -> dict[str, Any]:
         "cells": expected_cells,
         "summary": dict(outputs["summary"]),
         "survivors": dict(outputs["survivors"]),
-        "implementation": current_implementation,
+        "implementation": dict(recorded_implementation),
     }
 
 
