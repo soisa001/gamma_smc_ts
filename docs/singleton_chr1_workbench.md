@@ -37,8 +37,7 @@ cd "$REPO"
 git pull --ff-only origin AOU_run_opt
 
 bash scripts/bootstrap_singleton_tools.sh
-UV="$(command -v uv || true)"
-UV="${UV:-$REPO/.tools/uv-bin/uv}"
+UV="$REPO/.tools/uv-bin/uv"
 "$UV" run --no-project --python 3.12 scripts/run_singleton_chr.py \
   --chrom chr1 --root "$ROOT" --vcf-dir "$VCFS" --phase all \
   --workers 4 --chunks-per-chrom 4 --overlap-bp 1000000 \
@@ -49,7 +48,12 @@ The lightweight bootstrap reuses an available `bcftools`, including the existing
 repository `.native/bin/bcftools`. Otherwise it installs bcftools/htslib 1.22 into
 `.tools/singleton-native` using a private micromamba environment on Linux x86_64.
 It does not build Gamma-SMC or install unrelated simulation tools. Python and the
-pinned CRC32C library are managed with `uv`. The runner also accepts
+pinned CRC32C library are managed with `uv`. The bootstrap installs/reuses a
+private uv 0.11.16 at `.tools/uv-bin/uv`, which the cell invokes explicitly. An
+older uv on PATH (such as 0.11.3) cannot satisfy `>=0.11.16,<0.12`: version
+components are integers, so patch 3 precedes patch 16. The system uv and shell
+profiles are not modified. [uv installer options](https://docs.astral.sh/uv/reference/installer/).
+The runner also accepts
 `--bcftools /path/to/bcftools` or `BCFTOOLS_BIN`.
 
 To inspect the resolved paths/commands without contacting GCS or writing files:
@@ -58,8 +62,7 @@ To inspect the resolved paths/commands without contacting GCS or writing files:
 %%bash
 set -euo pipefail
 cd /home/jupyter/gamma_smc_ts
-UV="$(command -v uv || true)"
-UV="${UV:-$PWD/.tools/uv-bin/uv}"
+UV="$PWD/.tools/uv-bin/uv"
 "$UV" run --no-project --python 3.12 scripts/run_singleton_chr.py \
   --chrom chr1 --root "$HOME/singleton_phased/working" \
   --vcf-dir "$HOME/singleton_phased/vcfs" --dry-run
@@ -168,8 +171,10 @@ sequentially; use the staged indexed BCFs for actual parallel region reads.
 
 ## Validation status
 
-The local focused suite contains 29 original phasing tests, 9 chunk tests and 13
-staging-control tests (51 total). Chunk tests compare serial and parallel
+The local focused suite contains 29 original phasing tests, 9 chunk tests, 13
+staging-control tests and 4 bootstrap tests (55 total). Bootstrap tests exercise
+an old uv on PATH, absent/incompatible private versions and repeat-run reuse,
+using stub installers without network access. Chunk tests compare serial and parallel
 decisions, including exact boundaries, empty cores, zero/large halos, remote
 flanks, conflicting/tied anchors, random phase blocks, reference-minor calls and
 corrupt intermediate repair. A 12,000-sample synthetic single-chromosome run used

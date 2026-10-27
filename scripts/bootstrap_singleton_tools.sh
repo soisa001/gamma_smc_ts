@@ -3,13 +3,24 @@ set -euo pipefail
 # Public tooling only; no cloud data access, no credentials, no repository push.
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 mkdir -p "$REPO/.tools"
-if ! command -v uv >/dev/null 2>&1 && [[ ! -x "$REPO/.tools/uv-bin/uv" ]]; then
+LOCAL_UV="$REPO/.tools/uv-bin/uv"
+# The repository requires >=0.11.16,<0.12. A uv on PATH may be older or
+# newer than that range. Pin a private copy and have callers use this path.
+uv_ready() {
+  [[ -x "$LOCAL_UV" ]] || return 1
+  local version
+  version="$("$LOCAL_UV" --version 2>/dev/null)" || return 1
+  [[ "$version" =~ ^uv\ 0\.11\.16($|[[:space:]]) ]]
+}
+if ! uv_ready; then
   curl --proto '=https' --tlsv1.2 -fsSL \
     https://releases.astral.sh/github/uv/releases/download/0.11.16/uv-installer.sh \
     -o "$REPO/.tools/singleton-uv-installer.sh"
   UV_INSTALL_DIR="$REPO/.tools/uv-bin" UV_NO_MODIFY_PATH=1 \
     sh "$REPO/.tools/singleton-uv-installer.sh"
 fi
+uv_ready || { echo "Expected uv 0.11.16 at $LOCAL_UV after installation" >&2; exit 2; }
+echo "uv available: $LOCAL_UV ($("$LOCAL_UV" --version))"
 if [[ -n "${BCFTOOLS_BIN:-}" ]]; then
   "$BCFTOOLS_BIN" --version
   exit 0
