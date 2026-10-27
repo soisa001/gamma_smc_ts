@@ -1,5 +1,9 @@
 # Transfer physical singleton phase onto an unchanged SV panel
 
+For the supplied AoU HiPhase/panel bucket paths and a **chr1-only staging/run
+cell**, use [the chr1 Workbench runner](singleton_chr1_workbench.md). It retains
+all output on local disk and makes no uploads.
+
 The implementation looks up the **nearest informative left and right SNVs** by
 sample, chromosome, and HiPhase PS.
 It does not run SHAPEIT or statistically infer any singleton phase. `phase_rare`
