@@ -1,6 +1,7 @@
 # Transfer physical singleton phase onto an unchanged SV panel
 
-The implementation is a direct lookup by **sample, chromosome, and HiPhase PS**.
+The implementation looks up the **nearest informative left and right SNVs** by
+sample, chromosome, and HiPhase PS.
 It does not run SHAPEIT or statistically infer any singleton phase. `phase_rare`
 does not retain the target's physical GT/PS linkage, which is the information
 needed here. The source audit and pricing references are in
@@ -8,28 +9,36 @@ needed here. The source audit and pricing references are in
 
 ## How the lookup works
 
-1. Match existing panel and HiPhase variants by exact CHROM/POS/REF/ALT. Use
-   heterozygous, phased, genotype-concordant calls to orient each sample's HiPhase
-   block against the panel. Exact SNVs and sequence-resolved indels/SVs qualify.
-   Symbolic DEL/DUP/INV anchors additionally need identical END, SVLEN, and SVTYPE
-   annotations (both-absent SVLEN/SVTYPE is permitted). Ambiguous symbolic
-   insertions, breakends, filtered anchors, and multiallelic anchors are excluded.
+1. Match panel and HiPhase biallelic SNVs by exact CHROM/POS/REF/ALT. An informative
+   anchor must be heterozygous, phased, genotype-concordant, and PASS/unfiltered in
+   both files for the singleton carrier. SVs and indels are not used as anchors;
+   every original SV/indel remains untouched in the output.
 2. A shared `0|1` in the panel and `1|0` in HiPhase means that block is reversed.
    Reverse the singleton's GT when placing it on the panel. For example, a
    HiPhase singleton `1|0` becomes panel `0|1` in that reversed block.
-3. Require two agreeing anchor observations by default. **One exact heterozygous
-   anchor is mathematically sufficient**; use `--min-anchors 1` to allow that,
-   including a block whose only shared anchor is an SV. Any contradictory anchor
-   prevents transfer even when other anchors form a large majority. The default
-   threshold is a conservative policy, not a calibrated accuracy guarantee.
+3. Select the nearest qualifying SNV strictly left and strictly right of each
+   singleton, within its carrier's original HiPhase PS block. Search outward past
+   homozygous and otherwise uninformative markers with no fixed distance cutoff.
+   Never borrow an anchor from another sample/PS block. By default both flanks
+   must exist and imply the same orientation. Two markers on the same side do
+   not substitute for bracketing. If the selected informative flanks conflict,
+   reject the singleton; never search past the conflict to find agreement.
+   Distant disagreements outside the selected pair do not veto local agreement.
+   Tied nearest SNVs at the same coordinate must all agree. An anchor exactly at
+   the singleton coordinate counts as neither left nor right.
+   `--min-anchors 1` explicitly permits a single-sided result when the other side
+   is absent, but still rejects disagreement when both sides exist. The default
+   of two is the requested policy, not a calibrated accuracy guarantee.
 4. Recompute MAC from the exact cohort's GTs. Add only complete diploid,
    biallelic SNVs with MAC=1 absent from the panel. This includes reference-minor
    singletons (AC=AN-1). Only PASS/unfiltered new SNVs qualify. Missing calls,
    haploid calls, multiallelic sites, non-singletons, and new SVs are counted and
    excluded. No missing genotype is converted to homozygous reference.
-5. Keep unsupported singleton calls as `0/1`, with an explicit unresolved reason.
-   A genomic interval alone never establishes phase, and phase sets from different
-   samples are never pooled. No statistical fallback overrides a physical block.
+5. Exclude unsupported/conflicting singleton candidates from the augmented panel.
+   Record their coordinates, carrier, original PS, selected anchor positions,
+   orientation counts, and exclusion reason in `excluded_singletons.tsv.gz`.
+   There are no newly added unphased records. No statistical fallback overrides
+   missing physical evidence, and original panel records are never excluded.
 6. Merge added records around the original panel records and independently read
    back the result. Every original record, including SVs, must match the original
    VCF text exactly and remain in its original order. Original header lines and
@@ -48,7 +57,8 @@ errors in the existing panel are not corrected by this procedure.
   records the build; the program does not independently prove reference-build
   identity or liftover alleles. It rejects incompatible contig lengths/header
   types, malformed rows, unsorted records, duplicate exact variant keys, unphased
-  panel heterozygotes, empty shards, and absence of shared anchors.
+  panel heterozygotes and empty shards. With no shared SNV anchors it logs a
+  warning, excludes all candidates, and preserves the original panel.
 - Per-chromosome `.vcf`/ordinary `.vcf.gz` inputs work with Python alone. Whole-
   genome inputs require indexed BGZF VCF or indexed BCF plus `bcftools` on PATH.
   Plain multi-contig VCF input is rejected rather than rescanned for every job.
@@ -62,10 +72,12 @@ errors in the existing panel are not corrected by this procedure.
   the intended allocation; it is not an OS memory cap. Enforce memory in Slurm or
   VM provisioning. A one-chromosome pilot uses one active worker. Use at most 24
   workers locally; a larger authorized VM may use up to 32, bounded by job count.
-- Genotypes are streamed by coordinate; block evidence is in SQLite, with a
-  bounded in-memory update batch. There is no full genome-by-sample matrix.
-  Symbolic SV matching is deliberately exact; approximate SV reconciliation is
-  outside this workflow.
+- Genotypes are streamed by coordinate; informative anchor positions are stored
+  in SQLite, with a bounded in-memory update batch. Each singleton uses two
+  indexed predecessor/successor lookups on `(sample, PS, position)`. There is no
+  full genome-by-sample matrix. The anchor database now retains every informative
+  position and can be substantially larger than the former block-count database;
+  include it in pilot disk sizing.
 
 ## Run on a local VM or HPC
 
@@ -128,15 +140,19 @@ Each contig directory contains:
 
 | File | Meaning |
 |---|---|
-| `augmented.vcf.gz` | Entire original panel plus eligible singleton records |
-| `added_singletons.vcf.gz` | Only added records, including explicitly unphased unresolved calls |
-| `anchors.sqlite` | Counts of same/flipped anchor orientation by sample index and PS |
+| `augmented.vcf.gz` | Entire original panel plus supported, phased singleton records |
+| `added_singletons.vcf.gz` | Only the supported phased singleton additions |
+| `excluded_singletons.tsv.gz` | Rejected candidate coordinates/carriers and reasons, including selected flank positions |
+| `anchors.sqlite` | Same/flipped evidence by sample index, PS, and informative SNV position |
 | `audit.json` | Counts, record/header hashes, paths, parameters, input identities, elapsed time, process peak memory, preservation check |
 | `workflow.log` | Start/completion/failure messages, decode commands, parameters, progress |
 | `prepare.done.json`, `done.json` | Atomic completion records with output SHA-256 checksums |
 
-Added records carry `SP_METHOD`, `SP_REASON`, `SP_ANCHORS`, `SP_SOURCE_PS`, and
-`SP_SOURCE_GT`. The last two retain the carrier's original HiPhase evidence.
+Added records carry `SP_METHOD`, `SP_REASON`, `SP_ANCHORS`, `SP_LEFT_POS`,
+`SP_RIGHT_POS`, `SP_SOURCE_PS`, and `SP_SOURCE_GT`. The last two retain the carrier's
+original HiPhase evidence. `SP_ANCHORS` counts only observations at the selected
+nearest flank coordinates. Exclusion reasons distinguish no physical PS, no
+informative anchor, missing left/right anchor, and conflicting nearest anchors.
 Old FORMAT/PS and FORMAT/PQ are removed from **added** records because they describe
 the old physical coordinate system. Other new-record fields are retained. No
 field of an original panel record is changed. `anchors.sqlite` sample indices
@@ -165,6 +181,8 @@ Cache decisions use manifest/sample identity, input paths/sizes/mtime, semantic
 algorithm version and relevant parameters, plus SHA-256 verification of generated
 artifacts. A new repository commit or worker-count change is not a cache key.
 Preparation is reusable across downstream failures and unrelated manifest edits.
+Algorithm version 2 invalidates version 1's block-consensus caches, since both the
+anchor selection and exclusion policy changed.
 Inputs are hashed logically during their normal scan, and source identity is
 checked again at completion. A same-size input modification with deliberately
 preserved mtime cannot be detected on a cached run; use immutable staged inputs or
@@ -175,19 +193,20 @@ is no longer running. Failed runs never produce a new successful completion mark
 
 ## Local validation, 2026-10-27
 
-The focused suite passes 22 tests covering phase flips, same orientation,
-reference-minor singletons, exact SV anchors, incompatible symbolic SV ends,
-conflicting blocks, sample/PS isolation, unsupported calls, duplicate/sort errors,
+The focused suite passes 29 tests covering phase flips, same orientation,
+reference-minor singletons, exclusion of SV anchors, expansion past homozygotes,
+nearest-flank agreement/conflict, distant disagreements, tied-coordinate conflicts,
+missing left/right flanks, sample/PS isolation, unsupported calls, duplicate/sort errors,
 sample/header mismatches, truncated gzip, original-record preservation, corrupt-
 output repair, CLI/manifest generation, cache reuse, stale completion invalidation,
 and randomized orientations.
 
-The synthetic cohort-width benchmark used 12,000 samples, four chromosome jobs,
-160 total shared markers, and 400 new singleton sites. All 320 supported phases
-matched truth; all 80 deliberately unphased targets remained unresolved; all 160
-original records survived exactly. It processed 53,400,092 uncompressed input bytes
-in **6.93 seconds** with four workers. The per-worker peak resident memory and
-counts are recorded in [singleton_transfer_benchmark.json](singleton_transfer_benchmark.json).
+The synthetic cohort-width benchmark uses 12,000 samples, four chromosome jobs,
+160 shared markers bracketing 400 new singleton sites. It checks that all 320
+supported phases match truth, all 80 deliberately unphased targets are excluded,
+and all 160 original records survive exactly. Updated measured runtime,
+per-worker peak memory, and counts are recorded in
+[singleton_transfer_benchmark.json](singleton_transfer_benchmark.json).
 
 This is a short parser/correctness benchmark with artificial GT:PS fields, not a
 biological accuracy estimate or full-genome timing extrapolation. No user callset
@@ -204,8 +223,8 @@ HiPhase pass**; it rereads only the extracted singleton spool and the much small
 panel/output for assignment and verification. Each contig is processed separately.
 
 **A runtime forecast cannot be obtained from 3 TB compressed input alone.** Site
-count, genotype-field width, compression ratio, shared heterozygosity, block count,
-and added-output size matter. The synthetic 7.7 MB/s uncompressed end-to-end rate
+count, genotype-field width, compression ratio, shared heterozygosity, anchor count,
+and added-output size matter. Synthetic uncompressed end-to-end throughput
 cannot be applied to the 3 TB compressed size. A real all-sample pilot is needed
 before promising a cost ceiling.
 
@@ -228,10 +247,10 @@ in the research report. Disk keeps accruing costs while retained, including when
 the VM is stopped.
 
 Four TiB is only a price example and may be too small. Peak disk includes staged
-inputs plus roughly two copies of the added singleton records (raw spool plus
-assigned output during preparation; then assigned output plus augmented panel),
-SQLite evidence, temporary files, and any later BGZF copy. A first estimate is
-`input_HiPhase + 2*panel + 2*added_singleton_size + SQLite + headroom`; add another
+inputs plus the complete raw singleton-candidate spool during preparation,
+accepted singleton output, the augmented panel, SQLite evidence, excluded-candidate
+audit, and any later BGZF copy. A conservative first estimate is
+`input_HiPhase + 2*panel + candidate_spool + 2*added_singleton_size + SQLite + audit + headroom`; add another
 `panel + added_singleton_size` while retaining a BGZF copy. Do not provision based
 only on the input's 3 TB size.
 

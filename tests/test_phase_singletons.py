@@ -1,4 +1,5 @@
 """Synthetic behavior tests; no controlled genomic input is used."""
+import csv
 import gzip
 import importlib.util
 import json
@@ -37,6 +38,7 @@ def fixture(tmp_path):
         row(100, ["0|1:1:10", "0|1:1:11", "0|1:1:12", "0|0:.:13"], info="AC=3"),
         row(200, ["0|1:1:10", "0|1:1:11", "0|1:1:12", "0|0:.:13"], info="AC=3"),
         row(230, ["1|0:1:10", "0|0:.:11", "0|0:.:12", "0|0:.:13"], alt="<DEL>", info="END=290", ident="original_sv"),
+        row(300, ["0|1:1:10", "0|1:1:11", "0|1:1:12", "0|0:.:13"]),
         # Missing homozygous GT allowed in authoritative original, not in SHAPEIT view.
         row(800, [".|.:.:10", "0|1:1:11", "0|1:1:12", "0|0:.:13"]),
     ]
@@ -56,6 +58,7 @@ def fixture(tmp_path):
         row(250, ["0|1:10:10", "0|0:.:11", "0|0:.:12", "0:.:13"]),
         row(260, ["0|2:10:10", "0|0:.:11", "0|0:.:12", "0|0:.:13"], alt="C,G"),
         row(270, ["0|1:10:10", "0|0:.:11", "0|0:.:12", "0|0:.:13"]).replace("\tPASS\t", "\tLowQual\t"),
+        row(300, ["1|0:10:10", "0|1:20:11", "1|0:30:12", "0|0:.:13"]),
     ]
     scaffold = tmp_path / "scaffold.vcf"
     hiphase = tmp_path / "hiphase.vcf"
@@ -74,27 +77,34 @@ def run(tmp_path, manifest, *extra):
     return directory, records
 
 
+def exclusions(directory):
+    with gzip.open(directory / "excluded_singletons.tsv.gz", "rt") as handle:
+        return {int(r["pos"]): r for r in csv.DictReader(handle, delimiter="\t")}
+
+
 def test_transfer_both_orientations_and_reference_singleton_preserves_scaffold(tmp_path):
     scaffold, _, manifest = fixture(tmp_path)
     directory, records = run(tmp_path, manifest)
-    assert set(records) == {150, 160, 170, 180, 190, 210}
+    assert set(records) == {150, 160, 210}
     assert records[150][9] == "0|1:10"
     assert records[160][10] == "0|1:11"
     assert records[210][9] == "1|0:10"
     assert "AC=7" in records[210][7]
     assert "PS" not in records[150][8]
-    assert "SP_ANCHORS=0,3" in records[150][7]
+    assert "SP_ANCHORS=0,2" in records[150][7]
+    assert "SP_LEFT_POS=100" in records[150][7]
+    assert "SP_RIGHT_POS=200" in records[150][7]
     assert "SP_SOURCE_PS=10" in records[150][7]
     assert "SP_SOURCE_GT=1|0" in records[150][7]
-    assert records[170][11].startswith("0/1:")
-    assert "CONFLICTING_ANCHORS" in records[170][7]
-    assert "INSUFFICIENT_ANCHORS" in records[180][7]
-    assert "NO_PHYSICAL_PS" in records[190][7]
+    rejected = exclusions(directory)
+    assert rejected[170]["reason"] == "CONFLICTING_NEAREST_ANCHORS"
+    assert rejected[180]["reason"] == "NO_INFORMATIVE_ANCHOR"
+    assert rejected[190]["reason"] == "NO_PHYSICAL_PS"
     audit = ph.audit_preservation(scaffold, directory / "augmented.vcf.gz", "chr1")
-    assert audit["preserved_records"] == 4
-    assert audit["added_records"] == 6
+    assert audit["preserved_records"] == 5
+    assert audit["added_records"] == 3
     summary = json.loads((directory / "audit.json").read_text())
-    assert summary["final_counts"] == {"physical": 3, "unresolved": 3}
+    assert summary["final_counts"] == {"physical": 3, "excluded": 3}
 
 
 def test_resume_checks_output_content_and_repairs_corruption(tmp_path):
@@ -160,15 +170,22 @@ def test_existing_singleton_scaffold_record_not_replaced(tmp_path):
 def test_distinct_variant_at_same_position_preserves_order(tmp_path):
     scaffold, hip, manifest = fixture(tmp_path)
     hip.write_text(hip.read_text().replace("chr1\t150\t", "chr1\t100\t").replace("100\tv150\tA\tG", "100\tv150\tA\tC"))
-    directory, records = run(tmp_path, manifest)
+    directory, records = run(tmp_path, manifest, "--min-anchors", "1")
     assert 100 in records
-    assert ph.audit_preservation(scaffold, directory / "augmented.vcf.gz", "chr1")["added_records"] == 6
+    assert ph.info_value(records[100], "SP_LEFT_POS") == "."
+    assert ph.info_value(records[100], "SP_RIGHT_POS") == "200"
+    assert ph.audit_preservation(scaffold, directory / "augmented.vcf.gz", "chr1")["added_records"] == 3
 
 
-def test_sparse_anchor_threshold(tmp_path):
-    _, _, manifest = fixture(tmp_path)
-    _, records = run(tmp_path, manifest, "--min-anchors", "4")
-    assert all(ph.info_value(r, "SP_METHOD") == "UNRESOLVED" for r in records.values())
+def test_two_left_anchors_do_not_substitute_for_right_anchor(tmp_path):
+    _, hip, manifest = fixture(tmp_path)
+    hip.write_text("\n".join(x for x in hip.read_text().splitlines() if not x.startswith("chr1\t300\t")) + "\n")
+    directory, records = run(tmp_path, manifest)
+    assert 210 not in records
+    assert exclusions(directory)[210]["reason"] == "MISSING_RIGHT_ANCHOR"
+    assert exclusions(directory)[210]["left_pos"] == "200"
+    _, records = run(tmp_path, manifest, "--min-anchors", "1")
+    assert records[210][9] == "1|0:10"
 
 
 def test_global_scaffold_assertion_required(tmp_path):
@@ -185,13 +202,14 @@ def test_random_orientations_for_many_samples(tmp_path):
     samples = [f"s{i}" for i in range(100)]
     flips = [rng.randrange(2) for _ in samples]
     truth = [rng.randrange(2) for _ in samples]
-    scaffold_rows = [row(pos, ["0|1:1:30"] * len(samples)) for pos in (10, 20)]
+    scaffold_rows = [row(pos, ["0|1:1:30"] * len(samples)) for pos in (10, 20, 200)]
     hip_rows = [row(pos, [f"{f}|{1-f}:10:30" for f in flips]) for pos in (10, 20)]
     for i, t in enumerate(truth):
         genotypes = ["0|0:.:30"] * len(samples)
         orientation = t ^ flips[i]
         genotypes[i] = f"{orientation}|{1-orientation}:10:30"
         hip_rows.append(row(30+i, genotypes))
+    hip_rows.append(row(200, [f"{f}|{1-f}:10:30" for f in flips]))
     sf, hf = tmp_path / "scaffold.vcf", tmp_path / "hip.vcf"
     sf.write_text(header(samples) + "".join(scaffold_rows))
     hf.write_text(header(samples) + "".join(hip_rows))
@@ -209,29 +227,26 @@ def test_cli_subprocess(tmp_path):
     assert (tmp_path / "cli" / "chr1" / "done.json").exists()
 
 
-def test_sv_only_anchor_lookup_and_incompatible_end(tmp_path):
+def test_sv_is_not_used_as_a_snv_anchor(tmp_path):
     scaffold, hip, manifest = fixture(tmp_path)
     # Retain the common variants as homozygotes, leaving only the shared SV as
     # the heterozygous orientation anchor for sample a.
     text = scaffold.read_text().replace("0|1:1:10", "0|0:1:10")
     scaffold.write_text(text)
     directory, records = run(tmp_path, manifest, "--min-anchors", "1")
-    assert records[150][9].startswith("0|1:")
-    assert "SP_ANCHORS=0,1" in records[150][7]
-    # An identically labelled symbolic DEL with a different end is not an anchor.
-    hip.write_text(hip.read_text().replace("END=290", "END=295"))
-    _, records = run(tmp_path, manifest, "--min-anchors", "1")
-    assert records[150][9].startswith("0/1:")
-    assert ph.info_value(records[150], "SP_METHOD") == "UNRESOLVED"
+    assert 150 not in records
+    assert exclusions(directory)[150]["reason"] == "NO_INFORMATIVE_ANCHOR"
+    assert ph.audit_preservation(scaffold, directory / "augmented.vcf.gz", "chr1")["preserved_records"] == 5
 
 
 def test_sample_phase_set_isolation(tmp_path):
     scaffold, hip, manifest = fixture(tmp_path)
     # d's singleton gets PS=10, also used by a; a's anchors must not orient d.
     hip.write_text(hip.read_text().replace("0|1:40:13", "0|1:10:13"))
-    _, records = run(tmp_path, manifest)
-    assert records[180][12].startswith("0/1:")
-    assert "SP_ANCHORS=0,0" in records[180][7]
+    directory, records = run(tmp_path, manifest)
+    assert 180 not in records
+    assert exclusions(directory)[180]["same"] == "0"
+    assert exclusions(directory)[180]["flipped"] == "0"
 
 
 def test_manifest_generator_checks_samples_without_emitting_ids(tmp_path):
@@ -273,3 +288,90 @@ def test_failed_rerun_invalidates_stale_completion_marker(tmp_path):
         run(tmp_path, manifest)
     assert not (directory / "done.json").exists()
     assert not (tmp_path / "out" / "summary.json").exists()
+
+
+def insert_record(path, text):
+    lines = path.read_text().splitlines(keepends=True)
+    meta = [x for x in lines if x.startswith("#")]
+    data = sorted([x for x in lines if not x.startswith("#")] + [text], key=lambda x: int(x.split("\t")[1]))
+    path.write_text("".join(meta + data))
+
+
+def test_expand_past_homozygotes_and_do_not_cross_phase_sets(tmp_path):
+    scaffold, hip, manifest = fixture(tmp_path)
+    for pos in (140, 155):
+        # Homozygotes in the same PS carry no orientation information.
+        insert_record(scaffold, row(pos, ["1|1:1:30"] * 4))
+        insert_record(hip, row(pos, ["1|1:10:30"] * 4))
+    for pos in (145, 152):
+        # These closer heterozygotes imply the opposite flip but belong to a
+        # different physical block, so cannot orient the singleton at 150.
+        insert_record(scaffold, row(pos, ["0|1:1:30"] * 4))
+        insert_record(hip, row(pos, ["0|1:999:30"] * 4))
+    _, records = run(tmp_path, manifest)
+    assert records[150][9] == "0|1:10"
+    assert ph.info_value(records[150], "SP_LEFT_POS") == "100"
+    assert ph.info_value(records[150], "SP_RIGHT_POS") == "200"
+
+
+def test_distant_disagreement_does_not_override_agreeing_nearest_flanks(tmp_path):
+    scaffold, hip, manifest = fixture(tmp_path)
+    insert_record(scaffold, row(50, ["0|1:1:30"] * 4))
+    insert_record(hip, row(50, ["0|1:10:30"] * 4))
+    _, records = run(tmp_path, manifest)
+    # Same PS, but a distant conflicting anchor at 50 is outside the chosen pair.
+    assert records[150][9] == "0|1:10"
+    assert ph.info_value(records[150], "SP_LEFT_POS") == "100"
+
+
+def test_cannot_skip_conflicting_nearest_marker_for_favorable_farther_marker(tmp_path):
+    scaffold, hip, manifest = fixture(tmp_path)
+    insert_record(scaffold, row(155, ["0|1:1:30"] * 4))
+    insert_record(hip, row(155, ["0|1:10:30"] * 4))
+    directory, records = run(tmp_path, manifest, "--min-anchors", "1")
+    assert 150 not in records
+    rejected = exclusions(directory)[150]
+    assert rejected["reason"] == "CONFLICTING_NEAREST_ANCHORS"
+    assert rejected["left_pos"] == "100"
+    assert rejected["right_pos"] == "155"
+
+
+def test_same_position_anchor_ties_cannot_hide_conflict(tmp_path):
+    scaffold, hip, manifest = fixture(tmp_path)
+    insert_record(scaffold, row(100, ["0|1:1:30"] * 4, alt="C"))
+    insert_record(hip, row(100, ["0|1:10:30"] * 4, alt="C"))
+    directory, records = run(tmp_path, manifest)
+    assert 150 not in records
+    assert exclusions(directory)[150]["reason"] == "CONFLICTING_NEAREST_ANCHORS"
+
+
+def test_zero_shared_snvs_excludes_candidates_but_preserves_panel(tmp_path):
+    scaffold, hip, manifest = fixture(tmp_path)
+    hip.write_text("\n".join(x for x in hip.read_text().splitlines() if x.startswith("#") or int(x.split("\t")[1]) not in (100, 200, 300)) + "\n")
+    directory, records = run(tmp_path, manifest)
+    assert records == {}
+    assert len(exclusions(directory)) == 6
+    audit = ph.audit_preservation(scaffold, directory / "augmented.vcf.gz", "chr1")
+    assert audit["added_records"] == 0 and audit["preserved_records"] == 5
+
+
+def test_missing_left_anchor_is_excluded_by_default(tmp_path):
+    _, hip, manifest = fixture(tmp_path)
+    hip.write_text("\n".join(x for x in hip.read_text().splitlines() if not x.startswith("chr1\t100\t")) + "\n")
+    directory, records = run(tmp_path, manifest)
+    assert 150 not in records
+    assert exclusions(directory)[150]["reason"] == "MISSING_LEFT_ANCHOR"
+    _, records = run(tmp_path, manifest, "--min-anchors", "1")
+    assert records[150][9] == "0|1:10"
+
+
+def test_old_algorithm_cache_is_not_reused(tmp_path):
+    _, _, manifest = fixture(tmp_path)
+    directory, _ = run(tmp_path, manifest)
+    for name in ("done.json", "prepare.done.json"):
+        path = directory / name
+        content = json.loads(path.read_text())
+        content["signature"]["algorithm_version"] = 1
+        path.write_text(json.dumps(content))
+    run(tmp_path, manifest)
+    assert not json.loads((tmp_path / "out" / "summary.json").read_text())["results"][0]["cached"]

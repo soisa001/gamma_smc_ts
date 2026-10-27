@@ -41,7 +41,8 @@ def main():
         with open(scaffold, "w", newline="\n") as sf, open(hiphase, "w", newline="\n") as hf:
             sf.write(header)
             hf.write(header)
-            for i in range(args.anchors):
+            left_count = args.anchors // 2
+            for i in range(left_count):
                 prefix = f"{contig}\t{i+1}\ta{i}\tA\tG\t.\tPASS\t.\tGT:PS\t"
                 sf.write(prefix + "\t".join(["0|1:1"] * args.samples) + "\n")
                 hf.write(prefix + "\t".join(f"{f}|{1-f}:1" for f in flips) + "\n")
@@ -50,7 +51,12 @@ def main():
                 calls = ["0|0:."] * args.samples
                 # Every fifth singleton deliberately lacks a physical phase set.
                 calls[carrier] = "0/1:." if i % 5 == 0 else f"{flips[carrier]}|{1-flips[carrier]}:1"
-                hf.write(f"{contig}\t{args.anchors+i+1}\tr{i}\tC\tT\t.\tPASS\t.\tGT:PS\t" + "\t".join(calls) + "\n")
+                hf.write(f"{contig}\t{left_count+i+1}\tr{i}\tC\tT\t.\tPASS\t.\tGT:PS\t" + "\t".join(calls) + "\n")
+            for i in range(args.anchors - left_count):
+                pos = left_count + args.singletons + i + 1
+                prefix = f"{contig}\t{pos}\ta{left_count+i}\tA\tG\t.\tPASS\t.\tGT:PS\t"
+                sf.write(prefix + "\t".join(["0|1:1"] * args.samples) + "\n")
+                hf.write(prefix + "\t".join(f"{f}|{1-f}:1" for f in flips) + "\n")
         jobs.append({"contig": contig, "scaffold": str(scaffold.resolve()), "hiphase": str(hiphase.resolve())})
     manifest = args.out / "manifest.json"
     ph.json_write(manifest, {"genome_build": "synthetic", "scaffold_phase_scope": "chromosome", "samples": samples, "jobs": jobs})
@@ -60,8 +66,8 @@ def main():
     summary = json.loads((args.out / "results" / "summary.json").read_text())
     # Assert synthetic truth, not just successful process exit.
     for result in summary["results"]:
-        expected_unresolved = (args.singletons + 4) // 5
-        assert result["final_counts"] == {"physical": args.singletons - expected_unresolved, "unresolved": expected_unresolved}
+        expected_excluded = (args.singletons + 4) // 5
+        assert result["final_counts"] == {"physical": args.singletons - expected_excluded, "excluded": expected_excluded}
         with ph.text_input(result["output"]) as handle:
             for row, _ in ph.VCF(handle, result["contig"]).records():
                 if ph.info_value(row, "SP_METHOD") == "PHYSICAL":

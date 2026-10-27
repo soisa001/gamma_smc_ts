@@ -5,6 +5,8 @@
 # ///
 """Add cohort singleton SNVs without rewriting any existing scaffold record.
 
+Use agreeing nearest informative SNVs on either side in the carrier's HiPhase
+block. Unsupported candidates are excluded and recorded in a separate audit.
 Standard-library implementation; BCF input and indexed VCF input require bcftools.
 See docs/singleton_phasing.md for the input contract and confidence limitations.
 """
@@ -28,12 +30,14 @@ import subprocess
 import sys
 import time
 
-VERSION = 1  # Change only when output semantics change, not on every git commit.
+VERSION = 2  # Nearest flanking SNVs; exclude unsupported candidates from panel.
 SEED = 1729  # Existing repository seed.
 TAGS = {
-    "SP_METHOD": '##INFO=<ID=SP_METHOD,Number=1,Type=String,Description="Singleton phase: PHYSICAL or UNRESOLVED">',
-    "SP_REASON": '##INFO=<ID=SP_REASON,Number=1,Type=String,Description="Singleton phase evidence or reason left unresolved">',
-    "SP_ANCHORS": '##INFO=<ID=SP_ANCHORS,Number=2,Type=Integer,Description="HiPhase block anchors agreeing with original and flipped orientation">',
+    "SP_METHOD": '##INFO=<ID=SP_METHOD,Number=1,Type=String,Description="Singleton phase: PHYSICAL">',
+    "SP_REASON": '##INFO=<ID=SP_REASON,Number=1,Type=String,Description="Singleton phase evidence: agreeing flanks or explicit one-sided mode">',
+    "SP_ANCHORS": '##INFO=<ID=SP_ANCHORS,Number=2,Type=Integer,Description="Selected nearest SNV anchor observations supporting original and flipped orientation">',
+    "SP_LEFT_POS": '##INFO=<ID=SP_LEFT_POS,Number=1,Type=Integer,Description="Nearest informative shared SNV position strictly left in carrier HiPhase block">',
+    "SP_RIGHT_POS": '##INFO=<ID=SP_RIGHT_POS,Number=1,Type=Integer,Description="Nearest informative shared SNV position strictly right in carrier HiPhase block">',
     "SP_SOURCE_PS": '##INFO=<ID=SP_SOURCE_PS,Number=1,Type=String,Description="Singleton carrier original HiPhase PS">',
     "SP_SOURCE_GT": '##INFO=<ID=SP_SOURCE_GT,Number=1,Type=String,Description="Singleton carrier original HiPhase GT">',
 }
@@ -163,15 +167,7 @@ def snv(row):
 
 
 def anchor_compatible(a, b):
-    if key(a) != key(b) or "," in a[4] or a[4] in (".", "*"):
-        return False
-    if all(base in "ACGT" for allele in (a[3], a[4]) for base in allele):
-        return True  # Exact sequence-resolved SNV/indel/SV alleles.
-    # Symbolic intervals must agree beyond just <DEL> and the left breakpoint.
-    if a[4] not in ("<DEL>", "<DUP>", "<INV>"):
-        return False
-    ea, eb = info_value(a, "END"), info_value(b, "END")
-    return ea is not None and ea == eb and int(ea) > int(a[1]) and all(info_value(a, field) == info_value(b, field) for field in ("SVLEN", "SVTYPE"))
+    return key(a) == key(b) and snv(a) and snv(b)
 
 
 def calls(row):
@@ -251,7 +247,7 @@ def write_header(handle, vcf):
     handle.write("\n".join(vcf.meta + [vcf.columns]) + "\n")
 
 
-def annotate(row, carrier, gt, method, reason, anchors):
+def annotate(row, carrier, gt, method, reason, anchors, left, right):
     row = list(row)
     source_ps = info_value(row, "SP_SOURCE_PS")
     source_gt = info_value(row, "SP_SOURCE_GT")
@@ -276,6 +272,7 @@ def annotate(row, carrier, gt, method, reason, anchors):
     info = [x for x in info if x.split("=")[0] not in TAGS]
     info += [f"SP_METHOD={method}", f"SP_REASON={reason}", f"SP_ANCHORS={anchors[0]},{anchors[1]}"]
     info += [f"SP_SOURCE_PS={source_ps}", f"SP_SOURCE_GT={source_gt}"]
+    info += [f"SP_LEFT_POS={left[0] if left else '.'}", f"SP_RIGHT_POS={right[0] if right else '.'}"]
     row[7] = ";".join(info)
     return row
 
@@ -287,6 +284,26 @@ def info_value(row, name):
     return None
 
 
+def nearest_anchors(db, sample, ps, pos):
+    # PK(sample,ps,pos) supports two bounded index seeks, not a block-wide scan.
+    left = db.execute("SELECT pos,same,flipped FROM anchors WHERE sample=? AND ps=? AND pos<? ORDER BY pos DESC LIMIT 1", (sample, ps, pos)).fetchone()
+    right = db.execute("SELECT pos,same,flipped FROM anchors WHERE sample=? AND ps=? AND pos>? ORDER BY pos ASC LIMIT 1", (sample, ps, pos)).fetchone()
+    return left, right
+
+
+def anchor_decision(left, right, min_anchors):
+    selected = [a for a in (left, right) if a is not None]
+    counts = tuple(sum(a[i] for a in selected) for i in (1, 2))
+    # Do not search past a conflicting informative marker for an agreement.
+    if min(counts) > 0:
+        return "CONFLICTING_NEAREST_ANCHORS", counts
+    if not selected:
+        return "NO_INFORMATIVE_ANCHOR", counts
+    if len(selected) < min_anchors:
+        return "MISSING_LEFT_ANCHOR" if left is None else "MISSING_RIGHT_ANCHOR", counts
+    return ("AGREEING_FLANKS" if len(selected) == 2 else "ONE_SIDED_ANCHOR"), counts
+
+
 def prepare(job, directory, args, expected_samples):
     """One HiPhase pass; disk-backed block evidence, then candidate-only pass."""
     stats = Counter()
@@ -296,12 +313,12 @@ def prepare(job, directory, args, expected_samples):
     db = sqlite3.connect(db_path)
     db.execute("PRAGMA journal_mode=WAL")
     db.execute("PRAGMA cache_size=-65536")
-    db.execute("CREATE TABLE anchors(sample INTEGER, ps TEXT, same INTEGER, flipped INTEGER, PRIMARY KEY(sample,ps)) WITHOUT ROWID")
+    db.execute("CREATE TABLE anchors(sample INTEGER, ps TEXT, pos INTEGER, same INTEGER, flipped INTEGER, PRIMARY KEY(sample,ps,pos)) WITHOUT ROWID")
     pending = {}
 
     def flush():
-        db.executemany("INSERT INTO anchors VALUES(?,?,?,?) ON CONFLICT(sample,ps) DO UPDATE SET same=same+excluded.same, flipped=flipped+excluded.flipped",
-                       [(sample, ps, counts[0], counts[1]) for (sample, ps), counts in pending.items()])
+        db.executemany("INSERT INTO anchors VALUES(?,?,?,?,?) ON CONFLICT(sample,ps,pos) DO UPDATE SET same=same+excluded.same, flipped=flipped+excluded.flipped",
+                       [(sample, ps, pos, counts[0], counts[1]) for (sample, ps, pos), counts in pending.items()])
         db.commit()
         pending.clear()
 
@@ -352,7 +369,7 @@ def prepare(job, directory, args, expected_samples):
                             if sorted(a[0]) != sorted(b[0]):
                                 stats["discordant_anchor_genotypes"] += 1
                                 continue
-                            block = (sample, a[2])
+                            block = (sample, a[2], pos)
                             if block not in pending:
                                 pending[block] = [0, 0]
                             pending[block][int(a[0] != b[0])] += 1
@@ -383,35 +400,32 @@ def prepare(job, directory, args, expected_samples):
         if not stats["scaffold_records"] or not stats["hiphase_records"]:
             raise ValueError("An input has no records for the requested contig")
         if not stats["shared_anchor_sites"]:
-            raise ValueError("No exact shared anchors: check genome build, contigs, alleles, and sample cohort")
-        with text_input(directory / "raw_candidates.vcf.gz") as raw_handle, gzip.open(directory / "added_singletons.vcf.gz", "wt", encoding="utf-8", newline="\n") as output:
+            logging.warning("No exact shared SNV anchors; candidates will be excluded. Check build/allele representations.")
+        with text_input(directory / "raw_candidates.vcf.gz") as raw_handle, gzip.open(directory / "added_singletons.vcf.gz", "wt", encoding="utf-8", newline="\n") as output, gzip.open(directory / "excluded_singletons.tsv.gz", "wt", encoding="utf-8", newline="\n") as excluded:
             raw_vcf = VCF(raw_handle, job["contig"])
             output.write(header)
+            excluded.write("chrom\tpos\tref\talt\tsample\tsource_ps\treason\tleft_pos\tright_pos\tsame\tflipped\n")
             for row, _ in raw_vcf.records():
                 cs = calls(row)
                 carrier = singleton(cs)
                 alleles, phased, ps = cs[carrier]
-                counts = db.execute("SELECT same,flipped FROM anchors WHERE sample=? AND ps=?", (carrier, ps)).fetchone() or (0, 0)
+                left, right = nearest_anchors(db, carrier, ps, int(row[1])) if phased and ps != "." else (None, None)
                 if not phased or ps == ".":
                     reason = "NO_PHYSICAL_PS"
-                elif min(counts) > 0:
-                    reason = "CONFLICTING_ANCHORS"
-                elif max(counts) < args.min_anchors:
-                    reason = "INSUFFICIENT_ANCHORS"
+                    counts = (0, 0)
                 else:
-                    reason = "UNANIMOUS_ANCHORS"
-                method = "PHYSICAL" if reason == "UNANIMOUS_ANCHORS" else "UNRESOLVED"
-                if method == "PHYSICAL":
+                    reason, counts = anchor_decision(left, right, args.min_anchors)
+                if reason in ("AGREEING_FLANKS", "ONE_SIDED_ANCHOR"):
                     if counts[1]:
                         alleles = alleles[::-1]
                     gt = "|".join(map(str, alleles))
+                    output.write("\t".join(annotate(row, carrier, gt, "PHYSICAL", reason, counts, left, right)) + "\n")
+                    stats["physical"] += 1
                 else:
-                    gt = "/".join(map(str, sorted(alleles)))
-                output.write("\t".join(annotate(row, carrier, gt, method, reason, counts)) + "\n")
-                stats[method.lower()] += 1
+                    excluded.write("\t".join(map(str, [row[0], row[1], row[3], row[4], expected_samples[carrier], ps, reason, left[0] if left else ".", right[0] if right else ".", *counts])) + "\n")
+                    stats["excluded"] += 1
                 stats[reason.lower()] += 1
-    stats["anchored_blocks"] = db.execute("SELECT count(*) FROM anchors").fetchone()[0]
-    stats["conflicting_blocks"] = db.execute("SELECT count(*) FROM anchors WHERE same>0 AND flipped>0").fetchone()[0]
+    stats["anchor_positions"] = db.execute("SELECT count(*) FROM anchors").fetchone()[0]
     db.close()
     stats["prepare_seconds"] = time.monotonic() - started
     stats["scaffold_record_sha256"] = scaffold_hash.hexdigest()
@@ -421,7 +435,7 @@ def prepare(job, directory, args, expected_samples):
 
 def finalize(job, directory, args, expected_samples, stats):
     added = directory / "added_singletons.vcf.gz"
-    counts = {method: stats.get(method, 0) for method in ("physical", "unresolved")}
+    counts = {method: stats.get(method, 0) for method in ("physical", "excluded")}
     output = directory / "augmented.vcf.gz"
     temp = directory / "augmented.partial.vcf.gz"
     h = hashlib.sha256()
@@ -446,7 +460,7 @@ def finalize(job, directory, args, expected_samples, stats):
     if h.hexdigest() != stats["scaffold_record_sha256"] or n != stats["scaffold_records"]:
         raise ValueError("Scaffold changed since preparation")
     audit = audit_preservation(job["scaffold"], temp, job["contig"], args.bcftools)
-    if audit["added_records"] != sum(counts.values()):
+    if audit["added_records"] != counts["physical"] or sum(counts.values()) != stats.get("singleton_candidates", 0):
         raise ValueError("Unexpected added-record count")
     os.replace(temp, output)
     return {"final_counts": dict(counts), "preservation": audit, "output": str(output)}
@@ -476,7 +490,9 @@ def audit_preservation(scaffold_path, output_path, contig, bcftools="bcftools"):
                     h.update((raw + "\n").encode())
                     preserved += 1
                 else:
-                    if not snv(row) or singleton(calls(row)) is None or info_value(row, "SP_METHOD") not in ("PHYSICAL", "UNRESOLVED"):
+                    cs = calls(row) if snv(row) else []
+                    carrier = singleton(cs) if cs else None
+                    if carrier is None or not cs[carrier][1] or info_value(row, "SP_METHOD") != "PHYSICAL":
                         raise ValueError("Non-singleton or unaudited record added")
                     added += 1
             if seen != [raw for _, raw in expected]:
@@ -516,7 +532,7 @@ def job_run(payload):
         started = time.monotonic()
         logging.info("START %s", json.dumps({"signature": signature, "execution_parameters": params, "python": sys.version}, sort_keys=True))
         prep_done = directory / "prepare.done.json"
-        prep_names = ("added_singletons.vcf.gz", "merged.header.vcf", "anchors.sqlite")
+        prep_names = ("added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "merged.header.vcf", "anchors.sqlite")
         prep_signature = {"algorithm_version": VERSION, "inputs": {k: v for k, v in signature["inputs"].items() if k != "map"},
                           "contig": job["contig"], "sample_manifest_sha256": signature["sample_manifest_sha256"], "min_anchors": args.min_anchors}
         if prep_done.exists() and (previous := json.loads(prep_done.read_text()))["signature"] == prep_signature and all((directory / name).exists() and digest(directory / name) == sha for name, sha in previous["artifacts"].items()):
@@ -532,7 +548,7 @@ def job_run(payload):
         if signature["inputs"] != {k: identity(job[k]) for k in signature["inputs"]}:
             raise ValueError("Input files changed during processing")
         json_write(directory / "audit.json", {"signature": signature, "execution_parameters": params, **result})
-        artifacts = {name: digest(directory / name) for name in ("augmented.vcf.gz", "added_singletons.vcf.gz", "anchors.sqlite", "audit.json")}
+        artifacts = {name: digest(directory / name) for name in ("augmented.vcf.gz", "added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "anchors.sqlite", "audit.json")}
         json_write(done, {"signature": signature, "result": result, "artifacts": artifacts})
         logging.info("COMPLETE %s", json.dumps(result))
         return {"contig": job["contig"], "cached": False, **result}
@@ -549,7 +565,7 @@ def main(argv=None):
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--workers", type=int, default=4, help="Parallel chromosome jobs; each job streams one contig")
     parser.add_argument("--memory-gb", type=float, default=26, help="Declared TOTAL scheduler memory budget, not an OS-enforced cap")
-    parser.add_argument("--min-anchors", type=int, default=2)
+    parser.add_argument("--min-anchors", type=int, choices=(1, 2), default=2, help="2 requires agreeing left/right SNVs; 1 explicitly permits a single-sided anchor")
     parser.add_argument("--bcftools", default="bcftools")
     parser.add_argument("--seed", type=int, default=SEED)
     args = parser.parse_args(argv)

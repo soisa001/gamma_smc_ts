@@ -2,11 +2,11 @@
 
 Research date: 2026-10-27. Sources below are primary documentation, source code, or the methods paper. No controlled data were accessed. All scale estimates are planning scenarios, not measurements of the user's files.
 
-**Final implementation decision:** the user selected direct physical phase-block lookup. The delivered workflow has **no SHAPEIT stage**. See [singleton_phasing.md](singleton_phasing.md) for the actual interface, tests, and operating limits. The SHAPEIT details below document the investigated alternative and why it does not retain target physical linkage; they are not claims that a SHAPEIT pipeline was delivered or benchmarked.
+**Final implementation decision:** the user selected nearest informative left/right SNVs in the carrier's HiPhase block, requiring agreeing flanks by default and excluding unsupported candidates from the augmented panel. Original panel records remain unchanged. The delivered workflow has **no SHAPEIT stage**. See [singleton_phasing.md](singleton_phasing.md) for the actual interface, tests, and operating limits. The SHAPEIT details below document the investigated alternative and why it does not retain target physical linkage; they are not claims that a SHAPEIT pipeline was delivered or benchmarked.
 
 ## Recommendation
 
-Use direct physical phase transfer. Preserve original scaffold records as authoritative records and add new singleton records around them. Leave conflicting or unanchored physical blocks explicitly unresolved. Do not pass HiPhase genotypes through `phase_rare` expecting it to preserve their physical phase, or deliver SHAPEIT's whole output as a replacement for the scaffold.
+Use direct physical phase transfer from agreeing nearest flanking SNVs. Preserve original scaffold records as authoritative records and add supported singleton records around them. Exclude unsupported/conflicting candidates and retain their reasons in an audit table. Do not pass HiPhase genotypes through `phase_rare` expecting it to preserve their physical phase, or deliver SHAPEIT's whole output as a replacement for the scaffold.
 
 ## Verified tool constraints
 
