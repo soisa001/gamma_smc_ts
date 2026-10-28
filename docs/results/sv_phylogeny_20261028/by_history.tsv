@@ -1,0 +1,25 @@
+method	window	history	n	usable	mean_monophyly_probability	median_fold_error_usable	age_containment_usable	timing_calls	median_bootstrap_carrier_clade
+BEAST2	oracle	ancestral_retained	4	4	0.9995006657789614	1.6664837990561212	0.5	4	
+BEAST2	oracle	imported_old	4	2	0.5	1.8091017110539152	1.0	2	
+BEAST2	oracle	post_introgression	4	0	0.042276964047936086			0	
+BEAST2	w10000	ancestral_retained	4	3	0.7959387483355527	1.9911104471683914	0.3333333333333333	3	
+BEAST2	w10000	imported_old	4	3	0.75	1.7655320971892203	1.0	3	
+BEAST2	w10000	post_introgression	4	1	0.32756324900133155	17.00626807546847	0.0	0	
+IQTREE_LSD2	oracle	ancestral_retained	4	4	1.0	2.050003217908464	0.25	4	0.94
+IQTREE_LSD2	oracle	imported_old	4	2	0.5	2.1074452904520267	1.0	1	0.275
+IQTREE_LSD2	oracle	post_introgression	4	0	0.0			0	0.045
+IQTREE_LSD2	w1000	ancestral_retained	4	3	0.75	1.5379703298886724	1.0	3	0.87
+IQTREE_LSD2	w1000	imported_old	4	2	0.5	1.9681148423642458	0.5	1	0.335
+IQTREE_LSD2	w1000	post_introgression	4	0	0.0			0	0.02
+IQTREE_LSD2	w10000	ancestral_retained	4	4	1.0	2.1153605109678244	0.0	4	0.97
+IQTREE_LSD2	w10000	imported_old	4	3	0.75	1.9470582544516148	1.0	1	1.0
+IQTREE_LSD2	w10000	post_introgression	4	2	0.5	10.061502906184216	1.0	1	0.135
+IQTREE_LSD2	w25000	ancestral_retained	4	2	0.5	3.1785900017833586	0.0	2	0.5700000000000001
+IQTREE_LSD2	w25000	imported_old	4	3	0.75	1.4628342819114564	1.0	2	1.0
+IQTREE_LSD2	w25000	post_introgression	4	1	0.25	24.73299073557937	0.0	0	0.13999999999999999
+Relate	500kb	ancestral_retained	4	4	1.0	1.7979524705958045	0.5	4	
+Relate	500kb	imported_old	4	4	1.0	1.647821911731097	0.75	3	
+Relate	500kb	post_introgression	4	4	1.0	6.028705644728091	0.5	2	
+oracle_tree	focal	ancestral_retained	4	4	1.0	1.3209782093750797	1.0	3	
+oracle_tree	focal	imported_old	4	4	1.0	1.4950234979977097	1.0	0	
+oracle_tree	focal	post_introgression	4	4	1.0	3.7065786947683215	1.0	3	

@@ -127,3 +127,9 @@ configs/sv_mutation_age.json -text
 python/gamma_smc_aou/sv_mutation_age.py -text
 scripts/run_sv_mutation_age.sh text eol=lf
 tests/test_sv_mutation_age.py text eol=lf
+configs/sv_phylogeny* text eol=lf
+scripts/*sv_phylogeny* text eol=lf
+scripts/build_relate_windows.py text eol=lf
+tests/test_sv_phylogeny.py text eol=lf
+docs/sv_phylogeny_results.md text eol=lf
+docs/results/sv_phylogeny_20261028/** -text whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
