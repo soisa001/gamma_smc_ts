@@ -80,7 +80,7 @@ def extract_worker(payload):
     logging.info("EXTRACT %s", json.dumps({"job": job, "parameters": params, "signature": signature}))
     stats = ph.prepare(job, directory, argparse.Namespace(**params), samples, sparse=True, defer_phase=True)
     stats["process_peak_memory_mib"] = ph.peak_memory_mib()
-    files = ("raw_candidates.jsonl.gz", "anchors.sqlite", "merged.header.vcf", "header_merge.json")
+    files = ("raw_candidates.jsonl.gz", "anchors.sqlite", "duplicate_sites.tsv.gz", "merged.header.vcf", "header_merge.json")
     result = {"signature": signature, "stats": stats, "artifacts": {name: ph.digest(directory / name) for name in files}}
     ph.json_write(marker, result)
     logging.info("EXTRACT COMPLETE %s", json.dumps(stats))
@@ -169,7 +169,7 @@ def merge(job, directory, args, samples, chunks, extracted, phased):
     if audit["added_records"] != totals["physical"] or sum(totals.values()) != sum(e["stats"].get("singleton_candidates", 0) for e in extracted):
         raise ValueError("Chunk candidate/output count mismatch")
     # Compact audit files can be concatenated in core order; no full VCF spool.
-    for name in ("added_singletons.jsonl.gz", "excluded_singletons.tsv.gz"):
+    for name in ("added_singletons.jsonl.gz", "excluded_singletons.tsv.gz", "duplicate_sites.tsv.gz"):
         with gzip.open(directory / name, "wt", encoding="utf-8", newline="\n") as dest:
             for i, evidence in enumerate(extracted):
                 with gzip.open(Path(evidence["directory"]) / name, "rt", encoding="utf-8") as source:
@@ -224,7 +224,7 @@ def job_run(payload):
         if inputs != {name: ph.identity(job[name]) for name in inputs}:
             raise ValueError("Input files changed during processing")
         ph.json_write(directory / "audit.json", {"signature": signature, "execution_parameters": params, **result})
-        names = ("augmented.vcf.gz", "added_singletons.jsonl.gz", "excluded_singletons.tsv.gz", "merged.header.vcf", "chunks.json", "audit.json")
+        names = ("augmented.vcf.gz", "added_singletons.jsonl.gz", "excluded_singletons.tsv.gz", "duplicate_sites.tsv.gz", "merged.header.vcf", "chunks.json", "audit.json")
         artifacts = {name: ph.digest(directory / name) for name in names}
         for i, (e, p) in enumerate(zip(extracted, phased)):
             artifacts.update({f"chunk_{i:03d}/{name}": sha for name, sha in {**e["artifacts"], **p["artifacts"]}.items()})

@@ -83,6 +83,22 @@ counts are computed from GT. Each chunk's `header_merge.json` and log record the
 mapping and exact conflict. Existing staged files do not need to be downloaded
 again. GT and contig-length conflicts remain fatal.
 
+For `Duplicate CHROM/POS/REF/ALT` failures, phase algorithm version 4 handles
+repeated records explicitly. It preserves all panel rows, ignores source non-SNVs,
+collapses concordant singleton copies, and excludes conflicting source singleton
+copies. Ambiguous duplicate anchors remain conflict markers at their coordinate
+instead of being skipped. `duplicate_sites.tsv.gz` in the result directory and
+each chunk records key multiplicity and handling. Resume with `--phase run` after
+pulling the code; the staged BCFs do not need to be downloaded again.
+
+The bcftools AC/FT header sanity messages and HTSlib's older-index message are
+warnings, separate from these Python exceptions. The latter is emitted when the
+CSI modification time precedes the BCF modification time; it does not by itself
+prove that the index is corrupt or matches the data. Staging verifies downloaded
+objects against their source checksums, but cannot establish how the upstream
+CSI was built. The workflow does not change timestamps to hide the warning.
+[HTSlib index-loading implementation](https://github.com/samtools/htslib/blob/develop/hts.c).
+
 Staging uses `gcloud storage rsync SOURCE_DIRECTORY LOCAL_DIRECTORY` with an exact
 filename exclusion filter. It inherits gcloud's existing account and configuration.
 An explicit `--billing-project PROJECT_ID` is optional and, when supplied, is
@@ -129,7 +145,7 @@ generated VCFs as immutable. A matching existing final file is reused on restart
 
 The working directory `~/singleton_phased/working/results/chr1` contains the
 internal `augmented.vcf.gz`, compact `added_singletons.jsonl.gz`,
-`excluded_singletons.tsv.gz`, `chunks.json`, `audit.json`, and workflow logs.
+`excluded_singletons.tsv.gz`, `duplicate_sites.tsv.gz`, `chunks.json`, `audit.json`, and workflow logs.
 Each `chunk_000` through `chunk_003` directory contains its own `anchors.sqlite`,
 compact candidate/addition files, extraction/phasing completion markers and log.
 Only the final merge expands a sparse carrier into a cohort-wide row. Added
@@ -179,8 +195,10 @@ sequentially; use the staged indexed BCFs for actual parallel region reads.
 
 ## Validation status
 
-The local focused suite contains 29 original phasing tests, 9 chunk tests, 13
-staging-control tests, 6 header-merge tests and 4 bootstrap tests (61 total).
+The local focused suite contains 28 original phasing tests, 9 chunk tests, 13
+staging-control tests, 6 header-merge tests, 13 duplicate tests and 4 bootstrap
+tests (73 total). Duplicate tests cover conservative evidence handling and exact
+preservation of every original occurrence, including repeated keys.
 Header tests verify that Number/Type conflicts preserve source annotations under
 distinct names and leave panel definitions/records unchanged. Bootstrap tests exercise
 an old uv on PATH, absent/incompatible private versions and repeat-run reuse,

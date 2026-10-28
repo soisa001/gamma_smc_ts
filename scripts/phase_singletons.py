@@ -30,7 +30,7 @@ import subprocess
 import sys
 import time
 
-VERSION = 3  # Preserve panel schemas; namespace conflicting source annotations.
+VERSION = 4  # Preserve repeated panel rows; resolve duplicate source evidence conservatively.
 SEED = 1729  # Existing repository seed.
 TAGS = {
     "SP_METHOD": '##INFO=<ID=SP_METHOD,Number=1,Type=String,Description="Singleton phase: PHYSICAL">',
@@ -157,11 +157,14 @@ def key(row):
 
 def groups(vcf):
     for pos, rows in itertools.groupby(vcf.records(), lambda x: int(x[0][1])):
-        values = list(rows)
-        keys = [key(r) for r, _ in values]
-        if len(set(keys)) != len(keys):
-            raise ValueError(f"Duplicate CHROM/POS/REF/ALT at {vcf.contig}:{pos}")
-        yield pos, values
+        yield pos, list(rows)
+
+
+def allele_groups(records):
+    result = {}
+    for row, raw in records:
+        result.setdefault(key(row), []).append((row, raw))
+    return result
 
 
 def snv(row):
@@ -212,6 +215,38 @@ def singleton(cs):
         return None
     carrier = next(i for i, c in enumerate(cs) if hetero(c))
     return carrier
+
+
+def call_signature(call, physical=True):
+    # Homozygous phase/PS does not change the haplotypes. Panel PS is irrelevant
+    # because the panel is asserted to be oriented across the chromosome.
+    alleles, phased, ps = call
+    return alleles, phased if hetero(call) else None, ps if physical and hetero(call) else None
+
+
+def anchor_evidence(source_calls, panel_calls):
+    """One vote per allele/sample/PS, or a conflict marker for ambiguous copies."""
+    if not source_calls or not panel_calls:
+        return
+    if len(source_calls) == len(panel_calls) == 1:
+        for sample, (a, b) in enumerate(zip(source_calls[0], panel_calls[0])):
+            if hetero(a) and hetero(b) and a[1] and b[1] and a[2] != "." and sorted(a[0]) == sorted(b[0]):
+                flipped = int(a[0] != b[0])
+                yield sample, a[2], (1 - flipped, flipped), False
+        return
+    for sample, (sources, targets) in enumerate(zip(zip(*source_calls), zip(*panel_calls))):
+        ambiguous = len({call_signature(c) for c in sources}) > 1 or len({call_signature(c, physical=False) for c in targets}) > 1
+        votes = {}
+        for a in sources:
+            if not (hetero(a) and a[1] and a[2] != "."):
+                continue
+            for b in targets:
+                if hetero(b) and b[1] and sorted(a[0]) == sorted(b[0]):
+                    votes.setdefault(a[2], set()).add(int(a[0] != b[0]))
+        for ps, orientations in votes.items():
+            # Keep ambiguity at this position: never search past it for agreement.
+            counts = (1, 1) if ambiguous else (int(0 in orientations), int(1 in orientations))
+            yield sample, ps, counts, ambiguous
 
 
 def header_id(line):
@@ -350,6 +385,7 @@ def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=Fa
     db.execute("PRAGMA journal_mode=WAL")
     db.execute("PRAGMA cache_size=-65536")
     db.execute("CREATE TABLE anchors(sample INTEGER, ps TEXT, pos INTEGER, same INTEGER, flipped INTEGER, PRIMARY KEY(sample,ps,pos)) WITHOUT ROWID")
+    db.execute("CREATE TABLE candidate_conflicts(pos INTEGER, ref TEXT, alt TEXT, PRIMARY KEY(pos,ref,alt)) WITHOUT ROWID")
     pending = {}
 
     def flush():
@@ -375,11 +411,22 @@ def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=Fa
         sg = iter(groups(scaffold))
         current = next(sg, None)
         candidate_name = "raw_candidates.jsonl.gz" if sparse else "raw_candidates.vcf.gz"
-        with gzip.open(directory / candidate_name, "wt", encoding="utf-8", newline="\n") as candidates:
+        with gzip.open(directory / candidate_name, "wt", encoding="utf-8", newline="\n") as candidates, gzip.open(directory / "duplicate_sites.tsv.gz", "wt", encoding="utf-8", newline="\n") as duplicates:
             if not sparse:
                 write_header(candidates, hiphase)
+            duplicates.write("input\tchrom\tpos\tref\talt\trecord_count\taction\n")
+
+            def record_duplicate(source, rows, action):
+                row = rows[0][0]
+                if len(rows) < 2 or (core and not core[0] <= int(row[1]) <= core[1]):
+                    return
+                duplicates.write("\t".join(map(str, [source, *key(row), len(rows), action])) + "\n")
+                stats[f"{source}_duplicate_keys"] += 1
+                stats[f"{source}_extra_duplicate_rows"] += len(rows) - 1
 
             def save_scaffold(group):
+                for rows in allele_groups(group[1]).values():
+                    record_duplicate("scaffold", rows, "PANEL_ROWS_PRESERVED")
                 for row, raw in group[1]:
                     if not core or core[0] <= int(row[1]) <= core[1]:
                         scaffold_hash.update((raw + "\n").encode())
@@ -388,47 +435,55 @@ def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=Fa
                     if any(hetero(c) and not c[1] for c in cs):
                         raise ValueError(f"Unphased scaffold heterozygote at {key(row)}")
 
+            next_progress = 100000
             for pos, hr in groups(hiphase):
                 while current is not None and current[0] < pos:
                     save_scaffold(current)
                     current = next(sg, None)
-                shared = {key(r): r for r, _ in current[1]} if current and current[0] == pos else {}
+                shared = allele_groups(current[1]) if current and current[0] == pos else {}
                 for row, raw in hr:
                     stats["hiphase_records"] += 1
                     hiphase_hash.update((raw + "\n").encode())
-                    if key(row) in shared:
-                        other = shared[key(row)]
-                        if not anchor_compatible(row, other):
-                            stats["excluded_incompatible_shared_anchor"] += 1
-                            continue
+                for allele_key, source_rows in allele_groups(hr).items():
+                    row, raw = source_rows[0]
+                    if not snv(row):
+                        record_duplicate("hiphase", source_rows, "IGNORED_NON_SNV")
+                        stats["excluded_incompatible_shared_anchor" if allele_key in shared else "excluded_non_biallelic_snv"] += len(source_rows)
+                        continue
+                    eligible = [(r, raw) for r, raw in source_rows if r[6] in ("PASS", ".")]
+                    if allele_key in shared:
+                        record_duplicate("hiphase", source_rows, "ANCHOR_EVIDENCE_COMBINED")
                         stats["shared_anchor_sites"] += 1
-                        stats["shared_snvs" if snv(row) else "shared_non_snv_anchors"] += 1
-                        cs = calls(row)
-                        if row[6] not in ("PASS", ".") or other[6] not in ("PASS", "."):
-                            continue
-                        for sample, (a, b) in enumerate(zip(cs, calls(other))):
-                            if not (hetero(a) and hetero(b) and a[1] and b[1] and a[2] != "."):
-                                continue
-                            if sorted(a[0]) != sorted(b[0]):
-                                stats["discordant_anchor_genotypes"] += 1
-                                continue
-                            block = (sample, a[2], pos)
+                        stats["shared_snvs"] += 1
+                        sources = [calls(r) for r, _ in eligible]
+                        panels = [calls(r) for r, _ in shared[allele_key] if r[6] in ("PASS", ".")]
+                        for sample, ps, counts, ambiguous in anchor_evidence(sources, panels):
+                            block = (sample, ps, pos)
                             if block not in pending:
                                 pending[block] = [0, 0]
-                            pending[block][int(a[0] != b[0])] += 1
-                            stats["anchor_observations"] += 1
+                            pending[block][0] += counts[0]
+                            pending[block][1] += counts[1]
+                            stats["anchor_observations"] += sum(counts)
+                            stats["ambiguous_duplicate_anchor_blocks"] += int(ambiguous)
                         if len(pending) >= 50000:
                             flush()
                         continue
                     if core and not core[0] <= pos <= core[1]:
                         continue  # Halo records supply anchors, never candidates.
-                    if not snv(row):
-                        stats["excluded_non_biallelic_snv"] += 1
-                        continue
-                    cs = calls(row)
-                    if row[6] not in ("PASS", "."):
+                    if not eligible:
+                        record_duplicate("hiphase", source_rows, "FILTERED_SNV")
                         stats["excluded_filtered_snv"] += 1
-                    elif (carrier := singleton(cs)) is not None:
+                        continue
+                    source_calls = [calls(r) for r, _ in eligible]
+                    carriers = [singleton(cs) for cs in source_calls]
+                    first = next((i for i, carrier in enumerate(carriers) if carrier is not None), None)
+                    if first is not None:
+                        row, raw = eligible[first]
+                        cs, carrier = source_calls[first], carriers[first]
+                        conflict = any(any(call_signature(a) != call_signature(b) for a, b in zip(cs, other)) for other in source_calls if other is not cs)
+                        if conflict:
+                            db.execute("INSERT INTO candidate_conflicts VALUES(?,?,?)", (pos, row[3], row[4]))
+                        record_duplicate("hiphase", source_rows, "CONFLICTING_DUPLICATE_SNV" if conflict else "SINGLETON_COPIES_COLLAPSED")
                         if sparse:
                             background = "0|0" if sum(sum(c[0]) for c in cs) == 1 else "1|1"
                             candidates.write(json.dumps({"row": row[:9] + [row[9 + carrier]], "carrier": carrier, "background": background}, separators=(",", ":")) + "\n")
@@ -436,12 +491,14 @@ def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=Fa
                             candidates.write(raw + "\n")
                         stats["singleton_candidates"] += 1
                     else:
+                        record_duplicate("hiphase", source_rows, "NON_SINGLETON_OR_INCOMPLETE")
                         stats["excluded_non_singleton_or_incomplete_diploid"] += 1
                 if current and current[0] == pos:
                     save_scaffold(current)
                     current = next(sg, None)
-                if stats["hiphase_records"] and stats["hiphase_records"] % 100000 == 0:
+                if stats["hiphase_records"] >= next_progress:
                     logging.info("%s scanned %s HiPhase rows", job["contig"], stats["hiphase_records"])
+                    next_progress = (stats["hiphase_records"] // 100000 + 1) * 100000
             while current:
                 save_scaffold(current)
                 current = next(sg, None)
@@ -483,8 +540,10 @@ def resolve_candidates(job, directory, args, expected_samples, sparse=False, oth
                 row, carrier = candidate["row"], candidate["carrier"]
                 row_carrier = 0 if sparse else carrier
                 alleles, phased, ps = calls(row)[row_carrier]
-                left, right = nearest_anchors(databases[0], carrier, ps, int(row[1])) if phased and ps != "." else (None, None)
-                if phased and ps != "." and (left is None or right is None) and other_indexes:
+                duplicate_conflict = databases[0].execute("SELECT 1 FROM candidate_conflicts WHERE pos=? AND ref=? AND alt=?", (int(row[1]), row[3], row[4])).fetchone() is not None
+                can_anchor = phased and ps != "." and not duplicate_conflict
+                left, right = nearest_anchors(databases[0], carrier, ps, int(row[1])) if can_anchor else (None, None)
+                if can_anchor and (left is None or right is None) and other_indexes:
                     stats["cross_chunk_lookups"] += 1
                     # Every index contains a complete contiguous interval. A flank
                     # found locally is already nearest. Missing flanks need all
@@ -494,7 +553,9 @@ def resolve_candidates(job, directory, args, expected_samples, sparse=False, oth
                         left = max((a for a, _ in pairs if a is not None), default=None, key=lambda a: a[0])
                     if right is None:
                         right = min((b for _, b in pairs if b is not None), default=None, key=lambda b: b[0])
-                if not phased or ps == ".":
+                if duplicate_conflict:
+                    reason, counts = "CONFLICTING_DUPLICATE_SNV", (0, 0)
+                elif not phased or ps == ".":
                     reason, counts = "NO_PHYSICAL_PS", (0, 0)
                 else:
                     reason, counts = anchor_decision(left, right, args.min_anchors)
@@ -508,7 +569,7 @@ def resolve_candidates(job, directory, args, expected_samples, sparse=False, oth
                         output.write("\t".join(annotated) + "\n")
                     stats["physical"] += 1
                 else:
-                    excluded.write("\t".join(map(str, [row[0], row[1], row[3], row[4], expected_samples[carrier], ps, reason, left[0] if left else ".", right[0] if right else ".", *counts])) + "\n")
+                    excluded.write("\t".join(map(str, [row[0], row[1], row[3], row[4], "." if duplicate_conflict else expected_samples[carrier], "." if duplicate_conflict else ps, reason, left[0] if left else ".", right[0] if right else ".", *counts])) + "\n")
                     stats["excluded"] += 1
                 stats[reason.lower()] += 1
     finally:
@@ -564,16 +625,20 @@ def audit_preservation(scaffold_path, output_path, contig, bcftools="bcftools"):
             if current and current[0] < pos:
                 raise ValueError("Scaffold record missing from final output")
             expected = current[1] if current and current[0] == pos else []
-            lookup = {key(r): raw for r, raw in expected}
+            original_keys = {key(r) for r, _ in expected}
+            added_keys = set()
             seen = []
             for row, raw in rows:
-                if key(row) in lookup:
-                    if raw != lookup[key(row)]:
+                if key(row) in original_keys:
+                    if len(seen) >= len(expected) or raw != expected[len(seen)][1]:
                         raise ValueError(f"Original scaffold record changed: {key(row)}")
                     seen.append(raw)
                     h.update((raw + "\n").encode())
                     preserved += 1
                 else:
+                    if key(row) in added_keys:
+                        raise ValueError(f"Duplicate singleton addition: {key(row)}")
+                    added_keys.add(key(row))
                     cs = calls(row) if snv(row) else []
                     carrier = singleton(cs) if cs else None
                     if carrier is None or not cs[carrier][1] or info_value(row, "SP_METHOD") != "PHYSICAL":
@@ -616,7 +681,7 @@ def job_run(payload):
         started = time.monotonic()
         logging.info("START %s", json.dumps({"signature": signature, "execution_parameters": params, "python": sys.version}, sort_keys=True))
         prep_done = directory / "prepare.done.json"
-        prep_names = ("added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "merged.header.vcf", "header_merge.json", "anchors.sqlite")
+        prep_names = ("added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "duplicate_sites.tsv.gz", "merged.header.vcf", "header_merge.json", "anchors.sqlite")
         prep_signature = {"algorithm_version": VERSION, "inputs": {k: v for k, v in signature["inputs"].items() if k != "map"},
                           "contig": job["contig"], "sample_manifest_sha256": signature["sample_manifest_sha256"], "min_anchors": args.min_anchors}
         if prep_done.exists() and (previous := json.loads(prep_done.read_text()))["signature"] == prep_signature and all((directory / name).exists() and digest(directory / name) == sha for name, sha in previous["artifacts"].items()):
@@ -632,7 +697,7 @@ def job_run(payload):
         if signature["inputs"] != {k: identity(job[k]) for k in signature["inputs"]}:
             raise ValueError("Input files changed during processing")
         json_write(directory / "audit.json", {"signature": signature, "execution_parameters": params, **result})
-        artifacts = {name: digest(directory / name) for name in ("augmented.vcf.gz", "added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "anchors.sqlite", "header_merge.json", "audit.json")}
+        artifacts = {name: digest(directory / name) for name in ("augmented.vcf.gz", "added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "duplicate_sites.tsv.gz", "anchors.sqlite", "header_merge.json", "audit.json")}
         json_write(done, {"signature": signature, "result": result, "artifacts": artifacts})
         logging.info("COMPLETE %s", json.dumps(result))
         return {"contig": job["contig"], "cached": False, **result}

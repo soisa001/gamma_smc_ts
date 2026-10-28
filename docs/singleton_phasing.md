@@ -60,9 +60,25 @@ errors in the existing panel are not corrected by this procedure.
   IDs/order, genome build, contig names, and variant representations. The manifest
   records the build; the program does not independently prove reference-build
   identity or liftover alleles. It rejects incompatible contig lengths or GT
-  definitions, malformed rows, unsorted records, duplicate exact variant keys, unphased
+  definitions, malformed rows, unsorted records, unphased
   panel heterozygotes and empty shards. With no shared SNV anchors it logs a
   warning, excludes all candidates, and preserves the original panel.
+- Repeated CHROM/POS/REF/ALT keys are handled by role. Every original panel row,
+  including duplicate keys, survives in order. HiPhase non-SNVs are ignored;
+  symbolic SVs can share this key while differing in END or other annotations.
+  Only PASS/unfiltered source SNV copies participate in phasing. Concordant
+  copies contribute one vote per allele/sample/PS, and a singleton key is emitted
+  at most once. For concordant copies, the first eligible source row supplies
+  non-genotype annotations. Homozygous phase separators/PS do not affect agreement.
+  Conflicting singleton copies (GT, carrier or physical PS) are excluded once as
+  `CONFLICTING_DUPLICATE_SNV`; their exclusion audit uses `.` for sample/PS because
+  there is no single unambiguous source. For anchors, inconsistent source calls
+  or panel haplotypes mark that coordinate ambiguous for each implicated physical
+  PS. The nearest-anchor search cannot skip it to find agreement farther away.
+  This is evaluated per sample; ambiguity in one sample does not discard another
+  sample's concordant anchor. Panel PS is ignored in this comparison because the
+  panel is asserted to be chromosome-oriented. Filtered source copies do not
+  override passing evidence.
 - Per-chromosome `.vcf`/ordinary `.vcf.gz` inputs work with Python alone. Whole-
   genome inputs require indexed BGZF VCF or indexed BCF plus `bcftools` on PATH.
   Plain multi-contig VCF input is rejected rather than rescanned for every job.
@@ -158,6 +174,7 @@ With `--chunks-per-chrom 1`, each contig directory contains:
 | `augmented.vcf.gz` | Entire original panel plus supported, phased singleton records |
 | `added_singletons.vcf.gz` | Only the supported phased singleton additions |
 | `excluded_singletons.tsv.gz` | Rejected candidate coordinates/carriers and reasons, including selected flank positions |
+| `duplicate_sites.tsv.gz` | Repeated keys by input, record multiplicity, and handling action; no raw genotype columns |
 | `anchors.sqlite` | Same/flipped evidence by sample index, PS, and informative SNV position |
 | `audit.json` | Counts, record/header hashes, paths, parameters, input identities, elapsed time, process peak memory, preservation check |
 | `workflow.log` | Start/completion/failure messages, decode commands, parameters, progress |
@@ -167,7 +184,7 @@ With chunking enabled, `augmented.vcf.gz` remains the final output. The addition
 are compact `added_singletons.jsonl.gz` records (eight site fields, carrier index,
 phased carrier GT and background GT); there is no cohort-wide additions VCF.
 `chunk_NNN` directories hold per-chunk `anchors.sqlite`, compact candidates,
-additions, exclusions, logs, `extract.done.json` and `phase.done.json`. Root-level
+additions, exclusions, duplicate audits, logs, `extract.done.json` and `phase.done.json`. Root-level
 `chunks.json` records the cores/halos. Root-level `audit.json` includes each
 chunk's timings, counts, cross-chunk lookups and cache reuse. Extraction and phase
 assignment use separate parallel phases; the final panel merge is a single pass,
@@ -195,6 +212,10 @@ Added records carry `SP_METHOD`, `SP_REASON`, `SP_ANCHORS`, `SP_LEFT_POS`,
 original HiPhase evidence. `SP_ANCHORS` counts only observations at the selected
 nearest flank coordinates. Exclusion reasons distinguish no physical PS, no
 informative anchor, missing left/right anchor, and conflicting nearest anchors.
+Concordant duplicate rows are not counted repeatedly. An ambiguous duplicate
+anchor is represented by a same/flip conflict marker `(1,1)`; on excluded rows,
+these counts indicate ambiguity rather than independent supporting observations.
+`ambiguous_duplicate_anchor_blocks` records how many such markers were created.
 Old FORMAT/PS and FORMAT/PQ are removed from **added** records because they describe
 the old physical coordinate system. In the original one-chunk mode, other
 new-record fields are retained. In chunked mode, additions use FORMAT/GT only:
@@ -235,6 +256,10 @@ Algorithm version 3 adds source-annotation namespacing and invalidates earlier
 preparation/output caches; validated staged BCF/CSI files remain reusable. For a
 header failure after staging, use the chr1 runner's `--phase run` to resume with
 local inputs and no GCS requests.
+Algorithm version 4 adds duplicate handling and invalidates older phasing caches,
+while retaining the staging cache. The preservation audit now compares every
+original occurrence in order, including repeated keys, and rejects duplicated
+new singleton additions. Source record hashes still include every input row.
 Inputs are hashed logically during their normal scan, and source identity is
 checked again at completion. A same-size input modification with deliberately
 preserved mtime cannot be detected on a cached run; use immutable staged inputs or
@@ -245,10 +270,10 @@ is no longer running. Failed runs never produce a new successful completion mark
 
 ## Local validation, 2026-10-28
 
-The original focused suite passes 29 tests covering phase flips, same orientation,
+The original focused suite passes 28 tests covering phase flips, same orientation,
 reference-minor singletons, exclusion of SV anchors, expansion past homozygotes,
 nearest-flank agreement/conflict, distant disagreements, tied-coordinate conflicts,
-missing left/right flanks, sample/PS isolation, unsupported calls, duplicate/sort errors,
+missing left/right flanks, sample/PS isolation, unsupported calls, sort errors,
 sample/header mismatches, truncated gzip, original-record preservation, corrupt-
 output repair, CLI/manifest generation, cache reuse, stale completion invalidation,
 and randomized orientations.
@@ -262,6 +287,11 @@ Six header-merge tests cover incompatible INFO/AC Number/Type in both serial and
 chunked modes, existing-name collisions and non-GT FORMAT differences, while
 checking exact panel preservation. The earlier rejection test now checks GT
 schema incompatibility; ordinary source annotations are renamed instead.
+Thirteen duplicate tests cover repeated symbolic SVs with different END values,
+preservation of identical panel copies, concordant singleton/anchor deduplication,
+conflicting GT/carrier/PS, ambiguous nearest anchors in either input, filtered
+copies, and rejection of lost original copies or duplicated additions. They
+replace the earlier blanket rejection of duplicate allele keys.
 
 The synthetic cohort-width benchmark uses 12,000 samples, four chromosome jobs,
 160 shared markers bracketing 400 new singleton sites. It checks that all 320

@@ -123,7 +123,6 @@ def test_resume_checks_output_content_and_repairs_corruption(tmp_path):
 
 @pytest.mark.parametrize("mutation,match", [
     (lambda x: x.replace("\ta\tb\tc\td\n", "\tb\ta\tc\td\n"), "Sample identity"),
-    (lambda x: x + x.splitlines(keepends=True)[-1], "Duplicate"),
     (lambda x: x.replace("chr1\t200\t", "chr1\t99\t"), "not sorted"),
     (lambda x: x.replace("chr1\t", "chr2\t"), "shard or indexed"),
     (lambda x: x.replace("Type=String,Description=\"Genotype", "Type=Integer,Description=\"Genotype"), "Incompatible header"),
