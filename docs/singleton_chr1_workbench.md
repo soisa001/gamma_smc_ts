@@ -75,6 +75,14 @@ validated local files to create the ordered cohort manifest. `--phase run` uses
 validated local files, recreates the small manifest, and runs phasing. `all`
 performs the complete sequence. The `prepare` and `run` modes make no GCS calls.
 
+For the `Incompatible header definition: ('INFO', 'AC')` failure, pull the updated
+code and rerun with `--phase run`. Phase algorithm version 3 preserves the panel's
+header and renames incompatible source annotations on additions, for example
+INFO/AC to INFO/SP_HIPHASE_AC. Source Number/Type and values are retained; singleton
+counts are computed from GT. Each chunk's `header_merge.json` and log record the
+mapping and exact conflict. Existing staged files do not need to be downloaded
+again. GT and contig-length conflicts remain fatal.
+
 Staging uses `gcloud storage rsync SOURCE_DIRECTORY LOCAL_DIRECTORY` with an exact
 filename exclusion filter. It inherits gcloud's existing account and configuration.
 An explicit `--billing-project PROJECT_ID` is optional and, when supplied, is
@@ -172,7 +180,9 @@ sequentially; use the staged indexed BCFs for actual parallel region reads.
 ## Validation status
 
 The local focused suite contains 29 original phasing tests, 9 chunk tests, 13
-staging-control tests and 4 bootstrap tests (55 total). Bootstrap tests exercise
+staging-control tests, 6 header-merge tests and 4 bootstrap tests (61 total).
+Header tests verify that Number/Type conflicts preserve source annotations under
+distinct names and leave panel definitions/records unchanged. Bootstrap tests exercise
 an old uv on PATH, absent/incompatible private versions and repeat-run reuse,
 using stub installers without network access. Chunk tests compare serial and parallel
 decisions, including exact boundaries, empty cores, zero/large halos, remote

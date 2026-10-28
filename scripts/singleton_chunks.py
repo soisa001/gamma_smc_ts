@@ -80,7 +80,7 @@ def extract_worker(payload):
     logging.info("EXTRACT %s", json.dumps({"job": job, "parameters": params, "signature": signature}))
     stats = ph.prepare(job, directory, argparse.Namespace(**params), samples, sparse=True, defer_phase=True)
     stats["process_peak_memory_mib"] = ph.peak_memory_mib()
-    files = ("raw_candidates.jsonl.gz", "anchors.sqlite", "merged.header.vcf")
+    files = ("raw_candidates.jsonl.gz", "anchors.sqlite", "merged.header.vcf", "header_merge.json")
     result = {"signature": signature, "stats": stats, "artifacts": {name: ph.digest(directory / name) for name in files}}
     ph.json_write(marker, result)
     logging.info("EXTRACT COMPLETE %s", json.dumps(stats))

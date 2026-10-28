@@ -126,7 +126,7 @@ def test_resume_checks_output_content_and_repairs_corruption(tmp_path):
     (lambda x: x + x.splitlines(keepends=True)[-1], "Duplicate"),
     (lambda x: x.replace("chr1\t200\t", "chr1\t99\t"), "not sorted"),
     (lambda x: x.replace("chr1\t", "chr2\t"), "shard or indexed"),
-    (lambda x: x.replace("Type=Integer,Description=\"Depth", "Type=Float,Description=\"Depth"), "Incompatible header"),
+    (lambda x: x.replace("Type=String,Description=\"Genotype", "Type=Integer,Description=\"Genotype"), "Incompatible header"),
     (lambda x: x.replace("1|0:10:10", "2|0:10:10"), "outside REF/ALT"),
 ])
 def test_invalid_inputs_fail_closed(tmp_path, mutation, match):

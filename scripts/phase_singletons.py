@@ -30,7 +30,7 @@ import subprocess
 import sys
 import time
 
-VERSION = 2  # Nearest flanking SNVs; exclude unsupported candidates from panel.
+VERSION = 3  # Preserve panel schemas; namespace conflicting source annotations.
 SEED = 1729  # Existing repository seed.
 TAGS = {
     "SP_METHOD": '##INFO=<ID=SP_METHOD,Number=1,Type=String,Description="Singleton phase: PHYSICAL">',
@@ -220,20 +220,41 @@ def header_id(line):
 
 
 def merged_header(scaffold, hiphase):
+    return header_merge_plan(scaffold, hiphase)[0]
+
+
+def header_merge_plan(scaffold, hiphase):
+    """Keep every panel definition; rename incompatible source annotations."""
     result = list(scaffold.meta)
     definitions = {header_id(x): x for x in result if header_id(x)}
+    occupied = {header_id(x) for x in scaffold.meta + hiphase.meta if header_id(x)}
+    renames = {"INFO": {}, "FORMAT": {}}
+    for name in TAGS:
+        if ("INFO", name) in occupied:
+            raise ValueError(f"Reserved INFO field already exists: {name}")
     for line in hiphase.meta:
         tag = header_id(line)
         if tag is None:
             continue  # Keep scaffold provenance; full input headers hashed in audit.
         if tag in definitions and definitions[tag] != line:
-            # Descriptions may differ, but type/arity (and contig length) may not.
+            # Description-only differences do not alter the data schema.
             attrs = ("Number", "Type") if tag[0] in ("INFO", "FORMAT") else ("length",)
             for attr in attrs:
                 pattern = rf"(?:<|,){attr}=([^,>]+)"
                 a, b = re.search(pattern, definitions[tag]), re.search(pattern, line)
                 if (a.group(1) if a else None) != (b.group(1) if b else None):
-                    raise ValueError(f"Incompatible header definition: {tag}")
+                    if tag[0] not in renames or tag == ("FORMAT", "GT"):
+                        raise ValueError(f"Incompatible header definition: {tag}; panel={definitions[tag]}; HiPhase={line}")
+                    alias = f"SP_HIPHASE_{tag[1]}"
+                    suffix = 2
+                    while (tag[0], alias) in occupied:
+                        alias = f"SP_HIPHASE_{tag[1]}_{suffix}"
+                        suffix += 1
+                    occupied.add((tag[0], alias))
+                    renames[tag[0]][tag[1]] = alias
+                    result.append(line.replace(f"<ID={tag[1]}", f"<ID={alias}", 1))
+                    logging.warning("Header schema conflict %s -> %s; panel=%s; HiPhase=%s", tag, alias, definitions[tag], line)
+                    break
         elif tag not in definitions:
             result.append(line)
             definitions[tag] = line
@@ -242,7 +263,20 @@ def merged_header(scaffold, hiphase):
             raise ValueError(f"Reserved INFO field already exists: {name}")
         result.append(line)
     result.append(scaffold.columns)
-    return "\n".join(result) + "\n"
+    return "\n".join(result) + "\n", renames
+
+
+def rename_source_annotations(row, renames):
+    """Apply only to additions, after extracting GT/PS and removing physical PS/PQ."""
+    row = list(row)
+    if row[7] != ".":
+        values = []
+        for item in row[7].split(";"):
+            name, separator, value = item.partition("=")
+            values.append(renames["INFO"].get(name, name) + separator + value)
+        row[7] = ";".join(values)
+    row[8] = ":".join(renames["FORMAT"].get(name, name) for name in row[8].split(":"))
+    return row
 
 
 def write_header(handle, vcf):
@@ -329,9 +363,12 @@ def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=Fa
         scaffold, hiphase = VCF(sf, job["contig"], region), VCF(hf, job["contig"], region)
         if scaffold.samples != hiphase.samples or scaffold.samples != expected_samples:
             raise ValueError("Sample identity/order differs from the manifest or between inputs")
-        header = merged_header(scaffold, hiphase)
+        header, renames = header_merge_plan(scaffold, hiphase)
+        json_write(directory / "header_merge.json", renames)
         (directory / "merged.header.vcf").write_text(header, encoding="utf-8")
         stats["samples"] = len(scaffold.samples)
+        stats["renamed_info_fields"] = len(renames["INFO"])
+        stats["renamed_format_fields"] = len(renames["FORMAT"])
         stats["scaffold_header_sha256"] = hashlib.sha256(("\n".join(scaffold.meta + [scaffold.columns]) + "\n").encode()).hexdigest()
         stats["hiphase_header_sha256"] = hashlib.sha256(("\n".join(hiphase.meta + [hiphase.columns]) + "\n").encode()).hexdigest()
         scaffold_hash, hiphase_hash = hashlib.sha256(), hashlib.sha256()
@@ -427,6 +464,7 @@ def prepare(job, directory, args, expected_samples, sparse=False, defer_phase=Fa
 def resolve_candidates(job, directory, args, expected_samples, sparse=False, other_indexes=()):
     """Resolve compact candidates; indexes in other chunks close halo boundaries."""
     stats = Counter()
+    renames = json.loads((directory / "header_merge.json").read_text(encoding="utf-8"))
     paths = [directory / "anchors.sqlite", *other_indexes]
     databases = [sqlite3.connect(Path(p).resolve().as_uri() + "?mode=ro", uri=True) for p in paths]
     try:
@@ -463,6 +501,7 @@ def resolve_candidates(job, directory, args, expected_samples, sparse=False, oth
                 if reason in ("AGREEING_FLANKS", "ONE_SIDED_ANCHOR"):
                     gt = "|".join(map(str, alleles[::-1] if counts[1] else alleles))
                     annotated = annotate(row, row_carrier, gt, "PHYSICAL", reason, counts, left, right)
+                    annotated = rename_source_annotations(annotated, renames)
                     if sparse:
                         output.write(json.dumps({"fields": annotated[:8], "carrier": carrier, "gt": gt, "background": candidate["background"]}, separators=(",", ":")) + "\n")
                     else:
@@ -577,7 +616,7 @@ def job_run(payload):
         started = time.monotonic()
         logging.info("START %s", json.dumps({"signature": signature, "execution_parameters": params, "python": sys.version}, sort_keys=True))
         prep_done = directory / "prepare.done.json"
-        prep_names = ("added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "merged.header.vcf", "anchors.sqlite")
+        prep_names = ("added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "merged.header.vcf", "header_merge.json", "anchors.sqlite")
         prep_signature = {"algorithm_version": VERSION, "inputs": {k: v for k, v in signature["inputs"].items() if k != "map"},
                           "contig": job["contig"], "sample_manifest_sha256": signature["sample_manifest_sha256"], "min_anchors": args.min_anchors}
         if prep_done.exists() and (previous := json.loads(prep_done.read_text()))["signature"] == prep_signature and all((directory / name).exists() and digest(directory / name) == sha for name, sha in previous["artifacts"].items()):
@@ -593,7 +632,7 @@ def job_run(payload):
         if signature["inputs"] != {k: identity(job[k]) for k in signature["inputs"]}:
             raise ValueError("Input files changed during processing")
         json_write(directory / "audit.json", {"signature": signature, "execution_parameters": params, **result})
-        artifacts = {name: digest(directory / name) for name in ("augmented.vcf.gz", "added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "anchors.sqlite", "audit.json")}
+        artifacts = {name: digest(directory / name) for name in ("augmented.vcf.gz", "added_singletons.vcf.gz", "excluded_singletons.tsv.gz", "anchors.sqlite", "header_merge.json", "audit.json")}
         json_write(done, {"signature": signature, "result": result, "artifacts": artifacts})
         logging.info("COMPLETE %s", json.dumps(result))
         return {"contig": job["contig"], "cached": False, **result}

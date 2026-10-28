@@ -59,8 +59,8 @@ errors in the existing panel are not corrected by this procedure.
 - Both inputs must describe the same joint cohort, with exactly the same sample
   IDs/order, genome build, contig names, and variant representations. The manifest
   records the build; the program does not independently prove reference-build
-  identity or liftover alleles. It rejects incompatible contig lengths/header
-  types, malformed rows, unsorted records, duplicate exact variant keys, unphased
+  identity or liftover alleles. It rejects incompatible contig lengths or GT
+  definitions, malformed rows, unsorted records, duplicate exact variant keys, unphased
   panel heterozygotes and empty shards. With no shared SNV anchors it logs a
   warning, excludes all candidates, and preserves the original panel.
 - Per-chromosome `.vcf`/ordinary `.vcf.gz` inputs work with Python alone. Whole-
@@ -175,6 +175,21 @@ followed by a separate read-only preservation check. Every core's original-panel
 hash is checked against extraction, then the full output is independently audited.
 Both input headers must declare matching positive contig lengths for chunking.
 
+The panel's header definitions are authoritative and remain unchanged. When a
+HiPhase INFO or non-GT FORMAT field has a different Number/Type, added records
+retain that source annotation under `SP_HIPHASE_<ID>` (with a numeric suffix if
+needed to avoid existing names). For example, incompatible INFO/AC is retained as
+INFO/SP_HIPHASE_AC on additions; original panel records still use their original
+INFO/AC. The source definition and values are preserved without type conversion.
+This means a consumer requiring AC on every record should compute counts from GT
+for the additions, rather than assume their namespaced source count is panel AC.
+Singleton eligibility is already computed from GT, independently of INFO/AC.
+Description-only differences reuse the panel definition. GT and contig schema
+conflicts remain errors with both definitions included in the message.
+`header_merge.json` in each preparation directory records the renaming map;
+workflow logs include each conflicting source/panel definition. Renaming happens
+after phase assignment, so source FORMAT/PS still supplies the physical block.
+
 Added records carry `SP_METHOD`, `SP_REASON`, `SP_ANCHORS`, `SP_LEFT_POS`,
 `SP_RIGHT_POS`, `SP_SOURCE_PS`, and `SP_SOURCE_GT`. The last two retain the carrier's
 original HiPhase evidence. `SP_ANCHORS` counts only observations at the selected
@@ -216,6 +231,10 @@ mode it is also reusable across unrelated manifest edits; chunk extraction cache
 currently include the complete manifest identity.
 Algorithm version 2 invalidates version 1's block-consensus caches, since both the
 anchor selection and exclusion policy changed.
+Algorithm version 3 adds source-annotation namespacing and invalidates earlier
+preparation/output caches; validated staged BCF/CSI files remain reusable. For a
+header failure after staging, use the chr1 runner's `--phase run` to resume with
+local inputs and no GCS requests.
 Inputs are hashed logically during their normal scan, and source identity is
 checked again at completion. A same-size input modification with deliberately
 preserved mtime cannot be detected on a cached run; use immutable staged inputs or
@@ -224,7 +243,7 @@ exits fail the run. Corrupt generated VCFs are detected by checksums and rebuilt
 A stale `.lock` after a killed process needs removal only after confirming the job
 is no longer running. Failed runs never produce a new successful completion marker.
 
-## Local validation, 2026-10-27
+## Local validation, 2026-10-28
 
 The original focused suite passes 29 tests covering phase flips, same orientation,
 reference-minor singletons, exclusion of SV anchors, expansion past homozygotes,
@@ -239,6 +258,10 @@ halos of zero/10/2000 bases, remote flanks, empty cores, tied anchors, random PS
 blocks, sparse reference-minor reconstruction and corrupted intermediate repair.
 The staging suite adds 13 tests, including default four-chunk dispatch and staging
 without a forced billing/account override.
+Six header-merge tests cover incompatible INFO/AC Number/Type in both serial and
+chunked modes, existing-name collisions and non-GT FORMAT differences, while
+checking exact panel preservation. The earlier rejection test now checks GT
+schema incompatibility; ordinary source annotations are renamed instead.
 
 The synthetic cohort-width benchmark uses 12,000 samples, four chromosome jobs,
 160 shared markers bracketing 400 new singleton sites. It checks that all 320
