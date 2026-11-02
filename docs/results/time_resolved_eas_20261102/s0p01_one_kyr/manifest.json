@@ -1,0 +1,43 @@
+{
+  "source_manifest": "a2914ca326f421d165fd9eb2c188cbf979e3f920b09bfecc0376443bc44b62f6",
+  "reference_manifest": null,
+  "report_source": "c59a0ca75391822106f65eac16e0a961c9b0c8239767872ffe5b5cd5e5f6058c",
+  "artifacts": {
+    "calibration.npz": {
+      "bytes": 5157,
+      "sha256": "bdb749c19d4abc049f626880cd3ab93cdb24de8b7736df39ff44e0eed136ab15"
+    },
+    "center_coalescence_summaries.tsv": {
+      "bytes": 4010,
+      "sha256": "7157eb8cff306d14ea55b92355e4fef9fe881239cf959a4da33a895011901ebe"
+    },
+    "completed_units.tsv": {
+      "bytes": 91833,
+      "sha256": "804a038fa5a1a33d46d9c7054f4b61f3cb3b3d8757d947f8badb9c88a419003a"
+    },
+    "cumulative_baselines.tsv": {
+      "bytes": 1605,
+      "sha256": "42a3e46870c734eb756fc53d657247be14173c34e2fdf8ad2568c0d49eb76e99"
+    },
+    "performance.json": {
+      "bytes": 8685,
+      "sha256": "4396f51b392967b635ab05603ca7f574a1c9ef6469cba29cda6cec0c3568070e"
+    },
+    "performance.pdf": {
+      "bytes": 20316,
+      "sha256": "1460d59af108b297e830d989496f9e28ae193912f6ef27e2a9114747e90dd099"
+    },
+    "performance.png": {
+      "bytes": 270031,
+      "sha256": "620eb07af523aafde51b52f8e4b7a949ba4a0a89e0d3ef497f0a191af12a4af5"
+    },
+    "README.md": {
+      "bytes": 2469,
+      "sha256": "391dd3edcd09d8d7b6f7c61bd3db2a825c243821261e0e806d76cf5b1a8ac3a0"
+    },
+    "replicate_metrics.tsv": {
+      "bytes": 28255,
+      "sha256": "9a144cfa6141743bd2ffe110d453db696cbd66a9027f1a84c362584299ff151f"
+    }
+  }
+}

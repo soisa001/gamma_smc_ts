@@ -1,0 +1,43 @@
+{
+  "source_manifest": "70b18a1372d150c680e86c331864c2afde3552b38afede2bd5f84696b2647652",
+  "reference_manifest": "a2914ca326f421d165fd9eb2c188cbf979e3f920b09bfecc0376443bc44b62f6",
+  "report_source": "c59a0ca75391822106f65eac16e0a961c9b0c8239767872ffe5b5cd5e5f6058c",
+  "artifacts": {
+    "calibration.npz": {
+      "bytes": 11145,
+      "sha256": "46357d7cffa16d5a7e7c2de3b6949fdb8b5b6dd015d82ca387747de89d56e335"
+    },
+    "center_coalescence_summaries.tsv": {
+      "bytes": 4009,
+      "sha256": "30e102263d7285c44e69551a3a054bacdc5096a393a483c712f0244bde9a3b6b"
+    },
+    "completed_units.tsv": {
+      "bytes": 83469,
+      "sha256": "03d7d9c0f855e0c4376a906604fbace5a4c221aab87c6c3edc3c440c8fdf4d76"
+    },
+    "cumulative_baselines.tsv": {
+      "bytes": 1483,
+      "sha256": "0911134437fa1bf81c22f2f254cce1e051711baca707d95526694c4c86af25fe"
+    },
+    "performance.json": {
+      "bytes": 9000,
+      "sha256": "fef4160b5a292c9cdeaf1b09d47bf7721736c7dc5534b18f5c9ca4cbea6ca4c6"
+    },
+    "performance.pdf": {
+      "bytes": 20757,
+      "sha256": "cb198c641e5a47d8ee78d4e965af3da09620bf5bb8ec47fa43fa658ee214fd76"
+    },
+    "performance.png": {
+      "bytes": 269383,
+      "sha256": "678d64e1d032127f07123a11115b5f0570f60203141066cc2ac1b1ae9905ddd4"
+    },
+    "README.md": {
+      "bytes": 2504,
+      "sha256": "f6e441192863817d49edf512cf3d3248c9638d6b1e94cc0684672fc9045553d7"
+    },
+    "replicate_metrics.tsv": {
+      "bytes": 22035,
+      "sha256": "ce33dcb8af24c9bc1b22228c30d9d5cd60934ba53e36c25c3b2ee59b08f8cd16"
+    }
+  }
+}

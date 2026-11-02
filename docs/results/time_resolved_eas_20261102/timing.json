@@ -1,0 +1,11 @@
+{
+  "start_utc": "2026-11-02T23:24:21+00:00",
+  "last_simulation_and_score_completion_utc": "2026-11-02T23:45:52.434366+00:00",
+  "elapsed_minutes_including_setup": 21.523906099999998,
+  "main_run_started_utc": "2026-11-02T23:29:29Z",
+  "analyzed_runs": 239,
+  "main_complete": 219,
+  "strong_control_complete": 20,
+  "maximum_concurrent_workers": 12,
+  "rescaling_Q": 1
+}

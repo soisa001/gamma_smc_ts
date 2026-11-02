@@ -1,6 +1,6 @@
 # Time-resolved all-pairs selection scan: EAS simulation plan
 
-Status: proposed design, revised 2026-11-02 after specifying 1-50 kya, 10-kb spatial scoring, and posterior-mass versus median scoring. No simulations or new analysis runner have been launched. The initial objective is to test whether an excess-coalescence interval recovers a selection episode from 30 to 20 kya. All times below are years before present unless stated otherwise.
+Status: full benchmark remains proposed; a bounded no-introgression pilot completed on 2026-11-02. See [measured pilot performance](results/time_resolved_eas_20261102/README.md) and [execution details](time_resolved_pilot_execution.md). The design below specifies 1-50 kya, 10-kb spatial scoring, and posterior-mass versus median scoring. The initial objective is to test whether an excess-coalescence interval recovers a selection episode from 30 to 20 kya. All times below are years before present unless stated otherwise.
 
 ## 1. Estimand and statistic
 

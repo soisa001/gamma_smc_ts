@@ -1,0 +1,396 @@
+{
+  "config": {
+    "schema": "time-resolved-pilot/v1",
+    "scaling": 1,
+    "length": 1000000,
+    "diploids": 100,
+    "pairs": 1000,
+    "selection": 0.01,
+    "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+    "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+    "base_seed": 20380101,
+    "pair_seed": 1729,
+    "stride": 10000,
+    "generation_time": 25,
+    "cutoffs": [
+      1000,
+      2000,
+      3000,
+      4000,
+      5000,
+      6000,
+      7000,
+      8000,
+      9000,
+      10000,
+      11000,
+      12000,
+      13000,
+      14000,
+      15000,
+      16000,
+      17000,
+      18000,
+      19000,
+      20000,
+      21000,
+      22000,
+      23000,
+      24000,
+      25000,
+      26000,
+      27000,
+      28000,
+      29000,
+      30000,
+      31000,
+      32000,
+      33000,
+      34000,
+      35000,
+      36000,
+      37000,
+      38000,
+      39000,
+      40000,
+      41000,
+      42000,
+      43000,
+      44000,
+      45000,
+      46000,
+      47000,
+      48000,
+      49000,
+      50000
+    ],
+    "source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+    "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+    "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54"
+  },
+  "window_widths_kyr": [
+    1,
+    2,
+    5,
+    10
+  ],
+  "cohort_counts": {
+    "calibration": 99,
+    "development": 40,
+    "neutral_test": 40,
+    "selected": 40
+  },
+  "scientific_parameters": {
+    "generation_time_years": 25,
+    "mutation_rate": 1.29e-08,
+    "recombination_rate": 1e-08,
+    "selection_start_years": 30000,
+    "selection_end_years": 20000,
+    "dominance": 0.5,
+    "standing_frequency_target": 0.05,
+    "standing_frequency_bounds": [
+      0.02,
+      0.1
+    ],
+    "no_introgression": true,
+    "spatial_tolerance_bp": 100000,
+    "decoder_scaled_mutation_rate": 0.00075,
+    "decoder_threads_per_worker": 1,
+    "decoder_cache_size": 1000,
+    "decoder_exp10": "accurate",
+    "decoder_backward_alignment": "fixed",
+    "alpha": 0.05,
+    "bootstrap_draws": 2000,
+    "phlash_resource_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+  },
+  "statuses": {
+    "complete": 219
+  },
+  "summaries": [
+    {
+      "method": "truth",
+      "eligible_bins": 182,
+      "rates": {
+        "neutral_fpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "selected_any_call": {
+          "k": 5,
+          "n": 40,
+          "rate": 0.125,
+          "ci95": [
+            0.05459500250945401,
+            0.261121198388511
+          ]
+        },
+        "spatial_tpr": {
+          "k": 2,
+          "n": 40,
+          "rate": 0.05,
+          "ci95": [
+            0.013820667386148344,
+            0.16503877369140962
+          ]
+        },
+        "joint_tpr": {
+          "k": 1,
+          "n": 40,
+          "rate": 0.025,
+          "ci95": [
+            0.0044268315026814095,
+            0.1288136896347409
+          ]
+        },
+        "center_overlap_tpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_off_target_rate": {
+          "k": 2,
+          "n": 40,
+          "rate": 0.05,
+          "ci95": [
+            0.013820667386148344,
+            0.16503877369140962
+          ]
+        },
+        "center_mistimed_rate": {
+          "k": 2,
+          "n": 40,
+          "rate": 0.05,
+          "ci95": [
+            0.013820667386148344,
+            0.16503877369140962
+          ]
+        }
+      },
+      "mean_temporal_f1": 0.0,
+      "mean_temporal_recall": 0.0,
+      "mean_called_kyr": 0.05,
+      "mean_iou": 0.0,
+      "center_peak_mae_kya": 9.55,
+      "event_tp": 1,
+      "event_fp": 13,
+      "event_fn": 39,
+      "event_f1": 0.037037037037037035
+    },
+    {
+      "method": "median",
+      "eligible_bins": 182,
+      "rates": {
+        "neutral_fpr": {
+          "k": 4,
+          "n": 40,
+          "rate": 0.1,
+          "ci95": [
+            0.03957952868260638,
+            0.23051775227522298
+          ]
+        },
+        "selected_any_call": {
+          "k": 5,
+          "n": 40,
+          "rate": 0.125,
+          "ci95": [
+            0.05459500250945401,
+            0.261121198388511
+          ]
+        },
+        "spatial_tpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "joint_tpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_overlap_tpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_off_target_rate": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_mistimed_rate": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        }
+      },
+      "mean_temporal_f1": 0.0,
+      "mean_temporal_recall": 0.0,
+      "mean_called_kyr": 0.0,
+      "mean_iou": 0.0,
+      "center_peak_mae_kya": 16.3,
+      "event_tp": 0,
+      "event_fp": 9,
+      "event_fn": 40,
+      "event_f1": 0.0
+    },
+    {
+      "method": "mass",
+      "eligible_bins": 182,
+      "rates": {
+        "neutral_fpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "selected_any_call": {
+          "k": 2,
+          "n": 40,
+          "rate": 0.05,
+          "ci95": [
+            0.013820667386148344,
+            0.16503877369140962
+          ]
+        },
+        "spatial_tpr": {
+          "k": 1,
+          "n": 40,
+          "rate": 0.025,
+          "ci95": [
+            0.0044268315026814095,
+            0.1288136896347409
+          ]
+        },
+        "joint_tpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_overlap_tpr": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_off_target_rate": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        },
+        "center_mistimed_rate": {
+          "k": 0,
+          "n": 40,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.08762160119728664
+          ]
+        }
+      },
+      "mean_temporal_f1": 0.0,
+      "mean_temporal_recall": 0.0,
+      "mean_called_kyr": 0.0,
+      "mean_iou": 0.0,
+      "center_peak_mae_kya": 21.2875,
+      "event_tp": 0,
+      "event_fp": 3,
+      "event_fn": 40,
+      "event_f1": 0.0
+    }
+  ],
+  "paired_comparison": {
+    "any_call": {
+      "mass_minus_median": -0.075,
+      "ci95": [
+        -0.2,
+        0.05
+      ]
+    },
+    "joint_hit": {
+      "mass_minus_median": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "center_overlap": {
+      "mass_minus_median": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "temporal_f1": {
+      "mass_minus_median": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "root": "/mnt/d/phase2simselection/sim/time_scan_pilot_20261102",
+  "reference_null_root": null,
+  "selection_frequency_summary": {
+    "count": 40.0,
+    "mean": 0.28957615,
+    "std": 0.1764522479580851,
+    "min": 0.0160746,
+    "25%": 0.13245625,
+    "50%": 0.3068785,
+    "75%": 0.38982300000000003,
+    "max": 0.683636
+  },
+  "notes": [
+    "Independent calibration and neutral test regions; no time/pair pseudoreplication.",
+    "Test is maximum over all genomic positions and 182 time intervals; widths=[1, 2, 5, 10] kyr.",
+    "Event matching requires a cell within 100 kb of the selected center and in [20,30) kya.",
+    "Temporal F1 is computed at the selected coordinate, with no calls scored zero.",
+    "This is a 1-Mb bounded pilot, not the planned 10-Mb/10,000-pair benchmark.",
+    "Standing allele chosen on a valid onset genealogy near 5% frequency; no final-frequency conditioning.",
+    "Analytic Gamma mass is a marginal posterior expectation; full-region calibration handles dependence."
+  ]
+}

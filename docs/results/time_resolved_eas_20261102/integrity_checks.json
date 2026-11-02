@@ -1,0 +1,21 @@
+{
+  "campaigns": [
+    {
+      "campaign": "time_scan_pilot_20261102",
+      "complete": 219,
+      "raw_posterior_hashes": "verified",
+      "trajectory_checks": "passed",
+      "max_native_median_difference": 0.0
+    },
+    {
+      "campaign": "time_scan_positive_control_20261102",
+      "complete": 20,
+      "raw_posterior_hashes": "verified",
+      "trajectory_checks": "passed",
+      "max_native_median_difference": 0.0
+    }
+  ],
+  "report_artifacts": "all hashes verified",
+  "figures": "PDFs contain embedded TrueType fonts and no image objects",
+  "focused_tests": "6 passed"
+}
