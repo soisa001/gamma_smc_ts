@@ -1,5 +1,9 @@
 # All of Us Workbench runner
 
+For the chr1 SV-only Truvari 70% merge and original-versus-new comparison,
+use [the separate SV pilot runner](docs/chr1_sv_merge_workbench.md). That
+workflow stages the confirmed full panel and retains all outputs on the VM.
+
 `scripts/run_aou_workbench.sh` stages controlled inputs from their v9 GCS
 buckets, samples 100,000 arbitrary within-population haplotype pairs, validates
 every chromosome, uploads aggregate and pair-level candidate outputs, and
