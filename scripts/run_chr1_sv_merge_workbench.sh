@@ -34,9 +34,8 @@ ARGS=(--root "$ROOT" --phase "$PHASE" --source-uri "$SOURCE_URI" \
   --chrom chr1 --threshold 0.7 --refdist 500 --min-size 50 --max-size 100000 \
   --threads "$THREADS" --memory-gb "$MEMORY_GB" --bcftools "$BCFTOOLS_BIN")
 if [[ "$PHASE" == all || "$PHASE" == stage ]]; then
-  : "${GOOGLE_PROJECT:?Set GOOGLE_PROJECT to the requester-pays billing project}"
   # The default full-panel URI was explicitly confirmed by the user.
-  ARGS+=(--confirm-source-uri "$SOURCE_URI" --billing-project "$GOOGLE_PROJECT")
+  ARGS+=(--confirm-source-uri "$SOURCE_URI")
 fi
 "$UV" run --no-project --python 3.12 --with 'truvari==5.5.0' \
   scripts/run_chr1_sv_merge.py "${ARGS[@]}"

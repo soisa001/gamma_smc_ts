@@ -127,8 +127,6 @@ def require_manifest(directory):
 def stage(args):
     if args.confirm_source_uri != args.source_uri:
         raise ValueError("Staging requires --confirm-source-uri equal to --source-uri")
-    if not args.billing_project:
-        raise ValueError("Set GOOGLE_PROJECT or --billing-project for requester-pays staging")
     directory = args.root / "inputs"
     directory.mkdir(exist_ok=True)
     remote = storage.metadata_for(args, args.source_uri)
@@ -691,7 +689,8 @@ def parse_args(argv=None):
     p.add_argument("--memory-gb", type=int, default=26, help="Resource budget; bcftools sort uses one quarter per process; not an OS cap")
     p.add_argument("--scratch-reserve-gb", type=int, default=64, help="Free disk floor beyond source size, not a full-run prediction")
     p.add_argument("--density-bin-bp", type=int, default=1000000)
-    p.add_argument("--billing-project", default=os.environ.get("GOOGLE_PROJECT"))
+    p.add_argument("--billing-project", default=None,
+                   help="Optional explicit override; otherwise use existing gcloud configuration")
     p.add_argument("--bcftools", default=os.environ.get("BCFTOOLS_BIN", "bcftools"))
     p.add_argument("--truvari", default="truvari")
     p.add_argument("--gcloud", default="gcloud")

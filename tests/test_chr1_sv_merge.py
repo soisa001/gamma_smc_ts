@@ -143,6 +143,28 @@ class ComparisonTests(unittest.TestCase):
         self.assertIsNotNone(re.search(pattern, basename.replace("chr1.", "chr10.")))
         self.assertEqual(cmd[-2:], ["--billing-project", "billing"])
 
+    def test_stage_does_not_require_or_infer_billing_project(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for environment in ({}, {"GOOGLE_PROJECT": "do-not-infer"}):
+                with self.subTest(environment=environment), mock.patch.dict(os.environ, environment, clear=True):
+                    args = sv.parse_args(["--root", tmp, "--phase", "stage", "--confirm-source-uri", sv.SOURCE])
+                    self.assertIsNone(args.billing_project)
+                    cmd = sv.storage.sync_command(args.gcloud, args.source_uri, Path(tmp), args.billing_project)
+                    self.assertNotIn("--billing-project", cmd)
+                    # Reaching metadata retrieval proves no local billing guard blocks staging.
+                    with mock.patch.object(sv.storage, "metadata_for", side_effect=RuntimeError("metadata reached")) as remote:
+                        with self.assertRaisesRegex(RuntimeError, "metadata reached"):
+                            sv.stage(args)
+                        remote.assert_called_once_with(args, sv.SOURCE)
+            override = sv.parse_args(["--root", tmp, "--billing-project", "explicit-project"])
+            self.assertEqual(override.billing_project, "explicit-project")
+
+    def test_metadata_queries_omit_billing_flag_by_default(self):
+        metadata = json.dumps({"size": "1", "generation": "123", "crc32c": "AAAAAA=="})
+        with mock.patch.object(sv.storage, "command", return_value=metadata) as command:
+            sv.storage.describe("gcloud", sv.SOURCE)
+            self.assertNotIn("--billing-project", command.call_args.args[0])
+
     def test_real_comparison_outputs_and_cache(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

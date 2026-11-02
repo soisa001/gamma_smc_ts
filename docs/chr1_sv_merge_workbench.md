@@ -13,7 +13,7 @@ The source is recorded in this repository's `scripts/run_aou_workbench.sh`, `scr
 
 ## Run in the authorized Workbench VM
 
-Run this command cell there, not on the development machine. `$GOOGLE_PROJECT` must be the requester-pays billing project. The default output directory is outside the Git checkout. The first invocation installs public tools and runs synthetic tests before staging controlled data.
+Run this command cell there, not on the development machine. The workflow uses existing gcloud authentication and configuration without requiring `GOOGLE_PROJECT` or adding a billing-project flag. The default output directory is outside the Git checkout. The first invocation installs public tools and runs synthetic tests before staging controlled data.
 
 ```bash
 %%bash
@@ -29,13 +29,12 @@ cd "$REPO"
 export SV_MERGE_ROOT="$HOME/sv_merge_chr1_p70"
 export SV_THREADS=4
 export SV_MEMORY_GB=26
-: "${GOOGLE_PROJECT:?Set GOOGLE_PROJECT in the VM environment}"
 bash scripts/run_chr1_sv_merge_workbench.sh all
 ```
 
 For separate phases, replace `all` with `plan`, `stage`, `prepare`, `merge`, or `compare`. `plan` does not access the bucket or read controlled data, though the shell launcher bootstraps public tooling. The Python `--phase plan` does neither. Run the phases in that order. `prepare`, `merge`, and `compare` use local files and do not contact GCS. Repeating a phase reuses checksum-verified artifacts when relevant inputs and parameters match. A new repository commit alone does not invalidate the cache.
 
-`stage` uses `gcloud storage rsync SOURCE_DIRECTORY LOCAL_DIRECTORY --billing-project "$GOOGLE_PROJECT"`, with an anchored exclusion expression that selects only this BCF and its `.csi`. It never uses deletion of unmatched files. It verifies remote size, generation, CRC32C, and local checksums; it checks the source generation again after transfer. If an index is genuinely absent (404), it builds one locally; authorization failures are errors. Staging requires enough disk for a replacement copy plus a configurable 64 GiB scratch floor. This is a floor, not a reliable prediction of cohort-size-dependent scratch needs.
+`stage` uses `gcloud storage rsync SOURCE_DIRECTORY LOCAL_DIRECTORY`, with an anchored exclusion expression that selects only this BCF and its `.csi`. Neither rsync nor the metadata queries receive a billing-project flag by default. The Python entry point retains `--billing-project PROJECT` as an optional explicit override; it does not infer this override from `GOOGLE_PROJECT`. It never uses deletion of unmatched files. It verifies remote size, generation, CRC32C, and local checksums; it checks the source generation again after transfer. If an index is genuinely absent (404), it builds one locally; authorization failures are errors. Staging requires enough disk for a replacement copy plus a configurable 64 GiB scratch floor. This is a floor, not a reliable prediction of cohort-size-dependent scratch needs.
 
 The standalone Python entry point accepts `--input-bcf /absolute/path/to/already-local.bcf` to use an indexed local BCF or VCF without any cloud access. It also accepts `--bcftools` and `--truvari` paths. `uv run --no-project --python 3.12 --with truvari==5.5.0 scripts/run_chr1_sv_merge.py --help` lists all options. Use a separate output root for a different threshold so the two results remain available.
 
