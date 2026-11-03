@@ -1,0 +1,230 @@
+{
+  "manifest": {
+    "config": {
+      "schema": "recent-eas-selection/v1",
+      "selection_start_years": 10000,
+      "selection_end_years": 0,
+      "pulse_years": 50000,
+      "pulse_fraction": 0.01,
+      "archaic_split_years": 500000,
+      "archaic_ne": 3600,
+      "de_novo_introduction": "one copy at selection onset",
+      "donor_allele": "fixed in donor; neutral before selection",
+      "length": 1000000,
+      "diploids": 100,
+      "pairs": 1000,
+      "stride": 10000,
+      "generation_time": 25,
+      "dominance": 0.5,
+      "scaling": 1,
+      "mutation_rate": 1.29e-08,
+      "recombination_rate": 1e-08,
+      "base_seed": 20380101,
+      "pair_seed": 1729,
+      "selected_condition": "0 < whole-population focal AF < 1 at present",
+      "null_condition": "none; relabel nearest segregating sample variant",
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "source_sha256": "168863e6e946ea9ce16cfe3f82a9e9b9287d09d59d79d499216f2d13efd23e6b",
+      "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+      "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+      "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+      "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+      "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+    },
+    "versions": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "msprime": "1.4.2",
+      "pyslim": "1.1.1",
+      "tskit": "1.0.3"
+    },
+    "created_utc": "2026-11-03T23:00:03Z",
+    "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]"
+  },
+  "schedule": {
+    "parameters": {
+      "out": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103",
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "onset_years": 10000,
+      "selection": [
+        0.005,
+        0.01,
+        0.02,
+        0.03
+      ],
+      "workers": 24,
+      "seconds": 2640,
+      "reuse_root": "/mnt/d/phase2simselection/sim/recent10k_eas_20261103",
+      "development": 20,
+      "calibration": 99,
+      "test": 50,
+      "accepted": 50,
+      "de_novo_attempts": 5000,
+      "introgression_attempts": 1500
+    },
+    "strata": [
+      {
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "limit": 20,
+        "target": 20
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "limit": 99,
+        "target": 99
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "limit": 50,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "development",
+        "selection": 0.0,
+        "limit": 20,
+        "target": 20
+      },
+      {
+        "origin": "introgression",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "limit": 99,
+        "target": 99
+      },
+      {
+        "origin": "introgression",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "limit": 50,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "limit": 1500,
+        "target": 50
+      }
+    ],
+    "deadline_epoch": 1793749443.8276646,
+    "started_epoch": 1793746803.827675
+  },
+  "unavailable": [],
+  "root": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103",
+  "report_sha256": "9eba8c13249c4d62bcc2835e750313f93627da35c5f168956d228b6fa769d571",
+  "example_decoder_command": [
+    "/mnt/d/phase2simselection/code/bin/gamma_smc",
+    "--input",
+    "/dev/stdin",
+    "--input_format",
+    "vcf",
+    "--scaled_mutation_rate",
+    "0.00075",
+    "--recombination_to_mutation_ratio",
+    "0.7751937984496124",
+    "--unscaled_mutation_rate",
+    "1.29e-08",
+    "--recent_threshold_years",
+    "10000,50000",
+    "--generation_time",
+    "25",
+    "--recent_summary",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/de_novo/development_00000/native.tsv",
+    "--recent_call",
+    "median",
+    "--recent_call_probability",
+    "0.5",
+    "--output_at_hets=false",
+    "--output_at_stride",
+    "-1",
+    "--cache_size",
+    "1000",
+    "--threads",
+    "1",
+    "--pair_block",
+    "256",
+    "--backward_alignment",
+    "fixed",
+    "--exp10",
+    "accurate",
+    "--pairs_file",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/pairs.tsv",
+    "--output",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/de_novo/development_00000/posterior.zst",
+    "--output_positions_file",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/positions.txt",
+    "--no_recent_probability"
+  ],
+  "completed_proposals": 3505,
+  "analyzed_regions": 539,
+  "analyzed_selected": 201,
+  "failed_units": [],
+  "integrity": "Accepted tree/posterior/score hashes, all receipt trajectory/onset hashes, exact allele counts, activation date, pair/grid alignment and CDF monotonicity verified.",
+  "notes": [
+    "Fixed target is first 50 accepted replicates in proposal order; actual target is in schedule.",
+    "Deadline-limited strata use a complete proposal prefix; Wilson intervals are exploratory.",
+    "All methods and scan variants have separate null calibration; their union is not a calibrated discovery rule.",
+    "Cumulative 10-kya comparator uses the known simulated onset and is an oracle comparator, not an onset inference method.",
+    "Selection truth [0,10) kya is evaluated on observable [1,10) support: nine one-kyr cells; 0-1 kya is not scanned.",
+    "Region F1 counts joint hits (spatial hits for cumulative baselines), selected misses, and neutral any-call false positives; it depends on cohort mixture.",
+    "Event F1 also penalizes unmatched connected components; each selected region has at most one true event."
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "source_sha256": "b00129aed93c3da27d550c89b3f5ab2b087c4df42e78c4e98621a71997003ed9",
+  "report_provenance_sha256": "a4ec49edc9e785e5f6ea553dcdc3aca667212fc26310b119798c7e6528730836",
+  "completed_units_sha256": "83a9af8e0d0872a823898b5a06a0c11a7ec170f9311ebfedd2dcaf1f4b94b996",
+  "pairs": 19900,
+  "workers": 4,
+  "method": "Exact pair counts by MRCA; separate whole-region max calibration; no additional simulations"
+}

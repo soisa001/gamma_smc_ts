@@ -268,3 +268,78 @@ preserves existing scientific outputs and seeds. All figures stay on disk.
 The executed runner snapshots preserve the exploratory neutral-conditioning
 phase; the current runner defaults to the user's final selected-only condition.
 The final report is `docs/results/ongoing_eas_segregating_20261103/README.md`.
+
+### Recent onset: 10 kya to present
+
+The next experiment starts selection 10,000 years ago (400 generations), at
+s = 0.005, 0.01, 0.02, and 0.03, with h = 0.5. A de novo mutation enters as
+one copy at that date. For introgression, the 1% Neanderthal pulse stays at
+50 kya and the donor allele evolves neutrally until 10 kya. The split remains
+500 kya and donor Ne remains 3,600. Present-day segregation is required only
+for selected alleles; neutral regions retain the nearest segregating variant
+as their focal label. The marker used for conditioning is removed before the
+neutral mutation overlay and GammaSMC inference.
+
+The runner rejects absorbing loss/fixation early, checks exact allele counts,
+and verifies that selection acts for exactly 400 reproductive transitions.
+The time scan retains 1–50 kya at 1-kyr resolution and a 10-kb genomic stride.
+The pilot samples 1,000 unfiltered haplotype pairs from 100 diploids, using
+fixed pair seed 1729, to approximate the all-pairs statistic within the budget.
+It does not evaluate all 19,900 possible pairs. Each region is 1 Mb.
+
+The report separates spatial detection within 100 kb of the simulated site
+from joint detection requiring temporal overlap with [1,10) kya. The interval
+[0,1) is outside the requested grid. Center temporal F1 measures overlap of
+called one-kyr cells with those nine observable selected cells. A call wholly
+outside the selected interval is recorded as mistiming; any call in an
+independent neutral test region contributes to neutral FPR. Max-statistic
+calibration covers the entire region and all scanned intervals, separately
+for each estimator and scan variant. This is region-level error control,
+not genome-wide family-wise error control.
+
+Targets are 20 development nulls, 99 calibration nulls, 50 held-out nulls per
+origin, and the first 50 accepted selected proposals per coefficient and
+origin. A wall-clock cap can leave smaller cohorts. Reporting uses complete
+proposal prefixes, preserves seed order, and records all losses, fixations,
+incomplete units, and failures. Smaller samples are reported with counts and
+Wilson intervals rather than treated as definitive power estimates.
+
+```bash
+%%bash
+set -euo pipefail
+if [ ! -d gamma_smc_ts/.git ]; then
+  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
+fi
+cd gamma_smc_ts
+git pull --ff-only
+export MPLBACKEND=Agg
+export LD_LIBRARY_PATH="$PWD/.native/lib:${LD_LIBRARY_PATH:-}"
+OUT="$PWD/results/recent10k_eas"
+# One-time setup on a new Linux machine (does not run the full test suite).
+if [ ! -x .native/bin/slim ] || [ ! -x bin/gamma_smc ]; then
+  bash scripts/bootstrap_uv.sh --skip-tests
+fi
+export PATH="$PWD/.tools/uv-bin:$PATH"
+# Phase 1: simulate, infer pairwise posteriors, and score; bounded to 55 minutes.
+uv run --frozen --all-extras python scripts/run_recent_selection_pilot.py \
+  --out "$OUT" --slim "$PWD/.native/bin/slim" --decoder "$PWD/bin/gamma_smc" \
+  --onset-years 10000 --selection 0.005 0.01 0.02 0.03 \
+  --development 20 --calibration 99 --test 50 --accepted 50 \
+  --workers 4 --seconds 3300
+# Finish only already-submitted units, with a further 2.5-minute hard cap.
+uv run --frozen --all-extras python scripts/finish_recent_selection_pilot.py \
+  --root "$OUT" --workers 4 --seconds 150
+# Phase 2: validate artifact hashes and trajectories, then report performance.
+uv run --frozen --all-extras python scripts/report_recent_selection_pilot.py \
+  --root "$OUT" --out "$OUT/report"
+# Phase 3: exact all-pairs genealogy benchmark, using the same saved simulations.
+uv run --frozen --all-extras python scripts/audit_recent_all_pairs_truth.py \
+  --root "$OUT" --report "$OUT/report" --workers 4
+```
+
+The setup phase is outside the simulation time cap. The local experiment used 24 workers; four remains
+the CLI default. Re-running with the same scientific manifest reuses verified
+completed units. Figures are saved to PNG and editable vector PDF on disk.
+The all-pairs audit compares all 19,900 true TMRCA pairs against the 1,000-pair
+benchmark, with independent calibration for the full-pair statistic. This
+diagnoses subsampling effects; it does not infer 19,900 GammaSMC posteriors.

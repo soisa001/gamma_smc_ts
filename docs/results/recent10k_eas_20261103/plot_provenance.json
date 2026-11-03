@@ -1,0 +1,12 @@
+{
+  "source_sha256": "3e9cea2096abb7a53808ee675ac07f09265777d3ec51839ae577d875675907f2",
+  "plots_only": true,
+  "files": {
+    "performance.tsv": "302bb42921772aa7105c3cfcc39531c1cf48bac42779b5c0dffba694365e66af",
+    "center_excess_profiles.tsv": "d1b5fbc94e04602f74e8fe1bd127b4353a2e3a20bd7174d33ac97a938e604325",
+    "performance.png": "30aaf96ccaf499f46fb3012f49185eb4f40c6d4515b7d4e07850d1b5bd60e0ff",
+    "performance.pdf": "511740c4d2ed9f78751574bd74f61d124e2d2de24456223d0e1771916f679de3",
+    "center_excess.png": "de7e90a00dfa2bca064d53e5b10a3b281e592240a6c767c80bd188533695e2a5",
+    "center_excess.pdf": "e19e26ae9a2a69a2e57788a87ade151f236d269f4e3bd24a7a8ecc9783789ff0"
+  }
+}

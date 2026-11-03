@@ -1,0 +1,302 @@
+unit	origin	selection	cohort	any_call	spatial_hit	joint_hit	center_hit	center_mistimed	center_off_target	temporal_precision	temporal_recall	temporal_f1	temporal_iou	called_kyr	overlap_kyr	event_tp	event_fp	event_fn
+de_novo/neutral_test_00000	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/s0.005/selected_00000	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00000	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.2222222222222222	0.36363636363636365	0.2222222222222222	2	2	1	1	0
+de_novo/neutral_test_00001	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00002	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00003	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00004	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/s0.005/selected_00004	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/neutral_test_00005	de_novo	0.0	neutral_test	1	0	0	0	0	0		0.0	0.0	0.0	0	0	0	1	0
+de_novo/neutral_test_00006	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00007	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/s0.02/selected_00007	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/neutral_test_00008	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00009	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00010	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00011	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00012	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00013	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00014	de_novo	0.0	neutral_test	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	0
+de_novo/neutral_test_00015	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00016	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00017	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00018	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00019	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00020	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00021	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00022	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00023	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00024	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00025	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00026	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00027	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00028	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00029	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00030	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00031	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00032	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00033	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00034	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00035	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00036	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00037	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00038	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00039	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00040	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/s0.005/selected_00040	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/neutral_test_00041	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00042	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00043	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00044	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00045	de_novo	0.0	neutral_test	1	0	0	0	0	0		0.0	0.0	0.0	0	0	0	2	0
+de_novo/s0.01/selected_00045	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/neutral_test_00046	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00047	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00048	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/neutral_test_00049	de_novo	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+de_novo/s0.03/selected_00057	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.3333333333333333	0.5	0.3333333333333333	3	3	1	4	0
+de_novo/s0.01/selected_00079	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00091	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00098	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00115	de_novo	0.02	selected	1	1	1	1	0	0	1.0	0.1111111111111111	0.2	0.1111111111111111	1	1	1	0	0
+de_novo/s0.02/selected_00126	de_novo	0.02	selected	1	1	1	1	0	0	1.0	0.1111111111111111	0.2	0.1111111111111111	1	1	1	1	0
+de_novo/s0.01/selected_00133	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00148	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.1111111111111111	0.2	0.1111111111111111	1	1	1	1	0
+de_novo/s0.01/selected_00149	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00150	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.4444444444444444	0.6153846153846154	0.4444444444444444	4	4	1	1	0
+de_novo/s0.02/selected_00153	de_novo	0.02	selected	1	1	1	1	0	0	1.0	0.1111111111111111	0.2	0.1111111111111111	1	1	1	0	0
+de_novo/s0.03/selected_00166	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.3333333333333333	0.5	0.3333333333333333	3	3	1	3	0
+de_novo/s0.03/selected_00172	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.4444444444444444	0.6153846153846154	0.4444444444444444	4	4	1	0	0
+de_novo/s0.03/selected_00185	de_novo	0.03	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00191	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00192	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00204	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00224	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00230	de_novo	0.005	selected	1	0	0	0	0	0		0.0	0.0	0.0	0	0	0	1	1
+de_novo/s0.03/selected_00235	de_novo	0.03	selected	1	1	1	0	0	0		0.0	0.0	0.0	0	0	1	1	0
+de_novo/s0.02/selected_00243	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00244	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00245	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00250	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00251	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00251	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00253	de_novo	0.03	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.005/selected_00255	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00273	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.2222222222222222	0.36363636363636365	0.2222222222222222	2	2	1	0	0
+de_novo/s0.01/selected_00275	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00283	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00288	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00296	de_novo	0.03	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00307	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00321	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00322	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00342	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00347	de_novo	0.03	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00348	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00353	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.2222222222222222	0.36363636363636365	0.2222222222222222	2	2	1	1	0
+de_novo/s0.005/selected_00356	de_novo	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00362	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.1111111111111111	0.2	0.1111111111111111	1	1	1	0	0
+de_novo/s0.02/selected_00363	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00377	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.03/selected_00383	de_novo	0.03	selected	1	1	1	1	0	0	1.0	0.3333333333333333	0.5	0.3333333333333333	3	3	1	0	0
+de_novo/s0.03/selected_00384	de_novo	0.03	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.02/selected_00388	de_novo	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+de_novo/s0.01/selected_00392	de_novo	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/neutral_test_00000	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00001	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00002	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00003	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00004	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00005	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.03/selected_00005	introgression	0.03	selected	1	1	1	1	0	1	0.5	0.4444444444444444	0.47058823529411764	0.3076923076923077	8	4	1	4	0
+introgression/neutral_test_00006	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00007	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00008	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.005/selected_00008	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/neutral_test_00009	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00010	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.03/selected_00010	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/neutral_test_00011	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.03/selected_00011	introgression	0.03	selected	1	1	1	1	0	1	0.42857142857142855	0.3333333333333333	0.375	0.23076923076923078	7	3	1	5	0
+introgression/neutral_test_00012	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00013	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00014	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00015	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00016	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00017	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00018	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.02/selected_00018	introgression	0.02	selected	1	0	0	0	0	0		0.0	0.0	0.0	0	0	0	1	1
+introgression/neutral_test_00019	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.03/selected_00019	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	2	1
+introgression/neutral_test_00020	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.01/selected_00020	introgression	0.01	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	2	1
+introgression/neutral_test_00021	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00022	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.02/selected_00022	introgression	0.02	selected	1	1	1	1	0	0	0.6666666666666666	0.2222222222222222	0.3333333333333333	0.2	3	2	1	2	0
+introgression/neutral_test_00023	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00024	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00025	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00026	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00027	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.03/selected_00027	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/neutral_test_00028	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00029	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.02/selected_00029	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	3	1
+introgression/neutral_test_00030	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00031	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.005/selected_00031	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/neutral_test_00032	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00033	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.02/selected_00033	introgression	0.02	selected	1	1	1	1	0	1	0.4	0.2222222222222222	0.2857142857142857	0.16666666666666666	5	2	1	2	0
+introgression/neutral_test_00034	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.02/selected_00034	introgression	0.02	selected	1	1	1	1	0	1	0.14285714285714285	0.1111111111111111	0.125	0.06666666666666667	7	1	1	14	0
+introgression/neutral_test_00035	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00036	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.01/selected_00036	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/neutral_test_00037	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00038	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00039	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00040	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00041	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00042	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00043	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00044	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.02/selected_00044	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.03/selected_00044	introgression	0.03	selected	1	1	1	1	0	1	0.5	0.4444444444444444	0.47058823529411764	0.3076923076923077	8	4	1	4	0
+introgression/neutral_test_00045	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00046	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.01/selected_00046	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/neutral_test_00047	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00048	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/neutral_test_00049	introgression	0.0	neutral_test	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	0
+introgression/s0.01/selected_00050	introgression	0.01	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.01/selected_00059	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00060	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	4	0	0	4	1
+introgression/s0.005/selected_00067	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00068	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00068	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	4	0
+introgression/s0.01/selected_00070	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00075	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	2	1
+introgression/s0.02/selected_00079	introgression	0.02	selected	1	1	1	1	0	1	0.25	0.1111111111111111	0.15384615384615385	0.08333333333333333	4	1	1	3	0
+introgression/s0.03/selected_00081	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	3	1
+introgression/s0.03/selected_00084	introgression	0.03	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	1	0
+introgression/s0.01/selected_00087	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00087	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	4	1
+introgression/s0.01/selected_00088	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00091	introgression	0.03	selected	1	1	1	0	1	1	0.0	0.0	0.0	0.0	6	0	1	6	0
+introgression/s0.02/selected_00095	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	5	1
+introgression/s0.03/selected_00103	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	6	0
+introgression/s0.02/selected_00104	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.03/selected_00105	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.02/selected_00107	introgression	0.02	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	3	0
+introgression/s0.02/selected_00108	introgression	0.02	selected	1	1	1	1	0	0	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	1	0
+introgression/s0.01/selected_00110	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00111	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00115	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00116	introgression	0.02	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	6	0
+introgression/s0.01/selected_00118	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00119	introgression	0.03	selected	1	1	1	1	0	1	0.14285714285714285	0.1111111111111111	0.125	0.06666666666666667	7	1	1	3	0
+introgression/s0.005/selected_00121	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00121	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	9	0
+introgression/s0.005/selected_00122	introgression	0.005	selected	1	0	0	0	0	0		0.0	0.0	0.0	0	0	0	1	1
+introgression/s0.01/selected_00122	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00123	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	9	0
+introgression/s0.005/selected_00125	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00126	introgression	0.02	selected	1	1	1	1	0	1	0.5	0.1111111111111111	0.18181818181818182	0.1	2	1	1	3	0
+introgression/s0.005/selected_00127	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00128	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00130	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00130	introgression	0.01	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.02/selected_00130	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	5	1
+introgression/s0.005/selected_00135	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00138	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	10	0
+introgression/s0.02/selected_00143	introgression	0.02	selected	1	1	1	1	0	1	0.3333333333333333	0.1111111111111111	0.16666666666666666	0.09090909090909091	3	1	1	3	0
+introgression/s0.03/selected_00144	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	6	1
+introgression/s0.01/selected_00147	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00149	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00149	introgression	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00153	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	5	0
+introgression/s0.03/selected_00154	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	5	1
+introgression/s0.03/selected_00158	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	4	0	0	7	1
+introgression/s0.005/selected_00159	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00161	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00162	introgression	0.01	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.03/selected_00163	introgression	0.03	selected	1	1	1	1	0	1	0.6	0.3333333333333333	0.42857142857142855	0.2727272727272727	5	3	1	2	0
+introgression/s0.005/selected_00165	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00165	introgression	0.03	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	3	0
+introgression/s0.02/selected_00167	introgression	0.02	selected	1	1	1	0	0	0		0.0	0.0	0.0	0	0	1	1	0
+introgression/s0.01/selected_00168	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00169	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00171	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00175	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00177	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00179	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00187	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00187	introgression	0.01	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.03/selected_00187	introgression	0.03	selected	1	1	1	1	0	0	0.4	0.2222222222222222	0.2857142857142857	0.16666666666666666	5	2	1	1	0
+introgression/s0.03/selected_00189	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	4	1
+introgression/s0.01/selected_00190	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00197	introgression	0.03	selected	1	1	1	1	0	1	0.4	0.2222222222222222	0.2857142857142857	0.16666666666666666	5	2	1	4	0
+introgression/s0.005/selected_00198	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00204	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.02/selected_00205	introgression	0.02	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	5	0
+introgression/s0.02/selected_00209	introgression	0.02	selected	1	1	1	1	0	0	0.25	0.1111111111111111	0.15384615384615385	0.08333333333333333	4	1	1	1	0
+introgression/s0.01/selected_00214	introgression	0.01	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	2	1
+introgression/s0.02/selected_00215	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	3	1
+introgression/s0.02/selected_00217	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	4	1
+introgression/s0.03/selected_00223	introgression	0.03	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	3	0
+introgression/s0.005/selected_00226	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00226	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00230	introgression	0.02	selected	1	1	1	1	0	1	0.25	0.1111111111111111	0.15384615384615385	0.08333333333333333	4	1	1	5	0
+introgression/s0.03/selected_00231	introgression	0.03	selected	1	1	1	1	0	1	0.2857142857142857	0.2222222222222222	0.25	0.14285714285714285	7	2	1	6	0
+introgression/s0.02/selected_00240	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	4	0	0	4	1
+introgression/s0.01/selected_00243	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00243	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.03/selected_00248	introgression	0.03	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	6	0
+introgression/s0.005/selected_00249	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00250	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	4	0	0	3	1
+introgression/s0.01/selected_00251	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00260	introgression	0.02	selected	1	1	1	0	1	1	0.0	0.0	0.0	0.0	3	0	1	4	0
+introgression/s0.03/selected_00260	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	4	1
+introgression/s0.005/selected_00268	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00268	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	5	0	0	7	1
+introgression/s0.005/selected_00273	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00275	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	3	0	0	3	1
+introgression/s0.005/selected_00278	introgression	0.005	selected	1	0	0	0	0	0		0.0	0.0	0.0	0	0	0	1	1
+introgression/s0.01/selected_00279	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00282	introgression	0.03	selected	1	1	1	1	0	1	0.3333333333333333	0.2222222222222222	0.26666666666666666	0.15384615384615385	6	2	1	2	0
+introgression/s0.02/selected_00283	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	4	1
+introgression/s0.01/selected_00286	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00287	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00289	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00289	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.005/selected_00297	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00302	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00305	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.01/selected_00307	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00308	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	4	0	0	3	1
+introgression/s0.005/selected_00309	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00309	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.03/selected_00319	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	3	1
+introgression/s0.01/selected_00322	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00323	introgression	0.02	selected	1	1	1	1	0	1	0.16666666666666666	0.1111111111111111	0.13333333333333333	0.07142857142857142	6	1	1	5	0
+introgression/s0.01/selected_00331	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00331	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.01/selected_00342	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00344	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00348	introgression	0.03	selected	1	1	1	0	1	1	0.0	0.0	0.0	0.0	5	0	1	5	0
+introgression/s0.03/selected_00350	introgression	0.03	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	3	0
+introgression/s0.01/selected_00352	introgression	0.01	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00357	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.02/selected_00365	introgression	0.02	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00366	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.005/selected_00368	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.03/selected_00374	introgression	0.03	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	1	1
+introgression/s0.02/selected_00382	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	1	0	0	3	1
+introgression/s0.03/selected_00387	introgression	0.03	selected	1	1	1	1	0	0	0.6	0.3333333333333333	0.42857142857142855	0.2727272727272727	5	3	1	1	0
+introgression/s0.005/selected_00389	introgression	0.005	selected	0	0	0	0	0	0		0.0	0.0	0.0	0	0	0	0	1
+introgression/s0.02/selected_00390	introgression	0.02	selected	1	1	1	1	0	1	0.5	0.1111111111111111	0.18181818181818182	0.1	2	1	1	1	0
+introgression/s0.03/selected_00390	introgression	0.03	selected	1	1	1	1	0	1	0.75	0.3333333333333333	0.46153846153846156	0.3	4	3	1	2	0
+introgression/s0.02/selected_00394	introgression	0.02	selected	1	1	0	0	1	1	0.0	0.0	0.0	0.0	2	0	0	2	1
+introgression/s0.03/selected_00394	introgression	0.03	selected	1	1	1	1	0	1	0.2	0.1111111111111111	0.14285714285714285	0.07692307692307693	5	1	1	4	0

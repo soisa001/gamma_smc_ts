@@ -1,0 +1,16 @@
+[
+  {
+    "origin": "de_novo",
+    "trajectory_rows": 401,
+    "trajectory_exact_match": true,
+    "genealogical_tables_exact_match": true,
+    "ignored": "Provenance and uninitialized non-spatial individual locations"
+  },
+  {
+    "origin": "introgression",
+    "trajectory_rows": 2001,
+    "trajectory_exact_match": true,
+    "genealogical_tables_exact_match": true,
+    "ignored": "Provenance and uninitialized non-spatial individual locations"
+  }
+]

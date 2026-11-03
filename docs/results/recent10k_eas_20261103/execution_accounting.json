@@ -1,0 +1,343 @@
+{
+  "conservative_budget_start_utc": "2026-11-03T22:47:23Z",
+  "simulation_finished_utc": "2026-11-03T23:45:42.089042+00:00",
+  "elapsed_seconds": 3499.0890424251556,
+  "elapsed_minutes": 58.31815070708593,
+  "within_one_hour": true,
+  "initial_schedule": {
+    "parameters": {
+      "out": "/mnt/d/phase2simselection/sim/recent10k_eas_20261103",
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "onset_years": 10000,
+      "selection": [
+        0.005,
+        0.01,
+        0.02,
+        0.03
+      ],
+      "workers": 24,
+      "seconds": 3000,
+      "development": 20,
+      "calibration": 99,
+      "test": 50,
+      "accepted": 50,
+      "de_novo_attempts": 5000,
+      "introgression_attempts": 1500
+    },
+    "strata": [
+      {
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "limit": 20,
+        "target": 20
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "limit": 99,
+        "target": 99
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "limit": 50,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "development",
+        "selection": 0.0,
+        "limit": 20,
+        "target": 20
+      },
+      {
+        "origin": "introgression",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "limit": 99,
+        "target": 99
+      },
+      {
+        "origin": "introgression",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "limit": 50,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "limit": 1500,
+        "target": 50
+      }
+    ],
+    "deadline_epoch": 1793749302.6675634,
+    "started_epoch": 1793746302.6675754
+  },
+  "initial_interruption": {
+    "reason": "Validate and replace chromosome-scan logging with native mutationCounts; preserve all completed outputs",
+    "epoch": 1793746639.3549314,
+    "groups": [
+      8023,
+      8032,
+      8033,
+      8034,
+      8035,
+      8036,
+      8037,
+      8038,
+      8039,
+      8040,
+      8041,
+      8042,
+      8043,
+      8044,
+      8045,
+      8046,
+      8047,
+      8048,
+      8049,
+      8050,
+      8051,
+      8052,
+      8053,
+      8054,
+      8055
+    ]
+  },
+  "main_finished": {
+    "finished_epoch": 1793749444.2025385,
+    "submitted": 3505,
+    "returned": 3481,
+    "prefix_accepts": [
+      20,
+      99,
+      50,
+      11,
+      10,
+      14,
+      14,
+      20,
+      99,
+      50,
+      27,
+      37,
+      35,
+      38
+    ],
+    "strata": [
+      {
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "limit": 20,
+        "target": 20
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "limit": 99,
+        "target": 99
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "limit": 50,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "limit": 5000,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "development",
+        "selection": 0.0,
+        "limit": 20,
+        "target": 20
+      },
+      {
+        "origin": "introgression",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "limit": 99,
+        "target": 99
+      },
+      {
+        "origin": "introgression",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "limit": 50,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "limit": 1500,
+        "target": 50
+      },
+      {
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "limit": 1500,
+        "target": 50
+      }
+    ]
+  },
+  "completion_phase": {
+    "started_epoch": 1793749460.6371887,
+    "finished_epoch": 1793749542.0890424,
+    "deadline_epoch": 1793749610.6371887,
+    "seconds": 150,
+    "workers": 24,
+    "units": [
+      "introgression/s0.005/selected_00366",
+      "introgression/s0.005/selected_00368",
+      "introgression/s0.03/selected_00374",
+      "de_novo/s0.01/selected_00377",
+      "introgression/s0.02/selected_00382",
+      "de_novo/s0.03/selected_00383",
+      "de_novo/s0.03/selected_00384",
+      "introgression/s0.03/selected_00387",
+      "de_novo/s0.02/selected_00388",
+      "introgression/s0.005/selected_00389",
+      "introgression/s0.02/selected_00390",
+      "introgression/s0.03/selected_00390",
+      "de_novo/s0.01/selected_00392",
+      "introgression/s0.01/selected_00393",
+      "de_novo/s0.02/selected_00394",
+      "introgression/s0.02/selected_00394",
+      "introgression/s0.03/selected_00394",
+      "de_novo/s0.005/selected_00395",
+      "de_novo/s0.01/selected_00395",
+      "de_novo/s0.02/selected_00395",
+      "de_novo/s0.03/selected_00395",
+      "introgression/s0.005/selected_00395",
+      "introgression/s0.01/selected_00395",
+      "introgression/s0.02/selected_00395"
+    ],
+    "returned": 24,
+    "source_sha256": "5aaa46a12ebd595a76d4ee6c7991d9920f9985a4499dfd825e62229e31226880",
+    "executed_runner_sha256": "168863e6e946ea9ce16cfe3f82a9e9b9287d09d59d79d499216f2d13efd23e6b",
+    "new_proposals": 0
+  },
+  "states": {
+    "rejected": 2966,
+    "accepted": 539
+  },
+  "tests": "16 focused tests passed in 3.78 seconds",
+  "notes": [
+    "One-time setup, smoke checks, equivalence replays, original batch and optimized batch all fit within the conservative elapsed clock.",
+    "Completed original units were reused once under identical scientific settings and seeds; source receipts and source snapshots are preserved.",
+    "The final completion phase used the exact archived runner and submitted no new proposals.",
+    "Both replayed allele-count methods gave identical trajectories and genealogical tables; non-spatial uninitialized individual coordinates and provenance were excluded from table comparison."
+  ],
+  "executed_sources_sha256": {
+    "executed_sources/main/audit_recent_all_pairs_truth.py": "b00129aed93c3da27d550c89b3f5ab2b087c4df42e78c4e98621a71997003ed9",
+    "executed_sources/main/finish_recent_selection_pilot.py": "5aaa46a12ebd595a76d4ee6c7991d9920f9985a4499dfd825e62229e31226880",
+    "executed_sources/main/report_recent_selection_pilot.py": "9eba8c13249c4d62bcc2835e750313f93627da35c5f168956d228b6fa769d571",
+    "executed_sources/main/report_recent_selection_plots.py": "3e9cea2096abb7a53808ee675ac07f09265777d3ec51839ae577d875675907f2",
+    "executed_sources/main/run_ongoing_selection_pilot.py": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+    "executed_sources/main/run_recent_selection_pilot.py": "168863e6e946ea9ce16cfe3f82a9e9b9287d09d59d79d499216f2d13efd23e6b",
+    "executed_sources/main/run_time_resolved_pilot.py": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+    "executed_sources/pre_optimization/run_ongoing_selection_pilot.py": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+    "executed_sources/pre_optimization/run_recent_selection_pilot.py": "1805db9b0de38b576cd4b8989e6df259c569b7683489a10424722ee95b820706",
+    "executed_sources/pre_optimization/run_time_resolved_pilot.py": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc"
+  }
+}

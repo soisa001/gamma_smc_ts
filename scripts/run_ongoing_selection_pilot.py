@@ -22,14 +22,14 @@ import run_time_resolved_pilot as base
 def onset(cfg, origin, label, directory):
     times, ne=base.history()
     lookup=lambda t: float(ne[np.searchsorted(times,t,side='right')-1])
-    age=2000
+    age=cfg.get('ancestry_start_generations',2000)
     size=round(lookup(age))
     donors=round(2*size*.01) if origin=='introgression' else 0
     dem=msprime.Demography()
     dem.add_population(name='EAS',initial_size=size)
     if donors:
         dem.add_population(name='Neanderthal',initial_size=3600)
-        dem.add_mass_migration(time=18000,source='Neanderthal',dest='EAS',proportion=1)
+        dem.add_mass_migration(time=20000-age,source='Neanderthal',dest='EAS',proportion=1)
     for t,n in zip(times[times>age],ne[times>age]):
         dem.add_population_parameters_change(time=float(t)-age,initial_size=float(n),population='EAS')
     dem.sort_events()
@@ -41,7 +41,7 @@ def onset(cfg, origin, label, directory):
     nodes=initial.samples()
     if donors:
         tree=initial.at(cfg['length']//2)
-        assert all(tree.tmrca(int(a),int(b))>=18000 for a in nodes[:10] for b in nodes[-donors:][:10]), 'Cross-population coalescence predates split'
+        assert all(tree.tmrca(int(a),int(b))>=20000-age for a in nodes[:10] for b in nodes[-donors:][:10]), 'Cross-population coalescence predates split'
     carrier_nodes=nodes[-donors:] if donors else nodes[:1]
     tables=initial.dump_tables()
     pop=tables.nodes.population.copy();pop[nodes]=0;tables.nodes.population=pop

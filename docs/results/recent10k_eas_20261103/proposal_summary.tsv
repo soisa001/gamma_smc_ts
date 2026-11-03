@@ -1,0 +1,15 @@
+origin	cohort	selection	limit	target	submitted	completed	analyzed_prefix	accepted	lost	fixed
+de_novo	development	0.0	20	20	20	20	20	20	0	0
+de_novo	calibration	0.0	99	99	99	99	99	99	0	0
+de_novo	neutral_test	0.0	50	50	50	50	50	50	0	0
+de_novo	selected	0.005	5000	50	396	396	396	11	385	0
+de_novo	selected	0.01	5000	50	396	396	396	12	384	0
+de_novo	selected	0.02	5000	50	396	396	396	15	381	0
+de_novo	selected	0.03	5000	50	396	396	396	16	380	0
+introgression	development	0.0	20	20	20	20	20	20	0	0
+introgression	calibration	0.0	99	99	99	99	99	99	0	0
+introgression	neutral_test	0.0	50	50	50	50	50	50	0	0
+introgression	selected	0.005	1500	50	396	396	396	30	366	0
+introgression	selected	0.01	1500	50	396	396	396	37	359	0
+introgression	selected	0.02	1500	50	396	396	396	38	358	0
+introgression	selected	0.03	1500	50	395	395	395	42	353	0
