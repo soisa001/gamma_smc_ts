@@ -1,0 +1,10 @@
+{
+  "first_inspection_utc": "2026-11-03T18:58:42+00:00",
+  "last_simulation_deadline_utc": "2026-11-03T19:25:15.994237+00:00",
+  "bounded_simulation_window_minutes": 26.56657061666667,
+  "all_simulation_processes_stopped": true,
+  "executed_source_hashes_verified": true,
+  "pdf_has_no_raster_images": true,
+  "pdf_embeds_truetype_fonts": true,
+  "focused_tests_passed": 10
+}

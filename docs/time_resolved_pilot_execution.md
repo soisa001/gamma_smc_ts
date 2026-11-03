@@ -117,3 +117,154 @@ pair/position ordering, finite valid posteriors, monotone bounded CDFs, and comp
 posterior streams. Reports verify score and tree hashes and cohort seed uniqueness.
 PNG and vector PDF figures are written to disk only, with headless plotting and
 editable PDF fonts. Relevant focused tests are in `tests/test_time_resolved_pilot.py`.
+
+## Ongoing selection extension (2026-11-03)
+
+**Superseded initial design:** the unconditional run described immediately below
+was interrupted when the user required present-day segregation. Its outcomes
+are proposal diagnostics only, not the requested conditional power benchmark.
+The corrected design and runnable phases follow at the end of this section.
+
+`scripts/run_ongoing_selection_pilot.py` runs a separate experiment with selection
+enabled from 50 kya to the present, s in 0.01, 0.02, 0.03, 0.04, 0.05, h=0.5,
+and no scaling. The de novo allele starts as one copy. The introgressed allele
+is fixed among Neanderthal donors and absent among EAS founders. At 50 kya,
+the nearest integer to 1% of the 2N founder haplotypes comes from Neanderthals;
+founders are randomly paired into diploids. Their actual genealogies are
+simulated using a 500 kya human–Neanderthal divergence and Neanderthal Ne=3,600.
+These demographic assumptions follow the existing repository configuration.
+The selected marker tags donor membership at onset; it is not an additional
+simulation of the allele's earlier fixation within Neanderthals.
+
+The complete population at onset is simulated with DTWF for the first 100
+generations backward, then Hudson ancestry. EAS size changes use the same checked
+PHLASH median history as the earlier pilot. Population-size schedules, founder
+identities, realized pulse proportion, loss/fixation times, and all 2,001
+trajectory time points are retained. The focal marker is removed before adding
+independent neutral mutations for decoding. No failed allele establishment is
+retried or discarded, and there is no present-day allele-frequency filter.
+
+The local campaign requests 20 development, 99 calibration, 20 held-out neutral,
+and 20 selected replicates per coefficient **for each origin**: 478 regions.
+It uses 20 workers, one decoder thread each, and a 1,200-second campaign deadline.
+CLI defaults remain four workers. The two initial smoke regions are excluded.
+Four additional workers process the final 40 scheduled calibration units from
+the same manifest while the main controller handles earlier units, for at most
+24 simultaneous workers. Their schedule and status are recorded separately;
+the main controller verifies and reuses their receipts when it reaches them.
+The pipeline samples 1,000 unfiltered unordered haplotype pairs from 100 diploids
+per region; it does not enumerate all 19,900 possible pairs.
+
+The report uses independent, origin-matched neutral calibration. The primary
+1-kyr interval scan, secondary multiscale scan, and cumulative 50-kya baseline
+are evaluated separately, each corrected over its entire genomic/time search.
+Spatial TPR means a significant cell within 100 kb of the selected site; neutral
+FPR means any significant cell in a held-out neutral region. Conditional TPR
+among survivors and among alleles that ever reached 10% is also reported, with
+the actual denominator. These are descriptive strata, not replacement cohorts.
+
+Because selection covers the entire 1–50 kya scan grid, temporal overlap does
+not validate dating and temporal false positives outside selection cannot be
+measured. Temporal F1 here is coverage of [1,50) kya. The omitted 0–1 kya interval
+is explicitly outside the grid. Fixation also removes segregating variation
+even though the selection coefficient stays enabled. Comparisons with the
+earlier 30–20 kya experiment change initial allele frequency and origin as well
+as duration, so they do not isolate duration's causal effect.
+
+Run in phases from a Linux environment with SLiM 5.2 and the native Gamma-SMC
+binary installed. The repository bootstrap can provision the native stack.
+No controlled data are accessed by this simulation-only command.
+
+```bash
+%%bash
+set -euo pipefail
+if [ ! -d gamma_smc_ts/.git ]; then
+  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
+fi
+cd gamma_smc_ts
+git pull --ff-only
+OUT="$PWD/results/ongoing_eas_20261103"
+export MPLBACKEND=Agg
+export LD_LIBRARY_PATH="$PWD/.native/lib:${LD_LIBRARY_PATH:-}"
+uv run --frozen --all-extras python scripts/run_ongoing_selection_pilot.py run \
+  --out "$OUT" --slim "$PWD/.native/bin/slim" --decoder "$PWD/bin/gamma_smc" \
+  --development 20 --calibration 99 --test 20 --selected 20 \
+  --selection 0.01 0.02 0.03 0.04 0.05 --workers 4 --seconds 1200
+uv run --frozen --all-extras python scripts/report_ongoing_selection_pilot.py \
+  --root "$OUT" --out "$OUT/report"
+```
+
+Use `--workers 20` to reproduce the local concurrency; four workers may leave
+units incomplete at the same deadline. Re-running the simulation phase with
+identical scientific settings checks and reuses completed files. The report
+lists every missing scheduled unit and verifies tree, posterior, and score
+hashes before computing performance. Figures are saved only to PNG and vector
+PDF with editable text. Focused tests are in
+`tests/test_ongoing_selection_pilot.py` and `tests/test_time_resolved_pilot.py`.
+
+### Final design: segregating selected allele and relabeled neutral focal site
+
+Selected focal alleles must be segregating at present: 0 < whole-population
+frequency < 1. Fixation does not qualify as survival. Following the user's final
+clarification, neutral genealogies are unconditioned, and their focal coordinate
+is relabeled to the nearest variant segregating in the present-day sample.
+No particular neutral mutation introduced at 50 kya must survive. The 10 kb
+grid and whole-region calibration/FPR remain unchanged. The revised starting
+coefficient grid is 0.005, 0.01, 0.02,
+0.03. Selection from 50 kya is the current pilot; stronger coefficients with
+recent onset around 5 kya are reserved for a separate comparison. In a recent
+introgression-selection experiment, the donor pulse must remain at 50 kya and
+selection begin later. No 5-kya result has been simulated or claimed here.
+
+`run_conditioned_ongoing_pilot.py` performs exact rejection sampling with early
+termination at absorbing loss/fixation. This saves computation without changing
+the accepted distribution. Selected simulations use the strict segregation gate
+and keep their preassigned seeds. Neutral rejection is an optional experimental
+mode (`--condition-neutral`), disabled by default and excluded from final power.
+Old proposals can be reused from a source campaign, with source-receipt hashes.
+The source campaign can also provide the unconditioned neutral reference.
+The 0.005 coefficient has its own `s0.005` directory and cannot collide with 0.01.
+
+`report_conditioned_ongoing_pilot.py` reports proposal acceptance and checks
+whether valid power estimation is possible. It uses only each stratum's fully
+completed deterministic proposal prefix, avoiding bias toward quickly rejected
+simulations at a deadline. The minimum independent null sizes are 5 development,
+19 calibration (the minimum for empirical p<=0.05), and 1 held-out neutral test.
+Those minima permit a calculation but do not imply precise power or FPR estimates.
+Insufficient selected acceptances produce **not estimable**, never a zero-power
+result. Larger cohorts remain necessary for a useful study. The selected allele
+need not be observed as segregating in the random sample; its condition is on
+the whole simulated population. Neutral focal labels are polymorphic within
+the sample, which also establishes population segregation.
+
+```bash
+%%bash
+set -euo pipefail
+if [ ! -d gamma_smc_ts/.git ]; then
+  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
+fi
+cd gamma_smc_ts
+git pull --ff-only
+export MPLBACKEND=Agg
+export LD_LIBRARY_PATH="$PWD/.native/lib:${LD_LIBRARY_PATH:-}"
+SOURCE="$PWD/results/ongoing_neutral_reference"
+OUT="$PWD/results/ongoing_segregating"
+# Phase 1: independent, unconditioned neutral regions for each origin.
+uv run --frozen --all-extras python scripts/run_ongoing_selection_pilot.py run \
+  --out "$SOURCE" --slim "$PWD/.native/bin/slim" --decoder "$PWD/bin/gamma_smc" \
+  --development 10 --calibration 20 --test 10 --selected 0 --workers 4 --seconds 1200
+# Phase 2: bounded rejection sampling; defaults use four workers.
+uv run --frozen --all-extras python scripts/run_conditioned_ongoing_pilot.py \
+  --source "$SOURCE" --out "$OUT" --workers 4 --seconds 1200 \
+  --attempts 100 --calibration-attempts 200 --selection 0.005 0.01 0.02 0.03
+# Phase 3: integrity checks, acceptance counts, and performance when estimable.
+uv run --frozen --all-extras python scripts/report_conditioned_ongoing_pilot.py \
+  --root "$OUT" --neutral-reference "$SOURCE" --out "$OUT/report"
+```
+
+The local corrected run uses 24 persistent workers and a six-minute final batch
+after the earlier design corrections. Changing the attempt budget on restart
+preserves existing scientific outputs and seeds. All figures stay on disk.
+The executed runner snapshots preserve the exploratory neutral-conditioning
+phase; the current runner defaults to the user's final selected-only condition.
+The final report is `docs/results/ongoing_eas_segregating_20261103/README.md`.

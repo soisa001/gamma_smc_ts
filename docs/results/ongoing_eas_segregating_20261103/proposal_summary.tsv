@@ -1,0 +1,15 @@
+origin	cohort	selection	scheduled	completed	completed_prefix	accepted	rejected_loss	rejected_fixation	accepted_outside_prefix
+de_novo	calibration	0.0	200	63	63	0	63	0	0
+de_novo	development	0.0	100	64	64	0	64	0	0
+de_novo	neutral_test	0.0	100	63	63	0	63	0	0
+de_novo	selected	0.005	100	63	63	0	63	0	0
+de_novo	selected	0.01	100	61	51	0	51	0	0
+de_novo	selected	0.02	100	63	63	0	62	1	0
+de_novo	selected	0.03	100	63	63	0	60	3	0
+introgression	calibration	0.0	200	62	59	3	56	0	0
+introgression	development	0.0	100	60	52	4	48	0	0
+introgression	neutral_test	0.0	100	61	52	1	51	0	0
+introgression	selected	0.005	100	60	54	17	37	0	0
+introgression	selected	0.01	100	58	46	13	22	11	0
+introgression	selected	0.02	100	62	62	0	16	46	0
+introgression	selected	0.03	100	62	62	0	11	51	0
