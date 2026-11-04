@@ -89,6 +89,60 @@ The comparison verifies **original = retained + removed**, unique membership, sa
 
 ## Validation and recovery
 
+### Separate INS/DEL counts, raw lengths, and unique affected bases
+
+When the four `merge/{INS,DEL}.{kept,removed}.vcf.gz` files and their indexes are complete, the following comparison can run even while the original workflow is still building the combined `merge/new.vcf.gz`. It writes into a separate `compare_ins_del/` directory. It does not stage inputs, rerun preparation or Truvari, read the combined VCF, or parse cohort genotypes. Do not rerun `all` to obtain these summaries.
+
+```bash
+%%bash
+set -euo pipefail
+REPO="$HOME/gamma_smc_ts"
+if [[ ! -d "$REPO/.git" ]]; then
+  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git "$REPO"
+else
+  git -C "$REPO" switch AOU_run_opt
+  git -C "$REPO" pull --ff-only origin AOU_run_opt
+fi
+cd "$REPO"
+"$REPO/.tools/uv-bin/uv" run --no-project --python 3.12 \
+  scripts/compare_chr1_sv_alleles.py \
+  --root "$HOME/sv_merge_chr1_p70" --threads 4
+```
+
+The existing run has already installed the private uv executable used by this cell. This standalone script needs Matplotlib, but not Truvari, bcftools, or gcloud. It verifies the prepared allele metadata and sample manifest against their saved checksums, reads each kept/removed VCF to EOF, checks REF/ALT hashes and raw lengths against the original manifest, and verifies disjoint retained/removed membership and cluster counts. The comparison fails if a source file changes while it is being read. This validates these separate outputs without requiring the overall merge completion marker; it does not certify the still-running combined-file phase. Existing cached preparation/merging artifacts remain unchanged.
+
+Two scopes are reported separately, each split into DEL and INS:
+
+- `merge_eligible`: alleles that entered Truvari, compared with their retained representatives.
+- `all_ins_del`: all original INS/DEL alleles, with the same removed IDs excluded after merging. This includes unchanged pass-through calls reconstructed from `prepare/source_alleles.tsv.gz`, without rereading the large pass-through genotype VCF.
+
+The source manifest's schema-1 literal `size` was computed directly from `abs(len(ALT)-len(REF))`; the script uses that for unchanged literal alleles and independently verifies it against actual REF/ALT strings for the merged subset. No INFO/SVLEN, allele frequency, genotype count, or median cluster size substitutes for raw length.
+
+| Metric | Definition |
+| --- | --- |
+| `sv_records` | Number of biallelic SV records, including exact duplicate rows. |
+| `unique_alleles` | Distinct `(CHROM, POS, REF, ALT)` representations, using saved sequence SHA-256 hashes. Same sequence at another position is a different allele. This is exact deduplication, not another similarity merge. |
+| `raw_bp_sum_records` | Sum of `len(ALT)-len(REF)` for INS or `len(REF)-len(ALT)` for DEL across literal records. |
+| `raw_bp_sum_unique_alleles` | The same sum, counting each distinct literal allele once. |
+| `unique_inserted_bp` | INS raw-length sum once per distinct literal insertion allele. Different sequences at the same position each count. This is not a union of reference coordinates. |
+| `unique_deleted_reference_bp` | Union length of simple literal deletion intervals, counting each deleted reference base once across overlaps, nesting, and duplicate records. Shared VCF anchors/padding are excluded. |
+
+Symbolic calls remain in record/allele counts but are explicitly excluded from raw-base totals: the length of the text `<DEL>` or `<INS>` is not a biological allele length. Complex DEL replacements contribute their raw net lengths to sums, but are excluded from the deletion union because net length alone does not identify the deleted reference bases. Their exclusion counts are included in the table. Literal sequences containing N still have raw lengths; they contribute to deletion coverage only when their trimmed reference span equals their net deletion length.
+
+Outputs in `compare_ins_del/`:
+
+- `before_after.tsv`: before/after counts and all base totals for both scopes and types.
+- `changes.tsv`: absolute and percentage reductions for each metric.
+- `inter_sv_distance_summary.tsv`: adjacent POS distance summaries, separately by type, scope, and record/unique-allele basis. Zero distances are retained and no distance is calculated across contigs.
+- `{scope}.{before,after}.deleted_union.bed`: the 0-based half-open deletion unions underlying the coverage totals.
+- `{scope}.sv_records.{png,pdf}` and `{scope}.unique_affected_bp.{png,pdf}`: separate DEL/INS panels; deleted-reference coverage and inserted-allele bp have distinct axis labels.
+- `{scope}.{DEL,INS}.inter_sv_distance.{png,pdf}`: before/after ECDFs of adjacent POS distances, using the record basis, a symlog distance axis, and zero-distance observations. Each figure is letter-landscape with large text and vector PDF artwork/editable text.
+- `summary.json`, `comparison.log`, `done.json`: definitions, input paths/checksums, conservation results, runtime provenance and cache completion. Nothing is displayed inline or uploaded.
+
+Six focused synthetic tests cover overlapping/nested deletions, exact duplicate records, distinct insertion sequences at one position, repeated sequences at different positions, raw lengths despite conflicting INFO/SVLEN, complex/symbolic exclusions, zero distances, corrupted gzip, invalid membership, and full comparison/cache reuse without a combined VCF. Run with `uv run --no-project --python 3.12 --with matplotlib==3.10.8 python -m unittest discover -s tests -p test_compare_chr1_sv_alleles.py -v`.
+
+### Original full-workflow checks
+
 Portable tests cover allele boundaries, symbolic exclusion from merging, partial and haploid GT counts, tied positions, nested deletions, namespaced cluster IDs, conservation failures, exact rsync selection, content corruption, comparison outputs, and cache reuse. A real-tool synthetic integration test covers multiallelic decomposition, eligible and pass-through calls, INS/DEL collapse, genotype consolidation, and idempotence. The shell launcher runs it before `merge` or `all`; a failure stops the run.
 
 Development validation on 2026-11-02: ten portable tests passed, shell syntax and Python compilation passed, and synthetic PNG figures were visually inspected. The real-tool integration test could not run locally because both WSL distributions failed to start with socket error `0x80072747`; it is therefore an explicit preflight requirement in the VM launcher. No controlled input was downloaded or analyzed on the development machine.
