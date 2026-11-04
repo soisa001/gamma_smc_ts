@@ -140,6 +140,17 @@ def work(payload):
     return dict(id=task['id'],state='accepted')
 
 
+def save_ledger(path,value):
+    """Allow a brief Windows reader lock on atomically replaced WSL ledgers."""
+    for attempt in range(51):
+        try:
+            base.save(path,value)
+            return
+        except PermissionError:
+            if attempt==50:raise
+            time.sleep(.05)
+
+
 def launch(a):
     root=Path(a.out).resolve();root.mkdir(parents=True,exist_ok=True)
     common=dict(length=1000000,diploids=100,pairs=1000,stride=10000,generation_time=25,dominance=.5,
@@ -201,7 +212,7 @@ def launch(a):
                     strata.append(dict(regime=regime,origin=origin,cohort=cohort,selection=0.,target=n,limit=n))
             for s in a.selection:strata.append(dict(regime=regime,origin=origin,cohort='selected',selection=s,target=a.accepted,limit=a.attempts))
     started=time.time();deadline=min(started+a.seconds,a.deadline_epoch or float('inf'))
-    base.save(root/'schedule.json',dict(parameters=vars(a),strata=strata,started_epoch=started,deadline_epoch=deadline,
+    save_ledger(root/'schedule.json',dict(parameters=vars(a),strata=strata,started_epoch=started,deadline_epoch=deadline,
         null_pool_mapping={r:{o:('10k' if o=='introgression' else r) for o in ('de_novo','introgression')} for r in configs}))
     tasks=[];results=[];next_index=[0]*len(strata);done=[{} for _ in strata];pending={};cursor=0
     def make_task(k,i):
@@ -242,7 +253,7 @@ def launch(a):
                 item=next_task()
                 if item is None:break
                 k,task=item;f=pool.submit(work,(str(root),configs[task['regime']],task,deadline));pending[f]=(k,task)
-            base.save(root/'tasks.json',tasks)
+            save_ledger(root/'tasks.json',tasks)
             if not pending:break
             finished,_=wait(pending,timeout=min(1,max(0,deadline-time.time())),return_when=FIRST_COMPLETED)
             for f in finished:
@@ -250,14 +261,14 @@ def launch(a):
                 try:result=f.result()
                 except Exception as exc:result=dict(id=task['id'],state='failed',error=repr(exc))
                 done[k][task['replicate']]=result['state'];results.append(result)
-                base.save(root/'status.json',results)
+                save_ledger(root/'status.json',results)
         if pending:
             for process in pool._processes.values():
                 try:os.killpg(process.pid,signal.SIGKILL)
                 except ProcessLookupError:pass
     finally:pool.shutdown(wait=True,cancel_futures=True)
-    base.save(root/'tasks.json',tasks);base.save(root/'status.json',results)
-    base.save(root/'finished.json',dict(finished_epoch=time.time(),submitted=len(tasks),returned=len(results),
+    save_ledger(root/'tasks.json',tasks);save_ledger(root/'status.json',results)
+    save_ledger(root/'finished.json',dict(finished_epoch=time.time(),submitted=len(tasks),returned=len(results),
         prefix_accepts=[prefix_accepts(k) for k in range(len(strata))],strata=strata,pending_at_deadline=len(pending)))
 
 

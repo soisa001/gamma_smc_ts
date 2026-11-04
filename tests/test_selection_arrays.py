@@ -48,6 +48,36 @@ def test_ongoing_fifty_kya_has_no_observable_outside_time_cells():
     assert r['temporal_f1']==1 and r['center_off_target']==0
 
 
+def test_ledger_survives_transient_windows_reader_lock(tmp_path,monkeypatch):
+    import run_selection_arrays as runner
+    import json
+    original=runner.base.save;attempts=[]
+    def locked_save(path,value):
+        attempts.append(path)
+        if len(attempts)<3:raise PermissionError('reader holds rename lock')
+        original(path,value)
+    monkeypatch.setattr(runner.base,'save',locked_save)
+    monkeypatch.setattr(runner.time,'sleep',lambda _:None)
+    path=tmp_path/'status.json'
+    runner.save_ledger(path,{'completed':17})
+    assert json.loads(path.read_text())=={'completed':17} and len(attempts)==3
+    assert not path.with_suffix('.json.tmp').exists()
+
+
+@pytest.mark.parametrize('error,expected_attempts',[(PermissionError,51),(ValueError,1)])
+def test_ledger_failures_are_bounded_and_not_silenced(tmp_path,monkeypatch,error,expected_attempts):
+    import run_selection_arrays as runner
+    attempts=[]
+    def fail(*args):
+        attempts.append(1)
+        raise error('persistent failure')
+    monkeypatch.setattr(runner.base,'save',fail)
+    monkeypatch.setattr(runner.time,'sleep',lambda _:None)
+    with pytest.raises(error,match='persistent failure'):
+        runner.save_ledger(tmp_path/'status.json',{})
+    assert len(attempts)==expected_attempts
+
+
 @pytest.mark.parametrize('origin',['de_novo','introgression'])
 def test_zero_end_preserves_recent_simulation_and_rng(tmp_path,monkeypatch,origin):
     import run_selection_arrays as new

@@ -186,7 +186,7 @@ def report(root,out):
         'Ongoing 50-kya selection occupies the full observed range, so outside-time false calls cannot be assessed there.',
         'center_peak_kya is the midpoint of the highest standardized window even when it is not significant; it is not by itself an inferred selection date.',
         'Region F1 depends on selected/null cohort sizes; balanced_region_f1 standardizes to equal selected and neutral prevalence. Temporal F1 compares center support to the observable selection interval.',
-        'Reuse is restricted to prior 10-kya proposals and their nulls; previous simulation compute is outside the current budget.'])
+        'Same-manifest continuations reuse verified completed proposals from every regime. Cross-root historical reuse is restricted to compatible prior 10-kya proposals and their nulls; previous simulation compute is outside the current budget.'])
     (out/'provenance.json').write_text(json.dumps(provenance,indent=2,allow_nan=False)+'\n')
     primary=summary[summary.scan=='one_kyr'] if len(summary) else summary
     lines=['# Three EAS selection episodes','',

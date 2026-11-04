@@ -1,0 +1,18 @@
+{
+  "status": "paused by user; no automatic resume",
+  "paused_epoch": 1793828785.2217212,
+  "first_started_epoch": 1793827409.704272,
+  "elapsed_seconds": 1375.5174491405487,
+  "submitted": 10791,
+  "recorded_completed": 10768,
+  "recorded_selected_survivors": 540,
+  "additional_completed_proposals": 1384,
+  "additional_selected_survivors": 47,
+  "outstanding_in_ledger": 23,
+  "failed": 0,
+  "scientific_functions_ast_unchanged": true,
+  "focused_tests": "tests/test_selection_arrays.py: 9 passed in 2.91 seconds",
+  "runner_sha256": "4cb78bbd8a46fe940cc1d32292169741c614550216f8d1f5083032c71a5fcda4",
+  "raw_root": "D:\\phase2simselection\\sim\\selection_arrays_20261104",
+  "note": "Scheduler counts at pause; final integrity-validated performance analysis has not been rerun. Completed receipts are retained; incomplete units resume with original seeds. Initial cache replay stopped on a Windows reader lock; bounded ledger-write retries and WSL monitoring fixed it without changing simulation/scoring logic."
+}
