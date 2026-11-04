@@ -1,0 +1,8 @@
+{
+  "id": "40_20k/de_novo/s0.02/selected_00039",
+  "origin": "de_novo",
+  "selection": 0.02,
+  "final_frequency": 0.9190955708478359,
+  "scores_sha256": "8924f6cb0f8b118105f9f4740ca342f4f520797997e794aec18dedd974347499",
+  "choice": "First analyzed 40\u201320 kya region with true-tree joint detection and a posterior-mass center call wholly outside the selection period; illustrative, selected after examining outcomes."
+}

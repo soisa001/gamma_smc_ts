@@ -1,0 +1,17 @@
+{
+  "executed_runner_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+  "current_runner_sha256": "203753de95d2ec47e6333c6579542a75f30192d6107988e4d90eaa8a2c00c22f",
+  "simulation_timing_and_work_ast_identical": true,
+  "reused_recent_manifest_sha256": "857cbe6f20d265d1059308e405a93087a220c2744219dff7323b8c4e9a80ca30",
+  "tests": "22 relevant tests passed in 16.71 seconds; fresh zero-second CLI run and scheduler-only resume passed; zero-task finisher passed.",
+  "test_files": {
+    "test_selection_arrays.py": "271ae582351e66e0cfb17b9786600211c1b2bb856ee2ca87e5a51f0957ecb5f3",
+    "test_recent_selection_pilot.py": "b2a56128e917ec937d01df088dea3e45d51d98a995b73c6715f53a36bb49ffa3",
+    "test_time_resolved_pilot.py": "9ca4222f13d496463fdd88e248ca07f9887316c9b35b511c93982f6ccba510fb",
+    "test_ongoing_selection_pilot.py": "a2fd87adda7a5023c1dad3266d23fe15132679044ca66d26de97317ca4f02038"
+  },
+  "source_notes": "Original executed runner retains CRLF bytes to preserve its recorded hash. Current CLI changes add optional fresh runs and stricter cache checks; simulation, timing, and work functions are identical.",
+  "final_artifact_validation": "All 9,384 proposal receipts verified; 1,169 accepted regions passed hashes, exact counts, selection timing, pair/grid and CDF checks. All 19,900 true pairs evaluated in all 1,169 regions.",
+  "figure_validation": "PNG layouts visually inspected; vector PDF cells and editable text requested explicitly; no final inline figure display.",
+  "pdf_validation": "All five PDFs contain embedded TrueType fonts and no /Subtype /Image objects; final de novo panels and preliminary/final-equivalent introgression/example layouts visually inspected."
+}

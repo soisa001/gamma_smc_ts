@@ -343,3 +343,85 @@ completed units. Figures are saved to PNG and editable vector PDF on disk.
 The all-pairs audit compares all 19,900 true TMRCA pairs against the 1,000-pair
 benchmark, with independent calibration for the full-pair statistic. This
 diagnoses subsampling effects; it does not infer 19,900 GammaSMC posteriors.
+
+## Three selection episodes and expanded coefficient grid
+
+Completed local results: [three-episode EAS report](results/selection_arrays_eas_20261104/README.md).
+
+`run_selection_arrays.py` compares 10 kya to present, 50 kya to present, and
+40–20 kya, with s = 0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05. The target is
+100 present-day segregating selected replicates per coefficient, origin, and
+episode: 42 treatments. De novo alleles enter at selection onset. The 1%
+Neanderthal pulse always occurs at 50 kya. In the 40–20 kya episode, selection
+acts for exactly 800 reproductive transitions and then stops; drift continues
+for another 800 generations. Strong sweeps that fix are excluded by the
+requested segregation condition. A stratum with no surviving replicates has
+unestimable conditional power, not zero power.
+
+The scheduler shares one wall-clock deadline across treatments, attempts them
+round-robin, and stops dispatching 150 seconds before the deadline to finish
+submitted work. Any remaining worker process groups, including SLiM and
+GammaSMC children, are killed at the deadline. Targets can remain incomplete.
+Analysis uses uninterrupted proposal prefixes to avoid selecting only the
+fastest surviving simulations. The scientific manifest, source snapshots,
+exact trajectories, seeds, artifact hashes, losses, fixations, and incomplete
+tasks are retained. Re-running the same output directory validates and reuses
+completed work. Scheduler-only source changes are accepted only if scientific
+parameters and the parsed simulation/timing functions are unchanged.
+
+Optional `--reuse-recent /path/to/recent10k_eas_fast_20261103` references verified
+prior raw simulations without copying them. Those source files must remain
+available. Omit this option for a fresh experiment. Introgression nulls are
+shared across episodes because their selection coefficient is always zero;
+de novo null pools match their episode-specific forward duration.
+
+The primary detection grid covers all 49 adjacent intervals [1,2), …, [49,50)
+kya and 100 positions separated by 10 kb, irrespective of simulated selection
+timing. Truth is used only for evaluation. Independent null maxima calibrate
+the whole-region scan separately for posterior median, posterior mass, and
+true trees. The posterior pilot uses the same 1,000 unfiltered pairs as earlier
+experiments. An independent all-19,900-pair true-tree audit diagnoses pair
+subsampling effects. Neither calibration is genome-wide family-wise control.
+As a secondary analysis, widths of 1, 2, 5, and 10 kyr are scanned with 1-kyr
+starts and jointly calibrated across all widths and positions. This tests
+whether narrow temporal bins lose power. Primary and secondary scans each
+have their own calibration; their union is not a calibrated discovery rule.
+
+```bash
+%%bash
+set -euo pipefail
+if [ ! -d gamma_smc_ts/.git ]; then
+  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git
+fi
+cd gamma_smc_ts
+git pull --ff-only
+export MPLBACKEND=Agg
+export LD_LIBRARY_PATH="$PWD/.native/lib:${LD_LIBRARY_PATH:-}"
+# Phase 0: one-time native/runtime setup, outside the simulation budget.
+if [ ! -x .native/bin/slim ] || [ ! -x bin/gamma_smc ]; then
+  bash scripts/bootstrap_uv.sh --skip-tests
+fi
+export PATH="$PWD/.tools/uv-bin:$PATH"
+OUT="$PWD/../sim/selection_arrays"
+# Phase 1: one shared 55-minute cap, including inference and drain time.
+uv run --frozen --all-extras python scripts/run_selection_arrays.py \
+  --out "$OUT" --slim "$PWD/.native/bin/slim" --decoder "$PWD/bin/gamma_smc" \
+  --selection 0.001 0.005 0.01 0.02 0.03 0.04 0.05 --accepted 100 \
+  --development 20 --calibration 99 --test 50 \
+  --workers 4 --seconds 3300 --drain-seconds 150
+# Optional phase 1b: finish only submitted units, with a further 150-second cap.
+uv run --frozen --all-extras python scripts/finish_selection_arrays.py \
+  --root "$OUT" --workers 4 --seconds 150
+# Phase 2: validate saved simulations and report posterior performance.
+uv run --frozen --all-extras python scripts/report_selection_arrays.py \
+  --root "$OUT" --out "$OUT/report"
+# Phase 3: exact all-pair truth benchmark; no new simulations.
+uv run --frozen --all-extras python scripts/audit_selection_arrays.py \
+  --root "$OUT" --out "$OUT/report" --workers 4
+```
+
+The local November 4 experiment used 24 workers and reused the earlier 10-kya
+cohort. Four workers remains the portable default. Each invocation has its
+own time cap; resuming after a cap explicitly spends additional compute.
+Figures are written as PNG and vector PDF with editable text, without inline
+display. The temporal heatmaps use vector cells in PDF, not raster images.

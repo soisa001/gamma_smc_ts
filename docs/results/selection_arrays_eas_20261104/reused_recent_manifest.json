@@ -1,0 +1,43 @@
+{
+  "config": {
+    "schema": "recent-eas-selection/v1",
+    "selection_start_years": 10000,
+    "selection_end_years": 0,
+    "pulse_years": 50000,
+    "pulse_fraction": 0.01,
+    "archaic_split_years": 500000,
+    "archaic_ne": 3600,
+    "de_novo_introduction": "one copy at selection onset",
+    "donor_allele": "fixed in donor; neutral before selection",
+    "length": 1000000,
+    "diploids": 100,
+    "pairs": 1000,
+    "stride": 10000,
+    "generation_time": 25,
+    "dominance": 0.5,
+    "scaling": 1,
+    "mutation_rate": 1.29e-08,
+    "recombination_rate": 1e-08,
+    "base_seed": 20380101,
+    "pair_seed": 1729,
+    "selected_condition": "0 < whole-population focal AF < 1 at present",
+    "null_condition": "none; relabel nearest segregating sample variant",
+    "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+    "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+    "source_sha256": "168863e6e946ea9ce16cfe3f82a9e9b9287d09d59d79d499216f2d13efd23e6b",
+    "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+    "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+    "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+    "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+    "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928"
+  },
+  "versions": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "msprime": "1.4.2",
+    "pyslim": "1.1.1",
+    "tskit": "1.0.3"
+  },
+  "created_utc": "2026-11-03T23:00:03Z",
+  "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]"
+}

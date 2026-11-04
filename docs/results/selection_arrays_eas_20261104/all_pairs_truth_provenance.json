@@ -1,0 +1,11 @@
+{
+  "source_sha256": "42e1536aa48fee5945657c0fde13b166322f75679bf2a7f3fa7688ec6ff1b78b",
+  "pair_count": 19900,
+  "algorithm_source_sha256": "b00129aed93c3da27d550c89b3f5ab2b087c4df42e78c4e98621a71997003ed9",
+  "completed_units_sha256": "f0ea044381c9ac48330ef2d6db77ce1279d0deacb77afbe1f886df1c67b8ad74",
+  "report_provenance_sha256": "c115d4da3a1e491475ad7517aa8f0749a345eeb7d00601cda16378ab0edf92d9",
+  "cdfs_sha256": "c870428d6716c97ec5d12a19b1adbe16c7f7491546b204891fd2e5d764e99c4c",
+  "n_regions": 1169,
+  "newly_computed": 1169,
+  "workers": 8
+}
