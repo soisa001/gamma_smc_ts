@@ -13,6 +13,39 @@ The source is recorded in this repository's `scripts/run_aou_workbench.sh`, `scr
 
 ## Run in the authorized Workbench VM
 
+### Rerun the existing pilot with minimal prefilters (2026-11-04)
+
+The default is now `--merge-policy native --max-size -1`: every INS/DEL in the prepared structural-allele catalogue is submitted to Truvari, including complex replacements, ambiguous sequence, symbolic alleles, and variants above 100 kb. REF/ALT strings are preserved. The 50 bp net-length definition and INS/DEL scope remain; INV/DUP/BND pass through. Truvari applies its own size/type/sequence handling. Symbolic alleles lack literal sequence for the sequence-similarity test. The old representation restrictions remain available with `--merge-policy strict --max-size 100000` for reproduction.
+
+For the already prepared run, use this cell. It performs no cloud staging and no BCF extraction or multiallelic splitting. Outputs go to a **new root**. The existing catalogue and index are hardlinked where possible (copied otherwise); partition intermediates are compressed. Full checksum and allele-hash validation still require reading the prepared files, so repartitioning is not instantaneous. Truvari's own output and sorting still need scratch space.
+
+```bash
+%%bash
+set -euo pipefail
+REPO="$HOME/gamma_smc_ts"
+if [[ ! -d "$REPO/.git" ]]; then
+  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git "$REPO"
+else
+  git -C "$REPO" switch AOU_run_opt
+  git -C "$REPO" pull --ff-only origin AOU_run_opt
+fi
+cd "$REPO"
+export SV_MERGE_ROOT="$HOME/sv_merge_chr1_p70_native"
+export SV_REUSE_PREPARED_ROOT="$HOME/sv_merge_chr1_p70"
+export SV_MERGE_POLICY=native SV_MAX_SIZE=-1 SV_SEPARATE_ONLY=1
+export SV_THREADS=4 SV_MEMORY_GB=26
+bash scripts/run_chr1_sv_merge_workbench.sh prepare
+bash scripts/run_chr1_sv_merge_workbench.sh merge
+"$REPO/.tools/uv-bin/uv" run --no-project --python 3.12 \
+  scripts/compare_chr1_sv_alleles.py --root "$SV_MERGE_ROOT" --threads "$SV_THREADS"
+```
+
+The phases can be rerun individually. `SV_SEPARATE_ONLY=1` produces the four indexed kept/removed INS/DEL VCFs and their completion manifest, then the standalone comparison creates counts, raw lengths, deletion unions, and spacing plots in `compare_ins_del/`. It skips the expensive combined VCF and genotype audit. For a combined VCF, set `SV_SEPARATE_ONLY=0`, run `merge`, then `compare`; this currently repeats collapse with a distinct cache key. To run the original full workflow from scratch, unset `SV_REUSE_PREPARED_ROOT` and `SV_SEPARATE_ONLY` before the following cell.
+
+`prepare/source_alleles.tsv.gz` now records `merge_submitted` explicitly. `status`/`PM_STATUS` remain representation diagnostics, including their original values in reused catalogues; they no longer determine submission under native policy. The historical comparison scope name `merge_eligible` means **submitted to Truvari**, including any records Truvari itself retains unchanged. With the native default, this scope and `all_ins_del` should agree. The reuse path preserves the previous baseline and cannot recover variants excluded from that baseline, such as net changes below 50 bp.
+
+### Full workflow from the source panel
+
 Run this command cell there, not on the development machine. The workflow uses existing gcloud authentication and configuration without requiring `GOOGLE_PROJECT` or adding a billing-project flag. The default output directory is outside the Git checkout. The first invocation installs public tools and runs synthetic tests before staging controlled data.
 
 ```bash
@@ -26,7 +59,7 @@ else
   git -C "$REPO" pull --ff-only origin AOU_run_opt
 fi
 cd "$REPO"
-export SV_MERGE_ROOT="$HOME/sv_merge_chr1_p70"
+export SV_MERGE_ROOT="$HOME/sv_merge_chr1_p70_native"
 export SV_THREADS=4
 export SV_MEMORY_GB=26
 bash scripts/run_chr1_sv_merge_workbench.sh all
@@ -44,13 +77,13 @@ The original panel contains small variants as well as SVs. The baseline here is 
 
 `bcftools norm -m -any --multi-overlaps 0` decomposes multiallelic records. A target allele is coded as 1 and another ALT as 0; this is a per-allele non-target indicator, not proof of a true reference haplotype. For example, `1|2` becomes `1|0` and `0|1`. No reference-based left alignment or haplotype reconstruction is performed. Both catalogues use the same decomposition. Literal alleles qualify by net length change of at least 50 bp; equal-length substitutions and complex replacements with net change below 50 bp are outside this definition.
 
-The initial eligibility range is **50–100,000 bp, inclusive**, explicitly extending Truvari's 50,000 bp maximum default. Larger variants remain unchanged and are counted. Symbolic, ambiguous-sequence, breakend, and complex replacement alleles also remain in the catalogues with explicit pass-through reasons. Symbolic variants of unknown size are retained and reported as unknown; known symbolic variants below 50 bp are excluded. Only pure sequence-resolved A/C/G/T INS and DEL alleles are merged. This prevents an unresolved `<INS>` from silently bypassing the sequence-similarity gate. A future symbolic-resolution analysis would require the appropriate reference and insertion sequences.
+The native policy has **no upper size limit**. All INS/DEL representations in the structural catalogue enter Truvari, with no pure-indel or A/C/G/T-only restriction. Symbolic variants of unknown size are submitted and reported as unknown; known symbolic variants below 50 bp are outside the structural catalogue. The prior strict policy excluded complex replacements, ambiguous sequences, symbolic records, and literal sizes above 100 kb; that policy explains the small merge-eligible subset in the original run. These restrictions were imposed by this wrapper, not required by Truvari.
 
 The two independent type-specific commands are equivalent to:
 
 ```bash
 truvari collapse -i INS.vcf.gz -o INS.kept.vcf -c INS.removed.vcf \
-  -p 0.7 -P 0.7 -r 500 -O 0 -s 50 -S 100000 \
+  -p 0.7 -P 0.7 -r 500 -O 0 -s 50 -S -1 \
   -k first --gt off --median-info
 ```
 
@@ -139,13 +172,15 @@ Outputs in `compare_ins_del/`:
 - `{scope}.{DEL,INS}.inter_sv_distance.{png,pdf}`: before/after ECDFs of adjacent POS distances, using the record basis, a symlog distance axis, and zero-distance observations. Each figure is letter-landscape with large text and vector PDF artwork/editable text.
 - `summary.json`, `comparison.log`, `done.json`: definitions, input paths/checksums, conservation results, runtime provenance and cache completion. Nothing is displayed inline or uploaded.
 
-Six focused synthetic tests cover overlapping/nested deletions, exact duplicate records, distinct insertion sequences at one position, repeated sequences at different positions, raw lengths despite conflicting INFO/SVLEN, complex/symbolic exclusions, zero distances, corrupted gzip, invalid membership, and full comparison/cache reuse without a combined VCF. Run with `uv run --no-project --python 3.12 --with matplotlib==3.10.8 python -m unittest discover -s tests -p test_compare_chr1_sv_alleles.py -v`.
+Seven focused synthetic tests cover overlapping/nested deletions, exact duplicate records, distinct insertion sequences at one position, repeated sequences at different positions, raw lengths despite conflicting INFO/SVLEN, raw-bp metric exclusions, native-policy complex/symbolic membership, zero distances, corrupted gzip, invalid membership, and full comparison/cache reuse without a combined VCF. Run with `uv run --no-project --python 3.12 --with matplotlib==3.10.8 python -m unittest discover -s tests -p test_compare_chr1_sv_alleles.py -v`.
 
 ### Original full-workflow checks
 
-Portable tests cover allele boundaries, symbolic exclusion from merging, partial and haploid GT counts, tied positions, nested deletions, namespaced cluster IDs, conservation failures, exact rsync selection, content corruption, comparison outputs, and cache reuse. A real-tool synthetic integration test covers multiallelic decomposition, eligible and pass-through calls, INS/DEL collapse, genotype consolidation, and idempotence. The shell launcher runs it before `merge` or `all`; a failure stops the run.
+Portable tests cover allele boundaries, native and strict submission policies, partial and haploid GT counts, tied positions, nested deletions, namespaced cluster IDs, conservation failures, exact rsync selection, content corruption, comparison outputs, and cache reuse. Two real-tool synthetic integration tests cover multiallelic decomposition, strict INS/DEL collapse, genotype consolidation, idempotence, reuse of legacy prepared catalogues, native complex INS/DEL merging, ambiguous/symbolic/unknown-size/large allele submission, allele conservation, and protection of reused files and indexes. The shell launcher runs these before `merge` or `all`; a failure stops the run.
 
 Development validation on 2026-11-02: ten portable tests passed, shell syntax and Python compilation passed, and synthetic PNG figures were visually inspected. The real-tool integration test could not run locally because both WSL distributions failed to start with socket error `0x80072747`; it is therefore an explicit preflight requirement in the VM launcher. No controlled input was downloaded or analyzed on the development machine.
+
+Development validation on 2026-11-04: WSL was available; all 15 workflow tests passed locally, including both integrations with bcftools 1.22 and Truvari 5.5.0. All seven standalone comparison tests passed. Only synthetic data were used.
 
 To run just these tests in a configured Linux environment:
 

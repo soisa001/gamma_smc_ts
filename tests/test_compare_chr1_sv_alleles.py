@@ -28,7 +28,7 @@ def record(ident, pos, ref, alt, status="eligible", kind=None):
             "ref_sha256": sha(ref), "alt_sha256": sha(alt)}, (ref, alt)
 
 
-def fixture(root):
+def fixture(root, native=False):
     (root / "prepare").mkdir()
     (root / "merge").mkdir()
     definitions = [
@@ -44,6 +44,9 @@ def fixture(root):
         record("i5", 701, "AT", "A" + "C" * 51, "complex_replacement"),
     ]
     rows = {r["id"]: r for r, _ in definitions}
+    if native:
+        for row in rows.values():
+            row["merge_submitted"] = 1
     seq = {r["id"]: s for r, s in definitions}
     source = root / "prepare" / "source_alleles.tsv.gz"
     samples = root / "prepare" / "samples.txt"
@@ -54,6 +57,9 @@ def fixture(root):
              ("DEL", "removed"): [("d3", "MatchId=1.0"), ("d2", "MatchId=1.0")],
              ("INS", "kept"): [("i1", "CollapseId=1.0;NumCollapsed=1"), ("i3", "."), ("i4", ".")],
              ("INS", "removed"): [("i2", "MatchId=1.0")]}
+    if native:
+        parts[("DEL", "kept")].extend([("d4", "."), ("ds", ".")])
+        parts[("INS", "kept")].append(("i5", "."))
     for (kind, role), ids in parts.items():
         path = root / "merge" / f"{kind}.{role}.vcf.gz"
         with gzip.open(path, "wt") as handle:
@@ -68,6 +74,23 @@ def fixture(root):
 
 
 class MetricsTests(unittest.TestCase):
+    def test_native_comparison_includes_complex_and_symbolic_members(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixture(root, native=True)
+            output = root / "compare_ins_del"
+            output.mkdir()
+            compare.run(SimpleNamespace(root=root, output=output, threads=4))
+            report = json.loads((output / "summary.json").read_text())
+            rows = {(r["scope"], r["type"], r["callset"]): r for r in report["summary"]}
+            for kind, after_count in (("DEL", 3), ("INS", 4)):
+                for callset in ("before", "after"):
+                    submitted = rows[("merge_eligible", kind, callset)]
+                    all_rows = rows[("all_ins_del", kind, callset)]
+                    self.assertEqual(submitted["sv_records"], 5 if callset == "before" else after_count)
+                    self.assertEqual(submitted["raw_bp_sum_records"], all_rows["raw_bp_sum_records"])
+            self.assertEqual(rows[("merge_eligible", "DEL", "after")]["symbolic_records_excluded_from_raw_bp"], 1)
+
     def test_deletion_union_handles_nested_touching_and_contigs(self):
         intervals = [("chr1", 100, 200), ("chr1", 150, 250), ("chr1", 170, 180),
                      ("chr1", 250, 300), ("chr2", 100, 200)]

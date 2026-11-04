@@ -55,7 +55,7 @@ class AlleleTests(unittest.TestCase):
         self.assertEqual(sv.allele("A", "A" + "T" * 100, 100, {}, maximum=100)[-1], "eligible")
         self.assertEqual(sv.allele("A", "A" + "T" * 101, 100, {}, maximum=100)[-1], "above_sizemax")
 
-    def test_no_silent_symbolic_or_ambiguous_sequence_merging(self):
+    def test_representation_diagnostics(self):
         self.assertEqual(sv.allele("N", "<INS>", 100, {})[:2], ("INS", None))
         self.assertEqual(sv.allele("N", "<DEL>", 100, {"END": "250"}),
                          ("DEL", 150, 99, 250, "symbolic"))
@@ -65,6 +65,16 @@ class AlleleTests(unittest.TestCase):
         self.assertEqual(sv.allele("A", ".A", 100, {})[0], "BND")
         for alt in ("*", "<NON_REF>", "."):
             self.assertIsNone(sv.allele("A", alt, 100, {}))
+
+    def test_native_submission_does_not_filter_representations(self):
+        for status in ("eligible", "complex_replacement", "ambiguous_sequence", "symbolic", "above_sizemax"):
+            for kind in ("INS", "DEL"):
+                self.assertTrue(sv.merge_submitted(kind, status, "native"))
+                self.assertEqual(sv.merge_submitted(kind, status, "strict"), status == "eligible")
+        for kind in ("INV", "BND", "DUP"):
+            self.assertFalse(sv.merge_submitted(kind, "symbolic", "native"))
+        args = sv.parse_args(["--root", "test"])
+        self.assertEqual((args.merge_policy, args.min_size, args.max_size), ("native", 50, -1))
 
     def test_genotype_counts_partial_missing_haploid_and_format_order(self):
         f = fields(gt=("9:1|.", "3:1", "8:0/0", "2:./."))
@@ -223,7 +233,8 @@ class IntegrationTests(unittest.TestCase):
             subprocess.run([bcftools, "view", "-Ob", "-o", str(bcf), str(raw)], check=True, capture_output=True)
             subprocess.run([bcftools, "index", str(bcf)], check=True, capture_output=True)
             run = root / "run"
-            argv = ["--phase", "all", "--root", str(run), "--input-bcf", str(bcf), "--bcftools", bcftools]
+            argv = ["--phase", "all", "--root", str(run), "--input-bcf", str(bcf), "--bcftools", bcftools,
+                    "--merge-policy", "strict", "--max-size", "100000"]
             sv.main(argv)
             summary = json.loads((run / "compare" / "summary.json").read_text())
             self.assertEqual([(r["type"], r["original"], r["new"]) for r in summary["counts"]],
@@ -240,6 +251,75 @@ class IntegrationTests(unittest.TestCase):
             sv.main(argv)
             self.assertEqual(checksum, sv.common.digest(run / "merge" / "new.vcf.gz"))
             self.assertEqual(mtime, (run / "merge" / "new.vcf.gz").stat().st_mtime_ns)
+
+    def test_native_reuse_preserves_alleles_and_compares_all_submitted(self):
+        import compare_chr1_sv_alleles as comparison
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            raw = root / "source.vcf"
+            entries = [
+                fields(pos=100, ref="AG", alt="A" + "T" * 101, ident="complex-ins1"),
+                fields(pos=105, ref="AG", alt="A" + "T" * 101, ident="complex-ins2"),
+                fields(pos=1000, ref="A" + "T" * 101, alt="AG", ident="complex-del1"),
+                fields(pos=1005, ref="A" + "T" * 101, alt="AG", ident="complex-del2"),
+                fields(pos=2000, alt="A" + "N" * 80, ident="ambiguous"),
+                fields(pos=3000, ref="N", alt="<INS>", ident="symbolic", info="SVLEN=100;SVTYPE=INS"),
+                fields(pos=4000, ref="N", alt="<DEL>", ident="symbolic-del", info="SVLEN=-100;END=4100;SVTYPE=DEL"),
+                fields(pos=5000, ref="N", alt="<INS>", ident="unknown-size", info="SVTYPE=INS"),
+                fields(pos=6000, ref="A" * 100002, alt="A", ident="large"),
+                fields(pos=200000, ref="N", alt="<INV>", ident="inv", info="END=200200;SVTYPE=INV"),
+            ]
+            write_vcf(raw, entries)
+            bcf = root / "source.bcf"
+            bcftools = os.environ.get("BCFTOOLS_BIN", "bcftools")
+            subprocess.run([bcftools, "view", "-Ob", "-o", str(bcf), str(raw)], check=True, capture_output=True)
+            subprocess.run([bcftools, "index", str(bcf)], check=True, capture_output=True)
+            old, new = root / "old", root / "native"
+            sv.main(["--phase", "prepare", "--root", str(old), "--input-bcf", str(bcf),
+                     "--bcftools", bcftools, "--merge-policy", "strict", "--max-size", "100000"])
+            # Emulate a legacy manifest with no merge_submitted column/policy key.
+            with sv.open_text(old / "prepare/source_alleles.tsv.gz") as handle:
+                rows = list(sv.csv.DictReader(handle, delimiter="\t"))
+            for row in rows:
+                del row["merge_submitted"]
+            sv.tsv(old / "prepare/source_alleles.tsv.gz", rows, list(rows[0]))
+            parent = json.loads((old / "prepare/done.json").read_text())
+            parent["key"].pop("merge_policy")
+            sv.manifest(old / "prepare", parent["key"], [old / "prepare" / n for n in parent["artifacts"]])
+            original_digest = sv.common.digest(old / "prepare/original.vcf.gz")
+            original_index_digest = sv.common.digest(old / "prepare/original.vcf.gz.tbi")
+            options = ["--root", str(new), "--reuse-prepared", str(old), "--bcftools", bcftools]
+            with mock.patch.object(sv, "stream", side_effect=AssertionError("Must not extract/split again")):
+                sv.main(options + ["--phase", "prepare"])
+                manifest_time = (new / "prepare/done.json").stat().st_mtime_ns
+                sv.main(options + ["--phase", "prepare"])
+                self.assertEqual(manifest_time, (new / "prepare/done.json").stat().st_mtime_ns)
+            self.assertEqual(original_digest, sv.common.digest(new / "prepare/original.vcf.gz"))
+            self.assertEqual(len(list(sv.records(new / "prepare/INS.vcf.gz"))), 5)
+            self.assertEqual(len(list(sv.records(new / "prepare/DEL.vcf.gz"))), 4)
+            self.assertEqual(len(list(sv.records(new / "prepare/passthrough.vcf.gz"))), 1)
+            sv.main(options + ["--phase", "merge", "--separate-only"])
+            self.assertFalse((new / "merge/new.vcf.gz").exists())
+            source = comparison.read_source(new / "prepare/source_alleles.tsv.gz")
+            parts = {(kind, role): comparison.read_partition(new / f"merge/{kind}.{role}.vcf.gz", kind,
+                source, sv.common.digest(new / "prepare/samples.txt"))
+                for kind in ("INS", "DEL") for role in ("kept", "removed")}
+            kept, removed = comparison.validate_membership(source, parts)
+            self.assertEqual(len(kept) + len(removed), 9)
+            self.assertEqual(len(parts[("INS", "removed")]), 1)
+            self.assertEqual(len(parts[("DEL", "removed")]), 1)
+            self.assertEqual(original_digest, sv.common.digest(old / "prepare/original.vcf.gz"))
+            # Rebuilding fresh preparation cannot overwrite the hardlinked old original.
+            write_vcf(raw, entries + [fields(pos=220000, ident="added")])
+            subprocess.run([bcftools, "view", "-Ob", "-o", str(bcf), str(raw)], check=True, capture_output=True)
+            subprocess.run([bcftools, "index", "-f", str(bcf)], check=True, capture_output=True)
+            sv.main(["--phase", "prepare", "--root", str(new), "--input-bcf", str(bcf), "--bcftools", bcftools])
+            self.assertEqual(original_digest, sv.common.digest(old / "prepare/original.vcf.gz"))
+            self.assertEqual(original_index_digest, sv.common.digest(old / "prepare/original.vcf.gz.tbi"))
+            with mock.patch.object(sv, "command"):
+                (old / "prepare/samples.txt").write_text("corrupt\n")
+                with self.assertRaisesRegex(ValueError, "Corrupt prepared"):
+                    sv.reuse_prepare(sv.parse_args(options))
 
 
 if __name__ == "__main__":

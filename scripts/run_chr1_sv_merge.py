@@ -42,7 +42,7 @@ OLD_TRUVARI = set("NumCollapsed NumConsolidated CollapseId CollapseStart Collaps
 REPLACED = OLD_TRUVARI | {"AC", "AN", "AF", "SVLEN", "SVTYPE"}
 HEADERS = [
     '##INFO=<ID=PM_ROW,Number=1,Type=Integer,Description="Source candidate row before ALT splitting">',
-    '##INFO=<ID=PM_STATUS,Number=1,Type=String,Description="Pilot merge eligibility or pass-through reason">',
+    '##INFO=<ID=PM_STATUS,Number=1,Type=String,Description="Allele representation diagnostic; not merge eligibility under native policy">',
     '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Pilot allele SV type">',
     '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Signed net allele size; unknown omitted">',
     '##INFO=<ID=AC,Number=A,Type=Integer,Description="ALT count recomputed from GT">',
@@ -61,7 +61,8 @@ def info_string(info):
 
 
 def open_text(path, mode="rt"):
-    return gzip.open(path, mode, encoding="utf-8") if str(path).endswith(".gz") else open(path, mode, encoding="utf-8")
+    return (gzip.open(path, mode, encoding="utf-8", compresslevel=1) if str(path).endswith(".gz")
+            else open(path, mode, encoding="utf-8"))
 
 
 def command(args, cmd, label, capture=False, env=None):
@@ -226,6 +227,106 @@ def genotypes(fields):
             "carrier_bits": int.from_bytes(bits, "little"), "gt_sha256": gt_digest.hexdigest()}
 
 
+def merge_submitted(kind, status, policy):
+    """Representation diagnostics must not veto Truvari's own matching rules."""
+    return kind in {"INS", "DEL"} and (policy == "native" or status == "eligible")
+
+
+def reuse_prepare(args):
+    """Repartition the existing decomposed catalogue without repeating extraction."""
+    source = args.reuse_prepared.resolve() / "prepare"
+    directory = args.root / "prepare"
+    if source == directory.resolve():
+        raise ValueError("--reuse-prepared requires a different output root")
+    parent = json.loads((source / "done.json").read_text())
+    if parent["schema"] != SCHEMA:
+        raise ValueError("Unsupported prepared catalogue schema")
+    for name in ("chrom", "min_size"):
+        if parent["key"][name] != getattr(args, name):
+            raise ValueError(f"Cannot reuse catalogue with different {name}")
+    if args.merge_policy == "strict" and parent["key"]["max_size"] != args.max_size:
+        raise ValueError("Strict reuse requires the original max_size; use native policy for broader submission")
+    names = ("original.vcf.gz", "original.vcf.gz.tbi", "source_alleles.tsv.gz", "samples.txt")
+    snapshots = {name: common.identity(source / name) for name in names}
+    def verify(name):
+        if common.digest(source / name) != parent["artifacts"][name]:
+            raise ValueError(f"Corrupt prepared input: {name}")
+    with ThreadPoolExecutor(max_workers=args.threads) as pool:
+        list(pool.map(verify, names))
+    version = command(args, [args.bcftools, "--version"], "bcftools-version", True).splitlines()[0]
+    key = {"preparation_version": 2, "reused_artifacts": {n: parent["artifacts"][n] for n in names},
+           "chrom": args.chrom, "min_size": args.min_size, "max_size": args.max_size,
+           "merge_policy": args.merge_policy, "bcftools": version}
+    directory.mkdir(exist_ok=True)
+    if valid_manifest(directory, key):
+        logging.info("Reuse verified repartitioned catalogue")
+        return
+    (directory / "done.json").unlink(missing_ok=True)
+    metadata = []
+    with open_text(source / "source_alleles.tsv.gz") as handle:
+        for row in csv.DictReader(handle, delimiter="\t"):
+            row["merge_submitted"] = int(merge_submitted(row["type"], row["status"], args.merge_policy))
+            metadata.append(row)
+    expected = {row["id"]: row for row in metadata}
+    if len(expected) != len(metadata):
+        raise ValueError("Duplicate source allele IDs")
+    counts = Counter()
+    with ExitStack() as stack:
+        handles = {name: stack.enter_context(open_text(directory / f"{name}.staging.vcf.gz", "wt"))
+                   for name in ("INS", "DEL", "passthrough")}
+        lines = stack.enter_context(open_text(source / "original.vcf.gz"))
+        for line in lines:
+            if line.startswith("#"):
+                for handle in handles.values():
+                    handle.write(line)
+                continue
+            f = line.split("\t", 8)
+            row = expected.pop(f[2], None)
+            if row is None:
+                raise ValueError("Unexpected/duplicate source VCF ID")
+            if (f[0] != row["chrom"] or int(f[1]) != int(row["pos"])
+                    or hashlib.sha256(f[3].encode()).hexdigest() != row["ref_sha256"]
+                    or hashlib.sha256(f[4].encode()).hexdigest() != row["alt_sha256"]):
+                raise ValueError("Source VCF and allele manifest disagree")
+            route = row["type"] if row["merge_submitted"] else "passthrough"
+            handles[route].write(line)
+            counts[route] += 1
+            if sum(counts.values()) % 10000 == 0:
+                logging.info("REPARTITION records=%d partitions=%s", sum(counts.values()), dict(counts))
+    if expected:
+        raise ValueError("Source VCF is missing manifest alleles")
+    artifacts = []
+    for name in handles:
+        target = directory / f"{name}.vcf.gz"
+        staging = directory / f"{name}.staging.vcf.gz"
+        pack(args, staging, target, "repartition-" + name)
+        staging.unlink()
+        artifacts.extend([target, Path(str(target) + ".tbi")])
+    for name in ("original.vcf.gz", "original.vcf.gz.tbi", "samples.txt"):
+        target = directory / name
+        target.unlink(missing_ok=True)
+        if name == "samples.txt":
+            shutil.copyfile(source / name, target)
+        else:
+            try:
+                os.link(source / name, target)
+            except OSError:
+                shutil.copyfile(source / name, target)
+        if common.digest(target) != parent["artifacts"][name]:
+            raise ValueError(f"Reused file checksum mismatch: {name}")
+        artifacts.append(target)
+    if any(common.identity(source / name) != snapshots[name] for name in names):
+        raise ValueError("Source catalogue changed during repartition")
+    tsv(directory / "source_alleles.tsv.gz", metadata, list(metadata[0]))
+    common.json_write(directory / "summary.json", {
+        "original_sv_alleles": len(metadata), "partition_counts": dict(counts),
+        "status_counts": dict(Counter(row["status"] for row in metadata)),
+        "reused_prepared_root": str(args.reuse_prepared.resolve()), "parameters": key,
+        "sample_manifest_sha256": common.digest(directory / "samples.txt")})
+    artifacts.extend(directory / name for name in ("source_alleles.tsv.gz", "summary.json"))
+    manifest(directory, key, artifacts)
+
+
 def update_counts(fields, info):
     gt = genotypes(fields)
     info.update(AC=str(gt["ac"]), AN=str(gt["an"]),
@@ -237,12 +338,19 @@ def pack(args, source, target, label, threads=None, sort=False):
     threads = args.threads if threads is None else threads
     cmd = [args.bcftools, "sort", "-m", f"{max(1, args.memory_gb // 4)}G",
            "-T", args.root / f"sort-{label}"] if sort else [args.bcftools, "view", "--threads", threads]
-    command(args, cmd + ["-Oz", "-o", target, source], label)
-    command(args, [args.bcftools, "index", "-f", "-t", "--threads", threads, target], label + "-index")
+    partial = Path(str(target) + ".partial")
+    command(args, cmd + ["-Oz", "-o", partial, source], label)
     # Check complete BGZF stream, rather than trusting index creation alone.
-    with gzip.open(target, "rb") as handle:
+    with gzip.open(partial, "rb") as handle:
         for _ in iter(lambda: handle.read(8 * 1024 * 1024), b""):
             pass
+    # Atomic replacement also protects hardlinked catalogues reused by other roots.
+    partial.replace(target)
+    index = Path(str(target) + ".tbi")
+    index_partial = Path(str(index) + ".partial")
+    command(args, [args.bcftools, "index", "-f", "-t", "--threads", threads,
+                   "-o", index_partial, target], label + "-index")
+    index_partial.replace(index)
 
 
 def tsv(path, rows, columns):
@@ -253,6 +361,8 @@ def tsv(path, rows, columns):
 
 
 def prepare(args):
+    if args.reuse_prepared:
+        return reuse_prepare(args)
     directory = args.root / "prepare"
     directory.mkdir(exist_ok=True)
     if args.input_bcf:
@@ -264,7 +374,8 @@ def prepare(args):
         source = args.root / "inputs" / args.source_uri.rsplit("/", 1)[1]
     version = command(args, [args.bcftools, "--version"], "bcftools-version", True).splitlines()[0]
     key = {"input_sha256": common.digest(source), "chrom": args.chrom, "min_size": args.min_size,
-           "max_size": args.max_size, "bcftools": version, "multi_overlaps": "0", "filter": "all"}
+           "max_size": args.max_size, "bcftools": version, "multi_overlaps": "0", "filter": "all",
+           "preparation_version": 2, "merge_policy": args.merge_policy}
     if valid_manifest(directory, key):
         logging.info("Reuse verified prepare artifacts")
         return
@@ -296,7 +407,7 @@ def prepare(args):
     (directory / "samples.txt").write_text("".join(s + "\n" for s in samples), encoding="utf-8")
     metadata, source_rows, statuses = [], set(), Counter()
     with ExitStack() as stack:
-        handles = {name: stack.enter_context(open(directory / f"{name}.vcf", "w", encoding="utf-8"))
+        handles = {name: stack.enter_context(open_text(directory / f"{name}.staging.vcf.gz", "wt"))
                    for name in ("original", "INS", "DEL", "passthrough")}
         lines = stack.enter_context(stream(args, [args.bcftools, "norm", "--no-version", "-m", "-any",
                                                  "--multi-overlaps", "0", "-Ov", candidates], "split"))
@@ -332,10 +443,11 @@ def prepare(args):
             f[7] = info_string(info)
             line = "\t".join(f) + "\n"
             handles["original"].write(line)
-            handles[kind if status == "eligible" else "passthrough"].write(line)
+            submitted = merge_submitted(kind, status, args.merge_policy)
+            handles[kind if submitted else "passthrough"].write(line)
             metadata.append({"id": f[2], "source_row": source_row, "source_id": original_id,
                              "chrom": f[0], "pos": int(f[1]), "type": kind, "size": size,
-                             "start0": start, "end0": end, "status": status,
+                             "start0": start, "end0": end, "status": status, "merge_submitted": int(submitted),
                              "ref_sha256": hashlib.sha256(f[3].encode()).hexdigest(),
                              "alt_sha256": hashlib.sha256(f[4].encode()).hexdigest()})
     if not metadata:
@@ -350,9 +462,9 @@ def prepare(args):
     # Compression is parallel internally; full genomic order is retained.
     for name in handles:
         target = directory / f"{name}.vcf.gz"
-        pack(args, directory / f"{name}.vcf", target, "pack-" + name)
+        pack(args, directory / f"{name}.staging.vcf.gz", target, "pack-" + name)
         artifacts += [target, Path(str(target) + ".tbi")]
-        (directory / f"{name}.vcf").unlink()
+        (directory / f"{name}.staging.vcf.gz").unlink()
     candidates.unlink()
     manifest(directory, key, artifacts)
 
@@ -385,6 +497,8 @@ def merge(args):
     for name, value in (("chrom", args.chrom), ("min_size", args.min_size), ("max_size", args.max_size)):
         if prepared["key"][name] != value:
             raise ValueError(f"Prepare parameter {name} differs; rerun prepare")
+    if prepared["key"].get("merge_policy", "strict") != args.merge_policy:
+        raise ValueError("Prepare merge policy differs; use a new root and --reuse-prepared")
     directory = args.root / "merge"
     directory.mkdir(exist_ok=True)
     version = command(args, [args.truvari, "version"], "truvari-version", True).strip()
@@ -392,7 +506,8 @@ def merge(args):
         raise ValueError("Expected Truvari 5.5.0; inspect logs/truvari-version.log")
     key = {"prepare": prepared, "threshold": args.threshold, "refdist": args.refdist,
            "truvari": version, "keep": "first", "gt": "off", "chain": False,
-           "consolidate": True, "typeignore": False, "pctovl": 0, "median_info": True}
+           "consolidate": True, "typeignore": False, "pctovl": 0, "median_info": True,
+           "separate_only": args.separate_only}
     if valid_manifest(directory, key):
         logging.info("Reuse verified merge artifacts")
         return
@@ -414,6 +529,10 @@ def merge(args):
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         list(pool.map(run_type, ("INS", "DEL")))
+    if args.separate_only:
+        manifest(directory, key, [directory / f"{kind}.{role}.vcf.gz{ext}"
+                 for kind in ("INS", "DEL") for role in ("kept", "removed") for ext in ("", ".tbi")])
+        return
     parts = [directory / f"{kind}.kept.vcf.gz" for kind in ("INS", "DEL")]
     parts.append(args.root / "prepare" / "passthrough.vcf.gz")
     headers, sample_header = {}, None
@@ -596,6 +715,8 @@ def make_plots(directory, catalogues, counts):
 def compare(args):
     prepared = require_manifest(args.root / "prepare")
     merged = require_manifest(args.root / "merge")
+    if merged["key"].get("separate_only"):
+        raise ValueError("Use compare_chr1_sv_alleles.py for --separate-only merge outputs")
     if merged["key"]["prepare"] != prepared:
         raise ValueError("Merge is stale relative to prepare; rerun merge")
     directory = args.root / "compare"
@@ -618,7 +739,8 @@ def compare(args):
         before, after = len(selected(original, kind)), len(selected(new, kind))
         counts.append({"type": kind, "original": before, "new": after, "removed": before - after,
                        "percent_reduction": 100 * (before - after) / before if before else None,
-                       "eligible_original": sum(r["status"] == "eligible" for r in selected(original, kind))})
+                       "eligible_original": sum(merge_submitted(r["type"], r["status"],
+                           prepared["key"].get("merge_policy", "strict")) for r in selected(original, kind))})
     for name, catalogue in catalogues.items():
         exported = []
         for r in catalogue.values():
@@ -680,11 +802,15 @@ def parse_args(argv=None):
     p.add_argument("--source-uri", default=SOURCE)
     p.add_argument("--confirm-source-uri", help="Exact source URI approved for staging")
     p.add_argument("--input-bcf", type=Path, help="Already-local indexed BCF/VCF; bypass cloud staging")
+    p.add_argument("--reuse-prepared", type=Path, help="Existing run root; repartition its prepared catalogue without staging/extraction")
+    p.add_argument("--merge-policy", choices=("native", "strict"), default="native",
+                   help="native submits all INS/DEL representations; strict reproduces the original representation filters")
+    p.add_argument("--separate-only", action="store_true", help="Merge outputs per type only; run compare_chr1_sv_alleles.py afterward")
     p.add_argument("--chrom", default="chr1")
     p.add_argument("--threshold", type=float, default=.7)
     p.add_argument("--refdist", type=int, default=500)
     p.add_argument("--min-size", type=int, default=50)
-    p.add_argument("--max-size", type=int, default=100000)
+    p.add_argument("--max-size", type=int, default=-1, help="Truvari size ceiling; -1 disables the ceiling")
     p.add_argument("--threads", type=int, default=4)
     p.add_argument("--memory-gb", type=int, default=26, help="Resource budget; bcftools sort uses one quarter per process; not an OS cap")
     p.add_argument("--scratch-reserve-gb", type=int, default=64, help="Free disk floor beyond source size, not a full-run prediction")
@@ -703,6 +829,10 @@ def parse_args(argv=None):
         p.error("Source must be an explicit gs:// BCF object")
     if args.input_bcf and args.phase == "stage":
         p.error("--input-bcf cannot be combined with cloud stage phase")
+    if args.reuse_prepared and (args.input_bcf or args.phase == "stage"):
+        p.error("--reuse-prepared cannot be combined with --input-bcf or cloud staging")
+    if args.separate_only and args.phase in {"all", "compare"}:
+        p.error("--separate-only requires separate prepare/merge phases and compare_chr1_sv_alleles.py")
     args.root = args.root.resolve()
     return args
 
@@ -735,7 +865,7 @@ def main(argv=None):
             "schema": SCHEMA, "packages": dict(sorted((d.metadata["Name"], d.version)
                                                      for d in importlib.metadata.distributions()))})
         phases = ["stage", "prepare", "merge", "compare"] if args.phase == "all" else [args.phase]
-        if args.input_bcf and "stage" in phases:
+        if (args.input_bcf or args.reuse_prepared) and "stage" in phases:
             phases.remove("stage")
         for phase in phases:
             start = time.monotonic()

@@ -6,7 +6,7 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO"
 PHASE="${1:-plan}"
 case "$PHASE" in plan|stage|prepare|merge|compare|all) ;; *) echo "Unknown phase: $PHASE" >&2; exit 2 ;; esac
-ROOT="${SV_MERGE_ROOT:-$HOME/sv_merge_chr1_p70}"
+ROOT="${SV_MERGE_ROOT:-$HOME/sv_merge_chr1_p70_native}"
 SOURCE_URI="${SV_PANEL_URI:-gs://rw-long-reads-transfer-2026-06-17/v9/lrWGS/panel/panel/panel_bubble_split_vcf/aou_lr_phase2_v1.chr1.bubble.split.bcf}"
 THREADS="${SV_THREADS:-4}"
 MEMORY_GB="${SV_MEMORY_GB:-26}"
@@ -31,8 +31,15 @@ if [[ "$PHASE" == all || "$PHASE" == merge ]]; then
 fi
 
 ARGS=(--root "$ROOT" --phase "$PHASE" --source-uri "$SOURCE_URI" \
-  --chrom chr1 --threshold 0.7 --refdist 500 --min-size 50 --max-size 100000 \
+  --chrom chr1 --threshold 0.7 --refdist 500 --min-size 50 --max-size "${SV_MAX_SIZE:--1}" \
+  --merge-policy "${SV_MERGE_POLICY:-native}" \
   --threads "$THREADS" --memory-gb "$MEMORY_GB" --bcftools "$BCFTOOLS_BIN")
+if [[ -n "${SV_REUSE_PREPARED_ROOT:-}" ]]; then
+  ARGS+=(--reuse-prepared "$SV_REUSE_PREPARED_ROOT")
+fi
+if [[ "${SV_SEPARATE_ONLY:-0}" == 1 ]]; then
+  ARGS+=(--separate-only)
+fi
 if [[ "$PHASE" == all || "$PHASE" == stage ]]; then
   # The default full-panel URI was explicitly confirmed by the user.
   ARGS+=(--confirm-source-uri "$SOURCE_URI")

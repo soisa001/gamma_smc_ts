@@ -23,7 +23,7 @@ import time
 
 import run_chr1_sv_merge as pilot
 
-VERSION = 1
+VERSION = 2
 LITERAL_STATUSES = {"eligible", "above_sizemax", "ambiguous_sequence", "complex_replacement"}
 SCOPES = ("merge_eligible", "all_ins_del")
 
@@ -43,6 +43,7 @@ def read_source(path):
             # In prepare schema 1, literal size was computed from abs(len(ALT)-len(REF)).
             # Symbolic SVLEN/END is deliberately NOT used as raw allele length here.
             record["raw_bp"] = int(record["size"]) if record["status"] in LITERAL_STATUSES else None
+            record["merge_submitted"] = bool(int(record.get("merge_submitted", record["status"] == "eligible")))
             if record["raw_bp"] is not None and record["raw_bp"] <= 0:
                 raise ValueError("Invalid raw allele length")
             rows[record["id"]] = record
@@ -72,11 +73,12 @@ def read_partition(path, kind, source, expected_samples_sha256):
                 raise ValueError(f"Invalid biallelic VCF row: {path.name}")
             chrom, position, ident, ref, alt = fields[:5]
             row = source.get(ident)
-            if row is None or row["type"] != kind or row["status"] != "eligible" or ident in found:
+            if row is None or row["type"] != kind or not row["merge_submitted"] or ident in found:
                 raise ValueError(f"Unknown/duplicate/wrong-type source allele: {path.name}")
             actual_key = chrom, int(position), hashlib.sha256(ref.encode()).hexdigest(), hashlib.sha256(alt.encode()).hexdigest()
             delta = len(alt) - len(ref)
-            if actual_key != allele_key(row) or delta != row["raw_bp"] * (1 if kind == "INS" else -1):
+            if actual_key != allele_key(row) or (row["raw_bp"] is not None and
+                    delta != row["raw_bp"] * (1 if kind == "INS" else -1)):
                 raise ValueError(f"REF/ALT, position, or raw length changed from source: {path.name}")
             coordinate = (chrom, int(position))
             if previous is not None and coordinate < previous:
@@ -92,7 +94,7 @@ def validate_membership(source, partitions):
     retained, removed = set(), set()
     for kind in ("INS", "DEL"):
         kept, gone = partitions[(kind, "kept")], partitions[(kind, "removed")]
-        expected = {ident for ident, row in source.items() if row["type"] == kind and row["status"] == "eligible"}
+        expected = {ident for ident, row in source.items() if row["type"] == kind and row["merge_submitted"]}
         if set(kept) & set(gone) or set(kept) | set(gone) != expected:
             raise ValueError(f"{kind}: original eligible IDs != disjoint kept + removed IDs")
         clusters = {}
@@ -184,7 +186,7 @@ def figures(output, summary, gaps):
         plt.close(fig)
 
     for scope in SCOPES:
-        title = "Merge-eligible alleles" if scope == "merge_eligible" else "All INS/DEL alleles"
+        title = "Alleles submitted to Truvari" if scope == "merge_eligible" else "All INS/DEL alleles"
         for metric in ("sv_records", "unique_affected_bp"):
             fig, axes = plt.subplots(1, 2, figsize=(11, 8.5), layout="constrained")
             fig.suptitle(title, fontsize=22)
@@ -262,7 +264,7 @@ def run(args):
     for scope in SCOPES:
         for kind in ("DEL", "INS"):
             before = [r for r in source.values() if r["type"] == kind and
-                      (scope == "all_ins_del" or r["status"] == "eligible")]
+                      (scope == "all_ins_del" or r["merge_submitted"])]
             after = [r for r in before if r["id"] not in removed]
             for name, rows in (("before", before), ("after", after)):
                 stats, intervals = summarize(rows, kind)
@@ -302,6 +304,7 @@ def run(args):
         "eligible_kept": len(kept), "eligible_removed": len(removed), "summary": summary,
         "input_paths": {name: str(path) for name, path in paths.items()}, "cache_key": key,
         "definitions": {
+            "merge_eligible": "All alleles submitted to Truvari (merge_submitted); legacy manifests use status=eligible. Native tool filters may retain records unchanged.",
             "unique_allele": "Exact CHROM, POS, REF, ALT; sequence identity stored as SHA-256. No additional merging.",
             "raw_bp": "INS: len(ALT)-len(REF); DEL: len(REF)-len(ALT). No AC/AF weighting or INFO/SVLEN substitution.",
             "unique_inserted_bp": "Sum of raw lengths once per distinct literal insertion allele at its locus.",
