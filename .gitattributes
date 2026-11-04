@@ -132,7 +132,6 @@ scripts/*sv_phylogeny* text eol=lf
 scripts/build_relate_windows.py text eol=lf
 scripts/run_chr1_sv_merge_workbench.sh text eol=lf
 scripts/run_chr1_sv_merge.py text eol=lf
-scripts/truvari_collapse_phased.py text eol=lf
 scripts/run_sv_phased_batch.py text eol=lf
 scripts/run_sv_phased_batch_workbench.sh text eol=lf
 tests/test_sv_phased_batch.py text eol=lf

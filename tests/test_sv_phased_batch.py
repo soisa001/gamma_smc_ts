@@ -1,4 +1,4 @@
-"""Real Truvari regression and integration tests for GT/phase preservation."""
+"""Integration tests for unmodified Truvari batch outputs and resumability."""
 from __future__ import annotations
 
 import os
@@ -11,7 +11,6 @@ import unittest
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 import run_sv_phased_batch as batch
-import run_chr1_sv_merge as pilot
 
 
 def fixture(path, chrom="chr1"):
@@ -53,43 +52,7 @@ def key(record):
 
 @unittest.skipUnless(os.environ.get("SV_PILOT_INTEGRATION") == "1", "Requires Linux bcftools/Truvari")
 class PhasedTests(unittest.TestCase):
-    def test_native_bug_and_phase_preserving_wrapper_through_actual_cli(self):
-        import pysam
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            raw = root / "source.vcf"
-            fixture(raw)
-            bcftools = os.environ.get("BCFTOOLS_BIN", "bcftools")
-            source = root / "source.vcf.gz"
-            subprocess.run([bcftools, "view", "-i", "POS<1000", "-Oz", "-o", str(source), str(raw)], check=True, capture_output=True)
-            subprocess.run([bcftools, "index", "-t", str(source)], check=True, capture_output=True)
-            for label, command in (("native", ["truvari", "collapse"]),
-                                   ("phased", [sys.executable, str(SCRIPTS / "truvari_collapse_phased.py")])):
-                subprocess.run(command + ["-i", str(source), "-o", str(root / f"{label}.vcf.gz"),
-                    "-c", str(root / f"{label}.collapsed.vcf.gz"), "-p", ".7", "-P", ".7", "-r", "500",
-                    "-s", "50", "-S", "-1", "--keep", "common", "--gt", "all"], check=True, capture_output=True)
-                subprocess.run([bcftools, "index", "-t", str(root / f"{label}.vcf.gz")], check=True, capture_output=True)
-            with pysam.VariantFile(root / "native.vcf.gz") as handle:
-                native = list(handle)
-            with pysam.VariantFile(root / "phased.vcf.gz") as handle:
-                phased = list(handle)
-            self.assertEqual(len(native), 1)
-            self.assertEqual(key(native[0]), key(phased[0]))
-            # Preserve this release's native --keep common choice, even though
-            # 5.5.0 sorts its AC comparator ascending and chooses low_ins here.
-            self.assertEqual(phased[0].id, native[0].id)
-            # Truvari 5.5.0 does not write the summed GT back for this donor sample.
-            self.assertEqual(native[0].samples["s2"]["GT"], (0, 0))
-            for sample, gt, ps, dp in (("s1", (1, 0), 100, 10), ("s2", (0, 1), 200, 25), ("s3", (1, 0), 200, 30)):
-                call = phased[0].samples[sample]
-                self.assertEqual(call["GT"], gt)
-                self.assertTrue(call.phased)
-                self.assertEqual((call["PS"], call["DP"]), (ps, dp))
-            self.assertEqual(phased[0].info["AC"], (3,))
-            self.assertEqual(phased[0].info["AN"], 6)
-            self.assertEqual(phased[0].info["AF"], (.5,))
-
-    def test_two_chromosomes_thresholds_phase_membership_and_resume(self):
+    def test_two_chromosomes_match_native_cli_and_resume(self):
         import pysam
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -111,6 +74,9 @@ class PhasedTests(unittest.TestCase):
                 with pysam.VariantFile(root / f"run/{chrom}/prepare/input.vcf.gz") as handle:
                     original = {key(record): record for record in handle}
                 self.assertEqual(len(original), 10)
+                split = [r for r in original.values() if r.id == "multi"]
+                self.assertEqual({r.samples["s1"]["GT"] for r in split}, {(1, 0), (0, 1)})
+                self.assertTrue(all(r.samples["s1"].phased and r.samples["s1"]["PS"] == 9000 for r in split))
                 for percent, expected in ((70, 8), (90, 10)):
                     directory = root / f"run/{chrom}/p{percent}"
                     with pysam.VariantFile(directory / f"{chrom}.vcf.gz") as handle:
@@ -121,18 +87,17 @@ class PhasedTests(unittest.TestCase):
                     self.assertEqual(len(kept) + len(removed), len(original))
                     self.assertEqual({key(r) for r in kept + removed}, set(original))
                     self.assertTrue({"opposite1", "opposite2", "inv"} <= {r.id for r in kept})
-                    for rep in kept:
-                        members = [original[key(rep)]] + [original[key(r)] for r in removed
-                            if rep.info.get("CollapseId") in r.info.get("MatchId", ())]
-                        for sample in rep.samples:
-                            donors = [r.samples[sample] for r in members if 1 in r.samples[sample]["GT"]]
-                            self.assertLessEqual(len(donors), 1)
-                            donor = donors[0] if donors else original[key(rep)].samples[sample]
-                            self.assertEqual(rep.samples[sample]["GT"], donor["GT"],
-                                (rep.id, sample, dict(rep.info), [(r.id, dict(r.info)) for r in removed]))
-                            self.assertEqual(rep.samples[sample].phased, donor.phased)
-                            self.assertEqual(rep.samples[sample]["PS"], donor["PS"])
-                            self.assertEqual(rep.samples[sample]["DP"], donor["DP"])
+                    # Compare every emitted record, including GT and FORMAT, to a
+                    # separate invocation of the unmodified pinned Truvari CLI.
+                    direct = root / f"{chrom}.{percent}.direct.vcf.gz"
+                    direct_removed = root / f"{chrom}.{percent}.removed.vcf.gz"
+                    subprocess.run(["truvari", "collapse", "-i", str(root / f"run/{chrom}/prepare/input.vcf.gz"),
+                        "-o", str(direct), "-c", str(direct_removed), "-p", str(percent / 100),
+                        "-P", str(percent / 100), "-r", "500", "-s", "50", "-S", "-1",
+                        "--keep", "common", "--gt", "all"], check=True, capture_output=True)
+                    for path, actual in ((direct, kept), (direct_removed, removed)):
+                        with pysam.VariantFile(path) as handle:
+                            self.assertEqual(sorted(map(str, actual)), sorted(map(str, handle)))
                     for gone in removed:
                         for sample in gone.samples:
                             self.assertEqual(dict(gone.samples[sample]), dict(original[key(gone)].samples[sample]))
@@ -142,31 +107,6 @@ class PhasedTests(unittest.TestCase):
             batch.main(args)
             self.assertTrue(all(p.stat().st_mtime_ns == mtime for p, mtime in saved.items()))
 
-    def test_consolidator_preserves_partial_unphased_and_haploid_calls_and_rejects_overlap(self):
-        import pysam
-        from types import SimpleNamespace
-        from truvari_collapse_phased import consolidate
-        header = pysam.VariantHeader()
-        header.contigs.add("chr1")
-        header.formats.add("GT", 1, "String", "Genotype")
-        header.formats.add("PS", 1, "Integer", "Phase set")
-        header.add_sample("s1")
-        for gt, phased, ps in (((1, None), True, 100), ((0, 1), False, None), ((1,), False, None)):
-            a = header.new_record(contig="chr1", start=100, alleles=("A", "ATTT"))
-            b = header.new_record(contig="chr1", start=105, alleles=("A", "ATTT"))
-            a.samples[0]["GT"] = (0, 0)
-            a.samples[0]["PS"] = 500
-            b.samples[0]["GT"] = gt
-            b.samples[0]["PS"] = ps
-            b.samples[0].phased = phased
-            expected_phase = b.samples[0].phased
-            result, count = consolidate(a, [SimpleNamespace(comp=b)])
-            self.assertEqual(count, 1)
-            self.assertEqual(result.samples[0]["GT"], gt)
-            self.assertEqual(result.samples[0].phased, expected_phase)
-            self.assertEqual(result.samples[0]["PS"], ps)
-            with self.assertRaisesRegex(ValueError, "Multiple ALT"):
-                consolidate(result, [SimpleNamespace(comp=b)])
 
 
 if __name__ == "__main__":

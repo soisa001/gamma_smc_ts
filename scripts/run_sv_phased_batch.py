@@ -3,10 +3,10 @@
 # requires-python = ">=3.12"
 # dependencies = ["google-crc32c==1.8.0"]
 # ///
-"""chr1–chr21 phased Truvari outputs at 0.7/0.9, up to four chromosome jobs.
+"""chr1–chr21 native Truvari outputs at 0.7/0.9, up to four chromosome jobs.
 
-Native --keep common --gt all clustering, with audited phase-preserving
-genotype consolidation. Run via uv run --with truvari==5.5.0. No uploads.
+Unmodified --keep common --gt all clustering and genotype consolidation.
+Run via uv run --with truvari==5.5.0. No uploads.
 """
 from __future__ import annotations
 
@@ -131,7 +131,6 @@ def prepare(args, chrom, root):
 
 def merge(args, chrom, root, prepared):
     rows = []
-    phase_wrapper = Path(__file__).with_name("truvari_collapse_phased.py")
     for similarity in THRESHOLDS:
         directory = root / f"p{round(similarity * 100)}"
         (directory / "logs").mkdir(parents=True, exist_ok=True)
@@ -139,18 +138,18 @@ def merge(args, chrom, root, prepared):
         key = {"version": VERSION, "prepare": prepared, "similarity": similarity,
                "refdist": 500, "keep": "common", "gt": "all", "sizemin": 50, "sizemax": -1,
                "chain": False, "typeignore": False, "hap": False, "truvari": "5.5.0",
-               "phase_consolidation_sha256": pilot.common.digest(phase_wrapper)}
+               "genotype_consolidation": "native"}
         if pilot.valid_manifest(directory, key):
-            logging.info("Reuse %s %.1f merged phased VCF", chrom, similarity)
+            logging.info("Reuse %s %.1f native merged VCF", chrom, similarity)
             rows.append(json.loads((directory / "summary.json").read_text())["counts"])
             continue
         (directory / "done.json").unlink(missing_ok=True)
         kept = directory / f"{chrom}.partial.vcf.gz"
         removed = directory / f"{chrom}.collapsed.partial.vcf.gz"
-        cmd = [sys.executable, phase_wrapper, "-i", root / "prepare/input.vcf.gz", "-o", kept, "-c", removed,
+        cmd = ["truvari", "collapse", "-i", root / "prepare/input.vcf.gz", "-o", kept, "-c", removed,
                "-p", similarity, "-P", similarity, "-r", "500", "-s", "50", "-S", "-1",
                "--keep", "common", "--gt", "all"]
-        pilot.command(pa, cmd, "collapse-phased")
+        pilot.command(pa, cmd, "collapse-native")
         kept_count = check_vcf(pa, kept, "kept", allow_sort=True)
         removed_count = check_vcf(pa, removed, "collapsed", allow_sort=True)
         if kept_count + removed_count != prepared["key"]["records"]:
@@ -168,8 +167,7 @@ def merge(args, chrom, root, prepared):
         counts = {"chrom": chrom, "similarity": similarity, "before": prepared["key"]["records"],
                   "after": kept_count, "collapsed": removed_count}
         pilot.common.json_write(directory / "summary.json", {"counts": counts, "parameters": key,
-            "phase_policy": "GT/phase/FORMAT copied from the unique ALT-bearing member per sample; "
-                            "representative reference/missing calls retained when no ALT member is present."})
+            "phase_policy": "Unmodified Truvari 5.5.0 genotype consolidation; no custom GT or phase transfer."})
         artifacts.append(directory / "summary.json")
         pilot.manifest(directory, key, artifacts)
         rows.append(counts)
@@ -225,7 +223,7 @@ def main(argv=None):
         return worker(args, args.worker)
     if args.phase == "plan":
         print(json.dumps({"parameters": vars(args), "thresholds": THRESHOLDS, "keep": "common", "gt": "all",
-            "refdist": 500, "hap": False, "phased_genotypes": True, "uploads": False,
+            "refdist": 500, "hap": False, "sample_genotypes": True, "genotype_consolidation": "native", "uploads": False,
             "sources": [args.source_template.format(chrom=c) for c in args.chromosomes]}, default=str, indent=2))
         return
     (args.root / "logs").mkdir(parents=True, exist_ok=True)
@@ -234,7 +232,7 @@ def main(argv=None):
         "thresholds": THRESHOLDS, "seed": pilot.SEED, "script_sha256": pilot.common.digest(__file__)})
     forwarded = list(argv if argv is not None else sys.argv[1:])
     def run_one(chrom):
-        print(f"Starting {chrom}; phased outputs at similarity 0.7 and 0.9.", flush=True)
+        print(f"Starting {chrom}; native outputs at similarity 0.7 and 0.9.", flush=True)
         with open(args.root / "logs" / f"{chrom}.worker.log", "a") as log:
             result = subprocess.run([sys.executable, __file__, *forwarded, "--worker", chrom], stdout=log, stderr=log)
         if result.returncode:
