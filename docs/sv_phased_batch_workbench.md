@@ -1,6 +1,6 @@
-# chr1–chr21 native Truvari SV merges at 0.7 and 0.9
+# chr1–chr21 native Truvari SV merges at 0.7
 
-The final requested output is a **cohort VCF with native Truvari genotype consolidation**, one per chromosome at each similarity threshold. This supersedes the earlier sites-only request. Four chromosome jobs can run concurrently; each runs 0.7 then 0.9 independently against the same original input. Settings are `--keep common --gt all -r 500 -s 50 -S -1`, with both `-p` and `-P` set to the requested threshold. `--hap`, type mixing and chaining are off.
+The final requested output is a **cohort VCF with native Truvari genotype consolidation**, one per chromosome at similarity 0.7. This supersedes the earlier sites-only and two-threshold requests. Four chromosome jobs can run concurrently. Settings are `--keep common --gt all -r 500 -s 50 -S -1`, with both `-p` and `-P` set to 0.7. `--hap`, type mixing and chaining are off.
 
 ## Native Truvari behavior
 
@@ -52,7 +52,7 @@ truvari collapse \
   -p 0.7 -P 0.7 -r 500 -s 50 -S -1 --keep common --gt all
 ```
 
-Use 0.9 for both similarity arguments for the second independent run. Both runs use the unmodified native command.
+Only 0.7 is run. Existing 0.9 files are left untouched and are not included in the refreshed batch counts.
 
 Final outputs under `$SV_PHASED_ROOT`:
 
@@ -60,13 +60,11 @@ Final outputs under `$SV_PHASED_ROOT`:
 chr1/prepare/input.vcf.gz          # original phased SV baseline retained for audit/resume
 chr1/p70/chr1.vcf.gz               # final native merged VCF at 0.7
 chr1/p70/chr1.collapsed.vcf.gz     # removed original members, with MatchId links
-chr1/p90/chr1.vcf.gz               # final native merged VCF at 0.9
-chr1/p90/chr1.collapsed.vcf.gz
 ... through chr21 ...
 counts.tsv                        # original, retained and collapsed counts per chr/threshold
 ```
 
-Every VCF has an index. `CollapseId` and `MatchId` link the retained representative and removed records. `logs/chrN.worker.log`, `chrN/logs/batch.log`, and `chrN/p{70,90}/logs/collapse-native.log` contain tool output, paths, full parameters and native Truvari statistics. No summarized controlled data are pushed to GitHub.
+Every VCF has an index. `CollapseId` and `MatchId` link the retained representative and removed records. `logs/chrN.worker.log`, `chrN/logs/batch.log`, and `chrN/p70/logs/collapse-native.log` contain tool output, paths, full parameters and native Truvari statistics. No summarized controlled data are pushed to GitHub.
 
 Phases are `plan`, `prepare`, `merge`, or `all`. Repeating `all` reuses checksummed preparation and completed threshold outputs. The input snapshot is frozen and retains its source metadata/checksums; use a new output root for a new panel generation. The native-consolidation cache key differs from the former wrapper key, so old wrapped merge outputs are regenerated while verified prepared inputs are reused. Unrelated Git commits do not invalidate results. Use a different root if you want to retain both versions. If interrupted, verify the worker has stopped before removing its stale `.phased_batch.lock`.
 
@@ -78,4 +76,4 @@ SV_PILOT_INTEGRATION=1 uv run --no-project --python 3.12 \
   python -m unittest discover -s tests -p test_sv_phased_batch.py -v
 ```
 
-Tests compare every batch output record, including all sample FORMAT values, against independent unmodified Truvari CLI runs at both thresholds on two synthetic chromosomes. They also check phased multiallelic decomposition, same-sample calls staying separate, record conservation, unchanged removed calls, retained symbolic/non-pure alleles, and cache reuse. No controlled panel data are used in local tests.
+Tests compare every batch output record, including all sample FORMAT values, against independent unmodified Truvari CLI runs at 0.7 on two synthetic chromosomes. They also check that no 0.9 output is created, phased multiallelic decomposition, same-sample calls staying separate, record conservation, unchanged removed calls, retained symbolic/non-pure alleles, and cache reuse. No controlled panel data are used in local tests.

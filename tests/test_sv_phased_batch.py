@@ -77,7 +77,8 @@ class PhasedTests(unittest.TestCase):
                 split = [r for r in original.values() if r.id == "multi"]
                 self.assertEqual({r.samples["s1"]["GT"] for r in split}, {(1, 0), (0, 1)})
                 self.assertTrue(all(r.samples["s1"].phased and r.samples["s1"]["PS"] == 9000 for r in split))
-                for percent, expected in ((70, 8), (90, 10)):
+                self.assertFalse((root / f"run/{chrom}/p90").exists())
+                for percent, expected in ((70, 8),):
                     directory = root / f"run/{chrom}/p{percent}"
                     with pysam.VariantFile(directory / f"{chrom}.vcf.gz") as handle:
                         kept = list(handle)

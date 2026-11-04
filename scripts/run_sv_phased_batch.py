@@ -3,7 +3,7 @@
 # requires-python = ">=3.12"
 # dependencies = ["google-crc32c==1.8.0"]
 # ///
-"""chr1–chr21 native Truvari outputs at 0.7/0.9, up to four chromosome jobs.
+"""chr1–chr21 native Truvari outputs at 0.7, up to four chromosome jobs.
 
 Unmodified --keep common --gt all clustering and genotype consolidation.
 Run via uv run --with truvari==5.5.0. No uploads.
@@ -25,7 +25,7 @@ import run_chr1_sv_merge as pilot
 
 VERSION = 1
 TEMPLATE = pilot.SOURCE.replace(".chr1.", ".{chrom}.")
-THRESHOLDS = (.7, .9)
+THRESHOLDS = (.7,)
 # Only distinguish structural alleles from the panel's small variants.
 # No pure-allele, sequence-alphabet, FILTER, SV-type or upper-size restriction.
 SV_FILTER = 'ILEN>=50 || ILEN<=-50 || TYPE~"bnd" || (ALT~"<" && ALT!="<NON_REF>" && ALT!="<NONREF>")'
@@ -232,7 +232,7 @@ def main(argv=None):
         "thresholds": THRESHOLDS, "seed": pilot.SEED, "script_sha256": pilot.common.digest(__file__)})
     forwarded = list(argv if argv is not None else sys.argv[1:])
     def run_one(chrom):
-        print(f"Starting {chrom}; native outputs at similarity 0.7 and 0.9.", flush=True)
+        print(f"Starting {chrom}; native outputs at similarity 0.7.", flush=True)
         with open(args.root / "logs" / f"{chrom}.worker.log", "a") as log:
             result = subprocess.run([sys.executable, __file__, *forwarded, "--worker", chrom], stdout=log, stderr=log)
         if result.returncode:
