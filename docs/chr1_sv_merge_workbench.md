@@ -1,5 +1,7 @@
 # chr1 Truvari 70% merge pilot
 
+For **chr1–chr21 at 0.7 and 0.9 with phased cohort genotypes**, use [the phased batch workflow](sv_phased_batch_workbench.md). It runs up to four chromosomes concurrently with `--keep common --gt all -r 500`, writes one final merged VCF per chromosome/threshold, and avoids the old `new.unsorted.vcf` assembly step. It includes a tested fix for phase-aware genotype consolidation in Truvari 5.5.0.
+
 This workflow stages the full AoU chr1 panel, extracts structural alleles, runs Truvari 5.5.0 with **both sequence and size similarity at 0.7**, and compares the existing panel alleles with the new representatives. It writes data, summaries, logs, and figures only to the VM. There is no upload or Git push in the workflow.
 
 The user confirmed this input on 2026-11-02, with outputs retained on the VM:
