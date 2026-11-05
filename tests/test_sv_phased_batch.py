@@ -7,10 +7,58 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 import run_sv_phased_batch as batch
+
+
+def concurrent_stage(root, barrier):
+    """Model gcloud's shared source-list file through the real stage call site."""
+    import time
+    root = Path(root)
+    os.environ["XDG_CACHE_HOME"] = str(root.parent / "cache")
+    args = batch.pilot.parse_args(["--root", str(root), "--scratch-reserve-gb", "0",
+        "--source-uri", f"gs://fixture/{root.name}.bcf",
+        "--confirm-source-uri", f"gs://fixture/{root.name}.bcf"])
+    shared = root.parent / "shared-gcloud-list"
+    def command(args, cmd, label, capture=False, **kwargs):
+        if label == "rsync":
+            shared.write_text(root.name)
+            time.sleep(.2)
+            if shared.read_text() != root.name:
+                raise RuntimeError("Concurrent rsync replaced this chromosome's source listing")
+        return "1"
+    with mock.patch.object(batch.pilot.storage, "metadata_for", return_value={"bcf": {"size": 1}, "csi": None}), \
+         mock.patch.object(batch.pilot.storage, "verify_object"), \
+         mock.patch.object(batch.pilot, "manifest"), \
+         mock.patch.object(batch.pilot, "command", side_effect=command):
+        root.mkdir()
+        barrier.wait(timeout=20)
+        batch.pilot.stage(args)
+
+
+@unittest.skipUnless(sys.platform == "linux", "VM staging uses Linux process locks")
+class StagingTests(unittest.TestCase):
+    def test_concurrent_staging_keeps_source_listings_separate(self):
+        import multiprocessing
+        with tempfile.TemporaryDirectory() as tmp:
+            context = multiprocessing.get_context("fork")
+            barrier = context.Barrier(4)
+            workers = [context.Process(target=concurrent_stage, args=(str(Path(tmp) / f"chr{i}"), barrier))
+                       for i in range(1, 5)]
+            try:
+                for worker in workers:
+                    worker.start()
+                for worker in workers:
+                    worker.join(timeout=30)
+                self.assertEqual([worker.exitcode for worker in workers], [0] * 4)
+            finally:
+                for worker in workers:
+                    if worker.is_alive():
+                        worker.terminate()
+                        worker.join()
 
 
 def fixture(path, chrom="chr1"):

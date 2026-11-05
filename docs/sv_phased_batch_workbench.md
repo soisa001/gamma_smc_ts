@@ -37,7 +37,9 @@ The full-panel template is the repository path already discussed with the user:
 gs://rw-long-reads-transfer-2026-06-17/v9/lrWGS/panel/panel/panel_bubble_split_vcf/aou_lr_phase2_v1.{chrom}.bubble.split.bcf
 ```
 
-Staging uses `gcloud storage rsync` restricted to the exact BCF/index for each chromosome and no billing-project flag. Up to four raw cohort BCFs can be staged concurrently. Downloaded temporary BCFs are removed only after the prepared input is verified; set `SV_KEEP_STAGED_BCF=1` to keep them. The prepared phased SV input is retained. To use existing local indexed files, set `SV_LOCAL_INPUT_TEMPLATE='/absolute/path/aou_lr_phase2_v1.{chrom}.bubble.split.bcf'`; these external input files are never removed.
+Staging uses `gcloud storage rsync` restricted to the exact BCF/index for each chromosome and no billing-project flag. Transfers run one at a time under a Linux process lock at `${XDG_CACHE_HOME:-$HOME/.cache}/gamma_smc_ts/gcloud-rsync.lock`, because simultaneous rsync invocations can interfere with gcloud's shared source-list files. This lock covers this workflow's transfers across chromosome workers and batch roots; unrelated manual rsync commands do not honor it. Preparation and merging remain concurrent, with up to four chromosome workers total. Lock waits/acquisitions/releases are logged; the operating system releases the lock if a worker exits. Do not delete the lock file.
+
+Downloaded temporary BCFs are removed only after the prepared input is verified; set `SV_KEEP_STAGED_BCF=1` to keep them. The prepared phased SV input is retained. To use existing local indexed files, set `SV_LOCAL_INPUT_TEMPLATE='/absolute/path/aou_lr_phase2_v1.{chrom}.bubble.split.bcf'`; these external input files are never removed. Failed workers are reported immediately while other chromosomes continue.
 
 ## Minimal preparation and direct outputs
 
@@ -76,4 +78,4 @@ SV_PILOT_INTEGRATION=1 uv run --no-project --python 3.12 \
   python -m unittest discover -s tests -p test_sv_phased_batch.py -v
 ```
 
-Tests compare every batch output record, including all sample FORMAT values, against independent unmodified Truvari CLI runs at 0.7 on two synthetic chromosomes. They also check that no 0.9 output is created, phased multiallelic decomposition, same-sample calls staying separate, record conservation, unchanged removed calls, retained symbolic/non-pure alleles, and cache reuse. No controlled panel data are used in local tests.
+Tests compare every batch output record, including all sample FORMAT values, against independent unmodified Truvari CLI runs at 0.7 on two synthetic chromosomes. They also check that no 0.9 output is created, phased multiallelic decomposition, same-sample calls staying separate, record conservation, unchanged removed calls, retained symbolic/non-pure alleles, and cache reuse. A four-process staging test simulates gcloud's shared source listing through the actual staging call site and verifies transfers cannot overwrite one another's listing. No controlled panel data are used in local tests.

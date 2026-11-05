@@ -125,6 +125,26 @@ def require_manifest(directory):
     return data
 
 
+@contextmanager
+def rsync_lock():
+    """Serialize this workflow's rsync calls sharing gcloud's listing cache."""
+    import fcntl  # Staging runs on the Linux Workbench/HPC host.
+    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+    path = cache / "gamma_smc_ts" / "gcloud-rsync.lock"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Keep the inode: unlinking a lock file can let waiters lock different files.
+    with path.open("a") as handle:
+        started = time.monotonic()
+        logging.info("WAIT_RSYNC_LOCK %s", path)
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        try:
+            logging.info("ACQUIRED_RSYNC_LOCK %s wait_seconds=%.3f", path, time.monotonic() - started)
+            yield
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+            logging.info("RELEASED_RSYNC_LOCK %s", path)
+
+
 def stage(args):
     if args.confirm_source_uri != args.source_uri:
         raise ValueError("Staging requires --confirm-source-uri equal to --source-uri")
@@ -139,9 +159,12 @@ def stage(args):
     need = sum(x["size"] for x in remote.values() if x) + args.scratch_reserve_gb * 2**30
     if shutil.disk_usage(directory).free < need:
         raise ValueError("Insufficient free disk for input replacement plus scratch reserve")
-    command(args, storage.sync_command(args.gcloud, args.source_uri, directory, args.billing_project),
-            "rsync", env={"CLOUDSDK_STORAGE_PROCESS_COUNT": "1",
-                          "CLOUDSDK_STORAGE_THREAD_COUNT": str(args.threads)})
+    with rsync_lock():
+        if shutil.disk_usage(directory).free < need:
+            raise ValueError("Insufficient free disk after waiting for staging lock")
+        command(args, storage.sync_command(args.gcloud, args.source_uri, directory, args.billing_project),
+                "rsync", env={"CLOUDSDK_STORAGE_PROCESS_COUNT": "1",
+                              "CLOUDSDK_STORAGE_THREAD_COUNT": str(args.threads)})
     path = directory / args.source_uri.rsplit("/", 1)[1]
     storage.verify_object(path, remote["bcf"])
     index = Path(str(path) + ".csi")

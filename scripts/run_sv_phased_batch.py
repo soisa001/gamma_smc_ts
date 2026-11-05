@@ -236,7 +236,7 @@ def main(argv=None):
         with open(args.root / "logs" / f"{chrom}.worker.log", "a") as log:
             result = subprocess.run([sys.executable, __file__, *forwarded, "--worker", chrom], stdout=log, stderr=log)
         if result.returncode:
-            raise RuntimeError(f"{chrom} failed; inspect logs/{chrom}.worker.log and {chrom}/logs/batch.log")
+            raise RuntimeError(f"{chrom} failed (exit {result.returncode}); inspect logs/{chrom}.worker.log and {chrom}/logs/batch.log")
         print(f"Completed {chrom}.", flush=True)
     failures = []
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
@@ -246,6 +246,7 @@ def main(argv=None):
                 future.result()
             except Exception as error:
                 failures.append(str(error))
+                print(f"FAILED: {error}", file=sys.stderr, flush=True)
     if failures:
         raise SystemExit("\n".join(failures))
     if args.phase in {"merge", "all"}:
