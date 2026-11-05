@@ -137,6 +137,7 @@ scripts/run_sv_phased_batch_workbench.sh text eol=lf
 tests/test_sv_phased_batch.py text eol=lf
 scripts/compare_chr1_sv_alleles.py text eol=lf
 scripts/compare_sv_native.py text eol=lf
+scripts/audit_sv_native.py text eol=lf
 tests/test_compare_chr1_sv_alleles.py text eol=lf
 tests/test_chr1_sv_merge.py text eol=lf
 tests/test_sv_phylogeny.py text eol=lf

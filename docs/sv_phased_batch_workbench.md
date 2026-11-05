@@ -78,6 +78,10 @@ Results are written under `chrN/compare_native_p70/`: `changes.tsv` (before/afte
 
 Validation reads all three VCFs to EOF and checks exact site-multiset conservation (`before = retained + removed`), preparation counts, and unchanged input identities/manifests. It does not rehash the entire cohort VCFs. Results are cached against input identities and completion manifests. Existing genotype and representative behavior remains native Truvari.
 
+## Cluster audit
+
+For a read-only cluster/representation audit, run `uv run --no-project --python 3.12 scripts/audit_sv_native.py --batch-root "$SV_PHASED_ROOT" --chrom chr8 --bcftools "$BCFTOOLS_BIN"`. Aggregate JSON is printed and saved to `chr8/audit_native_p70/audit.json`; per-cluster positions and membership counts stay on disk in `clusters.tsv`. The audit checks site conservation and cluster annotations, summarizes literal-vs-complex representations, compares INFO type/size to raw REF/ALT lengths, and reports native match scores, cluster sizes, position spans, and identical-POS/REF matches with different ALT sequences. It does not validate genotypes or establish biological equivalence. Results are cached against input file identities and completion manifests.
+
 ## Tests
 
 ```bash

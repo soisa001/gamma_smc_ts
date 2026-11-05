@@ -173,6 +173,19 @@ class PhasedTests(unittest.TestCase):
             stamp = (output / "changes.tsv").stat().st_mtime_ns
             compare_sv_native.compare(root / "run", "chr1", bcftools, threads=4)
             self.assertEqual((output / "changes.tsv").stat().st_mtime_ns, stamp)
+            import audit_sv_native
+            from types import SimpleNamespace
+            audit_root = root / "run/chr1/audit_native_p70"
+            audit = audit_sv_native.run(SimpleNamespace(batch_root=root / "run", root=audit_root,
+                                                       chrom="chr1", bcftools=bcftools))
+            self.assertTrue(audit["exact_site_multiset_conserved"])
+            self.assertTrue(audit["numcollapsed_matches_membership"])
+            self.assertEqual(audit["record_counts"], {"before": 10, "after": 8, "removed": 2})
+            for kind in ("INS", "DEL"):
+                pairs = audit["removed_vs_representative"][kind]
+                self.assertEqual(pairs["counts"]["pairs"], 1)
+                self.assertAlmostEqual(pairs["distributions"]["raw_length_ratio"]["min"], .8)
+                self.assertEqual(audit["merged_cluster_sizes"][kind]["max"], 2)
             # A structurally readable but altered retained VCF must fail membership validation.
             kept_path = root / "run/chr1/p70/chr1.vcf.gz"
             with pysam.VariantFile(kept_path) as handle:
