@@ -20,7 +20,7 @@ import sys
 import compare_chr1_sv_alleles as metrics
 import run_chr1_sv_merge as pilot
 
-VERSION = 1
+VERSION = 2
 
 
 def read_sites(args, path, label):
@@ -64,6 +64,7 @@ def compare(root, chrom, bcftools, threads=4, similarity=.7):
         raise ValueError(f"Expected completed native {similarity} merge")
     if merged["key"]["prepare"] != prepared:
         raise ValueError("Merge does not match current preparation manifest")
+    final_minimum = merged["key"].get("final_min_raw_bp")
     for label in ("before", "after", "removed"):
         paths[label + "_index"] = Path(str(paths[label]) + ".tbi")
     snapshots = {k: pilot.common.identity(p) for k, p in paths.items()}
@@ -99,7 +100,8 @@ def compare(root, chrom, bcftools, threads=4, similarity=.7):
         for kind in ("INS", "DEL"):
             pair = []
             for role in ("before", "after"):
-                rows = [r for r in scans[role][0] if r["type"] == kind]
+                rows = [r for r in scans[role][0] if r["type"] == kind and
+                        (final_minimum is None or (r["raw_bp"] is not None and r["raw_bp"] >= final_minimum))]
                 summary, _ = metrics.summarize(rows, kind)
                 summary.update({"raw_length_bp_" + k: v for k, v in
                     pilot.quantiles([r["raw_bp"] for r in rows]).items()})
@@ -124,10 +126,11 @@ def compare(root, chrom, bcftools, threads=4, similarity=.7):
             pilot.tsv(path, rows, list(rows[0]))
             artifacts.append(path)
         report = {"chrom": chrom, "similarity": similarity, "conservation_passed": True,
+            "posthoc_min_raw_bp": final_minimum,
             "all_record_counts": {role: sum(scans[role][1].values()) for role in labels},
             "ins_del_summary": stats,
             "definitions": {
-                "baseline": "Prepared SV input, after chromosome selection and multiallelic splitting; not all original panel variants.",
+                "baseline": "Prepared input after chromosome selection and multiallelic splitting. If posthoc_min_raw_bp is set, apply that raw-length cutoff to BOTH baseline and native retained representatives for INS/DEL statistics; conservation still covers ALL records.",
                 "unique_allele": "Exact CHROM/POS/REF/ALT, sequences hashed with SHA-256; no AC weighting.",
                 "raw_bp": "Absolute len(ALT)-len(REF) for literal alleles; symbolic lengths excluded.",
                 "unique_inserted_bp": "Sum raw lengths once per exact insertion allele at its locus, not unique sequence k-mers.",

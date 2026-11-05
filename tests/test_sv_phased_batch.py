@@ -100,6 +100,42 @@ def key(record):
 
 @unittest.skipUnless(os.environ.get("SV_PILOT_INTEGRATION") == "1", "Requires Linux bcftools/Truvari")
 class PhasedTests(unittest.TestCase):
+    def test_sub50_alleles_participate_before_final_selection(self):
+        import pysam
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bcftools = os.environ.get("BCFTOOLS_BIN", "bcftools")
+            raw = root / "chr1.vcf"
+            fixture(raw)
+            header = "\n".join(line for line in raw.read_text().splitlines() if line.startswith("#")) + "\n"
+            rows = [
+                (100, "small49", "A", "A" + "T" * 49, "1|0", "0|0", "0|0"),
+                (100, "large50", "A", "A" + "T" * 50, "0|0", "1|0", "1|0"),
+                (2000, "snp", "A", "G", "1|0", "0|0", "0|0"),
+                (4000, "complex10", "A" * 80, "C" * 70, "1|0", "0|0", "0|0"),
+            ]
+            raw.write_text(header + "".join("\t".join(["chr1", str(pos), ident, ref, alt,
+                ".", "PASS", ".", "GT", s1, s2, s3]) + "\n"
+                for pos, ident, ref, alt, s1, s2, s3 in rows))
+            subprocess.run([bcftools, "view", "-Ob", "-o", str(root / "chr1.bcf"), str(raw)], check=True, capture_output=True)
+            subprocess.run([bcftools, "index", str(root / "chr1.bcf")], check=True, capture_output=True)
+            batch.main(["--root", str(root / "run"), "--chromosomes", "chr1", "--jobs", "1", "--phase", "all",
+                        "--similarities", "0.7", "0.9", "--input-template", str(root / "{chrom}.bcf"), "--bcftools", bcftools])
+            with pysam.VariantFile(root / "run/chr1/prepare/input.vcf.gz") as handle:
+                self.assertEqual({r.id for r in handle}, {r[1] for r in rows})
+            for tag in ("p70", "p90"):
+                directory = root / "run/chr1" / tag
+                with pysam.VariantFile(directory / "chr1.collapsed.vcf.gz") as handle:
+                    self.assertEqual([r.id for r in handle], ["small49"])
+                with pysam.VariantFile(directory / "chr1.vcf.gz") as handle:
+                    self.assertEqual({r.id for r in handle}, {"large50", "snp", "complex10"})
+                with pysam.VariantFile(directory / "chr1.sv50.vcf.gz") as handle:
+                    self.assertEqual([r.id for r in handle], ["large50"])
+                counts = json.loads((directory / "summary.json").read_text())["counts"]
+                self.assertEqual(counts["final_sv50"], 1)
+                self.assertEqual(counts["retained_excluded_by_final_filter"], 2)
+
     def test_two_chromosomes_match_native_cli_and_resume(self):
         import pysam
         with tempfile.TemporaryDirectory() as tmp:
@@ -121,18 +157,24 @@ class PhasedTests(unittest.TestCase):
             for chrom in ("chr1", "chr2"):
                 with pysam.VariantFile(root / f"run/{chrom}/prepare/input.vcf.gz") as handle:
                     original = {key(record): record for record in handle}
-                self.assertEqual(len(original), 10)
+                self.assertEqual(len(original), 11)
+                self.assertIn("small", {r.id for r in original.values()})
                 split = [r for r in original.values() if r.id == "multi"]
                 self.assertEqual({r.samples["s1"]["GT"] for r in split}, {(1, 0), (0, 1)})
                 self.assertTrue(all(r.samples["s1"].phased and r.samples["s1"]["PS"] == 9000 for r in split))
                 self.assertFalse((root / f"run/{chrom}/p90").exists())
-                for percent, expected in ((70, 8),):
+                for percent, expected in ((70, 9),):
                     directory = root / f"run/{chrom}/p{percent}"
                     with pysam.VariantFile(directory / f"{chrom}.vcf.gz") as handle:
                         kept = list(handle)
                     with pysam.VariantFile(directory / f"{chrom}.collapsed.vcf.gz") as handle:
                         removed = list(handle)
                     self.assertEqual(len(kept), expected)
+                    with pysam.VariantFile(directory / f"{chrom}.sv50.vcf.gz") as handle:
+                        final = list(handle)
+                    self.assertEqual(len(final), 7)
+                    self.assertTrue(all(abs(len(r.ref) - len(r.alts[0])) >= 50 for r in final))
+                    self.assertNotIn("small", {r.id for r in final})
                     self.assertEqual(len(kept) + len(removed), len(original))
                     self.assertEqual({key(r) for r in kept + removed}, set(original))
                     self.assertTrue({"opposite1", "opposite2", "inv"} <= {r.id for r in kept})
@@ -142,7 +184,7 @@ class PhasedTests(unittest.TestCase):
                     direct_removed = root / f"{chrom}.{percent}.removed.vcf.gz"
                     subprocess.run(["truvari", "collapse", "-i", str(root / f"run/{chrom}/prepare/input.vcf.gz"),
                         "-o", str(direct), "-c", str(direct_removed), "-p", str(percent / 100),
-                        "-P", str(percent / 100), "-r", "500", "-s", "50", "-S", "-1",
+                        "-P", str(percent / 100), "-r", "500", "-s", "0", "-S", "-1",
                         "--keep", "common", "--gt", "all"], check=True, capture_output=True)
                     for path, actual in ((direct, kept), (direct_removed, removed)):
                         with pysam.VariantFile(path) as handle:
@@ -169,7 +211,8 @@ class PhasedTests(unittest.TestCase):
                 self.assertEqual(float(stats[kind, "raw_bp_sum_records"]["before"]), bp_before)
                 self.assertEqual(float(stats[kind, "raw_bp_sum_records"]["after"]), bp_after)
             report = json.loads((output / "summary.json").read_text())
-            self.assertEqual(report["all_record_counts"], {"before": 10, "after": 8, "removed": 2})
+            self.assertEqual(report["all_record_counts"], {"before": 11, "after": 9, "removed": 2})
+            self.assertEqual(report["posthoc_min_raw_bp"], 50)
             stamp = (output / "changes.tsv").stat().st_mtime_ns
             compare_sv_native.compare(root / "run", "chr1", bcftools, threads=4)
             self.assertEqual((output / "changes.tsv").stat().st_mtime_ns, stamp)
@@ -180,7 +223,7 @@ class PhasedTests(unittest.TestCase):
                                                        chrom="chr1", bcftools=bcftools))
             self.assertTrue(audit["exact_site_multiset_conserved"])
             self.assertTrue(audit["numcollapsed_matches_membership"])
-            self.assertEqual(audit["record_counts"], {"before": 10, "after": 8, "removed": 2})
+            self.assertEqual(audit["record_counts"], {"before": 11, "after": 9, "removed": 2})
             for kind in ("INS", "DEL"):
                 pairs = audit["removed_vs_representative"][kind]
                 self.assertEqual(pairs["counts"]["pairs"], 1)
@@ -204,7 +247,7 @@ class PhasedTests(unittest.TestCase):
                 self.assertEqual(float(row["percent_reduction_p90"]), 0)
             audit90 = audit_sv_native.run(SimpleNamespace(batch_root=root / "run",
                 root=root / "run/chr1/audit_native_p90", chrom="chr1", bcftools=bcftools, similarity=.9))
-            self.assertEqual(audit90["record_counts"], {"before": 10, "after": 10, "removed": 0})
+            self.assertEqual(audit90["record_counts"], {"before": 11, "after": 11, "removed": 0})
             # A structurally readable but altered retained VCF must fail membership validation.
             kept_path = root / "run/chr1/p70/chr1.vcf.gz"
             with pysam.VariantFile(kept_path) as handle:

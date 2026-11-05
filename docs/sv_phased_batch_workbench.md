@@ -43,7 +43,11 @@ Downloaded temporary BCFs are removed only after the prepared input is verified;
 
 ## Minimal preparation and direct outputs
 
-Truvari accepts a biallelic, sorted BGZF VCF plus tabix index. An original VCF that already satisfies those requirements can go straight to the native command below. For the source panel BCF, the batch runner uses a streaming bcftools pipeline to convert formats, split multiallelic records with `--multi-overlaps 0`, and select structural alleles (literal net change ≥50 bp, plus symbolic/BND records). It does not impose pure-indel, A/C/G/T-only, PASS-only, SV-type, or upper-size filters. Shared REF/ALT padding is not rewritten. Phased `1|2` splits into `1|0` and `0|1`, with the existing phase-set field retained.
+Truvari accepts a biallelic, sorted BGZF VCF plus tabix index. An original VCF that already satisfies those requirements can go straight to the native command below. For the source panel BCF, the batch runner uses a streaming bcftools pipeline to convert formats and split multiallelic records with `--multi-overlaps 0`. There is no input size filter: SNPs, small indels and replacements are retained for native processing with `-s 0`. It does not impose pure-indel, A/C/G/T-only, PASS-only, SV-type, or upper-size filters. Shared REF/ALT padding is not rewritten. Phased `1|2` splits into `1|0` and `0|1`, with the existing phase-set field retained.
+
+The ≥50 bp rule is applied only AFTER collapse, using literal net length `abs(len(ALT)-len(REF))`. The final `chrN.sv50.vcf.gz` contains that subset of retained representatives. Symbolic/BND and equal-length replacements do not have a qualifying literal net indel length and remain available only in the full native outputs. No genotype or allele rewriting is performed by final selection. A sub-50 bp representative can absorb a ≥50 bp allele if native matching permits it; final selection acts on the representative, not the maximum member size. All native representatives and collapsed members are retained for auditing.
+
+This changes the input and merge semantics. Use a NEW root, for example `$HOME/sv_merge_chr1_posthoc50`, for the corrected chr1 comparison. Old runs used a ≥50 bp input filter AND native `-s 50`; their completed merges cannot be reused for this experiment. Staged original BCFs may be reused through `--input-template` if still present, but an old filtered prepared VCF cannot restore omitted alleles. The merge-only phase rejects old filtered preparation manifests. Including all variants can increase preparation size and collapse runtime substantially.
 
 Truvari's `-o` file is already the merged result; `-c` contains removed cluster members. The batch writes both directly as BGZF, checks gzip integrity, indexes them, checks sample order and count conservation, and sorts only if indexing reveals that a tool output is not sorted. It does **not** build `new.unsorted.vcf` or reconstruct INS/DEL partitions.
 
@@ -51,7 +55,10 @@ Truvari's `-o` file is already the merged result; `-c` contains removed cluster 
 # For an already prepared original SV VCF (run inside the pinned uv environment):
 truvari collapse \
   -i original.sv.vcf.gz -o chr1.p70.vcf.gz -c chr1.p70.collapsed.vcf.gz \
-  -p 0.7 -P 0.7 -r 500 -s 50 -S -1 --keep common --gt all
+  -p 0.7 -P 0.7 -r 500 -O 0 -s 0 -S -1 --keep common --gt all
+bcftools view -i 'ILEN>=50 || ILEN<=-50' -Oz \
+  -o chr1.p70.sv50.vcf.gz chr1.p70.vcf.gz
+bcftools index -t chr1.p70.sv50.vcf.gz
 ```
 
 By default only 0.7 is run. Existing 0.9 files are left untouched and are not included in the refreshed batch counts unless 0.9 is explicitly selected.
@@ -59,11 +66,12 @@ By default only 0.7 is run. Existing 0.9 files are left untouched and are not in
 Final outputs under `$SV_PHASED_ROOT`:
 
 ```text
-chr1/prepare/input.vcf.gz          # original phased SV baseline retained for audit/resume
-chr1/p70/chr1.vcf.gz               # final native merged VCF at 0.7
+chr1/prepare/input.vcf.gz          # all phased input alleles retained for audit/resume
+chr1/p70/chr1.vcf.gz               # full native retained output at 0.7
+chr1/p70/chr1.sv50.vcf.gz          # final >=50 bp literal net-length subset
 chr1/p70/chr1.collapsed.vcf.gz     # removed original members, with MatchId links
 ... through chr21 ...
-counts.tsv                        # original, retained and collapsed counts per chr/threshold
+counts.tsv                        # all input, native retained, collapsed, final SV50 and final-excluded counts
 ```
 
 Every VCF has an index. `CollapseId` and `MatchId` link the retained representative and removed records. `logs/chrN.worker.log`, `chrN/logs/batch.log`, and `chrN/p70/logs/collapse-native.log` contain tool output, paths, full parameters and native Truvari statistics. No summarized controlled data are pushed to GitHub.
@@ -82,7 +90,7 @@ Let an existing batch finish before launching another merge against its root. Us
 
 For completed native 0.7 outputs, run `uv run --no-project --python 3.12 scripts/compare_sv_native.py --root "$SV_PHASED_ROOT" --chromosomes chr6 chr8 --bcftools "$BCFTOOLS_BIN" --threads 4`. Omit `--chromosomes` to inspect all completed autosomes. Unfinished chromosomes are skipped. This reads site fields through bcftools, not sample FORMAT fields into Python, and does not rerun merging or touch its files. Up to three site scans run concurrently per chromosome.
 
-Results are written under `chrN/compare_native_p70/`: `changes.tsv` (before/after, absolute and percentage reductions), `before_after.tsv`, `inter_sv_distance_summary.tsv`, and `summary.json`. Only aggregate changes are printed; no plots or individual variants are displayed. Metrics include INS/DEL record and exact unique-allele counts, raw length sums/quantiles, unique insertion-allele bp, and the union of simple deleted reference intervals. Complex replacements and symbolic deletions are excluded from the deletion union; symbolic alleles are excluded from raw length metrics. The baseline is the prepared SV input, not every small variant in the original panel.
+Results are written under `chrN/compare_native_p70/`: `changes.tsv` (before/after, absolute and percentage reductions), `before_after.tsv`, `inter_sv_distance_summary.tsv`, and `summary.json`. Only aggregate changes are printed; no plots or individual variants are displayed. Metrics include INS/DEL record and exact unique-allele counts, raw length sums/quantiles, unique insertion-allele bp, and the union of simple deleted reference intervals. Complex replacements and symbolic deletions are excluded from the deletion union. For new post-hoc runs, INS/DEL statistics apply the same ≥50 bp literal net-length criterion to BOTH baseline and retained alleles; small alleles still participate in merging. Symbolic alleles are excluded from this final scope. The all-record conservation check still includes every native input/output record. Older manifests without a final cutoff retain their historical reporting scope.
 
 Validation reads all three VCFs to EOF and checks exact site-multiset conservation (`before = retained + removed`), preparation counts, and unchanged input identities/manifests. It does not rehash the entire cohort VCFs. Results are cached against input identities and completion manifests. Existing genotype and representative behavior remains native Truvari.
 

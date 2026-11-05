@@ -26,9 +26,8 @@ import run_chr1_sv_merge as pilot
 VERSION = 1
 TEMPLATE = pilot.SOURCE.replace(".chr1.", ".{chrom}.")
 THRESHOLDS = (.7,)
-# Only distinguish structural alleles from the panel's small variants.
-# No pure-allele, sequence-alphabet, FILTER, SV-type or upper-size restriction.
-SV_FILTER = 'ILEN>=50 || ILEN<=-50 || TYPE~"bnd" || (ALT~"<" && ALT!="<NON_REF>" && ALT!="<NONREF>")'
+# Selection is applied only to native retained representatives, never merge input.
+FINAL_FILTER = 'ILEN>=50 || ILEN<=-50'
 
 
 def pipeline(args, commands, label):
@@ -86,7 +85,7 @@ def prepare(args, chrom, root):
     source = Path(args.input_template.format(chrom=chrom)).resolve() if args.input_template else None
     origin = {"path": str(source), "sha256": pilot.common.digest(source)} if source else {"uri": uri}
     settings = {"version": VERSION, "origin": origin, "chrom": chrom,
-                "sv_filter": SV_FILTER, "split_multiallelic": True, "multi_overlaps": "0", "genotypes": True}
+                "sv_filter": None, "split_multiallelic": True, "multi_overlaps": "0", "genotypes": True}
     cached = pilot.valid_manifest(directory)
     if cached and cached["key"]["settings"] == settings:
         logging.info("Reuse verified phased SV input; source snapshot recorded in manifest")
@@ -101,9 +100,9 @@ def prepare(args, chrom, root):
     partial = directory / "input.partial.vcf.gz"
     # Streaming conversion/decomposition only; no padded-allele rewriting or genotype parsing in Python.
     pipeline(pa, [
-        [args.bcftools, "view", "--no-version", "-r", chrom, "-i", SV_FILTER, "-Ou", source],
+        [args.bcftools, "view", "--no-version", "-r", chrom, "-Ou", source],
         [args.bcftools, "norm", "--no-version", "-m", "-any", "--multi-overlaps", "0", "-Ou", "-"],
-        [args.bcftools, "view", "--no-version", "-i", SV_FILTER, "-Oz", "-o", partial, "-"],
+        [args.bcftools, "view", "--no-version", "-Oz", "-o", partial, "-"],
     ], "prepare-input")
     samples = pilot.command(pa, [args.bcftools, "query", "-l", partial], "sample-manifest", True)
     if not samples.strip():
@@ -130,13 +129,16 @@ def prepare(args, chrom, root):
 
 
 def merge(args, chrom, root, prepared):
+    if prepared["key"]["settings"].get("sv_filter") is not None:
+        raise ValueError("Prepared input has the old pre-merge size filter; run phase all with a new root")
     rows = []
     for similarity in args.similarities:
         directory = root / f"p{round(similarity * 100)}"
         (directory / "logs").mkdir(parents=True, exist_ok=True)
         pa = local_args(args, directory, chrom)
         key = {"version": VERSION, "prepare": prepared, "similarity": similarity,
-               "refdist": 500, "keep": "common", "gt": "all", "sizemin": 50, "sizemax": -1,
+               "refdist": 500, "pctovl": 0.0, "keep": "common", "gt": "all", "sizemin": 0, "sizemax": -1,
+               "final_filter": FINAL_FILTER, "final_min_raw_bp": 50,
                "chain": False, "typeignore": False, "hap": False, "truvari": "5.5.0",
                "genotype_consolidation": "native"}
         if pilot.valid_manifest(directory, key):
@@ -147,25 +149,33 @@ def merge(args, chrom, root, prepared):
         kept = directory / f"{chrom}.partial.vcf.gz"
         removed = directory / f"{chrom}.collapsed.partial.vcf.gz"
         cmd = ["truvari", "collapse", "-i", root / "prepare/input.vcf.gz", "-o", kept, "-c", removed,
-               "-p", similarity, "-P", similarity, "-r", "500", "-s", "50", "-S", "-1",
+               "-p", similarity, "-P", similarity, "-r", "500", "-O", "0", "-s", "0", "-S", "-1",
                "--keep", "common", "--gt", "all"]
         pilot.command(pa, cmd, "collapse-native")
         kept_count = check_vcf(pa, kept, "kept", allow_sort=True)
         removed_count = check_vcf(pa, removed, "collapsed", allow_sort=True)
         if kept_count + removed_count != prepared["key"]["records"]:
             raise ValueError("Input count differs from retained + collapsed counts")
+        final_sv = directory / f"{chrom}.sv50.partial.vcf.gz"
+        pilot.command(pa, [args.bcftools, "view", "--no-version", "-i", FINAL_FILTER,
+                           "-Oz", "-o", final_sv, kept], "final-sv50")
+        final_count = check_vcf(pa, final_sv, "final-sv50")
+        if final_count > kept_count:
+            raise ValueError("Final subset exceeds native retained count")
         sample_text = (root / "prepare/samples.txt").read_text()
-        for name, path in (("kept", kept), ("collapsed", removed)):
+        for name, path in (("kept", kept), ("collapsed", removed), ("final", final_sv)):
             if pilot.command(pa, [args.bcftools, "query", "-l", path], name + "-samples", True) != sample_text:
                 raise ValueError("Output sample manifest changed")
         artifacts = []
         for partial, final in ((kept, directory / f"{chrom}.vcf.gz"),
-                               (removed, directory / f"{chrom}.collapsed.vcf.gz")):
+                               (removed, directory / f"{chrom}.collapsed.vcf.gz"),
+                               (final_sv, directory / f"{chrom}.sv50.vcf.gz")):
             partial.replace(final)
             Path(str(partial) + ".tbi").replace(Path(str(final) + ".tbi"))
             artifacts.extend([final, Path(str(final) + ".tbi")])
         counts = {"chrom": chrom, "similarity": similarity, "before": prepared["key"]["records"],
-                  "after": kept_count, "collapsed": removed_count}
+                  "after": kept_count, "collapsed": removed_count, "final_sv50": final_count,
+                  "retained_excluded_by_final_filter": kept_count - final_count}
         pilot.common.json_write(directory / "summary.json", {"counts": counts, "parameters": key,
             "phase_policy": "Unmodified Truvari 5.5.0 genotype consolidation; no custom GT or phase transfer."})
         artifacts.append(directory / "summary.json")
@@ -227,7 +237,8 @@ def main(argv=None):
         return worker(args, args.worker)
     if args.phase == "plan":
         print(json.dumps({"parameters": vars(args), "thresholds": args.similarities, "keep": "common", "gt": "all",
-            "refdist": 500, "hap": False, "sample_genotypes": True, "genotype_consolidation": "native", "uploads": False,
+            "refdist": 500, "pctovl": 0.0, "sizemin": 0, "final_filter": FINAL_FILTER,
+            "hap": False, "sample_genotypes": True, "genotype_consolidation": "native", "uploads": False,
             "sources": [args.source_template.format(chrom=c) for c in args.chromosomes]}, default=str, indent=2))
         return
     (args.root / "logs").mkdir(parents=True, exist_ok=True)
