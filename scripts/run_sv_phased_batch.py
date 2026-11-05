@@ -131,7 +131,7 @@ def prepare(args, chrom, root):
 
 def merge(args, chrom, root, prepared):
     rows = []
-    for similarity in THRESHOLDS:
+    for similarity in args.similarities:
         directory = root / f"p{round(similarity * 100)}"
         (directory / "logs").mkdir(parents=True, exist_ok=True)
         pa = local_args(args, directory, chrom)
@@ -201,6 +201,8 @@ def main(argv=None):
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--phase", choices=("plan", "prepare", "merge", "all"), default="plan")
     parser.add_argument("--chromosomes", nargs="+", default=[f"chr{i}" for i in range(1, 22)])
+    parser.add_argument("--similarities", nargs="+", type=float, choices=(.7, .9), default=list(THRESHOLDS),
+                        help="Independent sequence AND size thresholds; default: 0.7")
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--memory-gb", type=int, default=26, help="Total budget divided between jobs; not an OS cap")
     parser.add_argument("--source-template", default=TEMPLATE)
@@ -211,6 +213,8 @@ def main(argv=None):
     parser.add_argument("--worker", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     args.root = args.root.resolve()
+    if len(set(args.similarities)) != len(args.similarities):
+        parser.error("Similarity thresholds must be unique")
     if not 1 <= args.jobs <= 4 or args.memory_gb < 4 * args.jobs:
         parser.error("Use 1–4 jobs and at least 4 GB per job")
     if not set(args.chromosomes) <= {f"chr{i}" for i in range(1, 22)} or len(args.chromosomes) != len(set(args.chromosomes)):
@@ -222,17 +226,17 @@ def main(argv=None):
             parser.error("Worker chromosome not requested")
         return worker(args, args.worker)
     if args.phase == "plan":
-        print(json.dumps({"parameters": vars(args), "thresholds": THRESHOLDS, "keep": "common", "gt": "all",
+        print(json.dumps({"parameters": vars(args), "thresholds": args.similarities, "keep": "common", "gt": "all",
             "refdist": 500, "hap": False, "sample_genotypes": True, "genotype_consolidation": "native", "uploads": False,
             "sources": [args.source_template.format(chrom=c) for c in args.chromosomes]}, default=str, indent=2))
         return
     (args.root / "logs").mkdir(parents=True, exist_ok=True)
     pilot.common.json_write(args.root / f"run-{time.time_ns()}.json", {
         "parameters": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
-        "thresholds": THRESHOLDS, "seed": pilot.SEED, "script_sha256": pilot.common.digest(__file__)})
+        "thresholds": args.similarities, "seed": pilot.SEED, "script_sha256": pilot.common.digest(__file__)})
     forwarded = list(argv if argv is not None else sys.argv[1:])
     def run_one(chrom):
-        print(f"Starting {chrom}; native outputs at similarity 0.7.", flush=True)
+        print(f"Starting {chrom}; native outputs at similarities {args.similarities}.", flush=True)
         with open(args.root / "logs" / f"{chrom}.worker.log", "a") as log:
             result = subprocess.run([sys.executable, __file__, *forwarded, "--worker", chrom], stdout=log, stderr=log)
         if result.returncode:
@@ -254,7 +258,8 @@ def main(argv=None):
         for chrom in args.chromosomes:
             with open(args.root / chrom / "counts.tsv") as handle:
                 rows.extend(pilot.csv.DictReader(handle, delimiter="\t"))
-        pilot.tsv(args.root / "counts.tsv", rows, list(rows[0]))
+        name = "counts.tsv" if args.chromosomes == [f"chr{i}" for i in range(1, 22)] else "counts." + "-".join(args.chromosomes) + ".tsv"
+        pilot.tsv(args.root / name, rows, list(rows[0]))
     print(f"Completed {args.phase}; outputs remain in {args.root}")
 
 

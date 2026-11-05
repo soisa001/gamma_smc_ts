@@ -54,7 +54,7 @@ truvari collapse \
   -p 0.7 -P 0.7 -r 500 -s 50 -S -1 --keep common --gt all
 ```
 
-Only 0.7 is run. Existing 0.9 files are left untouched and are not included in the refreshed batch counts.
+By default only 0.7 is run. Existing 0.9 files are left untouched and are not included in the refreshed batch counts unless 0.9 is explicitly selected.
 
 Final outputs under `$SV_PHASED_ROOT`:
 
@@ -71,6 +71,14 @@ Every VCF has an index. `CollapseId` and `MatchId` link the retained representat
 Phases are `plan`, `prepare`, `merge`, or `all`. Repeating `all` reuses checksummed preparation and completed threshold outputs. The input snapshot is frozen and retains its source metadata/checksums; use a new output root for a new panel generation. The native-consolidation cache key differs from the former wrapper key, so old wrapped merge outputs are regenerated while verified prepared inputs are reused. Unrelated Git commits do not invalidate results. Use a different root if you want to retain both versions. If interrupted, verify the worker has stopped before removing its stale `.phased_batch.lock`.
 
 ## Aggregate INS/DEL comparison
+
+### Chr1 threshold sensitivity comparison
+
+Select `--chromosomes chr1 --similarities 0.7 0.9` on `run_sv_phased_batch.py`, or append these options after the phase on the Workbench launcher. For example, `bash scripts/run_sv_phased_batch_workbench.sh all --chromosomes chr1 --similarities 0.7 0.9 --jobs 1` runs the two thresholds sequentially, independently from the same prepared input. Both sequence and size thresholds change together; all other native Truvari settings stay fixed. Existing verified p70 output is reused. The default remains 0.7 for the whole-genome batch. A subset run writes `counts.chr1.tsv` at the batch root without replacing the full-batch `counts.tsv`.
+
+Then run `uv run --no-project --python 3.12 scripts/compare_sv_native.py --root "$SV_PHASED_ROOT" --chromosomes chr1 --similarities 0.7 0.9 --bcftools "$BCFTOOLS_BIN" --threads 4`. Individual reports are written in `chr1/compare_native_p70` and `chr1/compare_native_p90`; the joined `chr1/compare_p70_p90/threshold_comparison.tsv` gives original, p70, p90, percentage reductions, and p90-minus-p70 values. Input preparation manifests must match before reports can be joined. Each individual report also contains inter-SV distance summaries. The cluster audit accepts `--similarity 0.9` for auditing p90 separately.
+
+Let an existing batch finish before launching another merge against its root. Use a separate code checkout for the comparison if the existing checkout is in use. The source-data and merge cache keys are unchanged by adding a threshold; a new Git commit alone does not trigger rerunning completed p70 merges.
 
 For completed native 0.7 outputs, run `uv run --no-project --python 3.12 scripts/compare_sv_native.py --root "$SV_PHASED_ROOT" --chromosomes chr6 chr8 --bcftools "$BCFTOOLS_BIN" --threads 4`. Omit `--chromosomes` to inspect all completed autosomes. Unfinished chromosomes are skipped. This reads site fields through bcftools, not sample FORMAT fields into Python, and does not rerun merging or touch its files. Up to three site scans run concurrently per chromosome.
 

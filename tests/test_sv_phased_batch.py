@@ -186,6 +186,25 @@ class PhasedTests(unittest.TestCase):
                 self.assertEqual(pairs["counts"]["pairs"], 1)
                 self.assertAlmostEqual(pairs["distributions"]["raw_length_ratio"]["min"], .8)
                 self.assertEqual(audit["merged_cluster_sizes"][kind]["max"], 2)
+            # Adding chr1's 0.9 run must reuse 0.7 and leave other chromosomes alone.
+            aggregate = root / "run/counts.tsv"
+            aggregate.write_text("existing full-batch summary\n")
+            batch.main(args + ["--chromosomes", "chr1", "--similarities", "0.7", "0.9"])
+            self.assertTrue(all(p.stat().st_mtime_ns == mtime for p, mtime in saved.items()))
+            self.assertFalse((root / "run/chr2/p90").exists())
+            self.assertEqual(aggregate.read_text(), "existing full-batch summary\n")
+            output90 = compare_sv_native.compare(root / "run", "chr1", bcftools, similarity=.9)
+            joined = compare_sv_native.side_by_side(root / "run", "chr1", {.7: output, .9: output90})
+            with open(joined) as handle:
+                combined = {(r["type"], r["metric"]): r for r in csv.DictReader(handle, delimiter="\t")}
+            for kind, p70, p90 in (("INS", 6, 7), ("DEL", 1, 2)):
+                row = combined[kind, "sv_records"]
+                self.assertEqual((int(row["after_p70"]), int(row["after_p90"])), (p70, p90))
+                self.assertEqual(float(row["p90_minus_p70"]), 1)
+                self.assertEqual(float(row["percent_reduction_p90"]), 0)
+            audit90 = audit_sv_native.run(SimpleNamespace(batch_root=root / "run",
+                root=root / "run/chr1/audit_native_p90", chrom="chr1", bcftools=bcftools, similarity=.9))
+            self.assertEqual(audit90["record_counts"], {"before": 10, "after": 10, "removed": 0})
             # A structurally readable but altered retained VCF must fail membership validation.
             kept_path = root / "run/chr1/p70/chr1.vcf.gz"
             with pysam.VariantFile(kept_path) as handle:

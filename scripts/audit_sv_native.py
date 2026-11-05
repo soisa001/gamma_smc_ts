@@ -45,10 +45,12 @@ def records(args, path, label):
 
 
 def run(args):
+    similarity = getattr(args, "similarity", .7)
+    tag = f"p{round(similarity * 100)}"
     base = args.batch_root / args.chrom
-    paths = {"before": base / "prepare/input.vcf.gz", "after": base / f"p70/{args.chrom}.vcf.gz",
-             "removed": base / f"p70/{args.chrom}.collapsed.vcf.gz"}
-    manifests = {"prepare": base / "prepare/done.json", "merge": base / "p70/done.json"}
+    paths = {"before": base / "prepare/input.vcf.gz", "after": base / f"{tag}/{args.chrom}.vcf.gz",
+             "removed": base / f"{tag}/{args.chrom}.collapsed.vcf.gz"}
+    manifests = {"prepare": base / "prepare/done.json", "merge": base / tag / "done.json"}
     for path in (*paths.values(), *manifests.values()):
         if not path.is_file():
             raise ValueError(f"Completed input/output required: {path}")
@@ -177,9 +179,10 @@ def main():
     parser.add_argument("--batch-root", type=Path, required=True)
     parser.add_argument("--chrom", default="chr8", choices=[f"chr{i}" for i in range(1, 22)])
     parser.add_argument("--bcftools", default=os.environ.get("BCFTOOLS_BIN", "bcftools"))
+    parser.add_argument("--similarity", type=float, choices=(.7, .9), default=.7)
     args = parser.parse_args()
     args.batch_root = args.batch_root.resolve()
-    args.root = args.batch_root / args.chrom / "audit_native_p70"
+    args.root = args.batch_root / args.chrom / f"audit_native_p{round(args.similarity * 100)}"
     args.root.mkdir(parents=True, exist_ok=True)
     import fcntl
     with (args.root / ".audit.lock").open("a") as lock:
