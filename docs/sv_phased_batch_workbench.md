@@ -70,6 +70,14 @@ Every VCF has an index. `CollapseId` and `MatchId` link the retained representat
 
 Phases are `plan`, `prepare`, `merge`, or `all`. Repeating `all` reuses checksummed preparation and completed threshold outputs. The input snapshot is frozen and retains its source metadata/checksums; use a new output root for a new panel generation. The native-consolidation cache key differs from the former wrapper key, so old wrapped merge outputs are regenerated while verified prepared inputs are reused. Unrelated Git commits do not invalidate results. Use a different root if you want to retain both versions. If interrupted, verify the worker has stopped before removing its stale `.phased_batch.lock`.
 
+## Aggregate INS/DEL comparison
+
+For completed native 0.7 outputs, run `uv run --no-project --python 3.12 scripts/compare_sv_native.py --root "$SV_PHASED_ROOT" --chromosomes chr6 chr8 --bcftools "$BCFTOOLS_BIN" --threads 4`. Omit `--chromosomes` to inspect all completed autosomes. Unfinished chromosomes are skipped. This reads site fields through bcftools, not sample FORMAT fields into Python, and does not rerun merging or touch its files. Up to three site scans run concurrently per chromosome.
+
+Results are written under `chrN/compare_native_p70/`: `changes.tsv` (before/after, absolute and percentage reductions), `before_after.tsv`, `inter_sv_distance_summary.tsv`, and `summary.json`. Only aggregate changes are printed; no plots or individual variants are displayed. Metrics include INS/DEL record and exact unique-allele counts, raw length sums/quantiles, unique insertion-allele bp, and the union of simple deleted reference intervals. Complex replacements and symbolic deletions are excluded from the deletion union; symbolic alleles are excluded from raw length metrics. The baseline is the prepared SV input, not every small variant in the original panel.
+
+Validation reads all three VCFs to EOF and checks exact site-multiset conservation (`before = retained + removed`), preparation counts, and unchanged input identities/manifests. It does not rehash the entire cohort VCFs. Results are cached against input identities and completion manifests. Existing genotype and representative behavior remains native Truvari.
+
 ## Tests
 
 ```bash

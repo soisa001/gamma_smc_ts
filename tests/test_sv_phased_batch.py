@@ -156,6 +156,34 @@ class PhasedTests(unittest.TestCase):
             batch.main(args)
             self.assertTrue(all(p.stat().st_mtime_ns == mtime for p, mtime in saved.items()))
 
+            import compare_sv_native
+            import csv
+            import json
+            output = compare_sv_native.compare(root / "run", "chr1", bcftools, threads=4)
+            with open(output / "changes.tsv") as handle:
+                stats = {(r["type"], r["metric"]): r for r in csv.DictReader(handle, delimiter="\t")}
+            for kind, before, after, bp_before, bp_after in (("INS", 7, 6, 590, 510), ("DEL", 2, 1, 180, 100)):
+                self.assertEqual(float(stats[kind, "sv_records"]["before"]), before)
+                self.assertEqual(float(stats[kind, "sv_records"]["after"]), after)
+                self.assertAlmostEqual(float(stats[kind, "sv_records"]["percent_reduction"]), 100 * (before - after) / before)
+                self.assertEqual(float(stats[kind, "raw_bp_sum_records"]["before"]), bp_before)
+                self.assertEqual(float(stats[kind, "raw_bp_sum_records"]["after"]), bp_after)
+            report = json.loads((output / "summary.json").read_text())
+            self.assertEqual(report["all_record_counts"], {"before": 10, "after": 8, "removed": 2})
+            stamp = (output / "changes.tsv").stat().st_mtime_ns
+            compare_sv_native.compare(root / "run", "chr1", bcftools, threads=4)
+            self.assertEqual((output / "changes.tsv").stat().st_mtime_ns, stamp)
+            # A structurally readable but altered retained VCF must fail membership validation.
+            kept_path = root / "run/chr1/p70/chr1.vcf.gz"
+            with pysam.VariantFile(kept_path) as handle:
+                records, header = list(handle), handle.header.copy()
+            records[0].pos += 1
+            with pysam.VariantFile(kept_path, "wz", header=header) as handle:
+                for record in records:
+                    handle.write(record)
+            with self.assertRaisesRegex(ValueError, "site multiset differs"):
+                compare_sv_native.compare(root / "run", "chr1", bcftools, threads=4)
+
 
 
 if __name__ == "__main__":
