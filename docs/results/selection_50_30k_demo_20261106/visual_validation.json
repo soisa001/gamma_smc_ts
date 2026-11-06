@@ -1,0 +1,7 @@
+{
+  "figures_checked": ["01_selected_vs_neutral.png", "02_allele_frequency.png"],
+  "result": "Both figures visually inspected: readable large text, legends above panels, no clipping or overlapping annotations. Selection is shaded from 50 to 30 kya. Full posterior normalization retained despite plotting only up to 200 kya.",
+  "execution": "WSL: uv --no-config run --no-project --python .venv/bin/python python scripts/demo_selection_50_30k.py run --workers 4 --seconds 900",
+  "recovery": "Initial decoder attempt lacked libhts search path. Resumed decoding from saved simulation receipts after restoring the native library directory; no simulations were regenerated or seeds changed. Initial source hash discrepancy was verified as scheduler-only via exact AST equality for timing, simulate, and work against the historical executed source.",
+  "validation": "Exact 50-30 kya coefficient schedule, all 2001 trajectory rows, present-day segregation, pair identity, raw output hashes, complete posterior stream, positive gamma parameters, and reconstruction of all 50 posterior-mass cutoffs passed. PDFs have embedded TrueType text and no raster objects."
+}

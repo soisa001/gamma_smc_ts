@@ -1,0 +1,14 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "01_selected_vs_neutral.pdf": "a29cb2d977b40e02949389a149c8d578cd78610dbecb46ad07500d2d314925f4",
+  "01_selected_vs_neutral.png": "a687e134e8b01b0a7bfe5283f5fd74227fc4937dbe102ccbe1bdedb66f29b257",
+  "02_allele_frequency.pdf": "f11d7eed64f1d2dd550672176418be5416091c2801e2d3009fb8bb856a38c7a6",
+  "02_allele_frequency.png": "a5e63c3c486e7c7d879c9b88114a6ead268e0f0a32e2dfeb9b0fb62c634529d1",
+  "execution_environment.json": "e301438350abf97a4ef00e46648bd4fafa97e349f8ab900de10ed00c6e978f30",
+  "manifest.json": "8cc9bc525967ad0fdd52cc81361dba6d05c071d60570f7e0e69cc43402028651",
+  "parameters.npz": "f940606648d769afc07f9a4e87860c3d3e645ced148b3193d40bff7b9745e513",
+  "proposal_ledger.json": "d10ae3ae1f9446142f19fce01eed9c32159062b4fc4b696ce431334ab9fe1986",
+  "summary.json": "6f5b7c72f981930b4bd8e2ee6d899d8536c0851d5d8d981fc7c317b3c563789d",
+  "trajectory.tsv": "9011e4dd4578bb7392101de24b491cca8b56a211ef41bccd618d0ae8de3317ed",
+  "visual_validation.json": "439fd5948d9606c1fef5b2f170e2179f0201280ea2345e76ca1e79d83045158f"
+}

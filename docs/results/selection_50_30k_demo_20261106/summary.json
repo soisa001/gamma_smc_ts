@@ -1,0 +1,23 @@
+{
+  "selected_id": "50_30k/introgression/s0.01/selected_00000",
+  "neutral_id": "10k/introgression/neutral_test_00000",
+  "af": {
+    "50": 0.010049559471365639,
+    "30": 0.4402346227013316,
+    "0": 0.5056194702021947
+  },
+  "posterior_mass_30_50_kya": {
+    "selected": 0.050412482107625896,
+    "neutral": 0.06277388372550877
+  },
+  "tail_above_200_kya": {
+    "selected": 0.6579867974149896,
+    "neutral": 0.6122286709392465
+  },
+  "interpretation": "Single illustrative survivor versus unchanged neutral. Does not estimate power or selection dates. Averaged fitted posteriors are mixtures, not necessarily gamma.",
+  "script_sha256": "3e2d2d1d5ccf6768af794b6aad7e9160ea56cf3c67391d34168190e4e8d5cfb0",
+  "versions": {
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.1"
+  }
+}
