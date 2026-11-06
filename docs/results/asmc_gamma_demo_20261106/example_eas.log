@@ -1,0 +1,4 @@
+Read 100 samples.
+Read data for 200 haploid samples and 2843 markers, 102 of which are monomorphic. This job will focus on 200 haploid samples.
+Using precomputed decoding info from /home/mew/asmc-demo-work/eas.decodingQuantities.gz
+Detected 8 float lanes and targeting AVX2

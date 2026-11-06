@@ -1,0 +1,12 @@
+{
+  "contract": {
+    "demo": "8f4bc19308ef44688deab2ef5c7dcefbdf4c3c3f490402761dcc18642a395a4f",
+    "times": "1e5ead4dd6c9161ad8a796973d474bfc7541068b5f6e3b3f41d7a2bacc4fcdb5",
+    "frequencies": "fdadca3f14b97924d6f76959d034798be34f6acfb64659b68c607da26caef71f",
+    "mu": 1.29e-08,
+    "samples": 200,
+    "version": "2.2.5"
+  },
+  "seconds": 166.16482805699997,
+  "sha256": "daee5dda140b9508ce22c316a73669b1632c214f1a8955f210430578d651f0ff"
+}

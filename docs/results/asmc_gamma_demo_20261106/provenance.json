@@ -1,0 +1,14 @@
+{
+  "cache_sha256": "1e06581956c5b60e2ad2103d75adedb3a358acd17166570f4e6bc1f40479e9c4",
+  "script_sha256": "22fbcb7c4047204523c24699301d162f21906025516903aaf505f336aac6a7f0",
+  "packages": {
+    "asmc-asmc": "1.4.0",
+    "asmc-preparedecoding": "2.2.5",
+    "numpy": "2.4.6",
+    "tskit": "1.0.3"
+  },
+  "workers": 4,
+  "RNG": "No new random draws; original fixed pairs and simulation seeds reused.",
+  "evaluation": "Same 1000 pairs and exact 10-kb coordinates; invariant anchors supply no new variation.",
+  "scope": "10 selected plus 10 neutral regions; descriptive inference accuracy, not a calibrated power study."
+}

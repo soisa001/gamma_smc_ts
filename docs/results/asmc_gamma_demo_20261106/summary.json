@@ -1,0 +1,87 @@
+{
+  "truth": {
+    "excess_peak_1kyr_kya": 41.5,
+    "selected": {
+      "fraction_lt20": 0.0388,
+      "fraction_20to40": 0.49670000000000003,
+      "fraction_lt50": 0.9521000000000001,
+      "focal_cdf_mae": 0.0,
+      "region_cdf_mae": 0.0
+    },
+    "neutral": {
+      "fraction_lt20": 0.044,
+      "fraction_20to40": 0.0968,
+      "fraction_lt50": 0.19160000000000002,
+      "focal_cdf_mae": 0.0,
+      "region_cdf_mae": 0.0
+    }
+  },
+  "gamma_median": {
+    "excess_peak_1kyr_kya": 16.5,
+    "selected": {
+      "fraction_lt20": 0.41600000000000004,
+      "fraction_20to40": 0.3559,
+      "fraction_lt50": 0.851,
+      "focal_cdf_mae": 0.26574400000000004,
+      "region_cdf_mae": 0.11341897999999999
+    },
+    "neutral": {
+      "fraction_lt20": 0.0982,
+      "fraction_20to40": 0.0831,
+      "fraction_lt50": 0.21529999999999996,
+      "focal_cdf_mae": 0.036632,
+      "region_cdf_mae": 0.06010136000000001
+    }
+  },
+  "gamma_mass": {
+    "excess_peak_1kyr_kya": 3.5,
+    "selected": {
+      "fraction_lt20": 0.4415073824815119,
+      "fraction_20to40": 0.23500831907606198,
+      "fraction_lt50": 0.7457119391011874,
+      "focal_cdf_mae": 0.296668676142091,
+      "region_cdf_mae": 0.12913504602259784
+    },
+    "neutral": {
+      "fraction_lt20": 0.1238294551804426,
+      "fraction_20to40": 0.07538769161179294,
+      "fraction_lt50": 0.22766182727982126,
+      "focal_cdf_mae": 0.059170922345599695,
+      "region_cdf_mae": 0.08369433526361554
+    }
+  },
+  "asmc_constant": {
+    "excess_peak_1kyr_kya": 22.5,
+    "selected": {
+      "fraction_lt20": 0.22343669882183895,
+      "fraction_20to40": 0.4172817112922669,
+      "fraction_lt50": 0.7437699560678565,
+      "focal_cdf_mae": 0.1818623279529475,
+      "region_cdf_mae": 0.06830470790826682
+    },
+    "neutral": {
+      "fraction_lt20": 0.053802554317936305,
+      "fraction_20to40": 0.08352865102291107,
+      "fraction_lt50": 0.17179415099285542,
+      "focal_cdf_mae": 0.014989108475789428,
+      "region_cdf_mae": 0.024764362059091702
+    }
+  },
+  "asmc_eas": {
+    "excess_peak_1kyr_kya": 24.5,
+    "selected": {
+      "fraction_lt20": 0.15337862119283527,
+      "fraction_20to40": 0.4147306549072266,
+      "fraction_lt50": 0.6923532763918863,
+      "focal_cdf_mae": 0.1507435955368616,
+      "region_cdf_mae": 0.05451084849233543
+    },
+    "neutral": {
+      "fraction_lt20": 0.03975569152791286,
+      "fraction_20to40": 0.09309530265331269,
+      "fraction_lt50": 0.17362415482957147,
+      "focal_cdf_mae": 0.013466062915147747,
+      "region_cdf_mae": 0.020398535617846235
+    }
+  }
+}

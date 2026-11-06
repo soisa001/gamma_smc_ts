@@ -1,0 +1,42 @@
+Read 100 samples.
+Read data for 200 haploid samples and 2843 markers, 102 of which are monomorphic. This job will focus on 200 haploid samples.
+Using precomputed decoding info from /home/mew/asmc-demo-work/constant.decodingQuantities.gz
+Detected 8 float lanes and targeting AVX2
+Using expected coalescent times from /home/mew/asmc-demo-work/constant.decodingQuantities.gz
+Read 100 samples.
+Read data for 200 haploid samples and 2742 markers, 1 of which are monomorphic. This job will focus on 200 haploid samples.
+Using precomputed decoding info from /home/mew/asmc-demo-work/constant.decodingQuantities.gz
+Detected 8 float lanes and targeting AVX2
+{"anchor_cdf_mae": 0.0003592665889300406, "anchor_cdf_max": 0.036860376596450806, "central_anchor_cdf_mae": 0.00019483423966448754, "central_anchor_cdf_max": 0.009576201438903809, "nearest_focal_marker": 500247, "nearest_focal_cdf_max": 0.002089262008666992, "max_error_position": 998310}
+Using expected coalescent times from /home/mew/asmc-demo-work/constant.decodingQuantities.gz
+Read 100 samples.
+Read data for 200 haploid samples and 2843 markers, 102 of which are monomorphic. This job will focus on 200 haploid samples.
+Using precomputed decoding info from /home/mew/asmc-demo-work/eas.decodingQuantities.gz
+Detected 8 float lanes and targeting AVX2
+Using expected coalescent times from /home/mew/asmc-demo-work/eas.decodingQuantities.gz
+Read 100 samples.
+Read data for 200 haploid samples and 2742 markers, 1 of which are monomorphic. This job will focus on 200 haploid samples.
+Using precomputed decoding info from /home/mew/asmc-demo-work/eas.decodingQuantities.gz
+Detected 8 float lanes and targeting AVX2
+{"anchor_cdf_mae": 0.00031919751199893653, "anchor_cdf_max": 0.06762869656085968, "central_anchor_cdf_mae": 0.00019091354624833912, "central_anchor_cdf_max": 0.010993123054504395, "nearest_focal_marker": 500247, "nearest_focal_cdf_max": 0.002559661865234375, "max_error_position": 998310}
+{
+  "constant": {
+    "anchor_cdf_mae": 0.0003592665889300406,
+    "anchor_cdf_max": 0.036860376596450806,
+    "central_anchor_cdf_mae": 0.00019483423966448754,
+    "central_anchor_cdf_max": 0.009576201438903809,
+    "nearest_focal_marker": 500247,
+    "nearest_focal_cdf_max": 0.002089262008666992,
+    "max_error_position": 998310
+  },
+  "eas": {
+    "anchor_cdf_mae": 0.00031919751199893653,
+    "anchor_cdf_max": 0.06762869656085968,
+    "central_anchor_cdf_mae": 0.00019091354624833912,
+    "central_anchor_cdf_max": 0.010993123054504395,
+    "nearest_focal_marker": 500247,
+    "nearest_focal_cdf_max": 0.002559661865234375,
+    "max_error_position": 998310
+  }
+}
+Using expected coalescent times from /home/mew/asmc-demo-work/eas.decodingQuantities.gz
