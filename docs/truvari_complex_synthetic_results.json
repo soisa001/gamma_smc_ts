@@ -1,0 +1,188 @@
+{
+  "provenance": {
+    "truvari": "5.5.0",
+    "seed": 1729,
+    "data": "synthetic only; no RNG",
+    "source_sha256": {
+      "variant_record.py": "fdd363f4e733f4679e6751e795da14f1774b5a4d20810d0240343fecd1800fe2",
+      "comparisons.py": "9d01a32b2c8d3b9091b1d13ebc5bbe2cd9eca1bc160ccd2159f5148ebf023db3"
+    }
+  },
+  "results": [
+    {
+      "case": "simple_DEL_different_deleted_sequence",
+      "type": "DEL",
+      "start0": [
+        1000,
+        1200
+      ],
+      "ref_lengths": [
+        61,
+        61
+      ],
+      "alt_lengths": [
+        1,
+        1
+      ],
+      "native_sizes": [
+        60,
+        60
+      ],
+      "sequence_similarity": 0.5081967213114754,
+      "size_similarity": 1.0,
+      "reciprocal_overlap": 0,
+      "retained_p70": 2,
+      "retained_p90": 2
+    },
+    {
+      "case": "complex_DEL_same_REF_different_ALT",
+      "type": "DEL",
+      "start0": [
+        1000,
+        1000
+      ],
+      "ref_lengths": [
+        80,
+        80
+      ],
+      "alt_lengths": [
+        20,
+        20
+      ],
+      "native_sizes": [
+        60,
+        60
+      ],
+      "sequence_similarity": 1.0,
+      "size_similarity": 1.0,
+      "reciprocal_overlap": 1.0,
+      "retained_p70": 1,
+      "retained_p90": 1
+    },
+    {
+      "case": "complex_DEL_different_net_size",
+      "type": "DEL",
+      "start0": [
+        1000,
+        1000
+      ],
+      "ref_lengths": [
+        80,
+        80
+      ],
+      "alt_lengths": [
+        20,
+        10
+      ],
+      "native_sizes": [
+        60,
+        70
+      ],
+      "sequence_similarity": 1.0,
+      "size_similarity": 0.8571428571428571,
+      "reciprocal_overlap": 1.0,
+      "retained_p70": 1,
+      "retained_p90": 2
+    },
+    {
+      "case": "simple_INS_different_inserted_sequence",
+      "type": "INS",
+      "start0": [
+        1000,
+        1000
+      ],
+      "ref_lengths": [
+        1,
+        1
+      ],
+      "alt_lengths": [
+        101,
+        101
+      ],
+      "native_sizes": [
+        100,
+        100
+      ],
+      "sequence_similarity": 0.504950495049505,
+      "size_similarity": 1.0,
+      "reciprocal_overlap": 1.0,
+      "retained_p70": 2,
+      "retained_p90": 2
+    },
+    {
+      "case": "padded_complex_INS",
+      "type": "INS",
+      "start0": [
+        1000,
+        1000
+      ],
+      "ref_lengths": [
+        1000,
+        1000
+      ],
+      "alt_lengths": [
+        1100,
+        1100
+      ],
+      "native_sizes": [
+        100,
+        100
+      ],
+      "sequence_similarity": 0.9540909090909091,
+      "size_similarity": 1.0,
+      "reciprocal_overlap": 1.0,
+      "retained_p70": 1,
+      "retained_p90": 1
+    },
+    {
+      "case": "same_complex_INS_shared_prefix_trimmed",
+      "type": "INS",
+      "start0": [
+        1999,
+        1999
+      ],
+      "ref_lengths": [
+        1,
+        1
+      ],
+      "alt_lengths": [
+        101,
+        101
+      ],
+      "native_sizes": [
+        100,
+        100
+      ],
+      "sequence_similarity": 0.5,
+      "size_similarity": 1.0,
+      "reciprocal_overlap": 1.0,
+      "retained_p70": 2,
+      "retained_p90": 2
+    },
+    {
+      "case": "equal_length_replacement",
+      "type": "UNK",
+      "start0": [
+        1000,
+        1000
+      ],
+      "ref_lengths": [
+        80,
+        80
+      ],
+      "alt_lengths": [
+        80,
+        80
+      ],
+      "native_sizes": [
+        80,
+        80
+      ],
+      "sequence_similarity": 0.5,
+      "size_similarity": 1.0,
+      "reciprocal_overlap": 1.0,
+      "retained_p70": 2,
+      "retained_p90": 2
+    }
+  ]
+}
