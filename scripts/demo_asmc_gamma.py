@@ -268,7 +268,10 @@ def report(a):
             shutil.copy2(a.work/name, out/name)
         for name in ['audit.json','audit.log','quantities.log']:
             if (a.work/name).exists():
-                shutil.copy2(a.work/name,out/name)
+                if name.endswith('.log'):
+                    (out/name).write_text('\n'.join(line.rstrip() for line in (a.work/name).read_text().splitlines())+'\n')
+                else:
+                    shutil.copy2(a.work/name,out/name)
         for model in ['constant','eas']:
             shutil.copy2(a.work/f'region_00/{model}.log',out/f'example_{model}.log')
         save(out/'decoding_receipts.json', receipts)
@@ -291,7 +294,7 @@ def report(a):
                 focal_cdf_mae=float(abs(focal-cdfs[0,i,50]).mean()),
                 region_cdf_mae=float(abs(cdfs[j,i]-cdfs[0,i]).mean())))
     with (out/'replicate_metrics.tsv').open('w') as f:
-        writer=csv.DictWriter(f,fieldnames=list(rows[0]),delimiter='\t'); writer.writeheader(); writer.writerows(rows)
+        writer=csv.DictWriter(f,fieldnames=list(rows[0]),delimiter='\t',lineterminator='\n'); writer.writeheader(); writer.writerows(rows)
     summary = {}
     for j, method in enumerate(METHODS):
         excess = cdfs[j,selected,50].mean(0)-cdfs[j,~selected,50].mean(0)
