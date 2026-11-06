@@ -1,0 +1,14 @@
+{
+  "synthetic_only": true,
+  "seed": 1729,
+  "randomness_used": false,
+  "score": "1 - ALT edit distance / max ALT lengths after group-common flank trimming",
+  "threshold": ">0.7",
+  "alleles_before": 3,
+  "alleles_after": 2,
+  "p90_alleles_after": 3,
+  "phase_and_missingness_roundtrip": true,
+  "same_sample_merge_prevented": true,
+  "exact_threshold_rejected": true,
+  "production_pipeline_implemented": false
+}
