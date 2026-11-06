@@ -1,0 +1,496 @@
+{
+  "finished_epoch": 1793927017.8457167,
+  "submitted": 49399,
+  "returned": 49399,
+  "prefix_accepts": [
+    20,
+    99,
+    50,
+    20,
+    35,
+    37,
+    49,
+    80,
+    60,
+    82,
+    20,
+    99,
+    50,
+    101,
+    100,
+    101,
+    101,
+    101,
+    98,
+    91,
+    20,
+    99,
+    50,
+    2,
+    1,
+    8,
+    0,
+    0,
+    0,
+    0,
+    101,
+    101,
+    102,
+    1,
+    0,
+    0,
+    0,
+    20,
+    99,
+    50,
+    5,
+    6,
+    12,
+    21,
+    4,
+    0,
+    0,
+    100,
+    100,
+    101,
+    100,
+    4,
+    0,
+    0
+  ],
+  "strata": [
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "development",
+      "selection": 0.0,
+      "target": 20,
+      "limit": 20
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "calibration",
+      "selection": 0.0,
+      "target": 99,
+      "limit": 99
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "neutral_test",
+      "selection": 0.0,
+      "target": 50,
+      "limit": 50
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.001,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.005,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.01,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.02,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.03,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.04,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.05,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "development",
+      "selection": 0.0,
+      "target": 20,
+      "limit": 20
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "calibration",
+      "selection": 0.0,
+      "target": 99,
+      "limit": 99
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "neutral_test",
+      "selection": 0.0,
+      "target": 50,
+      "limit": 50
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.001,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.005,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.01,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.02,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.03,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.04,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.05,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "development",
+      "selection": 0.0,
+      "target": 20,
+      "limit": 20
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "calibration",
+      "selection": 0.0,
+      "target": 99,
+      "limit": 99
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "neutral_test",
+      "selection": 0.0,
+      "target": 50,
+      "limit": 50
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.001,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.005,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.01,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.02,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.03,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.04,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.05,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.001,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.005,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.01,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.02,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.03,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.04,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "50k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.05,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "development",
+      "selection": 0.0,
+      "target": 20,
+      "limit": 20
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "calibration",
+      "selection": 0.0,
+      "target": 99,
+      "limit": 99
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "neutral_test",
+      "selection": 0.0,
+      "target": 50,
+      "limit": 50
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.001,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.005,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.01,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.02,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.03,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.04,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "de_novo",
+      "cohort": "selected",
+      "selection": 0.05,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.001,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.005,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.01,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.02,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.03,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.04,
+      "target": 100,
+      "limit": 10000
+    },
+    {
+      "regime": "40_20k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.05,
+      "target": 100,
+      "limit": 10000
+    }
+  ],
+  "pending_at_deadline": 0
+}

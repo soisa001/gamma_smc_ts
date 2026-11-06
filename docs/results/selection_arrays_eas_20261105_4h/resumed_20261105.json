@@ -1,0 +1,13 @@
+{
+  "status": "completed",
+  "resumed_utc": "2026-11-05T21:29:07Z",
+  "previous_active_seconds": 1375.5174491405487,
+  "total_budget_seconds": 14400,
+  "deadline_utc": "2026-11-06T01:06:00Z",
+  "target_per_treatment": 100,
+  "workers": 24,
+  "note": "Resumes the user-paused continuation; overnight paused time does not count against the four-hour active budget.",
+  "finished_epoch": 1793927017.8457167,
+  "active_seconds": 14246.363165855408,
+  "pending_at_deadline": 0
+}

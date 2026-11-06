@@ -13,9 +13,9 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def summarize(before, after, started_epoch=None):
+def summarize(before, after, started_epoch=None, previous_active_seconds=0.):
     before, after = Path(before), Path(after)
-    read = lambda root, name: pd.read_csv(root / f'{name}.tsv', sep='\t')
+    read = lambda root, name: pd.read_csv(root / f'{name}.tsv', sep='\t', low_memory=False)
     old_proposals, new_proposals = (read(p, 'proposals') for p in (before, after))
     old_ids, new_ids = (set(p.id) for p in (old_proposals, new_proposals))
     assert old_ids <= new_ids, 'Continuation omitted previously completed proposals'
@@ -50,6 +50,7 @@ def summarize(before, after, started_epoch=None):
     schedule, finished = provenance['schedule'], provenance['finished']
     continuation_start = schedule['started_epoch'] if started_epoch is None else started_epoch
     assert continuation_start <= schedule['started_epoch']
+    assert previous_active_seconds >= 0
     assert finished['finished_epoch'] >= schedule['started_epoch']
     assert finished['finished_epoch'] <= schedule['deadline_epoch'] + 10, 'Run exceeded deadline'
     added = new_proposals[~new_proposals.id.isin(old_ids)]
@@ -63,7 +64,9 @@ def summarize(before, after, started_epoch=None):
         additional_selected_survivors=int(selected.additional_accepted.sum()),
         total_selected_survivors=int(selected.accepted_after.sum()),
         selected_treatments_at_target=int(selected.reached_target.sum()), selected_treatments=len(selected),
-        elapsed_seconds=finished['finished_epoch'] - continuation_start,
+        elapsed_seconds=previous_active_seconds + finished['finished_epoch'] - continuation_start,
+        previous_active_seconds=previous_active_seconds,
+        elapsed_excludes_paused_time=True,
         final_invocation_elapsed_seconds=finished['finished_epoch'] - schedule['started_epoch'],
         started_epoch=continuation_start, final_invocation_started_epoch=schedule['started_epoch'],
         finished_epoch=finished['finished_epoch'],
@@ -93,5 +96,6 @@ if __name__ == '__main__':
     parser.add_argument('--before', required=True)
     parser.add_argument('--after', required=True)
     parser.add_argument('--started-epoch', type=float, help='First continuation invocation, including any restart overhead')
+    parser.add_argument('--previous-active-seconds', type=float, default=0., help='Active time before a pause; excludes the paused interval')
     args = parser.parse_args()
-    summarize(args.before, args.after, args.started_epoch)
+    summarize(args.before, args.after, args.started_epoch, args.previous_active_seconds)

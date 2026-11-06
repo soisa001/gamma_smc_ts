@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/mnt/d/phase2simselection/code/scripts/run_selection_arrays.py", line 273, in <module>
+    launch(p.parse_args())
+  File "/mnt/d/phase2simselection/code/scripts/run_selection_arrays.py", line 245, in launch
+    base.save(root/'tasks.json',tasks)
+  File "/mnt/d/phase2simselection/code/scripts/run_time_resolved_pilot.py", line 50, in save
+    temp.replace(path)
+  File "/home/mew/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/pathlib.py", line 1188, in replace
+    os.replace(self, target)
+PermissionError: [Errno 13] Permission denied: '/mnt/d/phase2simselection/sim/selection_arrays_20261104/tasks.json.tmp' -> '/mnt/d/phase2simselection/sim/selection_arrays_20261104/tasks.json'

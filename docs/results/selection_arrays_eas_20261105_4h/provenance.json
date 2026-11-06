@@ -1,0 +1,1190 @@
+{
+  "manifest": {
+    "contract": {
+      "schema": "selection-arrays/v1",
+      "configs": {
+        "10k": {
+          "length": 1000000,
+          "diploids": 100,
+          "pairs": 1000,
+          "stride": 10000,
+          "generation_time": 25,
+          "dominance": 0.5,
+          "pulse_years": 50000,
+          "pulse_fraction": 0.01,
+          "archaic_split_years": 500000,
+          "archaic_ne": 3600,
+          "scaling": 1,
+          "mutation_rate": 1.29e-08,
+          "recombination_rate": 1e-08,
+          "base_seed": 20380101,
+          "pair_seed": 1729,
+          "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+          "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+          "selected_condition": "0 < whole-population focal AF < 1 at present",
+          "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+          "source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+          "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+          "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+          "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+          "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+          "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+          "selection_start_years": 10000,
+          "selection_end_years": 0,
+          "seed_namespace": "recent-v1:"
+        },
+        "50k": {
+          "length": 1000000,
+          "diploids": 100,
+          "pairs": 1000,
+          "stride": 10000,
+          "generation_time": 25,
+          "dominance": 0.5,
+          "pulse_years": 50000,
+          "pulse_fraction": 0.01,
+          "archaic_split_years": 500000,
+          "archaic_ne": 3600,
+          "scaling": 1,
+          "mutation_rate": 1.29e-08,
+          "recombination_rate": 1e-08,
+          "base_seed": 20380101,
+          "pair_seed": 1729,
+          "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+          "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+          "selected_condition": "0 < whole-population focal AF < 1 at present",
+          "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+          "source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+          "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+          "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+          "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+          "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+          "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+          "selection_start_years": 50000,
+          "selection_end_years": 0,
+          "seed_namespace": "episode-v1:50k:"
+        },
+        "40_20k": {
+          "length": 1000000,
+          "diploids": 100,
+          "pairs": 1000,
+          "stride": 10000,
+          "generation_time": 25,
+          "dominance": 0.5,
+          "pulse_years": 50000,
+          "pulse_fraction": 0.01,
+          "archaic_split_years": 500000,
+          "archaic_ne": 3600,
+          "scaling": 1,
+          "mutation_rate": 1.29e-08,
+          "recombination_rate": 1e-08,
+          "base_seed": 20380101,
+          "pair_seed": 1729,
+          "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+          "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+          "selected_condition": "0 < whole-population focal AF < 1 at present",
+          "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+          "source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+          "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+          "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+          "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+          "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+          "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+          "selection_start_years": 40000,
+          "selection_end_years": 20000,
+          "seed_namespace": "episode-v1:40_20k:"
+        }
+      },
+      "selection": [
+        0.001,
+        0.005,
+        0.01,
+        0.02,
+        0.03,
+        0.04,
+        0.05
+      ],
+      "target": 100,
+      "development": 20,
+      "calibration": 99,
+      "neutral_test": 50,
+      "reuse_recent": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103"
+    },
+    "versions": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "msprime": "1.4.2",
+      "pyslim": "1.1.1",
+      "tskit": "1.0.3"
+    },
+    "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]"
+  },
+  "schedule": {
+    "parameters": {
+      "out": "/mnt/d/phase2simselection/sim/selection_arrays_20261104",
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "reuse_recent": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103",
+      "selection": [
+        0.001,
+        0.005,
+        0.01,
+        0.02,
+        0.03,
+        0.04,
+        0.05
+      ],
+      "workers": 24,
+      "seconds": 13024,
+      "deadline_epoch": 1793927160.0,
+      "drain_seconds": 150,
+      "development": 20,
+      "calibration": 99,
+      "test": 50,
+      "accepted": 100,
+      "attempts": 10000
+    },
+    "strata": [
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      }
+    ],
+    "started_epoch": 1793914173.978231,
+    "deadline_epoch": 1793927160.0,
+    "null_pool_mapping": {
+      "10k": {
+        "de_novo": "10k",
+        "introgression": "10k"
+      },
+      "50k": {
+        "de_novo": "50k",
+        "introgression": "10k"
+      },
+      "40_20k": {
+        "de_novo": "40_20k",
+        "introgression": "10k"
+      }
+    }
+  },
+  "root": "D:\\phase2simselection\\sim\\selection_arrays_20261104",
+  "unavailable": [],
+  "report_sha256": "26d413f8a99e9e2b826504f80fb325c1c29e8926fac2a2a75ced808cf4dd74c1",
+  "seed_validation": {
+    "proposals_checked": 49399,
+    "unique_namespaces": 49399,
+    "unique_simulation_seed_vectors": 49399,
+    "collisions": [
+      {
+        "phase": "slim",
+        "seed": 1270741871,
+        "ids": [
+          "10k/de_novo/s0.02/selected_00170",
+          "40_20k/introgression/s0.02/selected_00888"
+        ]
+      },
+      {
+        "phase": "mutations",
+        "seed": 407653849,
+        "ids": [
+          "10k/de_novo/s0.03/selected_00520",
+          "40_20k/de_novo/s0.01/selected_00914"
+        ]
+      },
+      {
+        "phase": "mutations",
+        "seed": 1517183462,
+        "ids": [
+          "10k/introgression/s0.04/selected_01010",
+          "50k/introgression/s0.02/selected_01035"
+        ]
+      }
+    ],
+    "note": "Record seed is bookkeeping only. Simulation phases use independently hashed suffixes. All original assignments are preserved; individual 31-bit seed collisions are disclosed, not reseeded."
+  },
+  "example_decoder_command": [
+    "/mnt/d/phase2simselection/code/bin/gamma_smc",
+    "--input",
+    "/dev/stdin",
+    "--input_format",
+    "vcf",
+    "--scaled_mutation_rate",
+    "0.00075",
+    "--recombination_to_mutation_ratio",
+    "0.7751937984496124",
+    "--unscaled_mutation_rate",
+    "1.29e-08",
+    "--recent_threshold_years",
+    "10000,50000",
+    "--generation_time",
+    "25",
+    "--recent_summary",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/de_novo/development_00000/native.tsv",
+    "--recent_call",
+    "median",
+    "--recent_call_probability",
+    "0.5",
+    "--output_at_hets=false",
+    "--output_at_stride",
+    "-1",
+    "--cache_size",
+    "1000",
+    "--threads",
+    "1",
+    "--pair_block",
+    "256",
+    "--backward_alignment",
+    "fixed",
+    "--exp10",
+    "accurate",
+    "--pairs_file",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/pairs.tsv",
+    "--output",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/de_novo/development_00000/posterior.zst",
+    "--output_positions_file",
+    "/mnt/d/phase2simselection/sim/recent10k_eas_20261103/positions.txt",
+    "--no_recent_probability"
+  ],
+  "finished": {
+    "finished_epoch": 1793927017.8457167,
+    "submitted": 49399,
+    "returned": 49399,
+    "prefix_accepts": [
+      20,
+      99,
+      50,
+      20,
+      35,
+      37,
+      49,
+      80,
+      60,
+      82,
+      20,
+      99,
+      50,
+      101,
+      100,
+      101,
+      101,
+      101,
+      98,
+      91,
+      20,
+      99,
+      50,
+      2,
+      1,
+      8,
+      0,
+      0,
+      0,
+      0,
+      101,
+      101,
+      102,
+      1,
+      0,
+      0,
+      0,
+      20,
+      99,
+      50,
+      5,
+      6,
+      12,
+      21,
+      4,
+      0,
+      0,
+      100,
+      100,
+      101,
+      100,
+      4,
+      0,
+      0
+    ],
+    "strata": [
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "10k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "50k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "development",
+        "selection": 0.0,
+        "target": 20,
+        "limit": 20
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "calibration",
+        "selection": 0.0,
+        "target": 99,
+        "limit": 99
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "neutral_test",
+        "selection": 0.0,
+        "target": 50,
+        "limit": 50
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "de_novo",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.001,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.005,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.01,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.02,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.03,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.04,
+        "target": 100,
+        "limit": 10000
+      },
+      {
+        "regime": "40_20k",
+        "origin": "introgression",
+        "cohort": "selected",
+        "selection": 0.05,
+        "target": 100,
+        "limit": 10000
+      }
+    ],
+    "pending_at_deadline": 0
+  },
+  "finish_submitted": null,
+  "failed_units": [],
+  "completed_proposals": 49399,
+  "analyzed_regions": 2492,
+  "analyzed_selected": 1816,
+  "integrity": "Validated trajectory/onset/tree/posterior/score hashes, exact allele counts, onset and cessation, strict present-day segregation, grids and CDF bounds/monotonicity.",
+  "notes": [
+    "First 100 acceptances in uninterrupted proposal order per treatment; report actual deadline-limited counts.",
+    "Null introgression pool shared across time windows because s=0 throughout; neutral de novo pools match forward duration.",
+    "Primary: 49 adjacent intervals [1,2),...,[49,50) kya. Secondary: widths 1/2/5/10 kyr with 1-kyr starts, jointly calibrated over widths and positions. No data for [0,1) kya. Truth used only for evaluation.",
+    "Conservative +1 empirical p-values from independent calibration-region maxima over all 100 positions and all candidate intervals; alpha .05 separately per estimator and scan. The union of the two scan variants is not calibrated.",
+    "Fixed 1,000 unfiltered pairs out of 19,900; neither an exhaustive all-pairs posterior analysis nor independent pair tests.",
+    "True-tree benchmarks apply the same interval statistic to true TMRCAs; they are not an optimal selection detector or a theoretical upper bound on power.",
+    "Near-site mistiming is a call within 100 kb with zero temporal overlap; near-site off-target flags any wholly outside connected component, even alongside a correct component. Center versions restrict evaluation to the exact selected coordinate.",
+    "Ongoing 50-kya selection occupies the full observed range, so outside-time false calls cannot be assessed there.",
+    "center_peak_kya is the midpoint of the highest standardized window even when it is not significant; it is not by itself an inferred selection date.",
+    "Region F1 depends on selected/null cohort sizes; balanced_region_f1 standardizes to equal selected and neutral prevalence. Temporal F1 compares center support to the observable selection interval.",
+    "Same-manifest continuations reuse verified completed proposals from every regime. Cross-root historical reuse is restricted to compatible prior 10-kya proposals and their nulls; previous simulation compute is outside the current budget."
+  ]
+}

@@ -1,0 +1,2 @@
+# Preserve checksummed report files and original executed-source bytes.
+** -text whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

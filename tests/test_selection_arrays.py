@@ -78,6 +78,41 @@ def test_ledger_failures_are_bounded_and_not_silenced(tmp_path,monkeypatch,error
     assert len(attempts)==expected_attempts
 
 
+def seed_collision_fixture():
+    import pandas as pd
+    # These two fixed proposal labels collide only in their bookkeeping seed.
+    rows=[dict(id='10k/de_novo/s0.001/selected_00183',regime='10k',
+               unit='de_novo/s0.001/selected_00183',seed=622511277),
+          dict(id='40_20k/introgression/s0.03/selected_01297',regime='40_20k',
+               unit='introgression/s0.03/selected_01297',seed=622511277)]
+    configs={'10k':dict(base_seed=20380101,seed_namespace='recent-v1:'),
+             '40_20k':dict(base_seed=20380101,seed_namespace='episode-v1:40_20k:')}
+    return pd.DataFrame(rows),configs
+
+
+def test_rng_audit_discloses_bookkeeping_collision_without_reseeding():
+    from report_selection_arrays import audit_rng_seeds
+    rows,configs=seed_collision_fixture();original=rows.copy(deep=True)
+    result=audit_rng_seeds(rows,configs)
+    assert result['unique_simulation_seed_vectors']==2
+    assert result['collisions']==[dict(phase='record',seed=622511277,ids=rows.id.tolist())]
+    assert rows.equals(original)
+
+
+def test_rng_audit_rejects_changed_seed():
+    from report_selection_arrays import audit_rng_seeds
+    rows,configs=seed_collision_fixture();rows.loc[1,'seed']+=1
+    with pytest.raises(AssertionError,match='Recorded seed differs'):
+        audit_rng_seeds(rows,configs)
+
+
+def test_rng_audit_rejects_repeated_namespace():
+    from report_selection_arrays import audit_rng_seeds
+    rows,configs=seed_collision_fixture();rows.loc[1]=rows.loc[0];rows.loc[1,'id']='different-id'
+    with pytest.raises(AssertionError,match='Duplicate RNG namespace'):
+        audit_rng_seeds(rows,configs)
+
+
 @pytest.mark.parametrize('origin',['de_novo','introgression'])
 def test_zero_end_preserves_recent_simulation_and_rng(tmp_path,monkeypatch,origin):
     import run_selection_arrays as new

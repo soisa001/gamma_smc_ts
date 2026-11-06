@@ -1,0 +1,31 @@
+{
+  "before": "D:\\phase2simselection\\code\\docs\\results\\selection_arrays_eas_20261104",
+  "after": "D:\\phase2simselection\\code\\docs\\results\\selection_arrays_eas_20261105_4h",
+  "source_sha256": "f321f13d64457036b0b48ccf331b9aac0cb7159693462bc642d22458acb9f5ee",
+  "before_provenance_sha256": "c115d4da3a1e491475ad7517aa8f0749a345eeb7d00601cda16378ab0edf92d9",
+  "after_provenance_sha256": "20caa4a1f52bb6828b3efd6e0c58ae154acb53257e0a652609ce267c285a30d7",
+  "previous_completed_proposals": 9384,
+  "total_completed_proposals": 49399,
+  "additional_completed_proposals": 40015,
+  "additional_selected_proposals": 40015,
+  "additional_selected_survivors": 1323,
+  "total_selected_survivors": 1816,
+  "selected_treatments_at_target": 12,
+  "selected_treatments": 42,
+  "elapsed_seconds": 14246.363165855408,
+  "previous_active_seconds": 1375.51744914055,
+  "elapsed_excludes_paused_time": true,
+  "final_invocation_elapsed_seconds": 12843.867485761642,
+  "started_epoch": 1793914147.0,
+  "final_invocation_started_epoch": 1793914173.978231,
+  "finished_epoch": 1793927017.8457167,
+  "deadline_epoch": 1793927160.0,
+  "workers": 24,
+  "unchanged_checks": [
+    "All previous completed proposal IDs retained",
+    "Previously analyzed region seeds, tree/posterior/score/receipt hashes identical",
+    "All calibration arrays exactly identical",
+    "All earlier replicate metrics exactly identical"
+  ],
+  "interpretation": "Before/after results are nested cohorts, not independent experiments. Power is conditional on present-day segregation. Zero surviving replicates means power is unestimable."
+}

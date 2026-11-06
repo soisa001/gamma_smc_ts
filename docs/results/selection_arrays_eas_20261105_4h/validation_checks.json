@@ -1,0 +1,95 @@
+{
+  "executed_runner_sha256": "4cb78bbd8a46fe940cc1d32292169741c614550216f8d1f5083032c71a5fcda4",
+  "original_executed_runner_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+  "simulation_timing_and_work_ast_identical": true,
+  "tests": "12 relevant tests passed in 5.61 seconds in this continuation; regression coverage includes unchanged recent simulation/RNG, ledger retries, and fixed-seed collision validation.",
+  "test_files": {
+    "test_selection_arrays.py": "49bfccd4c37187cec5b4014cbbf6847e849783d7d612653c9ccfba8d1b1fa3c9"
+  },
+  "final_artifact_validation": "All 49,399 proposals passed receipt, trajectory and onset hashes; all 2,492 analyzed regions passed posterior/tree/score hashes, exact pair/grid counts, timing and CDF checks.",
+  "continuation_validation": "All original proposal IDs retained; prior region output hashes, calibration arrays and every earlier replicate metric are exactly unchanged.",
+  "all_pairs_truth": {
+    "regions": 2492,
+    "pairs": 19900,
+    "newly_computed": 1323,
+    "reused": 1169
+  },
+  "active_seconds": 14246.363165855408,
+  "simulation_budget_seconds": 14400,
+  "pending_at_deadline": 0,
+  "failed": 0,
+  "scientific_runtime_versions": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "msprime": "1.4.2",
+    "pyslim": "1.1.1",
+    "tskit": "1.0.3"
+  },
+  "runtime_versions_match_saved_manifest": true,
+  "seed_collisions": [
+    {
+      "phase": "slim",
+      "seed": 1270741871,
+      "ids": [
+        "10k/de_novo/s0.02/selected_00170",
+        "40_20k/introgression/s0.02/selected_00888"
+      ],
+      "accepted_regions_affected": 0,
+      "outcomes": [
+        "loss",
+        "loss"
+      ]
+    },
+    {
+      "phase": "mutations",
+      "seed": 407653849,
+      "ids": [
+        "10k/de_novo/s0.03/selected_00520",
+        "40_20k/de_novo/s0.01/selected_00914"
+      ],
+      "accepted_regions_affected": 0,
+      "outcomes": [
+        "loss",
+        "loss"
+      ]
+    },
+    {
+      "phase": "mutations",
+      "seed": 1517183462,
+      "ids": [
+        "10k/introgression/s0.04/selected_01010",
+        "50k/introgression/s0.02/selected_01035"
+      ],
+      "accepted_regions_affected": 0,
+      "outcomes": [
+        "loss",
+        "fixation"
+      ]
+    }
+  ],
+  "seed_note": "All 49,399 namespaces and complete five-phase RNG seed vectors are unique. Three individual phase collisions involve rejected proposals only; no analyzed region is involved. Original seeds preserved.",
+  "figure_validation": "All five PNGs visually inspected: large labels readable, horizontal legends above panels, no overlapping data/legends or clipped labels. Figures saved as PNG and vector PDF; no notebook figure output.",
+  "pdf_validation": {
+    "older_episode_example.pdf": {
+      "embedded_truetype": true,
+      "image_objects": 0
+    },
+    "power_de_novo.pdf": {
+      "embedded_truetype": true,
+      "image_objects": 0
+    },
+    "power_introgression.pdf": {
+      "embedded_truetype": true,
+      "image_objects": 0
+    },
+    "time_profiles_de_novo.pdf": {
+      "embedded_truetype": true,
+      "image_objects": 0
+    },
+    "time_profiles_introgression.pdf": {
+      "embedded_truetype": true,
+      "image_objects": 0
+    }
+  },
+  "source_notes": "Archived executed sources preserve their exact bytes, including original CRLF and blank EOF. Report code changes audit fixed RNG assignments and account for paused time; no simulation or statistic change."
+}

@@ -4,7 +4,9 @@ import os
 os.environ['MPLBACKEND']='Agg'
 for key in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS','MKL_NUM_THREADS'):os.environ[key]='1'
 import argparse
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+import hashlib
 import json
 from pathlib import Path
 import numpy as np
@@ -25,6 +27,30 @@ def local_path(value):
     elif os.name!='nt' and len(value)>2 and value[1:3]==':/':
         value='/mnt/'+value[0].lower()+'/'+value[3:]
     return Path(value)
+
+
+def audit_rng_seeds(proposals,configs):
+    """Check fixed seed assignments without mistaking a 31-bit hash collision for a duplicate run."""
+    phases=('record','ancestry','pairing','slim','sample','mutations')
+    assignments={phase:defaultdict(list) for phase in phases};labels=set();vectors=set()
+    for row in proposals.itertuples():
+        cfg=configs[row.regime];label=cfg['seed_namespace']+row.unit
+        assert label not in labels,'Duplicate RNG namespace'
+        labels.add(label);vector=[]
+        for phase in phases:
+            value=label if phase=='record' else label+':'+phase
+            seed=int(hashlib.sha256(f"{cfg['base_seed']}:time-resolved-pilot:{value}".encode()).hexdigest()[:12],16)%(2**31-2)+1
+            if phase=='record':assert seed==row.seed,'Recorded seed differs from fixed assignment'
+            else:vector.append(seed)
+            assignments[phase][seed].append(row.id)
+        assert tuple(vector) not in vectors,'Duplicate complete simulation RNG seed vector'
+        vectors.add(tuple(vector))
+    collisions=[dict(phase=phase,seed=seed,ids=ids) for phase in phases
+                for seed,ids in assignments[phase].items() if len(ids)>1]
+    return dict(proposals_checked=len(proposals),unique_namespaces=len(labels),
+        unique_simulation_seed_vectors=len(vectors),collisions=collisions,
+        note='Record seed is bookkeeping only. Simulation phases use independently hashed suffixes. '
+             'All original assignments are preserved; individual 31-bit seed collisions are disclosed, not reseeded.')
 
 
 def evaluate(calls,positions,start,end,selected):
@@ -104,7 +130,7 @@ def read(root):
             accepted=accepted,lost=sum(r['rejection']=='loss' for r in chosen),fixed=sum(r['rejection']=='fixation' for r in chosen),
             reused=sum('source_receipt_sha256' in r for r in chosen)))
     proposals=pd.DataFrame(completed.values());proposals['included_prefix']=proposals.id.isin(included)
-    assert proposals.id.is_unique and proposals.seed.is_unique,'Duplicate proposal identity or seed'
+    assert proposals.id.is_unique,'Duplicate proposal identity'
     records=proposals[proposals.included_prefix&proposals.accepted].reset_index(drop=True)
     assert records.id.is_unique
     cdfs=np.stack([arrays[i] for i in records.id])
@@ -114,6 +140,7 @@ def read(root):
 def report(root,out):
     out.mkdir(parents=True,exist_ok=True)
     manifest,schedule,proposals,records,cdfs,counts=read(root)
+    seed_validation=audit_rng_seeds(proposals,manifest['contract']['configs'])
     rows=[];summaries=[];profiles=[];calibration={};unavailable=[]
     for scan,widths in [('one_kyr',[1]),('multiscale',[1,2,5,10])]:
         values,intervals=interval_values(cdfs,widths)
@@ -169,7 +196,7 @@ def report(root,out):
     status_by_id={r['id']:r for r in status}
     pd.DataFrame([dict(t,**{k:v for k,v in status_by_id.get(t['id'],{'state':'incomplete_at_deadline'}).items() if k!='id'})
         for t in json.loads((root/'tasks.json').read_text())]).to_csv(out/'task_status.tsv',sep='\t',index=False,na_rep='NA')
-    provenance=dict(manifest=manifest,schedule=schedule,root=str(root),unavailable=unavailable,report_sha256=sha(__file__),
+    provenance=dict(manifest=manifest,schedule=schedule,root=str(root),unavailable=unavailable,report_sha256=sha(__file__),seed_validation=seed_validation,
         example_decoder_command=json.loads((local_path(records.iloc[0].source_directory)/'decoder.json').read_text())['command'],
         finished=json.loads((root/'finished.json').read_text()) if (root/'finished.json').exists() else None,
         finish_submitted=json.loads((root/'finish_submitted.json').read_text()) if (root/'finish_submitted.json').exists() else None,
