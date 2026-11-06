@@ -1,0 +1,481 @@
+{
+  "example": {
+    "id": "10k/introgression/s0.01/selected_00020",
+    "selection": 0.01,
+    "selection_start_kya": 10,
+    "selection_end_kya": 0,
+    "position_bp": 420000,
+    "selected_coordinate_bp": 500000,
+    "bin_kya": [
+      1,
+      2
+    ],
+    "present_af": 0.5713526582883864,
+    "selection_onset_af": 0.1392812629829663
+  },
+  "position_bp": 420000,
+  "correlations": [
+    {
+      "cohort": "example",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 49,
+      "pearson": 0.4653690644056824,
+      "spearman": 0.644354418246518
+    },
+    {
+      "cohort": "example",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 49,
+      "pearson": 0.4653690644056824,
+      "spearman": 0.644354418246518
+    },
+    {
+      "cohort": "example",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 9,
+      "pearson": -0.7884652517937617,
+      "spearman": -0.7833333333333333
+    },
+    {
+      "cohort": "example",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 9,
+      "pearson": -0.7884652517937617,
+      "spearman": -0.7833333333333333
+    },
+    {
+      "cohort": "example",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 50,
+      "pearson": 0.9904291949351149,
+      "spearman": 0.9998559319991563
+    },
+    {
+      "cohort": "example",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 50,
+      "pearson": 0.9904291949351149,
+      "spearman": 0.9998559319991563
+    },
+    {
+      "cohort": "example",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 10,
+      "pearson": 0.9691548929920363,
+      "spearman": 0.9969650916353059
+    },
+    {
+      "cohort": "example",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 10,
+      "pearson": 0.9691548929920363,
+      "spearman": 0.9969650916353059
+    },
+    {
+      "cohort": "selected",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 4900,
+      "pearson": 0.4973366146704018,
+      "spearman": 0.5301619949561778
+    },
+    {
+      "cohort": "selected",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 49,
+      "pearson": 0.5166934578133894,
+      "spearman": 0.6946938775510202
+    },
+    {
+      "cohort": "selected",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 900,
+      "pearson": 0.29513594333119353,
+      "spearman": 0.14952169743116195
+    },
+    {
+      "cohort": "selected",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 9,
+      "pearson": -0.9579404846378201,
+      "spearman": -1.0
+    },
+    {
+      "cohort": "selected",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 5000,
+      "pearson": 0.976652808793438,
+      "spearman": 0.9738921225282569
+    },
+    {
+      "cohort": "selected",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 50,
+      "pearson": 0.9970098974688097,
+      "spearman": 0.9999999999999999
+    },
+    {
+      "cohort": "selected",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 1000,
+      "pearson": 0.8763370345625429,
+      "spearman": 0.9043721735342476
+    },
+    {
+      "cohort": "selected",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 10,
+      "pearson": 0.9678806854537387,
+      "spearman": 0.9999999999999999
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 4900,
+      "pearson": 0.3597465354574267,
+      "spearman": 0.3988204673278239
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 49,
+      "pearson": 0.172171288959504,
+      "spearman": 0.47234693877551015
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 900,
+      "pearson": 0.13690361356710914,
+      "spearman": 0.10498851939359537
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 9,
+      "pearson": -0.9810794205427213,
+      "spearman": -0.9833333333333333
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 5000,
+      "pearson": 0.9568518667439033,
+      "spearman": 0.9593626902320427
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 50,
+      "pearson": 0.9950720541621795,
+      "spearman": 0.9999999999999999
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "aggregation": "pooled_replicates_and_time",
+      "n": 1000,
+      "pearson": 0.8413343143941886,
+      "spearman": 0.8923981972760962
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "aggregation": "cohort_mean_time_profile",
+      "n": 10,
+      "pearson": 0.9664662838072918,
+      "spearman": 0.9999999999999999
+    }
+  ],
+  "per_replicate_distribution": [
+    {
+      "cohort": "example",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "pearson": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": 0.4653690644056824,
+        "median": 0.4653690644056824,
+        "q75": 0.4653690644056824
+      },
+      "spearman": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": 0.644354418246518,
+        "median": 0.644354418246518,
+        "q75": 0.644354418246518
+      }
+    },
+    {
+      "cohort": "example",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "pearson": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": -0.7884652517937617,
+        "median": -0.7884652517937617,
+        "q75": -0.7884652517937617
+      },
+      "spearman": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": -0.7833333333333333,
+        "median": -0.7833333333333333,
+        "q75": -0.7833333333333333
+      }
+    },
+    {
+      "cohort": "example",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "pearson": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": 0.9904291949351149,
+        "median": 0.9904291949351149,
+        "q75": 0.9904291949351149
+      },
+      "spearman": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": 0.9998559319991563,
+        "median": 0.9998559319991563,
+        "q75": 0.9998559319991563
+      }
+    },
+    {
+      "cohort": "example",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "pearson": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": 0.9691548929920363,
+        "median": 0.9691548929920363,
+        "q75": 0.9691548929920363
+      },
+      "spearman": {
+        "valid": 1,
+        "undefined": 0,
+        "q25": 0.9969650916353059,
+        "median": 0.9969650916353059,
+        "q75": 0.9969650916353059
+      }
+    },
+    {
+      "cohort": "selected",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.15515480723416775,
+        "median": 0.27521309554581674,
+        "q75": 0.47682049024023054
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.17273020521702953,
+        "median": 0.356694324490866,
+        "q75": 0.5565061818543182
+      }
+    },
+    {
+      "cohort": "selected",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": -0.800197302776083,
+        "median": -0.6583543690835907,
+        "q75": -0.45509907449641107
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": -0.8309613811385841,
+        "median": -0.6628080994302783,
+        "q75": -0.49214917036273004
+      }
+    },
+    {
+      "cohort": "selected",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9897095001855708,
+        "median": 0.9926867414853882,
+        "q75": 0.9950417179230955
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9998079047189693,
+        "median": 0.9999159627833579,
+        "q75": 0.9999579822564848
+      }
+    },
+    {
+      "cohort": "selected",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9482266964984766,
+        "median": 0.9626264362339707,
+        "q75": 0.9738447142092013
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9969650916353059,
+        "median": 0.9999999999999999,
+        "q75": 0.9999999999999999
+      }
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_50kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": -0.0841177821566404,
+        "median": 0.12241258919032103,
+        "q75": 0.2587966653056622
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": -0.044188879466505356,
+        "median": 0.1640104993804633,
+        "q75": 0.35278554790815947
+      }
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "one_kyr_fraction",
+      "interval": "1_10kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": -0.7891760217495075,
+        "median": -0.6859729031883994,
+        "q75": -0.43016618280465807
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": -0.7999999999999999,
+        "median": -0.6794177128495673,
+        "q75": -0.5057475495370152
+      }
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "cumulative_fraction",
+      "interval": "1_50kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9869737879901787,
+        "median": 0.9914434613054296,
+        "q75": 0.9941388291948945
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9998799447741638,
+        "median": 0.9999279685942136,
+        "q75": 0.9999759901079209
+      }
+    },
+    {
+      "cohort": "neutral",
+      "statistic": "cumulative_fraction",
+      "interval": "1_10kya",
+      "pearson": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9456195083430473,
+        "median": 0.961685466297905,
+        "q75": 0.9725712569236052
+      },
+      "spearman": {
+        "valid": 100,
+        "undefined": 0,
+        "q25": 0.9969650916353059,
+        "median": 0.9969650916353059,
+        "q75": 0.9999999999999999
+      }
+    }
+  ],
+  "interpretation": "Primary statistic is the fraction in each 1-kyr bin, not cumulative fractions. Pooled, cohort-mean-profile, within-replicate, and between-replicate correlations answer different questions. Cumulative curves share monotonicity and can correlate highly despite differing temporal distributions. No correlation p-values or confidence intervals computed.",
+  "design": "100 selected survivors, s=0.01, selection 10 kya-present, EAS introgression; 100 neutrals (50 held-out + 50 calibration). Coordinate and example were chosen from a mass call, so these are descriptive results at an ascertained coordinate, not genome-wide estimates.",
+  "provenance": {
+    "inputs": {
+      "docs/results/selected_vs_100_neutrals_10k_s001_20261106/curves.npz": "54126fe1973902aa3320e9001bbe73b753895855b8db42f7e7b838b2085e0dc2",
+      "docs/results/selected_vs_100_neutrals_10k_s001_20261106/manifest.json": "6d766e48ea14a079dcbd3d4f16f8e355c88145781441ef158d6219606aa0aadf",
+      "docs/results/selection_episode_10k_s001_20261106/series_data.npz": "374db47010a9c5b096efcd211c13234a67118630e3c35bfd4b7792ced43acd19"
+    },
+    "script_sha256": "34f6a519be98230d82026e24f5a8fa2bc37d37d78f115dda396629ab7a470260",
+    "workers": 4,
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.17.1",
+    "randomness": "No RNG draws; all fixed original simulations and pairs retained."
+  }
+}
