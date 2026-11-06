@@ -1,0 +1,21 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "10k_existing_intervals.pdf": "9fec19c75fba8c63e880d17ff19d4f36792cda44c4a82a9e95b20dafc9863890",
+  "10k_existing_intervals.png": "cde6cef0e7dbb2220df2f0520258c298e45aa80de43174516a205fcdb773bac6",
+  "10k_existing_posterior.pdf": "1cfddebd2138027e93acef2a03c089ee528e89d92f649b4fad3bd01c225e4d08",
+  "10k_existing_posterior.png": "00340f1189edf7bf8b37517d47126eb2a408e7b30e8688a5105aaa589594023d",
+  "50_30k_original_intervals.pdf": "42fa73265f0e3549e18c6e7c0877ce485c01c5813e2038d8569374991351ff49",
+  "50_30k_original_intervals.png": "cf8660dda6a20619ca1dcadcdac0327cc3a92f2044fd7b6af5a7ecdea5dea150",
+  "50_30k_original_posterior.pdf": "c48b8a32f352d0b4e7003e9f5be573343d8c65b5b0cd2a6428bb6462c50f7753",
+  "50_30k_original_posterior.png": "392b5b27e9a81b184f763602d380fc7691c954e1dc8c2925632d89ac6ddca137",
+  "50_30k_rerun_intervals.pdf": "2f176193e70366afae0bea80d0d4dd309df0d4b57f8fdc35f5d0fc32a28566a3",
+  "50_30k_rerun_intervals.png": "61c0504a1fbf84e45401752df3ace42c0f51140d3a4e4789aa3aa29c374a7aaf",
+  "50_30k_rerun_posterior.pdf": "2fbc525d342b2151d38f2cb7b16bcef697bac540b4144295e19ad88629569d12",
+  "50_30k_rerun_posterior.png": "f5fb666c6765ac62b51ea84c83508570e391d557d4cd47e5d4ff3ae143068b46",
+  "allele_frequencies.pdf": "38e445df820e2f43e8182ade4517e84e51a86669e50d7127c17cc9c314b15e6d",
+  "allele_frequencies.png": "5d40eb5eba7a88f650d084dcc62c159497d06f0d6eeb5b9a7631fdd4f3142544",
+  "manifest.json": "a437fbaf020089dbad5a02aa1c5b95283fc2e63661e4483d5ab15f77f6e57c0d",
+  "parameters.npz": "91cafaffdd3776519d91ea58338a38dce9685bc9a0d35707fcf4d236864d6239",
+  "summary.json": "42fc234fd5c5f5c776912990baeef2a4937a8d1d4aceaee27425f521c40a7647",
+  "visual_qa.json": "c60fc84c180b27949b909737124ef23551ff05be413269fa9d872721daa8f245"
+}

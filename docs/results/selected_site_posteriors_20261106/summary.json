@@ -1,0 +1,189 @@
+{
+  "examples": [
+    {
+      "label": "50\u201330 kya: original",
+      "id": "50_30k/introgression/s0.01/selected_00000",
+      "intervals": {
+        "30_50_kya": {
+          "truth": {
+            "selected": 0.22400000000000003,
+            "neutral_mean": 0.0981,
+            "neutral_95_quantile": 0.19224999999999998,
+            "neutral_ge_selected": 4,
+            "descriptive_rank_p": 0.04950495049504951
+          },
+          "median": {
+            "selected": 0.08900000000000002,
+            "neutral_mean": 0.08106999999999999,
+            "neutral_95_quantile": 0.16049999999999995,
+            "neutral_ge_selected": 28,
+            "descriptive_rank_p": 0.2871287128712871
+          },
+          "mass": {
+            "selected": 0.06520405695944889,
+            "neutral_mean": 0.06630709384245695,
+            "neutral_95_quantile": 0.11484871144625546,
+            "neutral_ge_selected": 44,
+            "descriptive_rank_p": 0.44554455445544555
+          }
+        },
+        "0_50_kya": {
+          "truth": {
+            "selected": 0.329,
+            "neutral_mean": 0.19607999999999998,
+            "neutral_95_quantile": 0.29949999999999993,
+            "neutral_ge_selected": 4,
+            "descriptive_rank_p": 0.04950495049504951
+          },
+          "median": {
+            "selected": 0.341,
+            "neutral_mean": 0.24876,
+            "neutral_95_quantile": 0.43929999999999997,
+            "neutral_ge_selected": 10,
+            "descriptive_rank_p": 0.10891089108910891
+          },
+          "mass": {
+            "selected": 0.30821630407880957,
+            "neutral_mean": 0.2507235804626259,
+            "neutral_95_quantile": 0.38895892076111316,
+            "neutral_ge_selected": 18,
+            "descriptive_rank_p": 0.18811881188118812
+          }
+        }
+      },
+      "af": {
+        "50": 0.010049559471365639,
+        "30": 0.4402346227013316,
+        "10": 0.5566057332779394,
+        "0": 0.5056194702021947
+      },
+      "posterior_tail_above_200": 0.569574940250401
+    },
+    {
+      "label": "50\u201330 kya: fresh rerun",
+      "id": "50_30k/introgression/s0.01/selected_00007",
+      "intervals": {
+        "30_50_kya": {
+          "truth": {
+            "selected": 0.04400000000000001,
+            "neutral_mean": 0.0981,
+            "neutral_95_quantile": 0.19224999999999998,
+            "neutral_ge_selected": 85,
+            "descriptive_rank_p": 0.8514851485148515
+          },
+          "median": {
+            "selected": 0.08200000000000002,
+            "neutral_mean": 0.08106999999999999,
+            "neutral_95_quantile": 0.16049999999999995,
+            "neutral_ge_selected": 39,
+            "descriptive_rank_p": 0.39603960396039606
+          },
+          "mass": {
+            "selected": 0.07239513777153156,
+            "neutral_mean": 0.06630709384245695,
+            "neutral_95_quantile": 0.11484871144625546,
+            "neutral_ge_selected": 33,
+            "descriptive_rank_p": 0.33663366336633666
+          }
+        },
+        "0_50_kya": {
+          "truth": {
+            "selected": 0.189,
+            "neutral_mean": 0.19607999999999998,
+            "neutral_95_quantile": 0.29949999999999993,
+            "neutral_ge_selected": 48,
+            "descriptive_rank_p": 0.48514851485148514
+          },
+          "median": {
+            "selected": 0.256,
+            "neutral_mean": 0.24876,
+            "neutral_95_quantile": 0.43929999999999997,
+            "neutral_ge_selected": 38,
+            "descriptive_rank_p": 0.38613861386138615
+          },
+          "mass": {
+            "selected": 0.2643066105626364,
+            "neutral_mean": 0.2507235804626259,
+            "neutral_95_quantile": 0.38895892076111316,
+            "neutral_ge_selected": 37,
+            "descriptive_rank_p": 0.37623762376237624
+          }
+        }
+      },
+      "af": {
+        "50": 0.010049559471365639,
+        "30": 0.055009511731135066,
+        "10": 0.2046634815122559,
+        "0": 0.1840608975210564
+      },
+      "posterior_tail_above_200": 0.464829525878799
+    },
+    {
+      "label": "10 kya\u2013present: existing example",
+      "id": "10k/introgression/s0.01/selected_00020",
+      "intervals": {
+        "0_10_kya": {
+          "truth": {
+            "selected": 0.014,
+            "neutral_mean": 0.006850000000000002,
+            "neutral_95_quantile": 0.011,
+            "neutral_ge_selected": 1,
+            "descriptive_rank_p": 0.019801980198019802
+          },
+          "median": {
+            "selected": 0.197,
+            "neutral_mean": 0.03909,
+            "neutral_95_quantile": 0.05909999999999999,
+            "neutral_ge_selected": 0,
+            "descriptive_rank_p": 0.009900990099009901
+          },
+          "mass": {
+            "selected": 0.20021586352354165,
+            "neutral_mean": 0.07985058462929935,
+            "neutral_95_quantile": 0.1298891750141182,
+            "neutral_ge_selected": 0,
+            "descriptive_rank_p": 0.009900990099009901
+          }
+        },
+        "0_50_kya": {
+          "truth": {
+            "selected": 0.379,
+            "neutral_mean": 0.19607999999999998,
+            "neutral_95_quantile": 0.29949999999999993,
+            "neutral_ge_selected": 1,
+            "descriptive_rank_p": 0.019801980198019802
+          },
+          "median": {
+            "selected": 0.386,
+            "neutral_mean": 0.24876,
+            "neutral_95_quantile": 0.43929999999999997,
+            "neutral_ge_selected": 7,
+            "descriptive_rank_p": 0.07920792079207921
+          },
+          "mass": {
+            "selected": 0.38528816535196825,
+            "neutral_mean": 0.2507235804626259,
+            "neutral_95_quantile": 0.38895892076111316,
+            "neutral_ge_selected": 6,
+            "descriptive_rank_p": 0.06930693069306931
+          }
+        }
+      },
+      "af": {
+        "50": 0.010049559471365639,
+        "30": 0.09242232086239696,
+        "10": 0.13928126298296634,
+        "0": 0.5713526582883864
+      },
+      "posterior_tail_above_200": 0.5106809488533882
+    }
+  ],
+  "position_bp": 500000,
+  "neutral_count": 100,
+  "caveats": "Descriptive fixed-site comparisons, not genome-wide adjusted selection calls or estimates of power. 10k example previously ascertained at 420 kb. 50 held-out plus 50 calibration neutrals.",
+  "script_sha256": "f5f5ec66c50cf50a6d303d0f1fcd18a424da8b95844cfe053211c1580406d314",
+  "versions": {
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.1"
+  }
+}

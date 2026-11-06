@@ -1,0 +1,15 @@
+{
+  "checked_figures": [
+    "10k_existing_intervals.png",
+    "10k_existing_posterior.png",
+    "50_30k_original_intervals.png",
+    "50_30k_original_posterior.png",
+    "50_30k_rerun_intervals.png",
+    "50_30k_rerun_posterior.png",
+    "allele_frequencies.png"
+  ],
+  "visual_check": "All seven PNGs inspected at full figure size. Large text readable, legends above panels, no clipping or overlap with data.",
+  "pdf_check": "All seven PDFs contain embedded TrueType fonts and no image objects; plots remain vectorized.",
+  "numerical_check": "All 103 simulations: source hashes and posterior stream length checked; reconstructed truth, median and posterior-mass fractions agree with all 50 saved cutoffs at 500 kb.",
+  "simulations": "Four fresh deterministic proposals (4-7); three lost, proposal 7 survived. Original proposal ledger retained."
+}

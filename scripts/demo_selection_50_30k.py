@@ -82,16 +82,18 @@ def run(args):
     snapshots.mkdir(exist_ok=True)
     for filename in (arrays.__file__, arrays.ancestor.__file__, arrays.base.__file__, __file__):
         dest = snapshots / Path(filename).name
-        if not dest.exists():
+        if dest.exists() and sha(dest) != sha(Path(filename)):
+            shutil.copy2(filename, snapshots / f'{Path(filename).stem}_{sha(Path(filename))[:12]}.py')
+        elif not dest.exists():
             shutil.copy2(filename, dest)
     deadline = time.time() + args.seconds
     receipts, accepted = [], None
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        for first in range(0, args.attempts, args.workers):
+        for first in range(args.start_replicate, args.start_replicate + args.attempts, args.workers):
             if time.time() >= deadline:
                 break
             tasks = []
-            for i in range(first, min(first + args.workers, args.attempts)):
+            for i in range(first, min(first + args.workers, args.start_replicate + args.attempts)):
                 unit = f'introgression/s0.01/selected_{i:05d}'
                 tasks.append(dict(id='50_30k/' + unit, unit=unit, origin='introgression', cohort='selected',
                                   selection=.01, replicate=i, regime='50_30k'))
@@ -104,13 +106,21 @@ def run(args):
                 receipts.append(record)
                 print(f"{task['id']}: {result['state']}; AF={record.get('final_frequency')}", flush=True)
             receipts.sort(key=lambda r: r['replicate'])
-            save_json(args.raw / 'proposal_ledger.json', receipts)
+            ledger = args.raw / 'proposal_ledger.json'
+            previous = json.loads(ledger.read_text()) if ledger.exists() else []
+            combined = {r['id']: r for r in previous + receipts}
+            save_json(ledger, sorted(combined.values(), key=lambda r: r['replicate']))
             hits = [r for r in receipts if r.get('accepted')]
             if hits:
                 accepted = hits[0]
                 break
     if accepted is None:
         raise RuntimeError('No survivor within bounded proposal budget; proposal ledger retained for resume.')
+    if args.simulation_only:
+        save_json(args.raw / f'rerun_{args.start_replicate:05d}.json', dict(selected=accepted,
+            proposals=receipts, start_replicate=args.start_replicate, workers=args.workers,
+            seconds=args.seconds, attempts=args.attempts, script_sha256=sha(Path(__file__))))
+        return
     directory = args.raw / accepted['id']
     trajectory = np.loadtxt(directory / 'trajectory.tsv', skiprows=1)
     np.testing.assert_array_equal(trajectory[:, 0], np.arange(50000, -1, -25))
@@ -223,11 +233,14 @@ def main():
     parser.add_argument('--workers', type=int, default=4)
     parser.add_argument('--seconds', type=int, default=900)
     parser.add_argument('--attempts', type=int, default=64)
+    parser.add_argument('--start-replicate', type=int, default=0)
+    parser.add_argument('--simulation-only', action='store_true', help='Skip historical 420-kb report; use plot_selected_site_posteriors.py for 500-kb figures.')
     args = parser.parse_args()
     assert 1 <= args.workers <= 24 and args.seconds > 0 and args.attempts > 0
     if args.phase == 'run':
         run(args)
-    report(args)
+    if not args.simulation_only:
+        report(args)
 
 
 if __name__ == '__main__':
