@@ -1,0 +1,22 @@
+{
+  "script_sha256": "10d17e7a3382540b24b33ba699ae5b3558a7bdac8ce66a8bf583d471cf208839",
+  "source_report": "/mnt/d/phase2simselection/code/docs/results/selection_arrays_eas_20261105_4h",
+  "workers": 4,
+  "parameters": {
+    "report": "/mnt/d/phase2simselection/code/docs/results/selection_arrays_eas_20261105_4h",
+    "out": "/mnt/d/phase2simselection/code/docs/results/selection_episode_10k_s001_20261106",
+    "selection": 0.01,
+    "regime": "10k",
+    "workers": 4
+  },
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "matplotlib": "3.11.1"
+  },
+  "calibration": "20 development and 99 calibration neutral regions; maxima over 100 positions and 49 time bins; +1 empirical p<=.05.",
+  "verification": "450 region/method metric records match frozen reports; original score/trajectory and true-tree cache hashes checked.",
+  "randomness": "No simulations, bootstrap samples, or RNG draws. Plot offsets and cohort ordering are deterministic.",
+  "interpretation": "100 selected survivors versus 50 unconditioned held-out neutral introgression regions. All curves are at fixed coordinates; no peak-based selection or alignment. Bands are between-region quantiles, not confidence intervals.",
+  "limits": "Times 1\u201350 kya only; 0\u20131 kya absent from bin scan. All-pairs truth versus fixed-1000-pair inference; no exhaustive posterior decoding. Selection is 10 kya\u2013present, with a 1% Neanderthal pulse at 50 kya."
+}

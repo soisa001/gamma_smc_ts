@@ -1,0 +1,27 @@
+{
+  "01_allele_frequency.pdf": {
+    "embedded_truetype": true,
+    "raster_image_objects": 0,
+    "pages": 1
+  },
+  "02_selected_vs_neutral_tmrca.pdf": {
+    "embedded_truetype": true,
+    "raster_image_objects": 0,
+    "pages": 1
+  },
+  "03_spatial_coalescence_excess.pdf": {
+    "embedded_truetype": true,
+    "raster_image_objects": 0,
+    "pages": 1
+  },
+  "04_called_intervals.pdf": {
+    "embedded_truetype": true,
+    "raster_image_objects": 0,
+    "pages": 1
+  },
+  "selection_episode_series.pdf": {
+    "embedded_truetype": true,
+    "raster_image_objects": 0,
+    "pages": 4
+  }
+}

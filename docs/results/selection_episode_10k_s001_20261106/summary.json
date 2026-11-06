@@ -1,0 +1,79 @@
+{
+  "regime": "10k",
+  "selection": 0.01,
+  "selected": 100,
+  "neutral_test": 50,
+  "methods": {
+    "truth_all_pairs": {
+      "joint_hits": 1,
+      "only_mistimed": 13,
+      "any_outside_component": 13,
+      "null_any_calls": 0,
+      "center_hits": 1,
+      "mean_temporal_f1": 0.002,
+      "focal_mean_excess_peak_kya": 26.5
+    },
+    "median": {
+      "joint_hits": 0,
+      "only_mistimed": 0,
+      "any_outside_component": 0,
+      "null_any_calls": 2,
+      "center_hits": 0,
+      "mean_temporal_f1": 0.0,
+      "focal_mean_excess_peak_kya": 6.5
+    },
+    "mass": {
+      "joint_hits": 4,
+      "only_mistimed": 0,
+      "any_outside_component": 0,
+      "null_any_calls": 2,
+      "center_hits": 0,
+      "mean_temporal_f1": 0.0,
+      "focal_mean_excess_peak_kya": 1.5
+    }
+  },
+  "af_milestones": {
+    "50": {
+      "min": 0.010049559471365639,
+      "q10": 0.010049559471365639,
+      "q25": 0.010049559471365639,
+      "median": 0.010049559471365639,
+      "q75": 0.010049559471365639,
+      "q90": 0.010049559471365639,
+      "max": 0.010049559471365639
+    },
+    "10": {
+      "min": 0.0019734108849189863,
+      "q10": 0.014333194848358953,
+      "q25": 0.03983174075612796,
+      "median": 0.08028666389696718,
+      "q75": 0.15523732862484418,
+      "q90": 0.2610614873286249,
+      "max": 0.49335272122974655
+    },
+    "5": {
+      "min": 0.0043537261110482865,
+      "q10": 0.03696285197331223,
+      "q25": 0.0954391891891892,
+      "median": 0.16441677032681218,
+      "q75": 0.3447324154698632,
+      "q90": 0.4671081646500057,
+      "max": 0.7052329526178899
+    },
+    "0": {
+      "min": 0.0003321199883093764,
+      "q10": 0.09736296729282355,
+      "q25": 0.22455628769561867,
+      "median": 0.3541262587347557,
+      "q75": 0.5745576161755719,
+      "q90": 0.7040638201769537,
+      "max": 0.8641496399819327
+    }
+  },
+  "proposal_outcomes": {
+    "analyzed_prefix": 1222,
+    "accepted": 100,
+    "lost": 1122,
+    "fixed": 0
+  }
+}

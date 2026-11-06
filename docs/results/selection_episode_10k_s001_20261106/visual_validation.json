@@ -1,0 +1,7 @@
+{
+  "figures_checked": ["01_allele_frequency.png", "02_selected_vs_neutral_tmrca.png", "03_spatial_coalescence_excess.png", "04_called_intervals.png"],
+  "execution": "WSL: uv --no-config run --no-project --python .venv/bin/python python scripts/plot_selection_episode_series.py --regime 10k --selection 0.01 --workers 4",
+  "environment_note": "Existing project environment; uv 0.12.5 run with --no-config to bypass the repository runner-version constraint. No dependencies changed. Package versions are in provenance.json.",
+  "validation": "All 450 region/method metric records reproduce the frozen analysis. Original source hashes and array constraints passed. Four figures visually inspected for legibility and legend placement; heatmap x limits explicitly restricted to the evaluated 1-50 kya range. PDF font embedding and absence of raster objects checked separately.",
+  "randomness": "No new simulations or RNG draws. Cohort includes all 100 survivors in frozen order."
+}
