@@ -1,0 +1,26 @@
+{
+  "script_sha256": "fe492f9e9eb7826dfd1b8b423784cabc575a6c7007783deb50a8caf28c60dba0",
+  "workers": 4,
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "matplotlib": "3.11.1"
+  },
+  "parameters": {
+    "regime": "10k",
+    "origin": "introgression",
+    "selection": 0.01,
+    "selected_survival_condition": "0<p<1 today",
+    "neutral_condition": "unconditioned; original fixed coordinates",
+    "pairs": 1000,
+    "stride_bp": 10000,
+    "bin_kya": 1,
+    "temporal_scan_kya": [
+      1,
+      50
+    ],
+    "alpha": 0.05
+  },
+  "randomness": "No simulations or RNG draws. Fixed deterministic cohort/example rules in manifest.",
+  "interpretation": "Example selected after inspecting scan calls; pointwise p-values are descriptive, not adjusted for choosing this example. Half of the displayed neutrals contributed to original calibration."
+}

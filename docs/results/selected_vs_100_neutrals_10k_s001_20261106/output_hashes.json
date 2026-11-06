@@ -1,0 +1,18 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "01_neutral_curves.pdf": "eae2556ffa8f22d212d4e31f72fb72eb4eefd8b1cfdd14f5376ee8f982a0fea2",
+  "01_neutral_curves.png": "96cf1690e217c888c63ecc377c2fbcd89706e403e150b145197c91d26cfb415e",
+  "02_pointwise_and_scan_pvalues.pdf": "1633af12872ceeb0639653ba4bd9cf884ba4f17cd34fb33dbee89b877f17ad7e",
+  "02_pointwise_and_scan_pvalues.png": "ae835ccafa82cf2a2d792517497d8dfcf62613ac40de50b4d53d136f181b6e49",
+  "cohort_manifest.tsv": "9e9b1b62ef1e6f3b7bd5e7eb0a6721cc8d37c88b0164e107ad1a37646d2f1582",
+  "curves.npz": "54126fe1973902aa3320e9001bbe73b753895855b8db42f7e7b838b2085e0dc2",
+  "manifest.json": "6d766e48ea14a079dcbd3d4f16f8e355c88145781441ef158d6219606aa0aadf",
+  "pdf_validation.json": "c6f2bb643ca794a34a9170ad8efe5e730967c1ea2a1903ce92d92df4a5bedcd5",
+  "plot_selected_vs_100_neutrals.py": "fe492f9e9eb7826dfd1b8b423784cabc575a6c7007783deb50a8caf28c60dba0",
+  "provenance.json": "469cba2513ac0f2bf9b3754927821e7a6dd64dabe7c592a70c786472c47ef713",
+  "README.md": "4fb49afcc43989764cd25f3a8e3a2ca17b29311ea6a785c1ed1da7a59173bdb7",
+  "selected_vs_100_neutrals.pdf": "aebd5697fa405c3ebd9c2e47b24cf0ac031b19372dc2caad7e4a6d78fced6c7a",
+  "summary.json": "03a38eb47dc84f0e55a804c289d699fd9dae810e9461ae41c5a569caee0c85b5",
+  "timewise_statistics.tsv": "8b4e984cd19f2f213f0a77bafc7771d35ec7a10ab8206e5223b015a2f094460e",
+  "visual_validation.json": "b764ecf195cad2b4df01f74d7bedd097cdc2ba3bcc86103a47cd970820de187b"
+}

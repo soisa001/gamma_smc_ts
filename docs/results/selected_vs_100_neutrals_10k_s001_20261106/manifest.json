@@ -1,0 +1,29 @@
+{
+  "contract": {
+    "version": 1,
+    "inputs": {
+      "docs/results/selection_arrays_eas_20261105_4h/completed_units.tsv": "50e942778c874eeb4db66217ea57bea4d0c8642aaf8bb383ad401830f0092bf1",
+      "docs/results/selection_arrays_eas_20261105_4h/calibration.npz": "6928bfc09017d16976f2391d92d1a9648141a208554ede8d60c4e697d6caca72",
+      "docs/results/selection_episode_10k_s001_20261106/series_data.npz": "374db47010a9c5b096efcd211c13234a67118630e3c35bfd4b7792ced43acd19",
+      "docs/results/selection_episode_10k_s001_20261106/input_manifest.json": "b5aa8998244a0a9c1da017555f949fb7f8311bb237ddac627350a4aaebae644b",
+      "docs/results/selection_episode_10k_s001_20261106/verified_calls.tsv": "66b80f7b6708f4dc616565637266a6bd9db907932bc9feb5beaa62b8e515e793"
+    },
+    "selection_rule": "First replicate in frozen order with a mass joint_hit; maximum mass z within 400-600 kb and 1-10 kya; first flattened index breaks ties.",
+    "null_rule": "All 50 neutral_test plus first 50 calibration records by replicate; shared 10k introgression pool."
+  },
+  "example": {
+    "id": "10k/introgression/s0.01/selected_00020",
+    "selection": 0.01,
+    "selection_start_kya": 10,
+    "selection_end_kya": 0,
+    "position_bp": 420000,
+    "selected_coordinate_bp": 500000,
+    "bin_kya": [
+      1,
+      2
+    ],
+    "present_af": 0.5713526582883864,
+    "selection_onset_af": 0.1392812629829663
+  },
+  "cache_sha256": "54126fe1973902aa3320e9001bbe73b753895855b8db42f7e7b838b2085e0dc2"
+}

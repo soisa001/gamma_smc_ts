@@ -1,0 +1,7 @@
+{
+  "figures_checked": ["01_neutral_curves.png", "02_pointwise_and_scan_pvalues.png"],
+  "result": "Both final figures visually inspected: readable labels, no clipping, legends above panels. Original single-replicate neutral curves are shown without smoothing.",
+  "execution": "WSL: uv --no-config run --no-project --python .venv/bin/python python scripts/plot_selected_vs_100_neutrals.py --workers 4",
+  "environment_note": "Existing project environment with package versions in provenance.json; uv 0.12.5 --no-config bypasses the repository runner-version constraint without modifying dependencies.",
+  "verification": "Original source hashes, 100 distinct neutral tree hashes, valid CDF arrays, selected-series identity, and original mass scan call checked. Strict threshold exceedance equals conservative p<=0.05 for every plotted method/bin. Cache reuse verified on second run. PDFs contain embedded TrueType fonts and no raster image objects."
+}

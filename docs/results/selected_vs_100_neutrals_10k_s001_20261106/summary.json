@@ -1,0 +1,115 @@
+{
+  "example": {
+    "id": "10k/introgression/s0.01/selected_00020",
+    "selection": 0.01,
+    "selection_start_kya": 10,
+    "selection_end_kya": 0,
+    "position_bp": 420000,
+    "selected_coordinate_bp": 500000,
+    "bin_kya": [
+      1,
+      2
+    ],
+    "present_af": 0.5713526582883864,
+    "selection_onset_af": 0.1392812629829663
+  },
+  "methods": {
+    "median": {
+      "highlighted_bin_kya": [
+        4,
+        5
+      ],
+      "selected_bin_mass": 0.031,
+      "neutrals_at_or_above": 0,
+      "raw_tail_fraction": 0.0,
+      "pointwise_p": 0.009900990099009901,
+      "original_scan_p": 0.36,
+      "pointwise_significant_bins": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        31,
+        32,
+        34
+      ],
+      "scan_significant_bins": []
+    },
+    "mass": {
+      "highlighted_bin_kya": [
+        1,
+        2
+      ],
+      "selected_bin_mass": 0.03208579414231933,
+      "neutrals_at_or_above": 0,
+      "raw_tail_fraction": 0.0,
+      "pointwise_p": 0.009900990099009901,
+      "original_scan_p": 0.02,
+      "pointwise_significant_bins": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "scan_significant_bins": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    }
+  }
+}
