@@ -1,0 +1,7 @@
+{
+  "figures_checked": ["01_selected_vs_neutral.png", "02_pairs_by_posterior_median.png", "03_pairs_by_true_tmrca.png"],
+  "result": "All three figures visually inspected: legible labels, legends above panels, pair annotations clear of curves. Different axes and retained older tails are disclosed.",
+  "execution": "WSL: uv --no-config run --no-project --python .venv/bin/python python scripts/plot_fitted_gamma_examples.py --workers 4",
+  "environment": "Existing project environment. --no-config bypasses the installed uv runner-version mismatch; no dependencies changed.",
+  "checks": "Reconstructed the saved median and mass CDFs at all 50 cutoffs for both simulations from raw decoder parameters. Independently reconstructed sampled-pair true CDFs from tree sequences. Verified input hashes, sample ordering, pair counts, positivity, stream completeness, and gamma median CDF=0.5. PDFs have embedded TrueType fonts and no raster objects."
+}

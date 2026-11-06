@@ -1,0 +1,7 @@
+{
+  "workers": 4,
+  "randomness": "No RNG draws or new simulations; deterministic nearest-age examples.",
+  "interpretation": "Actual original Gamma-SMC gamma parameters, transformed from coalescent units into kyr using theta/(2*mu)*25/1000. Selected region ascertained from earlier mass call; neutral first held-out replicate. Individual pairs need not share genotype class or true age when chosen by inferred median. Average curve is a mixture, not itself necessarily gamma.",
+  "density_grid": "Positive lower endpoint 0.05 kya (individual) or 0.1 kya (mixture), avoiding possible gamma singularity at zero; no truncation renormalization.",
+  "input_validation": "Reconstructed all 50 stored mass and median cutoffs and sampled-pair truth at 420 kb for both simulations. Confirmed pair ordering, stream length, positive parameters, and original file hashes."
+}

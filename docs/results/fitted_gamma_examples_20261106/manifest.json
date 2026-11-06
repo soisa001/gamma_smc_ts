@@ -1,0 +1,39 @@
+{
+  "contract": {
+    "version": 1,
+    "source_manifest_sha256": "9e9b1b62ef1e6f3b7bd5e7eb0a6721cc8d37c88b0164e107ad1a37646d2f1582",
+    "source_curves_sha256": "54126fe1973902aa3320e9001bbe73b753895855b8db42f7e7b838b2085e0dc2",
+    "position_bp": 420000,
+    "mutation_rate": 1.29e-08,
+    "generation_years": 25,
+    "choice": "Selected example and first held-out neutral; nearest posterior median or true TMRCA to each target, ties by pair order."
+  },
+  "inputs": [
+    {
+      "id": "10k/introgression/s0.01/selected_00020",
+      "directory": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/s0.01/selected_00020",
+      "hashes": {
+        "posterior.zst": "cbf68677e3aad8debf0b754c387f1057b65200610f66952b1a05e0621694b4ef",
+        "posterior.zst.meta": "b8075a75d779019116ea00ecd67f2354223f7848fa72fa8e39076cfdb3cbbbf2",
+        "observed.trees": "b89b17e403619dc089fbf00ab7e96cc185e1e1dd5f766501ea6361f261de1f6d",
+        "scores.npz": "6ff2e7a43cf110d3509e1c90a69a7c7a69cddb53e6293bc97d90f138e6216b11"
+      },
+      "theta": 0.00075,
+      "rho": 0.0005813953
+    },
+    {
+      "id": "10k/introgression/neutral_test_00000",
+      "directory": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00000",
+      "hashes": {
+        "posterior.zst": "a282f2445dd06a82ee4d9ae3d5da787e01258e2db894487364d64043aee68e15",
+        "posterior.zst.meta": "b8075a75d779019116ea00ecd67f2354223f7848fa72fa8e39076cfdb3cbbbf2",
+        "observed.trees": "33f6c73b348d0a68599511d53f379c8ea27fc8e1c57bd42b58d2b473ad1737dc",
+        "scores.npz": "a6efc7dcc61eeb27cb69c6cd945d6195554f47c3433ce72195ff7dd066c121e2"
+      },
+      "theta": 0.00075,
+      "rho": 0.0005813953
+    }
+  ],
+  "cache_sha256": "4b11238a05e2bc911345d501819b52feefd7faa66e76da5330cf7837b55de188",
+  "validation": "Reconstructed all 50 stored mass and median cutoffs and sampled-pair truth at 420 kb for both simulations. Confirmed pair ordering, stream length, positive parameters, and original file hashes."
+}

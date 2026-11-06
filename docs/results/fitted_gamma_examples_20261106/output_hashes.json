@@ -1,0 +1,17 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "01_selected_vs_neutral.pdf": "3768cf25385347c0ae7d112fa505c1baf2f11f03b063aeda807e6fb4f751fe8a",
+  "01_selected_vs_neutral.png": "3ce84ba903eda8bdf41586e6084364561aa4d57a95aabc677d729d5bd2e1f44c",
+  "02_pairs_by_posterior_median.pdf": "2b560d1c9992390db3796b7c40fa491d3db5ef3ffda63422e8981261d40c4471",
+  "02_pairs_by_posterior_median.png": "bc35256fc00fa206277a52d47e16e93db80661ac9d38a0a6de8081f1df96b8ad",
+  "03_pairs_by_true_tmrca.pdf": "80e2ef2dc3798a15f496fe76cc3a353339eef4934a7637c22a5be724ef366c42",
+  "03_pairs_by_true_tmrca.png": "b93e3ce59c6e84125839cbc5d19800f93e3f6d5a3b1dce74563d8a369d1f8071",
+  "fitted_gamma_curves.pdf": "e6d68256fafd2b3448a6aee2f835cc4f6c4a5363841860d1339dd50cfae9db74",
+  "manifest.json": "5720f39fbfac3de957ad885a1552b7de8e6d337d245528e656cac535711b0325",
+  "pair_examples.tsv": "e665f2940a84bc38022bb661f030fd54e72ee0dc987f86aa6a772b165f48e236",
+  "parameters.npz": "4b11238a05e2bc911345d501819b52feefd7faa66e76da5330cf7837b55de188",
+  "pdf_validation.json": "79cbfded71584370b896a895e1f5c1a9fc94e6828f037d575868d9652069f9c2",
+  "provenance.json": "06118ca0b97d02963e08506cb559f067e12b8b1976d8e3d6a7107f912f8977c0",
+  "summary.json": "91efa7a4849b34dbc5978c9afa317bc14e4eacf518a6a8a8c7cdf8389ee1d8ec",
+  "visual_validation.json": "78cad09c2153554daec5a82731891742aaa07f11b92daa2be9a9964ed9227a57"
+}

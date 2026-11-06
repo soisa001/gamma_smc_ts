@@ -1,0 +1,18 @@
+{
+  "01_selected_vs_neutral.pdf": {
+    "embedded_truetype": true,
+    "raster_objects": 0
+  },
+  "02_pairs_by_posterior_median.pdf": {
+    "embedded_truetype": true,
+    "raster_objects": 0
+  },
+  "03_pairs_by_true_tmrca.pdf": {
+    "embedded_truetype": true,
+    "raster_objects": 0
+  },
+  "fitted_gamma_curves.pdf": {
+    "embedded_truetype": true,
+    "raster_objects": 0
+  }
+}
