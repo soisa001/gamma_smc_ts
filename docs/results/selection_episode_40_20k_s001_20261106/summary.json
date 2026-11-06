@@ -1,0 +1,78 @@
+{
+  "selection": 0.01,
+  "selected": 100,
+  "neutral_test": 50,
+  "methods": {
+    "truth_all_pairs": {
+      "joint_hits": 21,
+      "only_mistimed": 24,
+      "any_outside_component": 29,
+      "null_any_calls": 0,
+      "center_hits": 13,
+      "mean_temporal_f1": 0.013203463203463202,
+      "focal_mean_excess_peak_kya": 39.5
+    },
+    "median": {
+      "joint_hits": 0,
+      "only_mistimed": 1,
+      "any_outside_component": 1,
+      "null_any_calls": 2,
+      "center_hits": 0,
+      "mean_temporal_f1": 0.0,
+      "focal_mean_excess_peak_kya": 13.5
+    },
+    "mass": {
+      "joint_hits": 3,
+      "only_mistimed": 16,
+      "any_outside_component": 17,
+      "null_any_calls": 2,
+      "center_hits": 1,
+      "mean_temporal_f1": 0.0031111111111111114,
+      "focal_mean_excess_peak_kya": 2.5
+    }
+  },
+  "af_milestones": {
+    "50": {
+      "min": 0.010049559471365639,
+      "q10": 0.010049559471365639,
+      "q25": 0.010049559471365639,
+      "median": 0.010049559471365639,
+      "q75": 0.010049559471365639,
+      "q90": 0.010049559471365639,
+      "max": 0.010049559471365639
+    },
+    "40": {
+      "min": 0.002764127764127764,
+      "q10": 0.009935503685503685,
+      "q25": 0.014434889434889435,
+      "median": 0.028255528255528257,
+      "q75": 0.04979269041769042,
+      "q90": 0.07361793611793614,
+      "max": 0.1630835380835381
+    },
+    "20": {
+      "min": 0.03522786799371399,
+      "q10": 0.26929020429544265,
+      "q25": 0.45645625982189625,
+      "median": 0.697158198009429,
+      "q75": 0.7970141435306444,
+      "q90": 0.8533394447354637,
+      "max": 0.9692247249869042
+    },
+    "0": {
+      "min": 0.07064856391317055,
+      "q10": 0.2507545766134389,
+      "q25": 0.4757652044530648,
+      "median": 0.7095278582246194,
+      "q75": 0.8267728564975955,
+      "q90": 0.8982849323803704,
+      "max": 0.9983526848579855
+    }
+  },
+  "proposal_outcomes": {
+    "analyzed_prefix": 471,
+    "accepted": 100,
+    "lost": 369,
+    "fixed": 2
+  }
+}

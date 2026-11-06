@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot the complete 100-survivor, 40–20-kya, s=.02 introgression cohort.
+"""Plot a complete 100-survivor, 40–20-kya introgression cohort.
 
 Phase 1 verifies and caches only the required existing outputs. Phase 2 validates
 calls against the frozen report and writes figures. No simulations or RNG draws.
@@ -45,7 +45,7 @@ def save_json(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8', newline='\n')
 
 
-def prepare(report, out, workers):
+def prepare(report, out, workers, selection=.02):
     names = ('completed_units.tsv', 'calibration.npz', 'replicate_metrics.tsv',
              'all_pairs_truth_cdfs.npz', 'all_pairs_truth_provenance.json',
              'all_pairs_truth_replicates.tsv', 'proposal_summary.tsv')
@@ -54,14 +54,14 @@ def prepare(report, out, workers):
     assert all(inputs[name] == inventory[name] for name in names), 'Changed source report'
     records = pd.read_csv(report / 'completed_units.tsv', sep='\t', low_memory=False)
     selected = records[(records.regime == '40_20k') & (records.origin == 'introgression') &
-                       (records.cohort == 'selected') & (records.selection == .02)].sort_values('replicate')
+                       (records.cohort == 'selected') & (records.selection == selection)].sort_values('replicate')
     neutral = records[(records.regime == '10k') & (records.origin == 'introgression') &
                       (records.cohort == 'neutral_test')].sort_values('replicate')
     assert len(selected) == 100 and len(neutral) == 50
     chosen = pd.concat([selected, neutral], ignore_index=True)
     contract = dict(version=1, input_sha256=inputs, ids=chosen.id.tolist(),
                     selected=100, neutral=50, focal_position_bp=500000,
-                    selection_start_kya=40, selection_end_kya=20, selection=.02)
+                    selection_start_kya=40, selection_end_kya=20, selection=selection)
     cache, manifest = out / 'series_data.npz', out / 'input_manifest.json'
     if cache.exists() and manifest.exists():
         saved = json.loads(manifest.read_text(encoding='utf-8'))
@@ -85,7 +85,7 @@ def prepare(report, out, workers):
                 tr = np.loadtxt(directory / 'trajectory.tsv', skiprows=1)
                 np.testing.assert_array_equal(tr[:, 0], np.arange(50000, -1, -25))
                 np.testing.assert_allclose(tr[:, 1], tr[:, 4] / (2 * tr[:, 2]), atol=1e-14)
-                np.testing.assert_allclose(tr[:, 3], .02 * ((tr[:, 0] < 40000) & (tr[:, 0] >= 20000)))
+                np.testing.assert_allclose(tr[:, 3], selection * ((tr[:, 0] < 40000) & (tr[:, 0] >= 20000)))
                 assert np.isclose(tr[-1, 1], row.final_frequency) and 0 < tr[-1, 1] < 1
                 trajectory = tr[:, 1]
             return scores, trajectory
@@ -167,7 +167,7 @@ def calls_and_checks(bundle, report, out):
     return np.stack(calls), pd.DataFrame(rows)
 
 
-def figures(bundle, calls, metrics, out):
+def figures(bundle, calls, metrics, out, selection=.02):
     matplotlib.rcParams.update({'font.size': 14, 'axes.titlesize': 15, 'axes.labelsize': 15,
                                'xtick.labelsize': 12, 'ytick.labelsize': 12,
                                'pdf.fonttype': 42, 'ps.fonttype': 42})
@@ -175,7 +175,7 @@ def figures(bundle, calls, metrics, out):
     cdf, af = bundle['cdfs'], bundle['af']
     mass = np.diff(cdf, axis=-1)
     order = np.argsort(af[:, -1], kind='stable')
-    summary = {'selected': 100, 'neutral_test': 50, 'methods': {}, 'af_milestones': {}}
+    summary = {'selection': selection, 'selected': 100, 'neutral_test': 50, 'methods': {}, 'af_milestones': {}}
     snapshots, profile_rows = [], []
     with PdfPages(out / 'selection_episode_series.pdf') as book:
         def save(fig, name):
@@ -185,7 +185,7 @@ def figures(bundle, calls, metrics, out):
             plt.close(fig)
 
         fig, axes = plt.subplots(2, 1, figsize=(11, 8.5), gridspec_kw={'height_ratios': [1.4, 1]})
-        fig.suptitle('AF histories · introgression, s=0.02 · 100 survivors', y=.99, fontsize=17)
+        fig.suptitle(f'AF histories · introgression, s={selection:g} · 100 survivors', y=.99, fontsize=17)
         axes[0].axvspan(20, 40, color='.88', zorder=0)
         axes[0].plot(years, af.T, color=BLUE, alpha=.17, linewidth=.7)
         axes[0].plot(years, np.median(af, axis=0), color=ORANGE, linewidth=3)
@@ -217,7 +217,7 @@ def figures(bundle, calls, metrics, out):
         save(fig, '01_allele_frequency')
 
         fig, axes = plt.subplots(3, 2, figsize=(11, 8.5), sharex=True)
-        fig.suptitle('Introgression, s=0.02 · coalescence at the focal coordinate', y=.995, fontsize=17)
+        fig.suptitle(f'Introgression, s={selection:g} · coalescence at the focal coordinate', y=.995, fontsize=17)
         for j, label in enumerate(LABELS):
             for col, (values, times) in enumerate(((cdf[j, :, 50], np.arange(1, 51)),
                                                    (mass[j, :, 50], np.arange(1.5, 50)))):
@@ -252,7 +252,7 @@ def figures(bundle, calls, metrics, out):
         excess = mass[:, :100].mean(axis=1) - mass[:, 100:].mean(axis=1)
         limit = abs(excess).max()
         fig, axes = plt.subplots(3, 1, figsize=(11, 8.5), sharex=True, sharey=True)
-        fig.suptitle('Introgression, s=0.02 · selected-minus-neutral coalescence mass', y=.99, fontsize=16)
+        fig.suptitle(f'Introgression, s={selection:g} · selected-minus-neutral coalescence mass', y=.99, fontsize=16)
         for j, ax in enumerate(axes):
             im = ax.pcolormesh(np.arange(1, 51), np.arange(101) * 10 - 500, excess[j],
                                cmap='RdBu_r', vmin=-limit, vmax=limit, shading='flat', rasterized=False)
@@ -274,7 +274,7 @@ def figures(bundle, calls, metrics, out):
         save(fig, '03_spatial_coalescence_excess')
 
         fig, axes = plt.subplots(1, 3, figsize=(11, 8.5), sharex=True, sharey=True)
-        fig.suptitle('Introgression, s=0.02 · temporal calls across 100 survivors', y=.99, fontsize=16)
+        fig.suptitle(f'Introgression, s={selection:g} · temporal calls across 100 survivors', y=.99, fontsize=16)
         near = calls[:, :100, 40:61].any(axis=2)
         truth = (np.arange(1, 50) >= 20) & (np.arange(1, 50) < 40)
         for j, ax in enumerate(axes):
@@ -317,18 +317,24 @@ def figures(bundle, calls, metrics, out):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', type=Path, default=ROOT / 'docs/results/selection_arrays_eas_20261105_4h')
-    parser.add_argument('--out', type=Path, default=ROOT / 'docs/results/selection_episode_40_20k_s002_20261106')
+    parser.add_argument('--out', type=Path)
+    parser.add_argument('--selection', type=float, default=.02,
+                        help='Selection coefficient of an existing complete 100-survivor cohort.')
     parser.add_argument('--workers', type=int, default=4)
     args = parser.parse_args()
     assert 1 <= args.workers <= 24
+    assert 0 < args.selection < 1
+    if args.out is None:
+        tag = format(args.selection, 'g').replace('.', '')
+        args.out = ROOT / f'docs/results/selection_episode_40_20k_s{tag}_20261106'
     args.out.mkdir(parents=True, exist_ok=True)
-    bundle, records = prepare(args.report, args.out, args.workers)
+    bundle, records = prepare(args.report, args.out, args.workers, args.selection)
     calls, metrics = calls_and_checks(bundle, args.report, args.out)
     print('All 450 region/method metric records match the frozen report.', flush=True)
-    summary = figures(bundle, calls, metrics, args.out)
+    summary = figures(bundle, calls, metrics, args.out, args.selection)
     counts = pd.read_csv(args.report / 'proposal_summary.tsv', sep='\t')
     count = counts[(counts.regime == '40_20k') & (counts.origin == 'introgression') &
-                   (counts.cohort == 'selected') & (counts.selection == .02)].iloc[0]
+                   (counts.cohort == 'selected') & (counts.selection == args.selection)].iloc[0]
     summary['proposal_outcomes'] = {k: int(count[k]) for k in ('analyzed_prefix', 'accepted', 'lost', 'fixed')}
     save_json(args.out / 'summary.json', summary)
     pdf_checks = {}
@@ -341,9 +347,9 @@ def main():
         assert check['pages'] == (4 if path.name == 'selection_episode_series.pdf' else 1)
         pdf_checks[path.name] = check
     save_json(args.out / 'pdf_validation.json', pdf_checks)
-    lines = ['# Selection at 40–20 kya, s=0.02: complete introgression cohort', '',
+    lines = [f'# Selection at 40–20 kya, s={args.selection:g}: complete introgression cohort', '',
         'Open [the four-page figure series](selection_episode_series.pdf). All pages are also saved individually as PNG and vector PDF; no inline plotting is used.', '',
-        'These are the first 100 present-day segregating survivors in the frozen proposal order, not a subset chosen for attractive trajectories or significant results. The corresponding de novo treatment has 21 survivors and is not included here. The 100 introgression survivors required 967 proposals: 743 lost the focal allele and 124 fixed it. The null comparison uses the 50 held-out neutral introgression regions, without focal-allele survival or AF matching. Both cohorts have the same 1% Neanderthal pulse at 50 kya and EAS demographic history.', '',
+        f'These are the first 100 present-day segregating survivors in the frozen proposal order, not a subset chosen for attractive trajectories or significant results. The 100 introgression survivors required {int(count.analyzed_prefix)} proposals: {int(count.lost)} lost the focal allele and {int(count.fixed)} fixed it. The null comparison uses the 50 held-out neutral introgression regions, without focal-allele survival or AF matching. Both cohorts have the same 1% Neanderthal pulse at 50 kya and EAS demographic history.', '',
         '## Figure guide', '',
         '1. [Allele-frequency trajectories](01_allele_frequency.pdf): all 100 whole-population trajectories, the pointwise median, and AF distributions at introgression, selection onset, selection cessation, and today. Selection is shaded; trajectory time runs from past to present. The selected cohort is conditioned on present-day segregation.',
         '2. [Selected versus neutral TMRCAs](02_selected_vs_neutral_tmrca.pdf): cumulative coalescence fractions and adjacent 1-kyr bin masses at the same fixed 500-kb coordinate in both cohorts. Lines are means; bands are pointwise 10th–90th percentiles across regions, not confidence or posterior credible intervals. Right-column y-scales vary by estimator. Mass is not conditioned on coalescence before 50 kya.',
@@ -361,7 +367,7 @@ def main():
     for method, label in zip(METHODS, LABELS):
         values = summary['methods'][method]
         lines.append(f"| {label} | {values['joint_hits']} | {values['only_mistimed']} | {values['any_outside_component']} | {values['mean_temporal_f1']:.3f} | {values['focal_mean_excess_peak_kya']:g} kya |")
-    lines += ['', 'The true mean focal excess peaks at 38.5 kya, inside the simulated episode. The inferred profiles put substantial mass at younger times; their mean excess peaks are 11.5 kya for the median and 2.5 kya for posterior mass. These are descriptive maxima of the mean selected-minus-neutral curve, not fitted onset/end dates or per-replicate significance calls. True TMRCAs use all 19,900 pairs; inference retains the original fixed 1,000 pairs, so the panels do not isolate inference error from pair subsampling.', '',
+    lines += ['', 'The table reports descriptive maxima of the mean selected-minus-neutral curve, not fitted onset/end dates or per-replicate significance calls. True TMRCAs use all 19,900 pairs; inference retains the original fixed 1,000 pairs, so the panels do not isolate inference error from pair subsampling. These are the original uncorrected Gamma-SMC estimates; no post-hoc temporal calibration or ASMC inference is applied.', '',
         'The primary scan covers [1,2), …, [49,50) kya; [0,1) is absent. Each method uses 20 independent development regions and 99 calibration regions, with conservative +1 empirical p-values against maxima over all 100 genomic positions and all 49 intervals. The 50 plotted neutral regions are held out from calibration. No thresholds were refitted to the selected cohort or the plotted null cohort. All 450 region/method metric records reproduce the frozen reports.', '',
         'A region can have both a correctly overlapping component and a wholly outside component. “Only mistimed” counts regions with near-site calls but no temporal overlap; “any wholly outside component” also includes errors alongside a correct call. Center temporal F1 refers to the exact focal coordinate, whereas the plotted call union uses ±100 kb.', '',
         '## Reproduce the figures without rerunning simulations', '',
@@ -370,7 +376,7 @@ def main():
         'if [[ -d "$REPO/.git" ]]; then', '  git -C "$REPO" pull --ff-only', 'else',
         '  git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git "$REPO"',
         'fi', 'cd "$REPO"',
-        'uv run --frozen python scripts/plot_selection_episode_series.py --workers 4', '```', '',
+        f'uv run --frozen python scripts/plot_selection_episode_series.py --selection {args.selection:g} --workers 4', '```', '',
         'The script separates verified data extraction/cache reuse from plotting and metric validation. `series_data.npz` contains the full plotting arrays; `af_milestones.tsv` and `tmrca_profiles.tsv` contain tabular summaries; `plot_row_order.tsv` maps each displayed row to its simulation; `verified_calls.tsv` contains the recomputed metrics. `input_manifest.json`, `provenance.json`, `pdf_validation.json`, and `output_hashes.json` record provenance and integrity checks.']
     (args.out / 'README.md').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
     save_json(args.out / 'provenance.json', dict(script_sha256=sha(__file__), source_report=str(args.report.resolve()),

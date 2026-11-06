@@ -1,0 +1,12 @@
+{
+  "figures_checked": [
+    "01_allele_frequency.png",
+    "02_selected_vs_neutral_tmrca.png",
+    "03_spatial_coalescence_excess.png",
+    "04_called_intervals.png"
+  ],
+  "result": "All four figures visually inspected: readable labels, no clipping, legends above panels and no overlapping data.",
+  "execution": "WSL: uv --no-config run --no-project --python .venv/bin/python python scripts/plot_selection_episode_series.py --selection 0.01 --workers 4",
+  "environment_note": "Used the existing project environment. Installed uv 0.12.5 exceeds the repository uv constraint; --no-config bypassed that runner constraint without syncing or changing dependencies. Package versions are recorded in provenance.json.",
+  "validation": "All 450 region/method records match frozen reports. Source hashes and cache array constraints passed. PDF structural validation is recorded in pdf_validation.json. No simulations or RNG draws."
+}
