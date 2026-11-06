@@ -1,0 +1,6 @@
+{
+  "figure": "allele_frequencies_with_neutrals.png",
+  "visual_check": "Both panels inspected. Large text readable, horizontal legend above panels, shaded selection windows correct, no clipping or overlap with data.",
+  "pdf_check": "Embedded TrueType text and vector paths; no raster image objects.",
+  "data_check": "All 100 trajectory hashes and AF copy counts verified, with identical demographic size history and time grid to selected examples. Same 100 neutral IDs as posterior comparisons."
+}

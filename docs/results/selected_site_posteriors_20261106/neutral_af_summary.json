@@ -1,0 +1,15 @@
+{
+  "neutral_count": 100,
+  "lost": 92,
+  "fixed": 0,
+  "segregating": 8,
+  "mean_present_frequency": 0.009676382283391344,
+  "max_present_frequency": 0.38729176076733,
+  "selected_present_frequencies": [
+    0.5056194702021947,
+    0.1840608975210564,
+    0.5713526582883864
+  ],
+  "script_sha256": "b6baee8e728693d23fdf2f11a0e9c8699d7b62ddc9e19d260a5c4efcc448da0c",
+  "tracking": "Original focal allele introduced on Neanderthal donor haplotypes at 50 kya; not the relabelled nearest segregating neutral site."
+}

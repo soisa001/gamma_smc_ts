@@ -1,0 +1,717 @@
+{
+  "contract": {
+    "position_bp": 500000,
+    "source_manifest_sha256": "9e9b1b62ef1e6f3b7bd5e7eb0a6721cc8d37c88b0164e107ad1a37646d2f1582",
+    "ids": [
+      "10k/introgression/neutral_test_00000",
+      "10k/introgression/neutral_test_00001",
+      "10k/introgression/neutral_test_00002",
+      "10k/introgression/neutral_test_00003",
+      "10k/introgression/neutral_test_00004",
+      "10k/introgression/neutral_test_00005",
+      "10k/introgression/neutral_test_00006",
+      "10k/introgression/neutral_test_00007",
+      "10k/introgression/neutral_test_00008",
+      "10k/introgression/neutral_test_00009",
+      "10k/introgression/neutral_test_00010",
+      "10k/introgression/neutral_test_00011",
+      "10k/introgression/neutral_test_00012",
+      "10k/introgression/neutral_test_00013",
+      "10k/introgression/neutral_test_00014",
+      "10k/introgression/neutral_test_00015",
+      "10k/introgression/neutral_test_00016",
+      "10k/introgression/neutral_test_00017",
+      "10k/introgression/neutral_test_00018",
+      "10k/introgression/neutral_test_00019",
+      "10k/introgression/neutral_test_00020",
+      "10k/introgression/neutral_test_00021",
+      "10k/introgression/neutral_test_00022",
+      "10k/introgression/neutral_test_00023",
+      "10k/introgression/neutral_test_00024",
+      "10k/introgression/neutral_test_00025",
+      "10k/introgression/neutral_test_00026",
+      "10k/introgression/neutral_test_00027",
+      "10k/introgression/neutral_test_00028",
+      "10k/introgression/neutral_test_00029",
+      "10k/introgression/neutral_test_00030",
+      "10k/introgression/neutral_test_00031",
+      "10k/introgression/neutral_test_00032",
+      "10k/introgression/neutral_test_00033",
+      "10k/introgression/neutral_test_00034",
+      "10k/introgression/neutral_test_00035",
+      "10k/introgression/neutral_test_00036",
+      "10k/introgression/neutral_test_00037",
+      "10k/introgression/neutral_test_00038",
+      "10k/introgression/neutral_test_00039",
+      "10k/introgression/neutral_test_00040",
+      "10k/introgression/neutral_test_00041",
+      "10k/introgression/neutral_test_00042",
+      "10k/introgression/neutral_test_00043",
+      "10k/introgression/neutral_test_00044",
+      "10k/introgression/neutral_test_00045",
+      "10k/introgression/neutral_test_00046",
+      "10k/introgression/neutral_test_00047",
+      "10k/introgression/neutral_test_00048",
+      "10k/introgression/neutral_test_00049",
+      "10k/introgression/calibration_00000",
+      "10k/introgression/calibration_00001",
+      "10k/introgression/calibration_00002",
+      "10k/introgression/calibration_00003",
+      "10k/introgression/calibration_00004",
+      "10k/introgression/calibration_00005",
+      "10k/introgression/calibration_00006",
+      "10k/introgression/calibration_00007",
+      "10k/introgression/calibration_00008",
+      "10k/introgression/calibration_00009",
+      "10k/introgression/calibration_00010",
+      "10k/introgression/calibration_00011",
+      "10k/introgression/calibration_00012",
+      "10k/introgression/calibration_00013",
+      "10k/introgression/calibration_00014",
+      "10k/introgression/calibration_00015",
+      "10k/introgression/calibration_00016",
+      "10k/introgression/calibration_00017",
+      "10k/introgression/calibration_00018",
+      "10k/introgression/calibration_00019",
+      "10k/introgression/calibration_00020",
+      "10k/introgression/calibration_00021",
+      "10k/introgression/calibration_00022",
+      "10k/introgression/calibration_00023",
+      "10k/introgression/calibration_00024",
+      "10k/introgression/calibration_00025",
+      "10k/introgression/calibration_00026",
+      "10k/introgression/calibration_00027",
+      "10k/introgression/calibration_00028",
+      "10k/introgression/calibration_00029",
+      "10k/introgression/calibration_00030",
+      "10k/introgression/calibration_00031",
+      "10k/introgression/calibration_00032",
+      "10k/introgression/calibration_00033",
+      "10k/introgression/calibration_00034",
+      "10k/introgression/calibration_00035",
+      "10k/introgression/calibration_00036",
+      "10k/introgression/calibration_00037",
+      "10k/introgression/calibration_00038",
+      "10k/introgression/calibration_00039",
+      "10k/introgression/calibration_00040",
+      "10k/introgression/calibration_00041",
+      "10k/introgression/calibration_00042",
+      "10k/introgression/calibration_00043",
+      "10k/introgression/calibration_00044",
+      "10k/introgression/calibration_00045",
+      "10k/introgression/calibration_00046",
+      "10k/introgression/calibration_00047",
+      "10k/introgression/calibration_00048",
+      "10k/introgression/calibration_00049"
+    ],
+    "trajectory_sha256": [
+      "c42ea49d5b37b9ff64c2ca04f14b8442b798983e633864bed50dcda4f5354082",
+      "76eed01499cd389fb4bef4196de76ec80aadab3d69e3dc76c88b2e406f65d3af",
+      "763fed686d0d9581945e44433f97047168f570bca971765f1b4263dd9f15ae2d",
+      "916b81ce9177d908e63d27b3bea0cebd8f8aad2c9080ff173b9cbc20ba07fb89",
+      "a1bbe66befe7d11f11af81134f0233b4b4b0498f98bc04379c13b25395e595c5",
+      "0c9c8919bd2de96fe31bc2d94e283e7c916a0ec87ebaef113c46529322ddbe91",
+      "6232cd0d4f5b834e00f954b57ab8ac7023fcee35d28c7fe690c830804365abd6",
+      "33cd7dae7ae85a9bc8635502d135c35b39f94b21a01b0cabc1dc714e1c17beba",
+      "4a3bba5416650c82f320c5364889540501f8da8df3c9933cfe356f85fe8214ce",
+      "014e5d937d44ff5620e5e7dab38de6069de580be9d5a45fdf4f1d5567036ec6c",
+      "ee7bf2f276be0cbc556ec0e1bbe46afdded68dfb58c69f1e0d1e5e3367b50aa1",
+      "d9ab7bd2818c9e582b983aaa2ed9270b61ca31606f32834957b620e2a7ecb249",
+      "3ef857e9ac8d720806bf46b2b637320f848cd58f73703cb08c4d820b7d84f38c",
+      "6b1b519d7bf0a48defdc429bf383ffd4913ba854582355b7c60e80fa4459d5ba",
+      "7dc9d2095633b104031e9222c75b112e4b7628fb99fbb426fcfa8f24a3d7e768",
+      "c482e78fa88c630919032a827cbdbb531de373b8aabc10c5b27c74e45c6a5b7c",
+      "33457c5f58f4d4d91876889f694c08e49cd98c0c626ae7564a116ef3dad50d23",
+      "8afd08deb10a5ea0cf7345c3fdc4ec91c1dc599963c73b94b40601d5e321b763",
+      "1c9e369442b92c9b3d290f093c2f16002cd5d903a1634f68b9efe95371d28fe2",
+      "f7f284f6ce430ba132addab599fbb4a7bae2bbaad4d87fb63168ea1fa1126473",
+      "0ccddab24608379ef24f22a6e0e19f68df43df7af863a8f910a55d8dc5d68ba8",
+      "0fcc6e7fa7031bc98ceee891771131e8b92664e08d4f8052b44d6775b81305b1",
+      "27fcaa6037c9e501d9cde1b78ebe013aebab0a87e9d60596bb5fc58f7050a9e5",
+      "06fd248fc606b68fe7dcadfd81a248a4756617b0f85bb0161a0a977a011d5538",
+      "458fc79f32b95436b9e837bdb4af42b2de700df1898f333844253e88ef9a171c",
+      "05e4b67f36872dcdee6fb0e0bc15b4aef336f30727c88dbd6b16719ad59ed33f",
+      "5fea2fbe06156e02aca3aaff9ea38e1414c176adf89d3b0b8828369d9d60ec1a",
+      "b77c86e6ff83287172ed130963cc0f32b0d93326442ce11f7591799a352f89a5",
+      "4e8ff3c46ed730f20138d6ae4297d4d10485bdebabfa2b11364d05d7de04811c",
+      "88c1f9352dcfb5e271a1b3a71f3833819ee6245fc83a8cf72bd60ee02000fa42",
+      "07d22882dbc458fa6025c4a410e396a67260a72b30b9f8fa9cc030d4aa403693",
+      "3a1eaef5355672e3c8c8200e3e9975b9533e9a52e84ea3d3a2090c75a7c5329d",
+      "a4cfd6c7863366de291515ed2bd851f22bf9b8d5b90705709f141ef5fc50f46a",
+      "8a0bbad69f1aa526d7d62f8a46db1bc83f92ff9ddfcb71595de64d5ea903132a",
+      "3305cbc999018dc0c9b44c6dcd63b04d1f8194ceb588a8502fa57ab73d88fcf7",
+      "741d8d5fa906e315a3882b4a457a0e7e43729a9af13a3ecaad1f7ba54eb25ac4",
+      "556969d57890c3187a2dbc18658098e0e9efab14f4926fe9e7eb507a6a40cee3",
+      "43f07984c4dc2900442a9b835b8bd5750c677b6556782756327e788ffc28771f",
+      "636e4c7ca315ba21a48f5f265e15a89bb55d94f728150ab4088a983c622e0c97",
+      "f697c845797a9dde576f7aee6704de515185e93bbd4f48eca93225fe7ea8e45b",
+      "55a859c11b6ba4f37ca39204840dc85d11da72bbef5ad6fdbfde07ebaa2d5e30",
+      "bf8e656f355547ba66cac48a889630e9449aa29ddd79abffdd4e32b82b9e9c95",
+      "7a67b0d2be8e54069d549f9e703e0dec3b5811a6786a22a81d11d2d765e0b2dc",
+      "d2e4edbb8e4f9ee929dab1b87f5fc7229dce5d55e0a883b8d22db56edad44666",
+      "1a06f3f91c7f8c0b94caebb401d523c568d9022dfb40e176e55401eb8157a02f",
+      "5a878ded237d954ed30fdfd806c43e1c2bcc263c43632038da598f47a0550d05",
+      "8e54c1f00c6df277bbcb32e85551a2767eb1cc658951c4ab292604659426ed6b",
+      "023e486b1b9ac9862e5c25960fdaf13601ead6c7f5524367274837fe4adebd7d",
+      "a629f0a4bba63437b9ed98898dd62998a034ae03672272313c4b97985da4ee1b",
+      "1450fb826bc8e11e86d08d69e80efcbce903d46b55713c4c5393059c0e670a91",
+      "813ee8ca1c46f62c93d4cdcb691c8fab8d48f3dd5ffd94fcdd7d7d1fa81189e4",
+      "3499a38df4f48f4c9dcd7cfdabda3159aaf4a1b2501c4df6d47e56e7aab89c2e",
+      "9d7db7224538721f3ba115e10fe2a6c7deff4d72e5888d9674d136f30e121bb9",
+      "897638b86c76bf8ae09aa4b80b47716423b1d7db6fe99e0658b99eb2bf6ed41d",
+      "a571aeae095a8c3f410354b75f24341bc88f540942d09a77ba348b7a839e2c63",
+      "1eabc8604811a705ced48c1a37a02081add859fe51db1c7049da6aa76c9cea88",
+      "8a9bbdc95f8f74ea453dc60796108ee277bff3148bc8b825e0d45db5113dd580",
+      "368c996fc42dbb47891be756e8ac4de3cdd0179c0b20a97c8b38d9c2309109ac",
+      "dea19602ff75da973f609b18ac3929b5be2411ec45d3c533dc75e382d7a1f2b9",
+      "0aedb7b19d04cc3457473f93c2dcb2bdc7987f546447dbc54bd1908636febb67",
+      "78fa0aab2c555280accb023d95197e5da9564f8e1e0c08519d603e1785dab2bd",
+      "1fd29e4605128a198a87624334219fe546aceeae207b7d80c4f08e4855e45076",
+      "806940738a0aecae3d0b37fc4304325a7a006fffd2094ad2ad2a6bbfc842369c",
+      "11e7649c0c5947a7ebf702a5c76ae09fe3257ad80447c639fea7f26bb7085bfd",
+      "fbbe5f921b6c9464b6dc13704e8445b505dd8cf9d1a75fbb4c578de191fbd8d9",
+      "f91b925be5fe65b0d239d76bc48fa155fa8835158a2d738f36478ce54be24fd8",
+      "35230ee7f767530cbdd4e413ba9ef78af6deb3c8f09303d4867cbde49bc6e703",
+      "43259976bd22e2da6e061688090f958088fb37174ce154f9ed654acbc5372bbd",
+      "80b05306752dba44bfd5dd74bb68d01a0c709ed258055e80fbfcf4f1d471ab02",
+      "0116fad8a9275e71da3d1c9fafa06dc8b3d216d99ef94a11b8504fb82137d7df",
+      "d65e8a4e86bcec9a3d24db70503a5b9aced30282ffadf4692a31160fb031aafe",
+      "793311f6873fd031daac7d92bfc4975b9e35c071e35093e5363880b21327e19a",
+      "5fa42bea349e0b3368ab80ac93d13115fef4d2e889da492975410ad8a6a62023",
+      "e938b5d3ead93315d828267b520fe9e21036ea7044c7d1ac6a6c702447bf3eb7",
+      "cb141b7534e5e01ddbfa62bc91d14f027003d931b7718abfca6294ad77a59ee7",
+      "b98f27e770a93e5499be94a5318234b015dff8ea57e46f6f0b5c3e452743aa48",
+      "b2aa6b18f169ab256511d9695e66e484c4fb6681d525ffbba889b25cac604021",
+      "32dfdb003e48fe94ddc08388a10954b043d69067739f02be733bf0ed1384e3fa",
+      "8da4f700961d3d26c3e4b7d94ffabd8940bf6f808f396f79a35e9b4dee6fc3e0",
+      "661104784a5793fa2482f5deaa4d49adb28763da1c7a8c8dee31b486f886d911",
+      "983bf4ab8d79c743a759b148b95b2ee830f3def3e3d472d308843cab9e9f1268",
+      "010b05faa1de67b5c6e02d2d6b5b17aca57b7a58d5e6ef5fbd5e582b5df87cf1",
+      "b6efff1a94e0488a6508626839d0f3aadfa708102160f66439140a3fb0a271a7",
+      "599fe8ab063fa7032be542c11102f8382bbcc521795ca6695baf77a4e837f40c",
+      "922ebaf24eb191aff694f63db1ce02fbbc374ae84ffe9d6ce1a3c54e3985db1c",
+      "b917db6f26ae29b9f209a67585cd9014218b4a6093fbaec59ba54934d04728a9",
+      "1ba5cec1d127db0d3beda2a3e3bb4bb856518386e7dd4a64f19484bfa16c37c4",
+      "7f4b1172455b64f1fa6648a8513dec7365de1ae83f0f3b65aeaee991cf000570",
+      "c3918151c2495916bb88af2e723a008912e7752ccd97e02549754f18489ff540",
+      "4c75ce22a60c870559cf488061e01fbe8ebe7b8ddf5878d3d1d36a8c48f66007",
+      "26e358fc3bb8403bd9acf07608ff80d94777b04269e3bf054374007b01f76e05",
+      "95a59773344e89cec329376baa4f77753a6e5b8974979c194ad70c152909589e",
+      "87c46c8b7005275b4043b1516d2f65319333f8fbc4561f228957a560af7e82d9",
+      "6ac880724e1f7953b26c3d344dc7c35521b89d1423bf3f87cea3754195a2eb90",
+      "9d766997843daa9bb521ca5e245732bff11232152e8e96a7c748fb798c15739b",
+      "d71beff77144c8d68e0d86942d53ee0d9212503aad4d685df0c23ef6c79a6b45",
+      "a31dbe9540f998fbbed90bc7e340d675c27b651d35f6174880006c86ed6bf1f4",
+      "7022f9c442e4bcc9ccd6bbd91d276f9a1202b1b8f550d67773ec2236769b9005",
+      "c4bb84b7977161f4cf0bee19e18b98c51f017dbdb8fdd613a920b801b0a0b26a",
+      "759ed179d09a11c0a7a874505efcd1d46a3c2cb7ff6776d3e0496c1587a0c2a7"
+    ],
+    "tracked_allele": "Original focal allele introduced on Neanderthal donor haplotypes at 50 kya; not the relabelled nearest segregating neutral site.",
+    "conditioning": "Neutral unconditioned, including losses/fixation; selected examples conditioned on present-day segregation.",
+    "neutral_pool": "50 held-out plus 50 calibration; same simulations and order as posterior comparison."
+  },
+  "inputs": [
+    {
+      "id": "10k/introgression/neutral_test_00000",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00000/trajectory.tsv",
+      "sha256": "c42ea49d5b37b9ff64c2ca04f14b8442b798983e633864bed50dcda4f5354082"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00001",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00001/trajectory.tsv",
+      "sha256": "76eed01499cd389fb4bef4196de76ec80aadab3d69e3dc76c88b2e406f65d3af"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00002",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00002/trajectory.tsv",
+      "sha256": "763fed686d0d9581945e44433f97047168f570bca971765f1b4263dd9f15ae2d"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00003",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00003/trajectory.tsv",
+      "sha256": "916b81ce9177d908e63d27b3bea0cebd8f8aad2c9080ff173b9cbc20ba07fb89"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00004",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00004/trajectory.tsv",
+      "sha256": "a1bbe66befe7d11f11af81134f0233b4b4b0498f98bc04379c13b25395e595c5"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00005",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00005/trajectory.tsv",
+      "sha256": "0c9c8919bd2de96fe31bc2d94e283e7c916a0ec87ebaef113c46529322ddbe91"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00006",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00006/trajectory.tsv",
+      "sha256": "6232cd0d4f5b834e00f954b57ab8ac7023fcee35d28c7fe690c830804365abd6"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00007",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00007/trajectory.tsv",
+      "sha256": "33cd7dae7ae85a9bc8635502d135c35b39f94b21a01b0cabc1dc714e1c17beba"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00008",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00008/trajectory.tsv",
+      "sha256": "4a3bba5416650c82f320c5364889540501f8da8df3c9933cfe356f85fe8214ce"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00009",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00009/trajectory.tsv",
+      "sha256": "014e5d937d44ff5620e5e7dab38de6069de580be9d5a45fdf4f1d5567036ec6c"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00010",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00010/trajectory.tsv",
+      "sha256": "ee7bf2f276be0cbc556ec0e1bbe46afdded68dfb58c69f1e0d1e5e3367b50aa1"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00011",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00011/trajectory.tsv",
+      "sha256": "d9ab7bd2818c9e582b983aaa2ed9270b61ca31606f32834957b620e2a7ecb249"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00012",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00012/trajectory.tsv",
+      "sha256": "3ef857e9ac8d720806bf46b2b637320f848cd58f73703cb08c4d820b7d84f38c"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00013",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00013/trajectory.tsv",
+      "sha256": "6b1b519d7bf0a48defdc429bf383ffd4913ba854582355b7c60e80fa4459d5ba"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00014",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00014/trajectory.tsv",
+      "sha256": "7dc9d2095633b104031e9222c75b112e4b7628fb99fbb426fcfa8f24a3d7e768"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00015",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00015/trajectory.tsv",
+      "sha256": "c482e78fa88c630919032a827cbdbb531de373b8aabc10c5b27c74e45c6a5b7c"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00016",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00016/trajectory.tsv",
+      "sha256": "33457c5f58f4d4d91876889f694c08e49cd98c0c626ae7564a116ef3dad50d23"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00017",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00017/trajectory.tsv",
+      "sha256": "8afd08deb10a5ea0cf7345c3fdc4ec91c1dc599963c73b94b40601d5e321b763"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00018",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00018/trajectory.tsv",
+      "sha256": "1c9e369442b92c9b3d290f093c2f16002cd5d903a1634f68b9efe95371d28fe2"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00019",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00019/trajectory.tsv",
+      "sha256": "f7f284f6ce430ba132addab599fbb4a7bae2bbaad4d87fb63168ea1fa1126473"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00020",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00020/trajectory.tsv",
+      "sha256": "0ccddab24608379ef24f22a6e0e19f68df43df7af863a8f910a55d8dc5d68ba8"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00021",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00021/trajectory.tsv",
+      "sha256": "0fcc6e7fa7031bc98ceee891771131e8b92664e08d4f8052b44d6775b81305b1"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00022",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00022/trajectory.tsv",
+      "sha256": "27fcaa6037c9e501d9cde1b78ebe013aebab0a87e9d60596bb5fc58f7050a9e5"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00023",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00023/trajectory.tsv",
+      "sha256": "06fd248fc606b68fe7dcadfd81a248a4756617b0f85bb0161a0a977a011d5538"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00024",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00024/trajectory.tsv",
+      "sha256": "458fc79f32b95436b9e837bdb4af42b2de700df1898f333844253e88ef9a171c"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00025",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00025/trajectory.tsv",
+      "sha256": "05e4b67f36872dcdee6fb0e0bc15b4aef336f30727c88dbd6b16719ad59ed33f"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00026",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00026/trajectory.tsv",
+      "sha256": "5fea2fbe06156e02aca3aaff9ea38e1414c176adf89d3b0b8828369d9d60ec1a"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00027",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00027/trajectory.tsv",
+      "sha256": "b77c86e6ff83287172ed130963cc0f32b0d93326442ce11f7591799a352f89a5"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00028",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00028/trajectory.tsv",
+      "sha256": "4e8ff3c46ed730f20138d6ae4297d4d10485bdebabfa2b11364d05d7de04811c"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00029",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00029/trajectory.tsv",
+      "sha256": "88c1f9352dcfb5e271a1b3a71f3833819ee6245fc83a8cf72bd60ee02000fa42"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00030",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00030/trajectory.tsv",
+      "sha256": "07d22882dbc458fa6025c4a410e396a67260a72b30b9f8fa9cc030d4aa403693"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00031",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00031/trajectory.tsv",
+      "sha256": "3a1eaef5355672e3c8c8200e3e9975b9533e9a52e84ea3d3a2090c75a7c5329d"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00032",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00032/trajectory.tsv",
+      "sha256": "a4cfd6c7863366de291515ed2bd851f22bf9b8d5b90705709f141ef5fc50f46a"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00033",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00033/trajectory.tsv",
+      "sha256": "8a0bbad69f1aa526d7d62f8a46db1bc83f92ff9ddfcb71595de64d5ea903132a"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00034",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00034/trajectory.tsv",
+      "sha256": "3305cbc999018dc0c9b44c6dcd63b04d1f8194ceb588a8502fa57ab73d88fcf7"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00035",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00035/trajectory.tsv",
+      "sha256": "741d8d5fa906e315a3882b4a457a0e7e43729a9af13a3ecaad1f7ba54eb25ac4"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00036",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00036/trajectory.tsv",
+      "sha256": "556969d57890c3187a2dbc18658098e0e9efab14f4926fe9e7eb507a6a40cee3"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00037",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00037/trajectory.tsv",
+      "sha256": "43f07984c4dc2900442a9b835b8bd5750c677b6556782756327e788ffc28771f"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00038",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00038/trajectory.tsv",
+      "sha256": "636e4c7ca315ba21a48f5f265e15a89bb55d94f728150ab4088a983c622e0c97"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00039",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00039/trajectory.tsv",
+      "sha256": "f697c845797a9dde576f7aee6704de515185e93bbd4f48eca93225fe7ea8e45b"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00040",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00040/trajectory.tsv",
+      "sha256": "55a859c11b6ba4f37ca39204840dc85d11da72bbef5ad6fdbfde07ebaa2d5e30"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00041",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00041/trajectory.tsv",
+      "sha256": "bf8e656f355547ba66cac48a889630e9449aa29ddd79abffdd4e32b82b9e9c95"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00042",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00042/trajectory.tsv",
+      "sha256": "7a67b0d2be8e54069d549f9e703e0dec3b5811a6786a22a81d11d2d765e0b2dc"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00043",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00043/trajectory.tsv",
+      "sha256": "d2e4edbb8e4f9ee929dab1b87f5fc7229dce5d55e0a883b8d22db56edad44666"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00044",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00044/trajectory.tsv",
+      "sha256": "1a06f3f91c7f8c0b94caebb401d523c568d9022dfb40e176e55401eb8157a02f"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00045",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00045/trajectory.tsv",
+      "sha256": "5a878ded237d954ed30fdfd806c43e1c2bcc263c43632038da598f47a0550d05"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00046",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00046/trajectory.tsv",
+      "sha256": "8e54c1f00c6df277bbcb32e85551a2767eb1cc658951c4ab292604659426ed6b"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00047",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00047/trajectory.tsv",
+      "sha256": "023e486b1b9ac9862e5c25960fdaf13601ead6c7f5524367274837fe4adebd7d"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00048",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00048/trajectory.tsv",
+      "sha256": "a629f0a4bba63437b9ed98898dd62998a034ae03672272313c4b97985da4ee1b"
+    },
+    {
+      "id": "10k/introgression/neutral_test_00049",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/neutral_test_00049/trajectory.tsv",
+      "sha256": "1450fb826bc8e11e86d08d69e80efcbce903d46b55713c4c5393059c0e670a91"
+    },
+    {
+      "id": "10k/introgression/calibration_00000",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00000/trajectory.tsv",
+      "sha256": "813ee8ca1c46f62c93d4cdcb691c8fab8d48f3dd5ffd94fcdd7d7d1fa81189e4"
+    },
+    {
+      "id": "10k/introgression/calibration_00001",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00001/trajectory.tsv",
+      "sha256": "3499a38df4f48f4c9dcd7cfdabda3159aaf4a1b2501c4df6d47e56e7aab89c2e"
+    },
+    {
+      "id": "10k/introgression/calibration_00002",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00002/trajectory.tsv",
+      "sha256": "9d7db7224538721f3ba115e10fe2a6c7deff4d72e5888d9674d136f30e121bb9"
+    },
+    {
+      "id": "10k/introgression/calibration_00003",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00003/trajectory.tsv",
+      "sha256": "897638b86c76bf8ae09aa4b80b47716423b1d7db6fe99e0658b99eb2bf6ed41d"
+    },
+    {
+      "id": "10k/introgression/calibration_00004",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00004/trajectory.tsv",
+      "sha256": "a571aeae095a8c3f410354b75f24341bc88f540942d09a77ba348b7a839e2c63"
+    },
+    {
+      "id": "10k/introgression/calibration_00005",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00005/trajectory.tsv",
+      "sha256": "1eabc8604811a705ced48c1a37a02081add859fe51db1c7049da6aa76c9cea88"
+    },
+    {
+      "id": "10k/introgression/calibration_00006",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00006/trajectory.tsv",
+      "sha256": "8a9bbdc95f8f74ea453dc60796108ee277bff3148bc8b825e0d45db5113dd580"
+    },
+    {
+      "id": "10k/introgression/calibration_00007",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00007/trajectory.tsv",
+      "sha256": "368c996fc42dbb47891be756e8ac4de3cdd0179c0b20a97c8b38d9c2309109ac"
+    },
+    {
+      "id": "10k/introgression/calibration_00008",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00008/trajectory.tsv",
+      "sha256": "dea19602ff75da973f609b18ac3929b5be2411ec45d3c533dc75e382d7a1f2b9"
+    },
+    {
+      "id": "10k/introgression/calibration_00009",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00009/trajectory.tsv",
+      "sha256": "0aedb7b19d04cc3457473f93c2dcb2bdc7987f546447dbc54bd1908636febb67"
+    },
+    {
+      "id": "10k/introgression/calibration_00010",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00010/trajectory.tsv",
+      "sha256": "78fa0aab2c555280accb023d95197e5da9564f8e1e0c08519d603e1785dab2bd"
+    },
+    {
+      "id": "10k/introgression/calibration_00011",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00011/trajectory.tsv",
+      "sha256": "1fd29e4605128a198a87624334219fe546aceeae207b7d80c4f08e4855e45076"
+    },
+    {
+      "id": "10k/introgression/calibration_00012",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00012/trajectory.tsv",
+      "sha256": "806940738a0aecae3d0b37fc4304325a7a006fffd2094ad2ad2a6bbfc842369c"
+    },
+    {
+      "id": "10k/introgression/calibration_00013",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00013/trajectory.tsv",
+      "sha256": "11e7649c0c5947a7ebf702a5c76ae09fe3257ad80447c639fea7f26bb7085bfd"
+    },
+    {
+      "id": "10k/introgression/calibration_00014",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00014/trajectory.tsv",
+      "sha256": "fbbe5f921b6c9464b6dc13704e8445b505dd8cf9d1a75fbb4c578de191fbd8d9"
+    },
+    {
+      "id": "10k/introgression/calibration_00015",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00015/trajectory.tsv",
+      "sha256": "f91b925be5fe65b0d239d76bc48fa155fa8835158a2d738f36478ce54be24fd8"
+    },
+    {
+      "id": "10k/introgression/calibration_00016",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00016/trajectory.tsv",
+      "sha256": "35230ee7f767530cbdd4e413ba9ef78af6deb3c8f09303d4867cbde49bc6e703"
+    },
+    {
+      "id": "10k/introgression/calibration_00017",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00017/trajectory.tsv",
+      "sha256": "43259976bd22e2da6e061688090f958088fb37174ce154f9ed654acbc5372bbd"
+    },
+    {
+      "id": "10k/introgression/calibration_00018",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00018/trajectory.tsv",
+      "sha256": "80b05306752dba44bfd5dd74bb68d01a0c709ed258055e80fbfcf4f1d471ab02"
+    },
+    {
+      "id": "10k/introgression/calibration_00019",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00019/trajectory.tsv",
+      "sha256": "0116fad8a9275e71da3d1c9fafa06dc8b3d216d99ef94a11b8504fb82137d7df"
+    },
+    {
+      "id": "10k/introgression/calibration_00020",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00020/trajectory.tsv",
+      "sha256": "d65e8a4e86bcec9a3d24db70503a5b9aced30282ffadf4692a31160fb031aafe"
+    },
+    {
+      "id": "10k/introgression/calibration_00021",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00021/trajectory.tsv",
+      "sha256": "793311f6873fd031daac7d92bfc4975b9e35c071e35093e5363880b21327e19a"
+    },
+    {
+      "id": "10k/introgression/calibration_00022",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00022/trajectory.tsv",
+      "sha256": "5fa42bea349e0b3368ab80ac93d13115fef4d2e889da492975410ad8a6a62023"
+    },
+    {
+      "id": "10k/introgression/calibration_00023",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00023/trajectory.tsv",
+      "sha256": "e938b5d3ead93315d828267b520fe9e21036ea7044c7d1ac6a6c702447bf3eb7"
+    },
+    {
+      "id": "10k/introgression/calibration_00024",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00024/trajectory.tsv",
+      "sha256": "cb141b7534e5e01ddbfa62bc91d14f027003d931b7718abfca6294ad77a59ee7"
+    },
+    {
+      "id": "10k/introgression/calibration_00025",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00025/trajectory.tsv",
+      "sha256": "b98f27e770a93e5499be94a5318234b015dff8ea57e46f6f0b5c3e452743aa48"
+    },
+    {
+      "id": "10k/introgression/calibration_00026",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00026/trajectory.tsv",
+      "sha256": "b2aa6b18f169ab256511d9695e66e484c4fb6681d525ffbba889b25cac604021"
+    },
+    {
+      "id": "10k/introgression/calibration_00027",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00027/trajectory.tsv",
+      "sha256": "32dfdb003e48fe94ddc08388a10954b043d69067739f02be733bf0ed1384e3fa"
+    },
+    {
+      "id": "10k/introgression/calibration_00028",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00028/trajectory.tsv",
+      "sha256": "8da4f700961d3d26c3e4b7d94ffabd8940bf6f808f396f79a35e9b4dee6fc3e0"
+    },
+    {
+      "id": "10k/introgression/calibration_00029",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00029/trajectory.tsv",
+      "sha256": "661104784a5793fa2482f5deaa4d49adb28763da1c7a8c8dee31b486f886d911"
+    },
+    {
+      "id": "10k/introgression/calibration_00030",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00030/trajectory.tsv",
+      "sha256": "983bf4ab8d79c743a759b148b95b2ee830f3def3e3d472d308843cab9e9f1268"
+    },
+    {
+      "id": "10k/introgression/calibration_00031",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00031/trajectory.tsv",
+      "sha256": "010b05faa1de67b5c6e02d2d6b5b17aca57b7a58d5e6ef5fbd5e582b5df87cf1"
+    },
+    {
+      "id": "10k/introgression/calibration_00032",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00032/trajectory.tsv",
+      "sha256": "b6efff1a94e0488a6508626839d0f3aadfa708102160f66439140a3fb0a271a7"
+    },
+    {
+      "id": "10k/introgression/calibration_00033",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00033/trajectory.tsv",
+      "sha256": "599fe8ab063fa7032be542c11102f8382bbcc521795ca6695baf77a4e837f40c"
+    },
+    {
+      "id": "10k/introgression/calibration_00034",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00034/trajectory.tsv",
+      "sha256": "922ebaf24eb191aff694f63db1ce02fbbc374ae84ffe9d6ce1a3c54e3985db1c"
+    },
+    {
+      "id": "10k/introgression/calibration_00035",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00035/trajectory.tsv",
+      "sha256": "b917db6f26ae29b9f209a67585cd9014218b4a6093fbaec59ba54934d04728a9"
+    },
+    {
+      "id": "10k/introgression/calibration_00036",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00036/trajectory.tsv",
+      "sha256": "1ba5cec1d127db0d3beda2a3e3bb4bb856518386e7dd4a64f19484bfa16c37c4"
+    },
+    {
+      "id": "10k/introgression/calibration_00037",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00037/trajectory.tsv",
+      "sha256": "7f4b1172455b64f1fa6648a8513dec7365de1ae83f0f3b65aeaee991cf000570"
+    },
+    {
+      "id": "10k/introgression/calibration_00038",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00038/trajectory.tsv",
+      "sha256": "c3918151c2495916bb88af2e723a008912e7752ccd97e02549754f18489ff540"
+    },
+    {
+      "id": "10k/introgression/calibration_00039",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00039/trajectory.tsv",
+      "sha256": "4c75ce22a60c870559cf488061e01fbe8ebe7b8ddf5878d3d1d36a8c48f66007"
+    },
+    {
+      "id": "10k/introgression/calibration_00040",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00040/trajectory.tsv",
+      "sha256": "26e358fc3bb8403bd9acf07608ff80d94777b04269e3bf054374007b01f76e05"
+    },
+    {
+      "id": "10k/introgression/calibration_00041",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00041/trajectory.tsv",
+      "sha256": "95a59773344e89cec329376baa4f77753a6e5b8974979c194ad70c152909589e"
+    },
+    {
+      "id": "10k/introgression/calibration_00042",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00042/trajectory.tsv",
+      "sha256": "87c46c8b7005275b4043b1516d2f65319333f8fbc4561f228957a560af7e82d9"
+    },
+    {
+      "id": "10k/introgression/calibration_00043",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00043/trajectory.tsv",
+      "sha256": "6ac880724e1f7953b26c3d344dc7c35521b89d1423bf3f87cea3754195a2eb90"
+    },
+    {
+      "id": "10k/introgression/calibration_00044",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00044/trajectory.tsv",
+      "sha256": "9d766997843daa9bb521ca5e245732bff11232152e8e96a7c748fb798c15739b"
+    },
+    {
+      "id": "10k/introgression/calibration_00045",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00045/trajectory.tsv",
+      "sha256": "d71beff77144c8d68e0d86942d53ee0d9212503aad4d685df0c23ef6c79a6b45"
+    },
+    {
+      "id": "10k/introgression/calibration_00046",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00046/trajectory.tsv",
+      "sha256": "a31dbe9540f998fbbed90bc7e340d675c27b651d35f6174880006c86ed6bf1f4"
+    },
+    {
+      "id": "10k/introgression/calibration_00047",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00047/trajectory.tsv",
+      "sha256": "7022f9c442e4bcc9ccd6bbd91d276f9a1202b1b8f550d67773ec2236769b9005"
+    },
+    {
+      "id": "10k/introgression/calibration_00048",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00048/trajectory.tsv",
+      "sha256": "c4bb84b7977161f4cf0bee19e18b98c51f017dbdb8fdd613a920b801b0a0b26a"
+    },
+    {
+      "id": "10k/introgression/calibration_00049",
+      "path": "/mnt/d/phase2simselection/sim/recent10k_eas_fast_20261103/introgression/calibration_00049/trajectory.tsv",
+      "sha256": "759ed179d09a11c0a7a874505efcd1d46a3c2cb7ff6776d3e0496c1587a0c2a7"
+    }
+  ],
+  "cache_sha256": "1636cd4e1c4a3e64ad12f5e0b59ba5554a2a1c95393a26e01f429b47c888ded0",
+  "validation": "All 100 hashes, time grids, zero selection coefficients, AF bounds, exact copy-count frequencies and receipt endpoints verified."
+}
