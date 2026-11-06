@@ -1,0 +1,18 @@
+{
+  "example": "Conceptual distribution, not fitted to simulation data",
+  "shape": 1,
+  "scale_kyr": 20.0,
+  "mode_kya": 0,
+  "median_kya": 13.862943611198906,
+  "mean_kya": 20.0,
+  "mass_1_2_kya": 0.0463920064647545,
+  "mass_13_14_kya": 0.025460472969606518,
+  "mass_above_50_kya": 0.0820849986238988,
+  "validation": "Analytic CDF at median equals 0.5; bin masses plus older tail sum to one; median weights sum to one. Embedded TrueType fonts; no raster PDF objects.",
+  "randomness": "None; analytic deterministic functions.",
+  "script_sha256": "eb9a55524b1534c484de72c7efcecd186864cc3f8f760be6df4b3fcd55c11cda",
+  "versions": {
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.1"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "file": "posterior_curve.png",
+  "result": "Visually checked: readable text, no clipping, legend above panels, different lower-panel y-scales explicitly disclosed.",
+  "execution": "WSL: uv --no-config run --no-project --python .venv/bin/python python scripts/plot_posterior_mass_intuition.py",
+  "environment": "Existing project environment; --no-config bypasses installed uv runner-version mismatch. Dependencies unchanged."
+}
