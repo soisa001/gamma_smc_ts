@@ -1,0 +1,11 @@
+{
+  "figures": [
+    "01_allele_frequency",
+    "02_selected_vs_neutral_tmrca",
+    "03_spatial_coalescence_excess",
+    "04_called_intervals"
+  ],
+  "visual_inspection": "Final PNGs inspected. Legends above panels, large labels, no clipping or overlap. TMRCA bin-mass y-scales vary explicitly by estimator; spatial color scale is shared.",
+  "cache_replay": "Rerendered successfully from verified cache with no raw reads; all 450 metric records matched again.",
+  "new_simulations": 0
+}

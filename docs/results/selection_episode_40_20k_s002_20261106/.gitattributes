@@ -1,0 +1,2 @@
+# Keep checksummed scientific artifacts byte-identical on Windows and Linux.
+** -text whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

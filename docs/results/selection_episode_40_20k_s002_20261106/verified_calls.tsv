@@ -1,0 +1,451 @@
+id	method	cohort	any_call	spatial_hit	joint_hit	center_hit	center_mistimed	center_off_target	center_outside_components	center_components	near_mistimed	near_off_target	near_outside_components	temporal_precision	temporal_recall	temporal_f1	temporal_iou	called_kyr	overlap_kyr	center_intervals_kya	event_tp	event_fp	event_fn
+40_20k/introgression/s0.02/selected_00027	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[46, 47]]	0	4	1
+40_20k/introgression/s0.02/selected_00061	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[45, 46]]	0	3	1
+40_20k/introgression/s0.02/selected_00072	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	0	1	1
+40_20k/introgression/s0.02/selected_00077	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	0	3	1
+40_20k/introgression/s0.02/selected_00079	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[33, 34], [35, 36]]	1	3	0
+40_20k/introgression/s0.02/selected_00080	truth_all_pairs	selected	1	1	1	1	0	1	1	2	0	1	1	0.5	0.05	0.09090909090909091	0.047619047619047616	2	1	[[34, 35], [43, 44]]	1	1	0
+40_20k/introgression/s0.02/selected_00085	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	0	1	1
+40_20k/introgression/s0.02/selected_00099	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	2	0
+40_20k/introgression/s0.02/selected_00102	truth_all_pairs	selected	1	1	1	1	0	1	1	2	0	1	1	0.5	0.05	0.09090909090909091	0.047619047619047616	2	1	[[35, 36], [41, 42]]	1	2	0
+40_20k/introgression/s0.02/selected_00103	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	1	0
+40_20k/introgression/s0.02/selected_00106	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	2	0
+40_20k/introgression/s0.02/selected_00113	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	1	0	[[43, 44]]	1	3	0
+40_20k/introgression/s0.02/selected_00117	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[35, 36]]	1	7	0
+40_20k/introgression/s0.02/selected_00123	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	1	1	0
+40_20k/introgression/s0.02/selected_00124	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[34, 35]]	1	0	0
+40_20k/introgression/s0.02/selected_00147	truth_all_pairs	selected	1	1	1	1	0	1	1	2	0	1	1	0.5	0.05	0.09090909090909091	0.047619047619047616	2	1	[[39, 40], [48, 49]]	1	4	0
+40_20k/introgression/s0.02/selected_00153	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	3	0
+40_20k/introgression/s0.02/selected_00155	truth_all_pairs	selected	1	1	1	1	0	1	1	2	0	1	1	0.5	0.05	0.09090909090909091	0.047619047619047616	2	1	[[34, 35], [45, 46]]	1	2	0
+40_20k/introgression/s0.02/selected_00161	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[34, 35]]	1	3	0
+40_20k/introgression/s0.02/selected_00165	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	1	0
+40_20k/introgression/s0.02/selected_00167	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[32, 33]]	1	0	0
+40_20k/introgression/s0.02/selected_00169	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[44, 45]]	0	4	1
+40_20k/introgression/s0.02/selected_00172	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	0	1	1
+40_20k/introgression/s0.02/selected_00179	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[39, 40]]	1	5	0
+40_20k/introgression/s0.02/selected_00202	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	0	1	1
+40_20k/introgression/s0.02/selected_00221	truth_all_pairs	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00233	truth_all_pairs	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00251	truth_all_pairs	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00257	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	2	0	[[42, 44]]	0	2	1
+40_20k/introgression/s0.02/selected_00263	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	0	3	1
+40_20k/introgression/s0.02/selected_00264	truth_all_pairs	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	3	0
+40_20k/introgression/s0.02/selected_00265	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	1	2	1.0	0.05	0.09523809523809523	0.05	1	1	[[39, 40]]	1	4	0
+40_20k/introgression/s0.02/selected_00272	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[33, 34]]	1	11	0
+40_20k/introgression/s0.02/selected_00273	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 37], [39, 40]]	1	5	0
+40_20k/introgression/s0.02/selected_00282	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	0	1	1
+40_20k/introgression/s0.02/selected_00284	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	0	3	1
+40_20k/introgression/s0.02/selected_00289	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	1	0
+40_20k/introgression/s0.02/selected_00297	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[42, 43]]	0	1	1
+40_20k/introgression/s0.02/selected_00309	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	1	0
+40_20k/introgression/s0.02/selected_00311	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	2	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	1	2	0
+40_20k/introgression/s0.02/selected_00328	truth_all_pairs	selected	1	1	0	0	0	0	0	0	1	1	2	NA	0.0	0.0	0.0	0	0	[]	0	4	1
+40_20k/introgression/s0.02/selected_00340	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	2	0
+40_20k/introgression/s0.02/selected_00341	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 37], [38, 39]]	1	2	0
+40_20k/introgression/s0.02/selected_00352	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	2	0.0	0.0	0.0	0.0	1	0	[[44, 45]]	1	2	0
+40_20k/introgression/s0.02/selected_00358	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	2	0.0	0.0	0.0	0.0	1	0	[[49, 50]]	1	2	0
+40_20k/introgression/s0.02/selected_00363	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[42, 43]]	0	3	1
+40_20k/introgression/s0.02/selected_00364	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[34, 35], [36, 37]]	1	4	0
+40_20k/introgression/s0.02/selected_00376	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	1	1	1.0	0.1	0.18181818181818182	0.1	2	2	[[33, 34], [37, 38]]	1	4	0
+40_20k/introgression/s0.02/selected_00380	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	1	0
+40_20k/introgression/s0.02/selected_00389	truth_all_pairs	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00405	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	1	0
+40_20k/introgression/s0.02/selected_00452	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	3	0
+40_20k/introgression/s0.02/selected_00473	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	0	1	1
+40_20k/introgression/s0.02/selected_00490	truth_all_pairs	selected	1	1	1	1	0	0	0	3	0	0	0	1.0	0.15	0.2608695652173913	0.15	3	3	[[33, 34], [36, 37], [38, 39]]	1	2	0
+40_20k/introgression/s0.02/selected_00492	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	1	0
+40_20k/introgression/s0.02/selected_00496	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[35, 36]]	1	3	0
+40_20k/introgression/s0.02/selected_00522	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	1	0	[[42, 43]]	1	4	0
+40_20k/introgression/s0.02/selected_00539	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	3	0
+40_20k/introgression/s0.02/selected_00546	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	2	0
+40_20k/introgression/s0.02/selected_00555	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	2	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	1	5	0
+40_20k/introgression/s0.02/selected_00564	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	1	0	[[47, 48]]	1	3	0
+40_20k/introgression/s0.02/selected_00569	truth_all_pairs	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00572	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	1	5	0
+40_20k/introgression/s0.02/selected_00579	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	1	1	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	6	0
+40_20k/introgression/s0.02/selected_00588	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[39, 40]]	1	4	0
+40_20k/introgression/s0.02/selected_00595	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	0	0
+40_20k/introgression/s0.02/selected_00599	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[35, 37]]	1	2	0
+40_20k/introgression/s0.02/selected_00601	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[35, 36]]	1	1	0
+40_20k/introgression/s0.02/selected_00632	truth_all_pairs	selected	1	1	1	1	0	1	1	2	0	1	1	0.5	0.05	0.09090909090909091	0.047619047619047616	2	1	[[34, 35], [44, 45]]	1	2	0
+40_20k/introgression/s0.02/selected_00639	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[37, 38]]	1	2	0
+40_20k/introgression/s0.02/selected_00654	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	1	0	[[40, 41]]	1	2	0
+40_20k/introgression/s0.02/selected_00655	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[35, 36], [39, 40]]	1	3	0
+40_20k/introgression/s0.02/selected_00664	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	3	0.0	0.0	0.0	0.0	1	0	[[43, 44]]	1	9	0
+40_20k/introgression/s0.02/selected_00667	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 37], [38, 39]]	1	3	0
+40_20k/introgression/s0.02/selected_00692	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[34, 35]]	1	4	0
+40_20k/introgression/s0.02/selected_00710	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	7	0
+40_20k/introgression/s0.02/selected_00715	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 38]]	1	3	0
+40_20k/introgression/s0.02/selected_00717	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[41, 42]]	0	1	1
+40_20k/introgression/s0.02/selected_00724	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	0	0
+40_20k/introgression/s0.02/selected_00729	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[39, 40]]	1	2	0
+40_20k/introgression/s0.02/selected_00741	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	3	0.0	0.0	0.0	0.0	1	0	[[43, 44]]	1	4	0
+40_20k/introgression/s0.02/selected_00761	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	1	0	[[42, 43]]	0	1	1
+40_20k/introgression/s0.02/selected_00762	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	3	0.0	0.0	0.0	0.0	1	0	[[43, 44]]	1	5	0
+40_20k/introgression/s0.02/selected_00772	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[33, 34]]	1	0	0
+40_20k/introgression/s0.02/selected_00782	truth_all_pairs	selected	1	1	0	0	1	1	1	1	1	1	3	0.0	0.0	0.0	0.0	1	0	[[49, 50]]	0	3	1
+40_20k/introgression/s0.02/selected_00802	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 37], [38, 39]]	1	3	0
+40_20k/introgression/s0.02/selected_00808	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 38]]	1	3	0
+40_20k/introgression/s0.02/selected_00810	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	1	2	1.0	0.05	0.09523809523809523	0.05	1	1	[[38, 39]]	1	4	0
+40_20k/introgression/s0.02/selected_00816	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[36, 37]]	1	3	0
+40_20k/introgression/s0.02/selected_00841	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[35, 36], [37, 38]]	1	1	0
+40_20k/introgression/s0.02/selected_00847	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[36, 38]]	1	1	0
+40_20k/introgression/s0.02/selected_00852	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[35, 37]]	1	4	0
+40_20k/introgression/s0.02/selected_00861	truth_all_pairs	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00872	truth_all_pairs	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00901	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[35, 36]]	1	1	0
+40_20k/introgression/s0.02/selected_00911	truth_all_pairs	selected	1	1	1	0	1	1	1	1	0	1	3	0.0	0.0	0.0	0.0	1	0	[[46, 47]]	1	3	0
+40_20k/introgression/s0.02/selected_00915	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[39, 40]]	1	1	0
+40_20k/introgression/s0.02/selected_00925	truth_all_pairs	selected	1	1	1	1	0	0	0	1	0	0	0	1.0	0.05	0.09523809523809523	0.05	1	1	[[35, 36]]	1	6	0
+40_20k/introgression/s0.02/selected_00951	truth_all_pairs	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00966	truth_all_pairs	selected	1	1	1	1	0	0	0	2	0	0	0	1.0	0.1	0.18181818181818182	0.1	2	2	[[34, 35], [36, 37]]	1	7	0
+10k/introgression/neutral_test_00000	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00001	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00002	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00003	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00004	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00005	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00006	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00007	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00008	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00009	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00010	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00011	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00012	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00013	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00014	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00015	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00016	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00017	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00018	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00019	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00020	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00021	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00022	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00023	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00024	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00025	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00026	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00027	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00028	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00029	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00030	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00031	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00032	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00033	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00034	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00035	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00036	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00037	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00038	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00039	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00040	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00041	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00042	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00043	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00044	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00045	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00046	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00047	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00048	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00049	truth_all_pairs	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+40_20k/introgression/s0.02/selected_00027	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00061	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00072	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00077	median	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	1	0
+40_20k/introgression/s0.02/selected_00079	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00080	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00085	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00099	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00102	median	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00103	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00106	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00113	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00117	median	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00123	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00124	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00147	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00153	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00155	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00161	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00165	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00167	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00169	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00172	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00179	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00202	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00221	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00233	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00251	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00257	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00263	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00264	median	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00265	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00272	median	selected	1	1	0	0	0	0	0	0	1	1	2	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00273	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00282	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00284	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00289	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00297	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00309	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00311	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00328	median	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	2	1
+40_20k/introgression/s0.02/selected_00340	median	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	2	1
+40_20k/introgression/s0.02/selected_00341	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00352	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00358	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00363	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00364	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00376	median	selected	1	1	0	0	0	0	0	0	1	1	3	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00380	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00389	median	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	0	0
+40_20k/introgression/s0.02/selected_00405	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00452	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00473	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00490	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00492	median	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00496	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00522	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00539	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00546	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00555	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00564	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00569	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00572	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00579	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00588	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00595	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00599	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00601	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00632	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00639	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00654	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00655	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00664	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00667	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00692	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00710	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00715	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00717	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00724	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00729	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00741	median	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	2	0	[[6, 8]]	0	2	1
+40_20k/introgression/s0.02/selected_00761	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00762	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00772	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00782	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00802	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00808	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00810	median	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00816	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00841	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00847	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00852	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00861	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00872	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00901	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00911	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00915	median	selected	1	1	0	0	0	0	0	0	1	1	3	NA	0.0	0.0	0.0	0	0	[]	0	4	1
+40_20k/introgression/s0.02/selected_00925	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00951	median	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00966	median	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	2	0	[[6, 8]]	0	1	1
+10k/introgression/neutral_test_00000	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00001	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00002	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00003	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00004	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00005	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00006	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00007	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00008	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00009	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00010	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00011	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00012	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00013	median	neutral_test	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	0
+10k/introgression/neutral_test_00014	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00015	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00016	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00017	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00018	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00019	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00020	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00021	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00022	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00023	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00024	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00025	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00026	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00027	median	neutral_test	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	0
+10k/introgression/neutral_test_00028	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00029	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00030	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00031	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00032	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00033	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00034	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00035	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00036	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00037	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00038	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00039	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00040	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00041	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00042	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00043	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00044	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00045	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00046	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00047	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00048	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00049	median	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+40_20k/introgression/s0.02/selected_00027	mass	selected	1	1	1	1	0	0	0	1	0	1	1	0.35	0.35	0.35	0.21212121212121213	20	7	[[7, 27]]	1	2	0
+40_20k/introgression/s0.02/selected_00061	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	13	0	[[1, 14]]	0	1	1
+40_20k/introgression/s0.02/selected_00072	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	1	0
+40_20k/introgression/s0.02/selected_00077	mass	selected	1	1	1	1	0	0	0	1	0	1	1	0.13636363636363635	0.15	0.14285714285714285	0.07692307692307693	22	3	[[1, 23]]	1	3	0
+40_20k/introgression/s0.02/selected_00079	mass	selected	1	1	1	1	0	0	0	1	0	1	1	0.09523809523809523	0.1	0.0975609756097561	0.05128205128205128	21	2	[[1, 22]]	1	1	0
+40_20k/introgression/s0.02/selected_00080	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.20833333333333334	0.25	0.22727272727272727	0.1282051282051282	24	5	[[1, 25]]	1	0	0
+40_20k/introgression/s0.02/selected_00085	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00099	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.058823529411764705	0.05	0.05405405405405406	0.027777777777777776	17	1	[[4, 21]]	1	1	0
+40_20k/introgression/s0.02/selected_00102	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	16	0	[[1, 17]]	0	2	1
+40_20k/introgression/s0.02/selected_00103	mass	selected	1	1	0	0	0	0	0	0	1	1	3	NA	0.0	0.0	0.0	0	0	[]	0	4	1
+40_20k/introgression/s0.02/selected_00106	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	1	0
+40_20k/introgression/s0.02/selected_00113	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	1	0
+40_20k/introgression/s0.02/selected_00117	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.09523809523809523	0.1	0.0975609756097561	0.05128205128205128	21	2	[[1, 22]]	1	4	0
+40_20k/introgression/s0.02/selected_00123	mass	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	0	0
+40_20k/introgression/s0.02/selected_00124	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	15	0	[[1, 16]]	0	2	1
+40_20k/introgression/s0.02/selected_00147	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.20833333333333334	0.25	0.22727272727272727	0.1282051282051282	24	5	[[1, 25]]	1	0	0
+40_20k/introgression/s0.02/selected_00153	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.20833333333333334	0.25	0.22727272727272727	0.1282051282051282	24	5	[[1, 25]]	1	2	0
+40_20k/introgression/s0.02/selected_00155	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	3	0	[[8, 11]]	0	2	1
+40_20k/introgression/s0.02/selected_00161	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	19	0	[[1, 20]]	1	4	0
+40_20k/introgression/s0.02/selected_00165	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00167	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	11	0	[[1, 12]]	0	1	1
+40_20k/introgression/s0.02/selected_00169	mass	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	0	0
+40_20k/introgression/s0.02/selected_00172	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.09523809523809523	0.1	0.0975609756097561	0.05128205128205128	21	2	[[1, 22]]	1	1	0
+40_20k/introgression/s0.02/selected_00179	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00202	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	17	0	[[1, 18]]	1	0	0
+40_20k/introgression/s0.02/selected_00221	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.24	0.3	0.26666666666666666	0.15384615384615385	25	6	[[1, 26]]	1	1	0
+40_20k/introgression/s0.02/selected_00233	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00251	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00257	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.3076923076923077	0.4	0.34782608695652173	0.21052631578947367	26	8	[[2, 28]]	1	0	0
+40_20k/introgression/s0.02/selected_00263	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	17	0	[[1, 18]]	0	1	1
+40_20k/introgression/s0.02/selected_00264	mass	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	17	0	[[1, 18]]	1	1	0
+40_20k/introgression/s0.02/selected_00265	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.2631578947368421	0.25	0.2564102564102564	0.14705882352941177	19	5	[[6, 25]]	1	1	0
+40_20k/introgression/s0.02/selected_00272	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.05	0.05	0.05	0.02564102564102564	20	1	[[1, 21]]	1	4	0
+40_20k/introgression/s0.02/selected_00273	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00282	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00284	mass	selected	1	1	0	0	0	0	0	0	1	1	2	NA	0.0	0.0	0.0	0	0	[]	0	6	1
+40_20k/introgression/s0.02/selected_00289	mass	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	0	0
+40_20k/introgression/s0.02/selected_00297	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00309	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	14	0	[[1, 15]]	0	2	1
+40_20k/introgression/s0.02/selected_00311	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00328	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	3	0
+40_20k/introgression/s0.02/selected_00340	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.17391304347826086	0.2	0.18604651162790697	0.10256410256410256	23	4	[[1, 24]]	1	2	0
+40_20k/introgression/s0.02/selected_00341	mass	selected	1	1	1	0	0	0	0	0	0	1	1	NA	0.0	0.0	0.0	0	0	[]	1	1	0
+40_20k/introgression/s0.02/selected_00352	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.09523809523809523	0.1	0.0975609756097561	0.05128205128205128	21	2	[[1, 22]]	1	0	0
+40_20k/introgression/s0.02/selected_00358	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	7	0	[[11, 18]]	1	0	0
+40_20k/introgression/s0.02/selected_00363	mass	selected	1	1	1	1	0	0	0	1	0	1	2	0.2692307692307692	0.35	0.30434782608695654	0.1794871794871795	26	7	[[1, 27]]	1	5	0
+40_20k/introgression/s0.02/selected_00364	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	12	0	[[3, 15]]	1	1	0
+40_20k/introgression/s0.02/selected_00376	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.2692307692307692	0.35	0.30434782608695654	0.1794871794871795	26	7	[[1, 27]]	1	0	0
+40_20k/introgression/s0.02/selected_00380	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00389	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00405	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00452	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	3	0	[[1, 4]]	0	2	1
+40_20k/introgression/s0.02/selected_00473	mass	selected	1	1	1	1	0	0	0	1	0	1	1	0.05	0.05	0.05	0.02564102564102564	20	1	[[1, 21]]	1	5	0
+40_20k/introgression/s0.02/selected_00490	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.09523809523809523	0.1	0.0975609756097561	0.05128205128205128	21	2	[[1, 22]]	1	0	0
+40_20k/introgression/s0.02/selected_00492	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	14	0	[[1, 15]]	1	1	0
+40_20k/introgression/s0.02/selected_00496	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00522	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.17391304347826086	0.2	0.18604651162790697	0.10256410256410256	23	4	[[1, 24]]	1	3	0
+40_20k/introgression/s0.02/selected_00539	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	13	0	[[1, 14]]	0	3	1
+40_20k/introgression/s0.02/selected_00546	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.17391304347826086	0.2	0.18604651162790697	0.10256410256410256	23	4	[[1, 24]]	1	0	0
+40_20k/introgression/s0.02/selected_00555	mass	selected	1	1	1	0	0	0	0	0	0	1	1	NA	0.0	0.0	0.0	0	0	[]	1	1	0
+40_20k/introgression/s0.02/selected_00564	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	4	1
+40_20k/introgression/s0.02/selected_00569	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00572	mass	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	3	0
+40_20k/introgression/s0.02/selected_00579	mass	selected	1	1	0	0	1	1	1	1	1	1	3	0.0	0.0	0.0	0.0	13	0	[[1, 14]]	0	4	1
+40_20k/introgression/s0.02/selected_00588	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.2692307692307692	0.35	0.30434782608695654	0.1794871794871795	26	7	[[1, 27]]	1	5	0
+40_20k/introgression/s0.02/selected_00595	mass	selected	1	1	0	0	1	1	1	1	1	1	3	0.0	0.0	0.0	0.0	6	0	[[1, 7]]	0	5	1
+40_20k/introgression/s0.02/selected_00599	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00601	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	12	0	[[1, 13]]	1	0	0
+40_20k/introgression/s0.02/selected_00632	mass	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	0	0
+40_20k/introgression/s0.02/selected_00639	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	14	0	[[2, 16]]	0	3	1
+40_20k/introgression/s0.02/selected_00654	mass	selected	1	1	1	1	0	0	0	1	0	1	1	0.09523809523809523	0.1	0.0975609756097561	0.05128205128205128	21	2	[[1, 22]]	1	3	0
+40_20k/introgression/s0.02/selected_00655	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.20833333333333334	0.25	0.22727272727272727	0.1282051282051282	24	5	[[1, 25]]	1	0	0
+40_20k/introgression/s0.02/selected_00664	mass	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00667	mass	selected	1	1	1	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	1	0	0
+40_20k/introgression/s0.02/selected_00692	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00710	mass	selected	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00715	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	17	0	[[1, 18]]	0	2	1
+40_20k/introgression/s0.02/selected_00717	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	2	0
+40_20k/introgression/s0.02/selected_00724	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	11	0	[[1, 12]]	0	2	1
+40_20k/introgression/s0.02/selected_00729	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00741	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	19	0	[[1, 20]]	1	1	0
+40_20k/introgression/s0.02/selected_00761	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	19	0	[[1, 20]]	0	1	1
+40_20k/introgression/s0.02/selected_00762	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00772	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00782	mass	selected	1	1	0	0	1	1	1	1	1	1	2	0.0	0.0	0.0	0.0	19	0	[[1, 20]]	0	2	1
+40_20k/introgression/s0.02/selected_00802	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00808	mass	selected	1	1	1	0	1	1	1	1	0	1	1	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	1	0
+40_20k/introgression/s0.02/selected_00810	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.13636363636363635	0.15	0.14285714285714285	0.07692307692307693	22	3	[[1, 23]]	1	1	0
+40_20k/introgression/s0.02/selected_00816	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	16	0	[[1, 17]]	0	1	1
+40_20k/introgression/s0.02/selected_00841	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	8	0	[[1, 9]]	0	1	1
+40_20k/introgression/s0.02/selected_00847	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.13636363636363635	0.15	0.14285714285714285	0.07692307692307693	22	3	[[1, 23]]	1	2	0
+40_20k/introgression/s0.02/selected_00852	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	16	0	[[3, 19]]	0	2	1
+40_20k/introgression/s0.02/selected_00861	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00872	mass	selected	1	1	0	0	1	1	1	1	1	1	1	0.0	0.0	0.0	0.0	4	0	[[1, 5]]	0	1	1
+40_20k/introgression/s0.02/selected_00901	mass	selected	1	1	0	0	0	0	0	0	1	1	2	NA	0.0	0.0	0.0	0	0	[]	0	3	1
+40_20k/introgression/s0.02/selected_00911	mass	selected	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	1
+40_20k/introgression/s0.02/selected_00915	mass	selected	1	1	1	0	1	1	1	1	0	0	0	0.0	0.0	0.0	0.0	18	0	[[1, 19]]	1	2	0
+40_20k/introgression/s0.02/selected_00925	mass	selected	1	1	0	0	0	0	0	0	1	1	1	NA	0.0	0.0	0.0	0	0	[]	0	1	1
+40_20k/introgression/s0.02/selected_00951	mass	selected	1	1	1	0	1	1	1	1	0	1	2	0.0	0.0	0.0	0.0	17	0	[[1, 18]]	1	3	0
+40_20k/introgression/s0.02/selected_00966	mass	selected	1	1	1	1	0	0	0	1	0	0	0	0.13636363636363635	0.15	0.14285714285714285	0.07692307692307693	22	3	[[1, 23]]	1	1	0
+10k/introgression/neutral_test_00000	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00001	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00002	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00003	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00004	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00005	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00006	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00007	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00008	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00009	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00010	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00011	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00012	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00013	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00014	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00015	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00016	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00017	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00018	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00019	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00020	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00021	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00022	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00023	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00024	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00025	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00026	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00027	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00028	mass	neutral_test	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	0
+10k/introgression/neutral_test_00029	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00030	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00031	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00032	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00033	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00034	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00035	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00036	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00037	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00038	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00039	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00040	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00041	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00042	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00043	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00044	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00045	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00046	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00047	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00048	mass	neutral_test	0	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	0	0
+10k/introgression/neutral_test_00049	mass	neutral_test	1	0	0	0	0	0	0	0	0	0	0	NA	0.0	0.0	0.0	0	0	[]	0	1	0

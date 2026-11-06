@@ -1,0 +1,20 @@
+{
+  "script_sha256": "f68f9e7aa12065b544c0204a0005986031e63ff294e7913c7e48e9967f03a146",
+  "source_report": "D:\\phase2simselection\\code\\docs\\results\\selection_arrays_eas_20261105_4h",
+  "workers": 4,
+  "parameters": {
+    "report": "D:\\phase2simselection\\code\\docs\\results\\selection_arrays_eas_20261105_4h",
+    "out": "D:\\phase2simselection\\code\\docs\\results\\selection_episode_40_20k_s002_20261106",
+    "workers": 4
+  },
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "matplotlib": "3.11.1"
+  },
+  "calibration": "20 development and 99 calibration neutral regions; maxima over 100 positions and 49 time bins; +1 empirical p<=.05.",
+  "verification": "450 region/method metric records match frozen reports; original score/trajectory and true-tree cache hashes checked.",
+  "randomness": "No simulations, bootstrap samples, or RNG draws. Plot offsets and cohort ordering are deterministic.",
+  "interpretation": "100 selected survivors versus 50 unconditioned held-out neutral introgression regions. All curves are at fixed coordinates; no peak-based selection or alignment. Bands are between-region quantiles, not confidence intervals.",
+  "limits": "Times 1\u201350 kya only; 0\u20131 kya absent from bin scan. All-pairs truth versus fixed-1000-pair inference; no exhaustive posterior decoding. Selection is 40\u201320 kya, with a 1% Neanderthal pulse at 50 kya."
+}

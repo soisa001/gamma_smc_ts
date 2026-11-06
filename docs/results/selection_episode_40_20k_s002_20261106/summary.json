@@ -1,0 +1,77 @@
+{
+  "selected": 100,
+  "neutral_test": 50,
+  "methods": {
+    "truth_all_pairs": {
+      "joint_hits": 73,
+      "only_mistimed": 23,
+      "any_outside_component": 46,
+      "null_any_calls": 0,
+      "center_hits": 58,
+      "mean_temporal_f1": 0.06966497270845097,
+      "focal_mean_excess_peak_kya": 38.5
+    },
+    "median": {
+      "joint_hits": 2,
+      "only_mistimed": 12,
+      "any_outside_component": 12,
+      "null_any_calls": 2,
+      "center_hits": 0,
+      "mean_temporal_f1": 0.0,
+      "focal_mean_excess_peak_kya": 11.5
+    },
+    "mass": {
+      "joint_hits": 51,
+      "only_mistimed": 36,
+      "any_outside_component": 47,
+      "null_any_calls": 2,
+      "center_hits": 27,
+      "mean_temporal_f1": 0.049120254114101064,
+      "focal_mean_excess_peak_kya": 2.5
+    }
+  },
+  "af_milestones": {
+    "50": {
+      "min": 0.010049559471365639,
+      "q10": 0.010049559471365639,
+      "q25": 0.010049559471365639,
+      "median": 0.010049559471365639,
+      "q75": 0.010049559471365639,
+      "q90": 0.010049559471365639,
+      "max": 0.010049559471365639
+    },
+    "40": {
+      "min": 0.0009213759213759214,
+      "q10": 0.005635749385749386,
+      "q25": 0.012285012285012284,
+      "median": 0.021729115479115477,
+      "q75": 0.029944717444717446,
+      "q90": 0.042306511056511065,
+      "max": 0.08799140049140049
+    },
+    "20": {
+      "min": 0.5484546883184913,
+      "q10": 0.8782870612886328,
+      "q25": 0.9328837087480356,
+      "median": 0.9679151388161341,
+      "q75": 0.9826807228915663,
+      "q90": 0.9883446830801467,
+      "max": 0.9965950759559979
+    },
+    "0": {
+      "min": 0.4270398809681962,
+      "q10": 0.84242102186678,
+      "q25": 0.9094342003879161,
+      "median": 0.9574886414963999,
+      "q75": 0.9825504158142253,
+      "q90": 0.9922044796344023,
+      "max": 0.9992826208252518
+    }
+  },
+  "proposal_outcomes": {
+    "analyzed_prefix": 967,
+    "accepted": 100,
+    "lost": 743,
+    "fixed": 124
+  }
+}
