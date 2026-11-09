@@ -1,0 +1,16 @@
+{
+  "labels": [
+    "50 kya - 30 kya",
+    "10 kya - present"
+  ],
+  "selected_ids": [
+    "50_30k/introgression/s0.01/selected_00000",
+    "10k/introgression/s0.01/selected_00020"
+  ],
+  "selected_cache_sha256": "91cafaffdd3776519d91ea58338a38dce9685bc9a0d35707fcf4d236864d6239",
+  "neutral_cache_sha256": "1636cd4e1c4a3e64ad12f5e0b59ba5554a2a1c95393a26e01f429b47c888ded0",
+  "neutral_count": 100,
+  "conditioning": "Neutral unconditioned, including losses/fixation; selected examples conditioned on present-day segregation.",
+  "tracking": "Original focal allele introduced on Neanderthal donor haplotypes at 50 kya; not the relabelled nearest segregating neutral site.",
+  "script_sha256": "6bec37cc47c6f7ac4eeccadfff1c3e8988140f144d056d8ba421eadb5196fca5"
+}

@@ -65,7 +65,7 @@ def prepare(out, workers):
         cache_sha256=sha(cache), validation='All 100 hashes, time grids, zero selection coefficients, AF bounds, exact copy-count frequencies and receipt endpoints verified.'))
 
 
-def report(out):
+def report(out, two_curves=False):
     parent = json.loads((out / 'manifest.json').read_text())
     neutral_manifest = json.loads((out / 'neutral_af_manifest.json').read_text())
     assert sha(out / 'parameters.npz') == parent['cache_sha256']
@@ -80,6 +80,40 @@ def report(out):
     matplotlib.rcParams.update({'font.size':16, 'axes.labelsize':16, 'axes.titlesize':16,
         'xtick.labelsize':14, 'ytick.labelsize':14, 'pdf.fonttype':42, 'ps.fonttype':42})
     times = neutral[0, :, 0] / 1000
+    if two_curves:
+        fig, ax = plt.subplots(figsize=(11, 8.5))
+        for trajectory in neutral:
+            ax.plot(times, trajectory[:, 1], color='.6', lw=.8, alpha=.45)
+        ax.plot(times, neutral[:, :, 1].mean(0), color='#0072B2', lw=2.5, label='Neutral mean')
+        labels = ['50 kya - 30 kya', '10 kya - present']
+        for i, color, label in zip((0, 2), ('#D55E00', '#CC79A7'), labels):
+            ax.plot(times, selected[i, :, 1], color=color, lw=3, label=label)
+        handles, legend_labels = ax.get_legend_handles_labels()
+        handles.insert(0, Line2D([], [], color='.6', lw=1))
+        legend_labels.insert(0, '100 neutrals')
+        ax.set(xlim=(50, 0), ylim=(0, 1), xlabel='Time before present (kya)', ylabel='Allele frequency')
+        ax.yaxis.set_major_formatter(PercentFormatter(1))
+        ax.grid(axis='y', alpha=.2)
+        fig.suptitle('Allele-frequency trajectories', y=.96, fontsize=21)
+        fig.legend(handles, legend_labels, loc='upper center', bbox_to_anchor=(.5, .91),
+                   ncol=2, frameon=False, fontsize=16)
+        fig.text(.5, .045, 'EAS + 1% introgression at 50 kya · s=0.01 · focal site: 500 kb',
+                 ha='center', fontsize=13)
+        fig.subplots_adjust(top=.78, bottom=.15, left=.13, right=.97)
+        stem = 'allele_frequencies_two_windows'
+        for extension in ('png', 'pdf'):
+            fig.savefig(out / f'{stem}.{extension}', dpi=180)
+        plt.close(fig)
+        pdf = (out / f'{stem}.pdf').read_bytes()
+        assert b'/FontFile2' in pdf and not re.search(rb'/Subtype\s*/Image', pdf)
+        save_json(out / f'{stem}_provenance.json', dict(labels=labels,
+            selected_ids=[parent['contract']['ids'][i] for i in (0, 2)],
+            selected_cache_sha256=parent['cache_sha256'], neutral_cache_sha256=neutral_manifest['cache_sha256'],
+            neutral_count=100, conditioning=neutral_manifest['contract']['conditioning'],
+            tracking=neutral_manifest['contract']['tracked_allele'], script_sha256=sha(Path(__file__))))
+        save_json(out / 'output_hashes.json', {p.name:sha(p) for p in sorted(out.iterdir()) if p.is_file() and p.name!='output_hashes.json'})
+        print(f'Saved {out / stem} (.png and .pdf)', flush=True)
+        return
     fig, axes = plt.subplots(2, 1, figsize=(11, 8.5), sharex=True, sharey=True)
     colors = ['#D55E00', '#009E73', '#CC79A7']
     for ax, window, indices, title in zip(axes, [(30,50), (0,10)], [(0,1), (2,)],
@@ -120,13 +154,14 @@ def report(out):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase',choices=['prepare','report','all'])
+    parser.add_argument('phase',choices=['prepare','report','all','two-curves'])
     parser.add_argument('--out',type=Path,default=ROOT/'docs/results/selected_site_posteriors_20261106')
     parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args()
     assert 1<=args.workers<=24
     if args.phase in ('prepare','all'):prepare(args.out,args.workers)
     if args.phase in ('report','all'):report(args.out)
+    if args.phase == 'two-curves':report(args.out, two_curves=True)
 
 
 if __name__=='__main__':main()
