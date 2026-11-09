@@ -1,0 +1,17 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "allele_frequencies.pdf": "284de903f16d4c6df4b49053a5786ae3f7af26b3c6826dc862551fe90e3fa931",
+  "allele_frequencies.png": "57eeddab06e7a032fdf1050effde93b6ba9537d5679959b12f3b6e008cfa6558",
+  "manifest.json": "0265da6a4ec3d02c2a0a3af38ce7e5b0c1f6d09e9cf036d9d8de65bf049c8fb9",
+  "parameters.npz": "4ecdd411eac0372e3bbcb9890ea4e774e2216200821c0abccc515d0c02be72a0",
+  "s0.005_intervals.pdf": "88b51d686e442aa37c4c164c4dcbb3455d7cb41c7dfd30f9f6a7aefa2a539ced",
+  "s0.005_intervals.png": "622c8e6007c06958f22152c2fd15d3dad9e9e324d65b3b0e9c1079dfe70a7d54",
+  "s0.005_posterior.pdf": "9c8d927a04ddce73ea61ec1b5407c6a327d70442eb08222c161cdcd00f2c475d",
+  "s0.005_posterior.png": "62568cb628bb64851e0e86ccc22cab3a33534c5773ffd9b0e02e09656854f49c",
+  "s0.01_intervals.pdf": "3fda260a9424c1b9a76e82492fd1d662c712d66f2fa0a6889b2d69ca9ddc6885",
+  "s0.01_intervals.png": "bfe73f00008809366036ba55a1503566a466278334aa0d5dc10f36573737b7c6",
+  "s0.01_posterior.pdf": "2e74e0edb0325b0b744df47797194048a8c44d8ca43866bcc6f3790d4363056d",
+  "s0.01_posterior.png": "4422cd163bc59ac71db0708beb3abbe0a9d13a09a70db073d86334b1090ebfcd",
+  "summary.json": "5762b1cc29ff815ff265b064d75a2e4f872401d1359d9295f7829a3ee08a899b",
+  "visual_qa.json": "852bfaf429bbaae5a2410bac70cfb9cb85c451b006ce309e564d26d386d6c265"
+}

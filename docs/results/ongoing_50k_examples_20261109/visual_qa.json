@@ -1,0 +1,7 @@
+{
+  "figures": ["allele_frequencies.png", "s0.005_posterior.png", "s0.005_intervals.png", "s0.01_posterior.png", "s0.01_intervals.png"],
+  "visual_check": "All five inspected. Labels and legends are readable above the panels, with no clipping or overlap with data. Colors are consistent across AF, posterior and interval figures.",
+  "pdf_check": "All five PDFs contain embedded TrueType fonts and vector paths, with no raster image objects.",
+  "data_check": "First surviving segregating replicate for each coefficient, both replicate 1. Reconstructed all 50 saved true/median/mass cutoffs from raw trees and Gamma-SMC posteriors at 500 kb. Input hashes verified. Same 100 neutral replicates and 1000 pairs as the prior comparison.",
+  "conditioning": "Both selected examples remain segregating today; neutral simulations are unconditioned. No fixation exception used."
+}

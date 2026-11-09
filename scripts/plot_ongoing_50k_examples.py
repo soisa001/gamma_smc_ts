@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Prepare and plot 50-kya-to-present examples at the selected site.
 
-Fixed scientific seeds; first accepted s=.01 proposal. The optional s=.05
+Fixed scientific seeds; first accepted proposal for each coefficient. The optional s=.05
 completed sweep replays proposal 0 to present, only when fixation is allowed.
 Phases: simulate-fixed, prepare, report. Report uses committed caches only.
 """
@@ -150,13 +150,17 @@ def extract(row):
     return a,scale,truth,pairs,cdfs,trajectory
 
 
-def prepare(out,workers,include_fixed):
+def prepare(out,workers,include_fixed,coefficients):
     inventory=json.loads((BASE/'output_hashes.json').read_text())
     assert sha(BASE/'completed_units.tsv')==inventory['completed_units.tsv']
     rows=pd.read_csv(BASE/'completed_units.tsv',sep='\t')
-    chosen=rows[(rows.regime=='50k')&(rows.origin=='introgression')&(rows.cohort=='selected')&(rows.selection==.01)].sort_values('replicate').iloc[0].to_dict()
-    assert chosen['replicate']==1 and 0<chosen['final_frequency']<1
-    selected=[chosen]
+    selected=[]
+    for coefficient in coefficients:
+        candidates=rows[(rows.regime=='50k')&(rows.origin=='introgression')&(rows.cohort=='selected')&(rows.selection==coefficient)].sort_values('replicate')
+        assert len(candidates), f'No accepted example for s={coefficient}'
+        chosen=candidates.iloc[0].to_dict()
+        assert bool(chosen['accepted']) and 0<chosen['final_frequency']<1
+        selected.append(chosen)
     if include_fixed:
         record=json.loads((NEW_RAW/FIXED_UNIT/'complete.json').read_text())
         selected.append(record)
@@ -167,7 +171,7 @@ def prepare(out,workers,include_fixed):
     contract=dict(selected_ids=[r['id'] for r in selected],selected_scores=[r['scores_sha256'] for r in selected],
         neutral_parameters_sha256=neutral_meta['cache_sha256'],neutral_af_sha256=neutral_af['cache_sha256'],
         position_bp=500000,selection_window_kya=[50,0],selection=[r['selection'] for r in selected],
-        choice='s=.01: first surviving segregating proposal; s=.05 if included: first proposal replayed allowing fixation, unchosen by inferred signal.',
+        choice='First surviving segregating proposal for each requested coefficient, unchosen by inferred signal. Optional fixed example only when explicitly requested.',
         schema='ongoing-50k-examples/v1')
     if (out/'manifest.json').exists():
         saved=json.loads((out/'manifest.json').read_text())
@@ -240,7 +244,10 @@ def report(out,workers):
     ax.set(xlim=(50,0),ylim=(0,1.02),xlabel='Time before present (kya)',ylabel='Allele frequency');ax.yaxis.set_major_formatter(PercentFormatter(1));ax.grid(axis='y',alpha=.2)
     fig.suptitle('50 kya - present',y=.96,fontsize=21);fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.91),ncol=2,frameon=False,fontsize=16)
     fig.text(.5,.055,'EAS + 1% introgression at 50 kya · focal site: 500 kb',ha='center',fontsize=13)
-    fig.text(.5,.025,'s=0.01: segregation required; s=0.05: fixation allowed. Neutrals unconditioned.' if n==2 else 's=0.01: present-day segregation required. Neutrals unconditioned.',ha='center',fontsize=11)
+    condition='Selected examples: present-day segregation required. Neutrals unconditioned.'
+    if np.any(trajectories[:,-1,1]==1):
+        condition='Completed sweep explicitly allows fixation. Neutrals unconditioned.'
+    fig.text(.5,.025,condition,ha='center',fontsize=11)
     fig.subplots_adjust(top=.78,bottom=.15,left=.13,right=.97);save(fig,'allele_frequencies')
     for path in out.glob('*.pdf'):
         contents=path.read_bytes();assert b'/FontFile2' in contents and not re.search(rb'/Subtype\s*/Image',contents)
@@ -254,14 +261,18 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase',choices=['simulate-fixed','prepare','report','all'])
     parser.add_argument('--include-fixed',action='store_true')
+    parser.add_argument('--selection',type=float,nargs='+',default=[.005,.01])
     parser.add_argument('--out',type=Path,default=ROOT/'docs/results/ongoing_50k_examples_20261109')
     parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args();assert 1<=args.workers<=24
+    assert len(args.selection)==len(set(args.selection)) and all(s>0 for s in args.selection)
+    if args.phase in ('prepare','all'):
+        assert len(args.selection)+int(args.include_fixed)<=2, 'At most two examples per comparison.'
     args.out.mkdir(parents=True,exist_ok=True)
     if args.phase=='simulate-fixed':
         if not args.include_fixed:parser.error('Explicit --include-fixed required for completed sweep.')
         simulate_fixed()
-    if args.phase in ('prepare','all'):prepare(args.out,args.workers,args.include_fixed)
+    if args.phase in ('prepare','all'):prepare(args.out,args.workers,args.include_fixed,args.selection)
     if args.phase in ('report','all'):report(args.out,args.workers)
 
 

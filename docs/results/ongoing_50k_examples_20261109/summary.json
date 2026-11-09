@@ -1,0 +1,54 @@
+{
+  "examples": [
+    {
+      "selection": 0.005,
+      "id": "50k/introgression/s0.005/selected_00001",
+      "present_af": 0.7506177431782555,
+      "status": "segregating at present",
+      "below_50_kya": {
+        "truth": {
+          "selected": 0.53,
+          "neutral_mean": 0.19607999999999998,
+          "neutral_ge_selected": 0
+        },
+        "median": {
+          "selected": 0.457,
+          "neutral_mean": 0.24876,
+          "neutral_ge_selected": 4
+        },
+        "mass": {
+          "selected": 0.3982725429475561,
+          "neutral_mean": 0.2507235804626259,
+          "neutral_ge_selected": 5
+        }
+      },
+      "posterior_tail_above_200": 0.43638577076063695
+    },
+    {
+      "selection": 0.01,
+      "id": "50k/introgression/s0.01/selected_00001",
+      "present_af": 0.998618380848633,
+      "status": "segregating at present",
+      "below_50_kya": {
+        "truth": {
+          "selected": 0.98,
+          "neutral_mean": 0.19607999999999998,
+          "neutral_ge_selected": 0
+        },
+        "median": {
+          "selected": 0.743,
+          "neutral_mean": 0.24876,
+          "neutral_ge_selected": 0
+        },
+        "mass": {
+          "selected": 0.653209390163705,
+          "neutral_mean": 0.2507235804626259,
+          "neutral_ge_selected": 0
+        }
+      },
+      "posterior_tail_above_200": 0.035070530781850046
+    }
+  ],
+  "script_sha256": "b4d6f0a26462b5006f0f2cc1327c4039bfa12f1ebb5829e8a46837772706f306",
+  "caveat": "Illustrative examples, not power estimates. Fixed-site comparisons use 50 held-out and 50 calibration neutrals."
+}
