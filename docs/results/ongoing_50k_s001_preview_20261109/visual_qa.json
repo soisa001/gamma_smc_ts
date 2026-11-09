@@ -1,0 +1,6 @@
+{
+  "figures": ["allele_frequencies.png", "s0.01_posterior.png", "s0.01_intervals.png"],
+  "visual_check": "All three inspected: readable large text, legends above panels, no clipping or overlap with data.",
+  "pdf_check": "All three PDFs contain embedded TrueType fonts and vector paths, with no raster image objects.",
+  "data_check": "Selected first accepted replicate (1), s=0.01 throughout 50 kya to present; raw hashes and reconstructed true, median and posterior-mass fractions checked at all 50 cutoffs at 500 kb. Same 100 cached neutral replicates."
+}
