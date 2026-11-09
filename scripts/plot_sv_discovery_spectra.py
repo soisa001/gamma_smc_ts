@@ -59,11 +59,14 @@ def parse_row(line, nsamples):
     return group, svtype, count, length, method
 
 
-def render(values, edges, xlabel, title, stem, out):
-    fig, axes = plt.subplots(3, 1, figsize=(8.5, 11), layout="constrained")
+def render(values, edges, xlabel, title, stem, out, *, groups=GROUPS,
+           colors=COLORS, ylabel="SV records", zero_counts=None):
+    fig, axes = plt.subplots(len(groups), 1, figsize=(8.5, 11), layout="constrained", squeeze=False)
+    axes = axes[:, 0]
     fig.suptitle(title, fontsize=21)
-    rows = ["group\tbin_left\tbin_right\trecords"]
-    for group, color, ax in zip(GROUPS, COLORS, axes):
+    count_label = "adjacent_pairs" if zero_counts is not None else "records"
+    rows = [f"group\tbin_left\tbin_right\t{count_label}"]
+    for group, color, ax in zip(groups, colors, axes):
         data = np.asarray(values[group])
         counts, _ = np.histogram(data, bins=edges)
         if int(counts.sum()) != len(data):
@@ -73,16 +76,21 @@ def render(values, edges, xlabel, title, stem, out):
         ax.set_yscale("log")
         ax.set_xlim(edges[0], edges[-1])
         ax.set_ylim(0.8, max(2, int(counts.max()) * 2.5))
-        ax.set_title(f"{group}   |   n = {len(data):,}", loc="left", fontsize=18)
-        ax.set_ylabel("SV records", fontsize=17)
+        label = f"{group}   |   n = {len(data):,}"
+        if zero_counts is not None:
+            label = f"{group}   |   >0: {len(data):,}; zero: {zero_counts[group]:,}"
+        ax.set_title(label, loc="left", fontsize=17 if zero_counts is not None else 18)
+        ax.set_ylabel(ylabel, fontsize=17)
         ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:,.3g}"))
+        ax.xaxis.set_minor_formatter(NullFormatter())
         ax.yaxis.set_major_locator(LogLocator(base=10, numticks=4))
         ax.yaxis.set_minor_formatter(NullFormatter())
         ax.tick_params(labelsize=15)
         ax.grid(axis="y", which="major", alpha=0.2)
         ax.spines[["right", "top"]].set_visible(False)
         if not len(data):
-            ax.text(0.5, 0.5, "No eligible records", ha="center", transform=ax.transAxes)
+            message = "No positive distances" if zero_counts is not None else "No eligible records"
+            ax.text(0.5, 0.5, message, ha="center", transform=ax.transAxes)
         for left, right, count in zip(edges[:-1], edges[1:], counts):
             rows.append(f"{group}\t{left:.12g}\t{right:.12g}\t{int(count)}")
     axes[-1].set_xlabel(xlabel, fontsize=18)
