@@ -1,0 +1,18 @@
+{
+  "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+  "packages": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "msprime": "1.4.2",
+    "pyslim": "1.1.1",
+    "tskit": "1.0.3",
+    "matplotlib": "3.11.1",
+    "pandas": "3.0.3",
+    "zstandard": "0.25.0"
+  },
+  "threads_per_worker": 1,
+  "simulation_workers": 4,
+  "deadline_preserved_across_scheduler_restart": true,
+  "conditioning": "0 < whole-population frequency of original focal allele < 1 at present",
+  "notes": "Original 4-hour deadline retained. All submitted proposals finish before selecting the first 100 accepted IDs; cached simulations reused without changing seeds."
+}

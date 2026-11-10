@@ -63,6 +63,8 @@ def main():
     np.testing.assert_allclose(trajectories[:,:,1],trajectories[:,:,4]/(2*trajectories[:,:,2]),atol=1e-14)
     neutral=trajectories[:,:,1]
     assert np.isfinite(neutral).all() and np.all((neutral>=0)&(neutral<=1))
+    conditioned=meta.get('neutral_conditioned',False)
+    if conditioned:assert np.all((neutral[:,-1]>0)&(neutral[:,-1]<1))
 
     def read(entry):
         path=out/entry['cache']
@@ -82,7 +84,7 @@ def main():
         'xtick.labelsize':16,'ytick.labelsize':16,'pdf.fonttype':42,'ps.fonttype':42})
     orange='#D55E00';gray='#666666';shade='#E9E3D7'
     handles=[Line2D([],[],color=orange,lw=2,label='100 selected simulations'),
-        Line2D([],[],color=gray,lw=2,label='100 neutral simulations'),
+        Line2D([],[],color=gray,lw=2,label='100 segregating neutrals' if conditioned else '100 neutral simulations'),
         Patch(facecolor=shade,label='Selection active')]
     def draw(ax,case,af):
         ax.axvspan(*case['window'],facecolor=shade,alpha=.55,zorder=0)
@@ -106,7 +108,9 @@ def main():
             fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.875),ncol=3,frameon=False,fontsize=12)
             fig.subplots_adjust(left=.12,right=.97,bottom=.18,top=.79)
             fig.text(.5,.07,'EAS demography · 1% introgression at 50 kya · same cohorts as the coalescence plots',ha='center',fontsize=12)
-            fig.text(.5,.035,'Selected: segregating today. Neutral: original introduced allele, including losses and fixation.',ha='center',fontsize=11.5)
+            conditioning_note=('Selected and neutral: original introduced focal allele required to be segregating today.' if conditioned
+                else 'Selected: segregating today. Neutral: original introduced allele, including losses and fixation.')
+            fig.text(.5,.035,conditioning_note,ha='center',fontsize=11.5)
             stem=f"{case['key']}_allele_frequency_100"
             for extension in ('png','pdf'):
                 path=out/f'{stem}.{extension}'

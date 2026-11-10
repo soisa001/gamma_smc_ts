@@ -199,6 +199,7 @@ def report(out,available_only=False,calls_only=False):
     matplotlib.rcParams.update({'font.size':16,'axes.labelsize':17,'axes.titlesize':17,
         'xtick.labelsize':13,'ytick.labelsize':13,'pdf.fonttype':42,'ps.fonttype':42})
     blue,purple='#0072B2','#AA3377'
+    neutral_label='100 segregating neutrals' if meta.get('neutral_conditioned',False) else '100 neutrals'
     summary=[];replicate_records=[]
     # Each underlying statistic curve is retained; bold segments mark its own
     # empirical call. The separate row plots preserve individual call identity.
@@ -227,11 +228,11 @@ def report(out,available_only=False,calls_only=False):
                         for spine in ('top','right'):ax.spines[spine].set_visible(False)
                     fig.suptitle(case['label'],y=.98,fontsize=21)
                     fig.text(.5,.935,f'{name} · all 100 selected simulations · selected site: 500 kb',ha='center',fontsize=15)
-                    handles=[Line2D([],[],color='.55',lw=1,label='100 neutral curves'),Line2D([],[],color=blue,alpha=.4,lw=1,label='100 selected curves'),
+                    handles=[Line2D([],[],color='.55',lw=1,label=neutral_label),Line2D([],[],color=blue,alpha=.4,lw=1,label='100 selected curves'),
                         Line2D([],[],color=blue,lw=2,marker='o',markersize=4,label=f'Selected points: p < {threshold:g}'),Patch(facecolor='.93',label='Selection active')]
                     fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.89),ncol=2,frameon=False,fontsize=12)
                     fig.subplots_adjust(top=.74,bottom=.16,left=.10,right=.97,wspace=.40)
-                    fig.text(.5,.06,'Bold points use each simulation’s own p value against the same 100 neutrals.',ha='center',fontsize=12)
+                    fig.text(.5,.06,f'Bold points use each simulation’s own p value against the same {neutral_label}.',ha='center',fontsize=11.5)
                     fig.text(.5,.025,'Pointwise tests; no correction across times/loci. Interval values are plotted at bin midpoints.',ha='center',fontsize=11)
                     stem=f"{case['key']}_{METHOD_KEYS[method]}_curves_{tag}"
                     for extension in ('png','pdf'):fig.savefig(out/f'{stem}.{extension}',dpi=180)
@@ -272,7 +273,7 @@ def report(out,available_only=False,calls_only=False):
                     fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.9),ncol=3,frameon=False,fontsize=12)
                     if method==2:
                         fig.text(.5,.075,'Order: first significant time, then longer spans · based on p < 0.05 in both panels',ha='center',fontsize=11)
-                    fig.text(.5,.05,'Same 100 neutrals · 1,000 pairs · p = (1 + neutral exceedances) / 101',ha='center',fontsize=12)
+                    fig.text(.5,.05,f'Same {neutral_label} · 1,000 pairs · p = (1 + neutral exceedances) / 101',ha='center',fontsize=11.5)
                     fig.text(.5,.025,'Blank rows have no pointwise call. No correction across times/loci; bars do not estimate selection duration.',ha='center',fontsize=10.5)
                     fig.subplots_adjust(top=.8,bottom=.21,left=.11,right=.97,wspace=.16)
                     stem=f"{case['key']}_{METHOD_KEYS[method]}_{tag}"

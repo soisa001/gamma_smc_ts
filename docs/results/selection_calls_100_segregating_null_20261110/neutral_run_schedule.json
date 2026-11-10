@@ -1,0 +1,12 @@
+{
+  "workers": 4,
+  "seconds": 14400,
+  "attempts": 5000,
+  "target": 100,
+  "started_epoch": 1794340424.8156886,
+  "deadline_epoch": 1794354431.3930433,
+  "raw": "/mnt/d/phase2simselection/sim/segregating_neutral_100_20261110",
+  "out": "/mnt/d/phase2simselection/code/docs/results/selection_calls_100_segregating_null_20261110",
+  "script_sha256": "7900ad320dd1b7ca6f153da36f4064fb6beaecac233506d986751c62bd20c891",
+  "native_library_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/lib"
+}

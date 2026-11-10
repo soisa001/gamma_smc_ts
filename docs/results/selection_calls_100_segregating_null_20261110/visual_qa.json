@@ -1,0 +1,8 @@
+{
+  "visual_check": "Inspected all 48 coalescence PNGs in six contact sheets, a full-size posterior-mass curve plot, and all four AF figures at full size. Legends and footnotes clear; no clipping or overlaps. Posterior-mass rows are sorted consistently across panels and thresholds.",
+  "file_check": "52 PNGs at 1980x1530 verified; 61 vector PDFs with embedded TrueType fonts, no raster images, complete EOF markers and correct page counts (120 total pages). SHA256 inventory and AF provenance verified.",
+  "data_check": "All 100 neutral focal alleles segregate today at s=0. Same neutral IDs in AF and coalescence plots. Selected AF/CDF arrays, IDs, proposal indices and grids exactly unchanged from prior report. All p values and 24 summary records recomputed independently.",
+  "simulation_validation": "Accepted s=0 replay has identical full AF trajectory, genealogy, mutations and sample identities; excluded timestamp provenance and unused nonspatial individual coordinates. Rejected replay matches trajectory prefix exactly and remains lost after the stopping point.",
+  "tests": "Four targeted tests for discrete ties and strict finite-reference thresholds passed.",
+  "conditioning": "Original focal allele has 0<whole-population AF<1 today in both selected and neutral cohorts; no frequency-matching filter or inferred-signal ascertainment."
+}

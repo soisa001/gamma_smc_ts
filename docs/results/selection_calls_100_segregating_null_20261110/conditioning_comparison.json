@@ -1,0 +1,225 @@
+{
+  "results": [
+    {
+      "case": "50_30k_s001",
+      "method": "True TMRCA",
+      "threshold": 0.05,
+      "old_cumulative": 69,
+      "new_cumulative": 52,
+      "old_interval": 97,
+      "new_interval": 96
+    },
+    {
+      "case": "50_30k_s001",
+      "method": "Posterior median",
+      "threshold": 0.05,
+      "old_cumulative": 36,
+      "new_cumulative": 31,
+      "old_interval": 68,
+      "new_interval": 68
+    },
+    {
+      "case": "50_30k_s001",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.05,
+      "old_cumulative": 19,
+      "new_cumulative": 17,
+      "old_interval": 18,
+      "new_interval": 18
+    },
+    {
+      "case": "10k_s001",
+      "method": "True TMRCA",
+      "threshold": 0.05,
+      "old_cumulative": 86,
+      "new_cumulative": 81,
+      "old_interval": 97,
+      "new_interval": 97
+    },
+    {
+      "case": "10k_s001",
+      "method": "Posterior median",
+      "threshold": 0.05,
+      "old_cumulative": 58,
+      "new_cumulative": 56,
+      "old_interval": 78,
+      "new_interval": 79
+    },
+    {
+      "case": "10k_s001",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.05,
+      "old_cumulative": 26,
+      "new_cumulative": 22,
+      "old_interval": 23,
+      "new_interval": 23
+    },
+    {
+      "case": "50k_s001",
+      "method": "True TMRCA",
+      "threshold": 0.05,
+      "old_cumulative": 99,
+      "new_cumulative": 99,
+      "old_interval": 100,
+      "new_interval": 100
+    },
+    {
+      "case": "50k_s001",
+      "method": "Posterior median",
+      "threshold": 0.05,
+      "old_cumulative": 99,
+      "new_cumulative": 98,
+      "old_interval": 100,
+      "new_interval": 100
+    },
+    {
+      "case": "50k_s001",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.05,
+      "old_cumulative": 96,
+      "new_cumulative": 96,
+      "old_interval": 96,
+      "new_interval": 96
+    },
+    {
+      "case": "50k_s0005",
+      "method": "True TMRCA",
+      "threshold": 0.05,
+      "old_cumulative": 94,
+      "new_cumulative": 92,
+      "old_interval": 100,
+      "new_interval": 100
+    },
+    {
+      "case": "50k_s0005",
+      "method": "Posterior median",
+      "threshold": 0.05,
+      "old_cumulative": 81,
+      "new_cumulative": 78,
+      "old_interval": 91,
+      "new_interval": 92
+    },
+    {
+      "case": "50k_s0005",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.05,
+      "old_cumulative": 65,
+      "new_cumulative": 60,
+      "old_interval": 65,
+      "new_interval": 64
+    },
+    {
+      "case": "50_30k_s001",
+      "method": "True TMRCA",
+      "threshold": 0.01,
+      "old_cumulative": 28,
+      "new_cumulative": 25,
+      "old_interval": 48,
+      "new_interval": 49
+    },
+    {
+      "case": "50_30k_s001",
+      "method": "Posterior median",
+      "threshold": 0.01,
+      "old_cumulative": 15,
+      "new_cumulative": 9,
+      "old_interval": 30,
+      "new_interval": 31
+    },
+    {
+      "case": "50_30k_s001",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.01,
+      "old_cumulative": 6,
+      "new_cumulative": 6,
+      "old_interval": 6,
+      "new_interval": 6
+    },
+    {
+      "case": "10k_s001",
+      "method": "True TMRCA",
+      "threshold": 0.01,
+      "old_cumulative": 65,
+      "new_cumulative": 62,
+      "old_interval": 73,
+      "new_interval": 71
+    },
+    {
+      "case": "10k_s001",
+      "method": "Posterior median",
+      "threshold": 0.01,
+      "old_cumulative": 22,
+      "new_cumulative": 21,
+      "old_interval": 42,
+      "new_interval": 35
+    },
+    {
+      "case": "10k_s001",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.01,
+      "old_cumulative": 5,
+      "new_cumulative": 5,
+      "old_interval": 5,
+      "new_interval": 4
+    },
+    {
+      "case": "50k_s001",
+      "method": "True TMRCA",
+      "threshold": 0.01,
+      "old_cumulative": 99,
+      "new_cumulative": 99,
+      "old_interval": 100,
+      "new_interval": 99
+    },
+    {
+      "case": "50k_s001",
+      "method": "Posterior median",
+      "threshold": 0.01,
+      "old_cumulative": 88,
+      "new_cumulative": 79,
+      "old_interval": 95,
+      "new_interval": 94
+    },
+    {
+      "case": "50k_s001",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.01,
+      "old_cumulative": 82,
+      "new_cumulative": 79,
+      "old_interval": 82,
+      "new_interval": 84
+    },
+    {
+      "case": "50k_s0005",
+      "method": "True TMRCA",
+      "threshold": 0.01,
+      "old_cumulative": 82,
+      "new_cumulative": 81,
+      "old_interval": 92,
+      "new_interval": 88
+    },
+    {
+      "case": "50k_s0005",
+      "method": "Posterior median",
+      "threshold": 0.01,
+      "old_cumulative": 48,
+      "new_cumulative": 35,
+      "old_interval": 74,
+      "new_interval": 65
+    },
+    {
+      "case": "50k_s0005",
+      "method": "Posterior-weighted mass",
+      "threshold": 0.01,
+      "old_cumulative": 34,
+      "new_cumulative": 31,
+      "old_interval": 35,
+      "new_interval": 34
+    }
+  ],
+  "validation": "All selected AF/CDF values, cohort IDs, proposal indices and time grids are exactly unchanged. Same pair panel. All 100 neutral focal alleles segregate today at s=0, with unique IDs/seeds. P values and summary call counts independently recomputed.",
+  "old_summary_sha256": "e6609bf23ee32a1bfe77ac9e027ebd0c150ff75d21b422fbb2ee088984e080a0",
+  "new_summary_sha256": "0f76c9e2d06ba7dd7bfbf95dd0551455447dcdf1481b07893a0465f7f0e509ca",
+  "script_sha256": "bca139a364820b180a0b5614b9ee5153a584a839dcf19ca9429e79ff95a2522f",
+  "interpretation": "Fractions with any pointwise call, not scan-adjusted power or FPR."
+}

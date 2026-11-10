@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "id": "segregating_null/introgression/neutral_conditioned_00013",
+      "source_receipt": "/mnt/d/phase2simselection/sim/segregating_neutral_100_20261110/introgression/neutral_conditioned_00013/complete.json",
+      "source_receipt_sha256": "f0622f69434f669882334aa9e353a3c7856b5e60cef16389f017dddb5cf03bb3",
+      "replay_directory": "/mnt/d/phase2simselection/sim/segregating_neutral_100_20261110/validation/neutral_conditioned_00013",
+      "outcome": "Exact full trajectory, genealogy, mutation tables and sample identities match the unconditioned s=0 replay. Only timestamp provenance and unused nonspatial individual coordinates are excluded.",
+      "trajectory_rows": 2001
+    },
+    {
+      "id": "segregating_null/introgression/neutral_conditioned_00000",
+      "source_receipt": "/mnt/d/phase2simselection/sim/segregating_neutral_100_20261110/introgression/neutral_conditioned_00000/rejected.json",
+      "source_receipt_sha256": "3d416bb4f9591222993e6f19467fce5354bc6ffb4742ffa5d33348479880caec",
+      "replay_directory": "/mnt/d/phase2simselection/sim/segregating_neutral_100_20261110/validation/neutral_conditioned_00000",
+      "outcome": "Exact trajectory prefix matches; after the rejection point, the full unconditioned replay stays in the same absorbing state.",
+      "trajectory_rows": 150
+    }
+  ],
+  "passed": true,
+  "manifest_sha256": "3ea3529e76ce4398d0a5ef018f8744e3c98df415aec09914ea49866a20527a75",
+  "script_sha256": "9bf80690bd5238f7c39d8a0cb9bc8c3df3772fddad25cf500c52bf503d4cee58"
+}
