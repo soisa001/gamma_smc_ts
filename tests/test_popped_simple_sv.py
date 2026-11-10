@@ -33,6 +33,66 @@ class ClassificationTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("SV_PILOT_INTEGRATION") == "1", "Requires Linux bcftools/Truvari")
 class TrialTests(unittest.TestCase):
+    def test_missing_contig_length(self):
+        import test_sv_phased_batch as old
+        bcftools = os.environ.get("BCFTOOLS_BIN", "bcftools")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source.vcf"
+            old.fixture(source)
+            header = "".join(l for l in source.read_text().splitlines(True) if l.startswith("#"))
+            header = header.replace("ID=chr1,length=1000000", "ID=chr1")
+            header = header.replace("#CHROM", "##contig=<ID=chr2>\n#CHROM")
+            source.write_text(header + "\t".join(["chr1", "100", "ins", "A", "A" + "T" * 60,
+                ".", "PASS", ".", "GT", "1|0", "0|0", "0|0"]) + "\n"
+                + "\t".join(["chr1", "105", "ins2", "A", "A" + "T" * 60,
+                ".", "PASS", ".", "GT", "0|0", "0|1", "0|0"]) + "\n"
+                + "\t".join(["chr1", "999000", "last_del", "A" + "C" * 700, "A",
+                ".", "PASS", ".", "GT", "1|0", "0|0", "0|0"]) + "\n")
+            compressed = root / "source.vcf.gz"
+            subprocess.run([bcftools, "view", "-Oz", "-o", str(compressed), str(source)], check=True, capture_output=True)
+            subprocess.run([bcftools, "index", "-t", str(compressed)], check=True, capture_output=True)
+            result = subprocess.run(["truvari", "collapse", "-i", str(compressed),
+                "-o", str(root / "kept.vcf.gz"), "-c", str(root / "gone.vcf.gz"),
+                "-s", "0", "-S", "-1", "--keep", "common", "--gt", "all"], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 10)
+            self.assertIn("has no length definition. Fix header.", result.stderr)
+            run = root / "run"
+            args = ["--root", str(run), "--input-bcf", str(compressed), "--bcftools", bcftools,
+                    "--similarities", "0.7", "0.9"]
+            simple.main(args + ["--phase", "prepare"])
+            saved = {p: (simple.pilot.common.digest(p), p.stat().st_mtime_ns) for p in (run / "prepare").iterdir()}
+            simple.main(args + ["--phase", "merge"])
+            self.assertTrue(all((simple.pilot.common.digest(p), p.stat().st_mtime_ns) == info for p, info in saved.items()))
+            for tag in ("p70", "p90"):
+                with gzip.open(run / tag / "chr1.sv50.vcf.gz", "rt") as handle:
+                    records = [line for line in handle if not line.startswith("#")]
+                self.assertEqual(len(records), 2)
+                self.assertIn("last_del", {line.split("\t")[2] for line in records})
+                # The BED workaround must match the same data with valid length
+                # metadata and no BED, including consolidation and phase fields.
+                import pysam
+                for kind in simple.KINDS:
+                    valid = root / "valid.vcf.gz"
+                    with gzip.open(run / "prepare" / f"{kind}.vcf.gz", "rb") as src, pysam.BGZFile(str(valid), "w") as dst:
+                        for line in src:
+                            if line.startswith(b"##contig="):
+                                line = line.replace(b"ID=chr1>", b"ID=chr1,length=1000000>").replace(b"ID=chr2>", b"ID=chr2,length=1000000>")
+                            dst.write(line)
+                    subprocess.run([bcftools, "index", "-f", "-t", str(valid)], check=True, capture_output=True)
+                    threshold = "0.7" if tag == "p70" else "0.9"
+                    direct, gone = root / "direct.vcf.gz", root / "direct.collapsed.vcf.gz"
+                    subprocess.run(["truvari", "collapse", "-i", str(valid), "-o", str(direct), "-c", str(gone),
+                        "-p", threshold, "-P", threshold, "-r", "500", "-O", "0", "-s", "0", "-S", "-1",
+                        "--keep", "common", "--gt", "all"], check=True, capture_output=True)
+                    for path, name in ((direct, "retained"), (gone, "collapsed")):
+                        with gzip.open(path, "rt") as h1, gzip.open(run / tag / kind / f"{name}.vcf.gz", "rt") as h2:
+                            self.assertEqual(sorted(l for l in h1 if not l.startswith("#")), sorted(l for l in h2 if not l.startswith("#")))
+            final = run / "p70/chr1.sv50.vcf.gz"
+            stamp = final.stat().st_mtime_ns
+            simple.main(args + ["--phase", "merge"])
+            self.assertEqual(final.stat().st_mtime_ns, stamp)
+
     def test_native_partitions_unchanged_replacements_counts_and_resume(self):
         import pysam
         import test_sv_phased_batch as old

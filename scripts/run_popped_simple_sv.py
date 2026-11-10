@@ -170,19 +170,64 @@ def site_counts(args, path, label):
     return counts
 
 
+def merge_region(args, prepared, kind):
+    """Use native --bed when a header lacks lengths; never guess assembly sizes.
+
+    Truvari 5.5.0 build_region_tree accepts an explicit BED instead of deriving
+    intervals from header contig lengths. One interval covers the entire input
+    partition, including its last allele and insertions' size-expanded bounds.
+    Keep this separate from prepare so existing expensive extraction is reused.
+    """
+    source = args.root / "prepare" / f"{kind}.vcf.gz"
+    with pysam.VariantFile(source, drop_samples=True) as handle:
+        missing = sorted(name for name, contig in handle.header.contigs.items() if not contig.length)
+    if not missing:
+        return None
+    directory = args.root / "merge_regions" / kind
+    directory.mkdir(parents=True, exist_ok=True)
+    key = {"version": 1, "chrom": args.chrom, "missing_header_lengths": missing,
+           "input_sha256": prepared["artifacts"][f"{kind}.vcf.gz"],
+           "index_sha256": prepared["artifacts"][f"{kind}.vcf.gz.tbi"],
+           "policy": "one interval covering all prepared records; end includes REF, ALT, END and 501bp margin"}
+    bed = directory / "all_prepared.bed"
+    if not pilot.valid_manifest(directory, key):
+        (directory / "done.json").unlink(missing_ok=True)
+        end, count = 1, 0
+        with pilot.stream(args, [args.bcftools, "query", "-f", "%CHROM\t%POS\t%END\t%REF\t%ALT\n", source],
+                          kind + "-merge-region") as lines:
+            for line in lines:
+                chrom, pos, stop, ref, alt = line.rstrip("\n").split("\t")
+                if chrom != args.chrom:
+                    raise ValueError("Prepared partition contains an unexpected chromosome")
+                end = max(end, int(pos) + len(ref) + len(alt) + 501, int(stop) + 501)
+                count += 1
+        if count != prepared["key"]["partition_records_all_sizes"].get(kind, 0):
+            raise ValueError("Region scan count differs from prepared partition")
+        bed.write_text(f"{args.chrom}\t0\t{end}\n")
+        pilot.manifest(directory, key, [bed])
+        logging.info("MERGE_REGION type=%s records=%s end=%s missing_lengths=%s", kind, count, end, missing)
+    return {"path": str(bed), "sha256": pilot.common.digest(bed)}
+
+
 def collapse(args, prepared, similarity, kind):
     directory = args.root / f"p{round(similarity * 100)}" / kind
     directory.mkdir(parents=True, exist_ok=True)
     key = {"version": VERSION, "prepare": prepared, "similarity": similarity, "type": kind,
            "truvari": "5.5.0", "keep": "common", "gt": "all", "refdist": 500, "pctovl": 0,
            "sizemin": 0, "sizemax": -1, "hap": False, "chain": False, "genotypes": "native"}
+    region = merge_region(args, prepared, kind)
+    if region:
+        key["merge_region"] = region
     if pilot.valid_manifest(directory, key):
         return json.loads((directory / "summary.json").read_text())
     (directory / "done.json").unlink(missing_ok=True)
     kept, removed = [directory / f"{name}.partial.vcf.gz" for name in ("retained", "collapsed")]
-    pilot.command(args, ["truvari", "collapse", "-i", args.root / "prepare" / f"{kind}.vcf.gz",
+    command = ["truvari", "collapse", "-i", args.root / "prepare" / f"{kind}.vcf.gz",
         "-o", kept, "-c", removed, "-p", similarity, "-P", similarity, "-r", 500, "-O", 0,
-        "-s", 0, "-S", -1, "--keep", "common", "--gt", "all"], f"p{round(similarity*100)}-{kind}-collapse")
+        "-s", 0, "-S", -1, "--keep", "common", "--gt", "all"]
+    if region:
+        command.extend(["--bed", region["path"]])
+    pilot.command(args, command, f"p{round(similarity*100)}-{kind}-collapse")
     paths = [directory / f"{name}.vcf.gz" for name in ("retained", "collapsed")]
     ns = [finish(args, temp, path, directory.parent.name + "-" + kind + "-" + path.stem, sort=True)
           for temp, path in zip((kept, removed), paths)]

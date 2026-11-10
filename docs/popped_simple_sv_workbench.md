@@ -44,6 +44,28 @@ No sample fields or individual variants are printed to the notebook. Native
 genotype consolidation is used as requested; matching the native output is not
 a claim that native GT consolidation fixes the previously discussed limitations.
 
+### Missing contig lengths
+
+Some panel headers declare `##contig=<ID=chr1>` without a length. Truvari 5.5.0
+exits with `Contig chr1 has no length definition. Fix header.` when it tries to
+construct its default analysis intervals. The preceding `AC should be declared
+as Number=A` warning is separate and is not the cause of that exit.
+
+The runner detects missing lengths (including unused header contigs) and supplies
+native `--bed` with one chr1 interval covering every allele in that partition.
+It computes the upper bound from site fields, including REF/ALT lengths and END
+plus a margin; it does not claim this bound is the chromosome's assembly length.
+The generated BED and its checksum manifest are saved under `merge_regions/INS`
+and `merge_regions/DEL`. No input/output header or allele/genotype repair is
+performed. All-record and SV50 conservation checks remain enabled.
+
+For a run that already completed preparation but failed with this error, pull
+the fix and run the same launcher with **`--phase merge`**, the same root, and
+`--similarities 0.7 0.9`. The existing checksummed preparation is reused without
+staging, repartitioning, or rewriting its VCFs. The regression test reproduces
+the native failure and checks that the workaround produces identical record and
+sample fields to a valid-header native run without a BED, at both thresholds.
+
 ## Workbench cell
 
 ```bash
