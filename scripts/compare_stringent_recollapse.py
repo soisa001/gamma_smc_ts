@@ -4,8 +4,8 @@
 # ///
 """Independent 90% and 70% Truvari re-collapse experiments on stringent SVs.
 
-Separate each type and representation. Symbolic runs disable sequence matching;
-unresolved literal/complex records are retained without collapse. No uploads.
+Separate each type and representation. DEL uses size plus reciprocal overlap;
+only sequence-resolved INS can collapse. No uploads.
 """
 
 import argparse
@@ -253,32 +253,48 @@ def validate_and_finalize(raw, final, partition, samples):
 
 def collapse_job(task):
     root, slug, m, samples, threshold, refdist = task
-    job = root / f"pct{int(threshold*100)}" / slug
+    kind = m["svtype"].split(":")[0]
+    mode = m["mode"]
+    passthrough = mode == "unresolved_passthrough" or (kind == "INS" and mode != "sequence_resolved")
+    pctseq = threshold if kind == "INS" and not passthrough else 0.0
+    pctovl = threshold if kind == "DEL" and not passthrough else 0.0
+    if kind == "INS" and mode == "symbolic_size_position":
+        mode = "symbolic_passthrough"
+    elif kind == "DEL" and not passthrough:
+        mode = "symbolic_size_overlap" if mode == "symbolic_size_position" else "literal_size_overlap"
+    # Keep previous size-only DEL/symbolic-INS results as a baseline. Input
+    # partitions are identical and remain reusable without reading all GTs again.
+    output_slug = slug.removesuffix(m["mode"]) + mode
+    job = root / f"pct{int(threshold*100)}" / output_slug
     job.mkdir(parents=True, exist_ok=True)
     source = root / "partitions" / m["filename"]
     bed = root / "partitions" / m["bed"]
     # Truvari 5.5 accepts -1 to disable the default 50 kb upper bound.
     sizemax = -1
-    pctseq = threshold if m["mode"] == "sequence_resolved" else 0.0
     recipe = dict(schema=SCHEMA, input_sha256=digest(source), samples_sha256=totals_hash(samples),
                   pctsize=threshold, pctseq=pctseq, refdist=refdist, sizemin=10001,
                   sizemax=sizemax, gt="all", keep="common", chain=False,
-                  typeignore=False, pctovl=0.0, truvari=truvari.__version__, mode=m["mode"],
+                  typeignore=False, pctovl=pctovl, truvari=truvari.__version__, mode=mode,
                   bed_sha256=digest(bed))
     receipt = job / "complete.json"
     if receipt.exists():
         saved = json.loads(receipt.read_text())
         if saved["recipe"] == recipe and files_valid(job, saved["hashes"]):
-            print(f"Reused {job.parent.name}/{slug}", flush=True)
-            return saved["summary"]
-    print(f"Running {job.parent.name}/{slug}: {m['records']:,} records; size max {sizemax:,}", flush=True)
+            print(f"Reused {job.parent.name}/{output_slug}", flush=True)
+            return dict(saved["summary"], pctovl=pctovl, action="passthrough" if passthrough else "collapse")
+    sequence_rule = f">={pctseq:g}" if pctseq else "off"
+    overlap_rule = f">={pctovl:g}" if pctovl else "off"
+    criteria = "PASSTHROUGH (no collapse)" if passthrough else (
+        f"size>={threshold:g}; sequence={sequence_rule}; reciprocal_overlap={overlap_rule}; "
+        f"refdist={refdist}; gt=all; keep=common; size max={sizemax}")
+    print(f"Running {job.parent.name}/{output_slug}: {m['records']:,} records; {criteria}", flush=True)
     raw, removed = job / "retained.raw.vcf", job / "removed.vcf"
     command = [sys.executable, "-m", "truvari", "collapse", "-i", str(source),
                "-o", str(raw), "-c", str(removed), "--bed", str(bed),
                "--gt", "all", "--keep", "common", "--pctsize", str(threshold),
                "--pctseq", str(pctseq), "--refdist", str(refdist),
-               "--sizemin", "10001", "--sizemax", str(sizemax), "--pctovl", "0"]
-    if m["mode"] == "unresolved_passthrough":
+               "--sizemin", "10001", "--sizemax", str(sizemax), "--pctovl", str(pctovl)]
+    if passthrough:
         raw = source
         with pysam.VariantFile(source) as vcf:
             removed.write_text(str(vcf.header))
@@ -300,16 +316,17 @@ def collapse_job(task):
     removed_gz = job / "removed.vcf.gz"
     pysam.tabix_compress(str(removed), str(removed_gz), force=True)
     # Removed order follows clusters, so no tabix index is promised for this file.
-    summary = dict(threshold=threshold, svtype=m["svtype"], mode=m["mode"], input_records=m["records"],
+    summary = dict(threshold=threshold, svtype=m["svtype"], mode=mode, input_records=m["records"],
                    retained_records=count, collapsed_records=removed_count,
                    input_gt50kb=m["gt50kb"], retained_gt50kb=gt50, collapsed_gt50kb=removed_gt50,
-                   pctsize=threshold, pctseq=pctseq, refdist=refdist, sizemax=sizemax,
+                   pctsize=threshold, pctseq=pctseq, pctovl=pctovl, refdist=refdist, sizemax=sizemax,
+                   action="passthrough" if passthrough else "collapse",
                    per_sample_ALT_dosage_preserved=True, per_sample_carrier_counts_preserved=True,
                    dosage_sha256=dosage_hash, carriers_sha256=carrier_hash)
     hashes = {f.name: digest(f) for f in (final, Path(str(final)+".tbi"), removed_gz)}
-    write_json(receipt, dict(recipe=recipe, command=command if m["mode"] != "unresolved_passthrough" else None,
+    write_json(receipt, dict(recipe=recipe, command=command if not passthrough else None,
                             summary=summary, hashes=hashes))
-    print(f"Completed {job.parent.name}/{slug}: {m['records']:,} -> {count:,}", flush=True)
+    print(f"Completed {job.parent.name}/{output_slug}: {m['records']:,} -> {count:,}", flush=True)
     return summary
 
 
@@ -330,11 +347,12 @@ def main():
                     script_sha256=digest(Path(__file__)), versions={p: importlib.metadata.version(p) for p in ("truvari", "pysam", "numpy", "pandas")},
                     bcftools=subprocess.check_output(["bcftools", "--version"], text=True).splitlines()[0],
                     thresholds=[0.9, 0.7], random_seed=None, randomness="No random operations",
-                    symbolic="Size/position-only hypothesis; pctseq=0, not sequence-validated",
-                    sequence="Literal unambiguous pure DEL/INS only; Truvari unroll comparison without reference FASTA",
+                    deletion="Size AND reciprocal overlap at each threshold; pctseq=0; representations stay separate",
+                    insertion="Only literal unambiguous pure INS collapse: size AND sequence at each threshold; symbolic/ambiguous INS pass through",
+                    other_symbolic="DUP/INV retain separate size/position matching; pctseq=0, pctovl=0",
                     genotype="gt all, keep common; AC/AN/AF/NS and RC_N_CARRIERS recalculated; missing alleles not imputed",
                     provenance="RC IDs map to original input; old collapse INFO cleared, source discovery counts retained as RC_SOURCE_DISCOVERY",
-                    scope="Each threshold starts from identical partitions; no cross-type or cross-representation merges; unresolved calls pass through",
+                    scope="Each threshold starts from identical partitions; no cross-type or cross-representation merges; symbolic INS and unresolved calls pass through",
                     note="Already-collapsed representatives cannot reconstruct every original call or cluster")
     write_json(args.out / "run_manifest.json", manifest)
     prepared = prepare(args.bcf, args.out)

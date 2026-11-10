@@ -45,7 +45,7 @@ def make_fixture(path):
         # Same carrier must block collapse even for identical alleles.
         add(100000, "INS", 60000, "A", "A" + "T"*60000, "s1")
         add(100000, "INS", 60000, "A", "A" + "T"*60000, "s1")
-        # Symbolic INS size ratio 0.8: merge only at 70%, sequence not claimed.
+        # These would merge at 70% using size alone; now both must pass through.
         add(200000, "INS", 60000, "N", "<INS>", "s1")
         add(200000, "INS", 75000, "N", "<INS>", "s2")
         # Symbolic DELs within both start/end distance tolerances.
@@ -53,8 +53,14 @@ def make_fixture(path):
         add(300000, "DEL", 60300, "N", "<DEL>", "s2")
         # A DUP cannot merge with DEL at the same position/size.
         add(300000, "DUP", 60000, "N", "<DUP>", "s3")
+        # Equal-length DELs with ~80% overlap: merge at 70%, not 90%.
+        add(600000, "DEL", 60000, "N", "<DEL>", "s1")
+        add(612000, "DEL", 60000, "N", "<DEL>", "s2")
+        # Equal-length DELs with ~25% overlap: neither run should merge them.
+        add(800000, "DEL", 60000, "N", "<DEL>", "s1")
+        add(845000, "DEL", 60000, "N", "<DEL>", "s2")
         # Ambiguous literal sequence is passed through separately.
-        add(400000, "INS", 60000, "A", "A" + "N"*60000, "s4")
+        add(1000000, "INS", 60000, "A", "A" + "N"*60000, "s4")
 
 
 def test_actual_collapse_and_cache(tmp_path):
@@ -70,9 +76,19 @@ def test_actual_collapse_and_cache(tmp_path):
     assert rows[0.7, "INS", "sequence_resolved"]["collapsed_records"] == "1"
     assert rows[0.7, "INS", "sequence_resolved"]["collapsed_gt50kb"] == "1"
     assert all(r["sizemax"] == "-1" for r in rows.values())
-    assert rows[0.9, "INS", "symbolic_size_position"]["collapsed_records"] == "0"
-    assert rows[0.7, "INS", "symbolic_size_position"]["collapsed_records"] == "1"
-    assert rows[0.9, "DEL", "symbolic_size_position"]["collapsed_records"] == "1"
+    for threshold in (0.9, 0.7):
+        assert rows[threshold, "INS", "symbolic_passthrough"]["collapsed_records"] == "0"
+        assert rows[threshold, "INS", "symbolic_passthrough"]["retained_records"] == "2"
+        assert rows[threshold, "INS", "symbolic_passthrough"]["action"] == "passthrough"
+        assert float(rows[threshold, "DEL", "symbolic_size_overlap"]["pctovl"]) == threshold
+        assert float(rows[threshold, "DEL", "symbolic_size_overlap"]["pctseq"]) == 0
+        folder = out / f"pct{int(threshold*100)}/INS.symbolic_passthrough"
+        assert json.loads((folder / "complete.json").read_text())["command"] is None
+        with pysam.VariantFile(out / "partitions/INS.symbolic_size_position.vcf.gz") as before:
+            with pysam.VariantFile(folder / "retained.vcf.gz") as after:
+                assert [str(r) for r in before] == [str(r) for r in after]
+    assert rows[0.9, "DEL", "symbolic_size_overlap"]["collapsed_records"] == "1"
+    assert rows[0.7, "DEL", "symbolic_size_overlap"]["collapsed_records"] == "2"
     assert rows[0.7, "DUP", "symbolic_size_position"]["collapsed_records"] == "0"
     assert rows[0.7, "INS", "unresolved_passthrough"]["retained_records"] == "1"
     final = out / "pct70/INS.sequence_resolved/retained.vcf.gz"
@@ -83,6 +99,13 @@ def test_actual_collapse_and_cache(tmp_path):
         assert all(r.info.get("NumCollapsed", 0) != 777 for r in recs)
         assert all(r.info["RC_SOURCE_DISCOVERY"] == 99 for r in recs)
     first = recollapse.digest(final)
+    # Old unchanged INS results can lack the new summary columns. They should
+    # still be reused, with a consistent schema in the combined comparison TSV.
+    receipt = final.parent / "complete.json"
+    cached = json.loads(receipt.read_text())
+    del cached["summary"]["pctovl"]
+    del cached["summary"]["action"]
+    receipt.write_text(json.dumps(cached))
     repeated = subprocess.run(command, check=True, text=True, capture_output=True)
     assert "Reusing validated partitions" in repeated.stdout
     assert "Reused pct70/INS.sequence_resolved" in repeated.stdout

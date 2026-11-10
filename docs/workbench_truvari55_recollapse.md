@@ -46,25 +46,40 @@ date -u '+finished_utc=%Y-%m-%dT%H:%M:%SZ'
 ```
 
 Both thresholds start from identical partitions, use `--gt all --keep common`,
-and set `--sizemax -1` to include SVs above 50 kb. Literal unambiguous DEL/INS use
-both sequence and size similarity. Symbolic calls are partitioned by full ALT
-type and use size/position matching with `--pctseq 0`; these results do not imply
-sequence similarity. Ambiguous or unsupported alleles pass through unchanged.
-Types and representations never collapse together. BND is excluded.
+and set `--sizemax -1` to include SVs above 50 kb.
+
+| Type/representation | 90% experiment | 70% experiment |
+| --- | --- | --- |
+| DEL with valid intervals | Size AND reciprocal overlap >=90%; sequence off | Size AND reciprocal overlap >=70%; sequence off |
+| Sequence-resolved INS | Size AND sequence similarity >=90% | Size AND sequence similarity >=70% |
+| Symbolic INS | Pass through without collapse | Pass through without collapse |
+| Ambiguous/unsupported alleles | Pass through without collapse | Pass through without collapse |
+| Symbolic DUP/INV | Existing size/position criteria, size >=90% | Existing size/position criteria, size >=70% |
+
+Symbolic calls stay partitioned by full ALT type. Types and representations never
+collapse together. BND is excluded. Pass-through preserves each partition record's
+alleles and genotypes; the workflow still adds audit IDs and recalculates count
+annotations as before. No reference FASTA is needed.
 
 `comparison.tsv` reports input, retained, and collapsed records by type and
-representation, including counts above 50 kb. Per-sample ALT dosage and
+representation, including counts above 50 kb, `pctovl`, and `action` (collapse or
+passthrough). Progress messages print the active criteria. Per-sample ALT dosage and
 carrier-record totals must be preserved. `run_manifest.json`, per-job
 `complete.json` and `truvari.log`, and the builder's `build_manifest.json` and
 `installed.txt` record versions, parameters, commands, checksums, and paths.
 
-Existing source BCFs are reused. Partitions from the old implementation are
-rebuilt once because pysam 0.24 can infer an interval end from SVLEN even when END
-is invalid; the updated classifier checks the explicit span. Old collapse outputs
-are not accepted as 5.5 results. Subsequent unchanged runs reuse validated results.
+Wait for an existing run to finish before running this cell again. Existing source
+BCFs and validated Truvari 5.5 partitions are reused. DEL results now go to
+`pct90/DEL.symbolic_size_overlap` and `pct70/DEL.symbolic_size_overlap`; symbolic
+INS go to `INS.symbolic_passthrough`. Previous size/position-only directories are
+left on disk as a baseline but are not included in the updated `comparison.tsv`.
+Unchanged jobs, including completed sequence-resolved INS jobs, remain reusable.
 
 Local validation: a complete source build, a repeated cached build, and two
 integration tests using actual Truvari 5.5.0 and bcftools passed. Synthetic cases
 cover >50 kb literal and symbolic alleles, distinct 90%/70% outcomes, shared-carrier
 protection, type separation, invalid spans, ambiguous bases, genotype totals, and
-cache reuse. Controlled cohort data have not been run locally.
+cache reuse. Equal-length DELs with 80% overlap merge only at 70%; those with 25%
+overlap merge in neither experiment. Symbolic INS pass through even when their
+lengths/positions would previously have allowed merging. Controlled cohort data
+have not been run locally.
