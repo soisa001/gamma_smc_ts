@@ -1,0 +1,12 @@
+{
+  "workers": 4,
+  "seconds": 14400,
+  "attempts": 5000,
+  "target": 100,
+  "started_epoch": 1794348270.4916513,
+  "deadline_epoch": 1794362670.4916513,
+  "raw": "/mnt/d/phase2simselection/sim/segregating_neutral_fpr_100_20261110",
+  "out": "docs/results/segregating_neutral_fpr_100_20261110",
+  "script_sha256": "30f2d02932181a898df5dcc7c64d2110d98836fac9484f0dd8e543b20a748507",
+  "native_library_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/lib"
+}

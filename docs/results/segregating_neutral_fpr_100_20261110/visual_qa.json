@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "png_count": 11,
+  "pdf_count": 13,
+  "pdf_pages": 19,
+  "visual_review": "All 11 PNGs inspected: two summary charts, two pointwise charts, six replicate-call charts and AF trajectories. Regional labels staggered to avoid overlap; legends above panels; no clipped labels.",
+  "numerical_review": "check_neutral_fpr_report.py independently recomputed every position/time empirical rank, all FPR endpoints and 1,200 replicate calls. Both sets of 100 focal AFs segregate today. Input/output hashes checked.",
+  "pdf_review": "Editable embedded TrueType fonts; no raster image objects; complete EOF and page counts."
+}

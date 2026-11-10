@@ -1,0 +1,14 @@
+{
+  "target": 100,
+  "reused": 0,
+  "new_completed": 1121,
+  "accepted": 102,
+  "new_accepted": 102,
+  "lost": 1019,
+  "fixed": 0,
+  "elapsed_seconds": 2250.229912519455,
+  "deadline_epoch": 1794362670.4916513,
+  "last_proposal": 1120,
+  "submitted": 1121,
+  "pending": 0
+}
