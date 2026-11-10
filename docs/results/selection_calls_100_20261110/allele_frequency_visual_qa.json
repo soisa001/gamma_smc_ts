@@ -1,0 +1,6 @@
+{
+  "visual_check": "All four AF figures inspected at full size. Large readable labels, horizontal legend above axes, clear selection shading, no clipping or overlap; the 0-100% AF scale and 50-to-0-kya time axis are identical across cases.",
+  "file_check": "Four 1980x1530 PNG files verified. Plot script verified four individual vector PDFs and one four-page vector PDF with embedded TrueType fonts, no raster images, and complete EOF markers.",
+  "data_check": "Exactly 100 trajectories per group in each panel. Neutral IDs exactly match the coalescence null pool; selected IDs match each cohort cache. Source SHA256 hashes, neutral copy-count frequencies, AF bounds and selected present-day segregation checked.",
+  "unchanged_outputs": "All previously committed output files match their original SHA256 hashes; no existing plots, statistics or simulation caches changed."
+}
