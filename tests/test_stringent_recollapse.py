@@ -2,6 +2,7 @@
 
 import csv
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -62,11 +63,13 @@ def test_actual_collapse_and_cache(tmp_path):
     out = tmp_path / "out"
     command = [sys.executable, str(SCRIPT), "--bcf", str(source), "--out", str(out), "--workers", "4"]
     subprocess.run(command, check=True)
+    assert json.loads((out / "run_manifest.json").read_text())["versions"]["truvari"] == "5.5.0"
     with (out / "comparison.tsv").open() as handle:
         rows = {(float(r["threshold"]), r["svtype"], r["mode"]): r for r in csv.DictReader(handle, delimiter="\t")}
     assert rows[0.9, "INS", "sequence_resolved"]["collapsed_records"] == "0"
     assert rows[0.7, "INS", "sequence_resolved"]["collapsed_records"] == "1"
     assert rows[0.7, "INS", "sequence_resolved"]["collapsed_gt50kb"] == "1"
+    assert all(r["sizemax"] == "-1" for r in rows.values())
     assert rows[0.9, "INS", "symbolic_size_position"]["collapsed_records"] == "0"
     assert rows[0.7, "INS", "symbolic_size_position"]["collapsed_records"] == "1"
     assert rows[0.9, "DEL", "symbolic_size_position"]["collapsed_records"] == "1"

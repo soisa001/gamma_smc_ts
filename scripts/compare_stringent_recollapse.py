@@ -1,8 +1,6 @@
 # /// script
-# requires-python = ">=3.11,<3.12"
-# dependencies = ["truvari==4.2.2", "numpy==1.26.4", "pandas==2.2.3", "pysam==0.23.3", "pywfa==0.5.1"]
-# [tool.uv]
-# build-constraint-dependencies = ["setuptools<81"]
+# requires-python = ">=3.12,<3.13"
+# dependencies = ["truvari==5.5.0", "pywfa==0.5.1"]
 # ///
 """Independent 90% and 70% Truvari re-collapse experiments on stringent SVs.
 
@@ -31,7 +29,7 @@ for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
 import pysam
 import truvari
 
-SCHEMA = 1
+SCHEMA = 2
 OLD_COLLAPSE = ("CollapseId", "NumCollapsed", "NumConsolidated", "CollapseStart", "CollapseEnd", "CollapseSize")
 
 
@@ -81,7 +79,14 @@ def classify(record):
     # Full symbolic label keeps e.g. DUP:TANDEM separate from generic DUP.
     if symbolic:
         label = alt[1:-1].upper()
-        if label.split(":")[0] != base or (base in ("DEL", "DUP", "INV") and record.stop <= record.pos):
+        # pysam >=0.24 can infer stop from SVLEN even when END is invalid.
+        # Inspect the coordinate span without that inference before accepting it.
+        span_record = record.copy()
+        if "SVLEN" in span_record.info:
+            del span_record.info["SVLEN"]
+        bad_span = base in ("DEL", "DUP", "INV") and (
+            span_record.stop <= record.pos or span_record.stop != record.stop)
+        if label.split(":")[0] != base or bad_span:
             return kind, "unresolved_passthrough", length
         return label, "symbolic_size_position", length
     # Sequence comparison is conservative: ambiguous bases and replacements go
@@ -182,7 +187,7 @@ def prepare(source, out):
                 record.info["AF"], record.info["NS"] = ((ac/an if an else 0.0),), ns
                 record.info["RC_N_CARRIERS"] = nc
                 # Confirm that our >10 kb eligibility agrees with Truvari's size.
-                actual_size = truvari.entry_size(record)
+                actual_size = truvari.VariantRecord(record).var_size()
                 if actual_size != length:
                     raise ValueError(f"Truvari size disagrees with audit length for {record.id}")
                 handles[slug].write(record)
@@ -239,7 +244,7 @@ def validate_and_finalize(raw, final, partition, samples):
                 record.info["RC_N_CARRIERS"] = nc
                 writer.write(record)
                 count += 1
-                gt50 += int(truvari.entry_size(record) > 50000)
+                gt50 += int(truvari.VariantRecord(record).var_size() > 50000)
     if dosage != partition["dosage"] or carriers != partition["carriers"]:
         raise ValueError("Per-sample ALT dosage or carrier-record counts changed unexpectedly")
     pysam.tabix_index(str(final), preset="vcf", force=True)
@@ -252,8 +257,8 @@ def collapse_job(task):
     job.mkdir(parents=True, exist_ok=True)
     source = root / "partitions" / m["filename"]
     bed = root / "partitions" / m["bed"]
-    # Finite data-derived bound works in v4.2.2, where -1 is not accepted.
-    sizemax = max(50001, m["max_length"] + 1)
+    # Truvari 5.5 accepts -1 to disable the default 50 kb upper bound.
+    sizemax = -1
     pctseq = threshold if m["mode"] == "sequence_resolved" else 0.0
     recipe = dict(schema=SCHEMA, input_sha256=digest(source), samples_sha256=totals_hash(samples),
                   pctsize=threshold, pctseq=pctseq, refdist=refdist, sizemin=10001,
@@ -286,7 +291,7 @@ def collapse_job(task):
     with pysam.VariantFile(removed) as vcf:
         for record in vcf:
             removed_count += 1
-            removed_gt50 += int(truvari.entry_size(record) > 50000)
+            removed_gt50 += int(truvari.VariantRecord(record).var_size() > 50000)
             removed_ids.add(record.id)
     with pysam.VariantFile(source) as vcf:
         source_ids = {record.id for record in vcf}
@@ -309,6 +314,8 @@ def collapse_job(task):
 
 
 def main():
+    if truvari.__version__ != "5.5.0":
+        raise RuntimeError("This workflow requires Truvari 5.5.0; run build_truvari55.py first")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bcf", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
