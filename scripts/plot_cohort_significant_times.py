@@ -37,6 +37,20 @@ CASES=[dict(key='50_30k_s001',regime='50_30k',selection=.01,window=[30,50],label
        dict(key='50k_s0005',regime='50k',selection=.005,window=[0,50],label='50 kya–present · s=0.005')]
 METHODS=['True TMRCA','Posterior median','Posterior-weighted mass']
 METHOD_KEYS=['true_tmrca','posterior_median','posterior_mass']
+ROW_ORDER='Posterior mass: earliest significant time ascending, summed significant spans across panels descending, significant-test count descending, proposal index ascending; based on p<0.05 and shared across panels/thresholds. No-call simulations last. Other methods retain proposal order.'
+
+
+def mass_order(data):
+    masks=[data['p_cumulative'][:,2]<.05,data['p_interval'][:,2]<.05]
+    def key(i):
+        hits=[np.flatnonzero(mask[i]) for mask in masks]
+        first=min((h[0] for h in hits if len(h)),default=1000)
+        span=sum(int(h[-1]-h[0]+1) for h in hits if len(h))
+        count=sum(len(h) for h in hits)
+        return first,-span,-count,int(data['proposal_indices'][i])
+    order=np.array(sorted(range(len(masks[0])),key=key))
+    np.testing.assert_array_equal(np.sort(order),np.arange(100))
+    return order
 
 
 def prepare(out,workers,available_only):
@@ -156,13 +170,13 @@ def prepare(out,workers,available_only):
         p_definition='One-sided empirical p=(1+# neutrals >= selected)/101; strict p<alpha.',
         thresholds=[.05,.01],multiple_testing='Pointwise only; no adjustment across times or loci.',
         comparison='Exact integer pair counts for truth/median; original continuous values for posterior mass.',
-        rows='Accepted replicate index 1..100 in fixed proposal order, identical ordering across statistics and thresholds.',
+        rows=ROW_ORDER,
         selected_ascertainment='Present-day segregation only; no selection by inferred signal.',workers=workers,
         simulation_configurations={case['key']:(episode_config if case['regime']=='50_30k' else base_configs[case['regime']]) for case in CASES},
         source_simulation_manifests=[dict(path=str(path),sha256=sha(path)) for path in (BASE/'manifest.json',RAW/'manifest.json')]))
 
 
-def report(out,available_only=False):
+def report(out,available_only=False,calls_only=False):
     meta=json.loads((out/'manifest.json').read_text())
     assert meta['cases'], 'No completed cohorts to render.'
     if not available_only:
@@ -174,13 +188,21 @@ def report(out,available_only=False):
         with np.load(out/entry['cache']) as data:
             datasets.append({k:data[k].copy() for k in ('p_cumulative','p_interval','ids','proposal_indices','cdfs')})
     with np.load(out/'neutral.npz') as data:neutral=data['cdfs'].copy()
+    orders={entry['case']['key']:mass_order(data) for entry,data in zip(meta['cases'],datasets)}
+    meta['rows']=ROW_ORDER
+    save_json(out/'manifest.json',meta)
+    save_json(out/'posterior_mass_row_order.json',dict(rule=ROW_ORDER,cases={
+        entry['case']['key']:[dict(display_row=row+1,accepted_index=int(i)+1,
+            proposal_index=int(data['proposal_indices'][i]),id=str(data['ids'][i]))
+            for row,i in enumerate(orders[entry['case']['key']])]
+        for entry,data in zip(meta['cases'],datasets)}))
     matplotlib.rcParams.update({'font.size':16,'axes.labelsize':17,'axes.titlesize':17,
         'xtick.labelsize':13,'ytick.labelsize':13,'pdf.fonttype':42,'ps.fonttype':42})
     blue,purple='#0072B2','#AA3377'
     summary=[];replicate_records=[]
     # Each underlying statistic curve is retained; bold segments mark its own
     # empirical call. The separate row plots preserve individual call identity.
-    for threshold,tag in [(.05,'p005'),(.01,'p001')]:
+    for threshold,tag in ([] if calls_only else [(.05,'p005'),(.01,'p001')]):
         with PdfPages(out/f'all_statistic_curves_{tag}.pdf') as book, PdfPages(out/f'posterior_mass_curves_{tag}.pdf') as mass_book:
             for entry,data in zip(meta['cases'],datasets):
                 case=entry['case']
@@ -223,12 +245,14 @@ def report(out,available_only=False):
                 case=case_entry['case']
                 for method,name in enumerate(METHODS):
                     masks=[data['p_cumulative'][:,method]<threshold,data['p_interval'][:,method]<threshold]
+                    order=orders[case['key']] if method==2 else np.arange(100)
+                    display_rows=np.argsort(order)+1
                     fig,axes=plt.subplots(1,2,figsize=(11,8.5),sharey=True)
                     for col,(ax,mask,color,title) in enumerate(zip(axes,masks,[blue,purple],['Cumulative cutoff','1-kyr interval'])):
                         lower,upper=case['window']
                         ax.axvspan(lower,upper,color='.91',zorder=0)
-                        for row in range(100):
-                            for start,end in runs(mask[row]):
+                        for row,i in enumerate(order):
+                            for start,end in runs(mask[i]):
                                 if col==0:
                                     x=np.arange(start+1,end+2)
                                     ax.plot(x,np.full(len(x),row+1),color=color,lw=1.25,marker='o',markersize=1.5)
@@ -240,13 +264,15 @@ def report(out,available_only=False):
                         for spine in ('top','right'):ax.spines[spine].set_visible(False)
                         count=int(mask.any(1).sum())
                         ax.text(.5,-.19,f'{count}/100 with ≥1 significant test',transform=ax.transAxes,ha='center',fontsize=12)
-                    axes[0].set_ylabel('Selected simulation (proposal order)')
+                    axes[0].set_ylabel('Selected simulation (sorted)' if method==2 else 'Selected simulation (proposal order)')
                     fig.suptitle(case['label'],y=.98,fontsize=21)
                     fig.text(.5,.935,f'{name} · pointwise p < {threshold:g} · selected site: 500 kb',ha='center',fontsize=15)
                     handles=[Line2D([],[],color=blue,marker='o',lw=2,markersize=4,label='Significant cutoff'),
                         Line2D([],[],color=purple,lw=6,label='Significant bin'),Patch(facecolor='.91',label='Selection active')]
                     fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.9),ncol=3,frameon=False,fontsize=12)
-                    fig.text(.5,.055,'Same 100 neutrals · 1,000 pairs · p = (1 + neutral exceedances) / 101',ha='center',fontsize=12)
+                    if method==2:
+                        fig.text(.5,.075,'Order: first significant time, then longer spans · based on p < 0.05 in both panels',ha='center',fontsize=11)
+                    fig.text(.5,.05,'Same 100 neutrals · 1,000 pairs · p = (1 + neutral exceedances) / 101',ha='center',fontsize=12)
                     fig.text(.5,.025,'Blank rows have no pointwise call. No correction across times/loci; bars do not estimate selection duration.',ha='center',fontsize=10.5)
                     fig.subplots_adjust(top=.8,bottom=.21,left=.11,right=.97,wspace=.16)
                     stem=f"{case['key']}_{METHOD_KEYS[method]}_{tag}"
@@ -259,6 +285,7 @@ def report(out,available_only=False):
                         cumulative_fraction_by_cutoff=masks[0].mean(0).tolist(),interval_fraction_by_bin=masks[1].mean(0).tolist()))
                     for i in range(100):
                         replicate_records.append(dict(case=case['key'],accepted_index=i+1,id=str(data['ids'][i]),
+                            display_row=int(display_rows[i]),
                             proposal_index=int(data['proposal_indices'][i]),method=name,threshold=threshold,
                             cumulative_cutoff_runs_kya=[[a+1,b+1] for a,b in runs(masks[0][i])],
                             interval_runs_kya=[[a+1,b+2] for a,b in runs(masks[1][i])]))
@@ -279,10 +306,11 @@ def main():
     parser.add_argument('--out',type=Path,default=ROOT/'docs/results/selection_calls_100_20261110')
     parser.add_argument('--workers',type=int,default=4)
     parser.add_argument('--available-only',action='store_true')
+    parser.add_argument('--calls-only',action='store_true',help='Regenerate call plots and row mappings without rendering statistic curves.')
     args=parser.parse_args();assert 1<=args.workers<=24
     args.out.mkdir(parents=True,exist_ok=True)
     if args.phase in ('prepare','all'):prepare(args.out,args.workers,args.available_only)
-    if args.phase in ('report','all'):report(args.out,args.available_only)
+    if args.phase in ('report','all'):report(args.out,args.available_only,args.calls_only)
 
 
 if __name__=='__main__':main()

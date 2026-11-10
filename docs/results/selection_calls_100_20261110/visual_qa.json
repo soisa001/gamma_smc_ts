@@ -5,5 +5,6 @@
   "numerical_check": "All four caches contain 100 unique, present-day-segregating selected replicates, each with three statistics at 50 cutoffs. Summary counts recomputed from stored p values agree exactly. Source and output SHA256 inventories verified.",
   "tests": "Four targeted tests in tests/test_pointwise_time_tests.py passed: discrete-bin ties, identical simulations, strict finite-null thresholds and rejection of noninteger discrete pair counts.",
   "comparison": "Truth and median comparisons use exact integer pair counts before differencing; continuous posterior-weighted mass retains original values.",
-  "interpretation": "Each curve uses its own pointwise empirical p value against 100 neutrals. Counts of simulations with any pointwise call are not scan-calibrated power or FPR, and called times are not estimates of selection duration."
+  "interpretation": "Each curve uses its own pointwise empirical p value against 100 neutrals. Counts of simulations with any pointwise call are not scan-calibrated power or FPR, and called times are not estimates of selection duration.",
+  "sorted_mass_check": "Inspected all eight sorted posterior-mass figures in contact sheets and the ongoing s=0.01 p<0.05 figure at full size. Clear sorted-row labels and footer rule; no overlap or clipping. All 2400 replicate call records and 24 aggregate records exactly match the prior report. The four row mappings each contain 100 unique replicates and preserve identical display-row identity across panels and thresholds. Statistic curves and cache arrays are unchanged."
 }

@@ -1,0 +1,2413 @@
+{
+  "rule": "Posterior mass: earliest significant time ascending, summed significant spans across panels descending, significant-test count descending, proposal index ascending; based on p<0.05 and shared across panels/thresholds. No-call simulations last. Other methods retain proposal order.",
+  "cases": {
+    "50_30k_s001": [
+      {
+        "display_row": 1,
+        "accepted_index": 10,
+        "proposal_index": 18,
+        "id": "50_30k/introgression/s0.01/selected_00018"
+      },
+      {
+        "display_row": 2,
+        "accepted_index": 20,
+        "proposal_index": 36,
+        "id": "50_30k/introgression/s0.01/selected_00036"
+      },
+      {
+        "display_row": 3,
+        "accepted_index": 39,
+        "proposal_index": 86,
+        "id": "50_30k/introgression/s0.01/selected_00086"
+      },
+      {
+        "display_row": 4,
+        "accepted_index": 40,
+        "proposal_index": 87,
+        "id": "50_30k/introgression/s0.01/selected_00087"
+      },
+      {
+        "display_row": 5,
+        "accepted_index": 87,
+        "proposal_index": 179,
+        "id": "50_30k/introgression/s0.01/selected_00179"
+      },
+      {
+        "display_row": 6,
+        "accepted_index": 99,
+        "proposal_index": 198,
+        "id": "50_30k/introgression/s0.01/selected_00198"
+      },
+      {
+        "display_row": 7,
+        "accepted_index": 4,
+        "proposal_index": 8,
+        "id": "50_30k/introgression/s0.01/selected_00008"
+      },
+      {
+        "display_row": 8,
+        "accepted_index": 11,
+        "proposal_index": 23,
+        "id": "50_30k/introgression/s0.01/selected_00023"
+      },
+      {
+        "display_row": 9,
+        "accepted_index": 26,
+        "proposal_index": 44,
+        "id": "50_30k/introgression/s0.01/selected_00044"
+      },
+      {
+        "display_row": 10,
+        "accepted_index": 7,
+        "proposal_index": 15,
+        "id": "50_30k/introgression/s0.01/selected_00015"
+      },
+      {
+        "display_row": 11,
+        "accepted_index": 88,
+        "proposal_index": 181,
+        "id": "50_30k/introgression/s0.01/selected_00181"
+      },
+      {
+        "display_row": 12,
+        "accepted_index": 6,
+        "proposal_index": 13,
+        "id": "50_30k/introgression/s0.01/selected_00013"
+      },
+      {
+        "display_row": 13,
+        "accepted_index": 48,
+        "proposal_index": 105,
+        "id": "50_30k/introgression/s0.01/selected_00105"
+      },
+      {
+        "display_row": 14,
+        "accepted_index": 60,
+        "proposal_index": 134,
+        "id": "50_30k/introgression/s0.01/selected_00134"
+      },
+      {
+        "display_row": 15,
+        "accepted_index": 32,
+        "proposal_index": 64,
+        "id": "50_30k/introgression/s0.01/selected_00064"
+      },
+      {
+        "display_row": 16,
+        "accepted_index": 13,
+        "proposal_index": 25,
+        "id": "50_30k/introgression/s0.01/selected_00025"
+      },
+      {
+        "display_row": 17,
+        "accepted_index": 63,
+        "proposal_index": 138,
+        "id": "50_30k/introgression/s0.01/selected_00138"
+      },
+      {
+        "display_row": 18,
+        "accepted_index": 35,
+        "proposal_index": 76,
+        "id": "50_30k/introgression/s0.01/selected_00076"
+      },
+      {
+        "display_row": 19,
+        "accepted_index": 64,
+        "proposal_index": 139,
+        "id": "50_30k/introgression/s0.01/selected_00139"
+      },
+      {
+        "display_row": 20,
+        "accepted_index": 1,
+        "proposal_index": 0,
+        "id": "50_30k/introgression/s0.01/selected_00000"
+      },
+      {
+        "display_row": 21,
+        "accepted_index": 2,
+        "proposal_index": 3,
+        "id": "50_30k/introgression/s0.01/selected_00003"
+      },
+      {
+        "display_row": 22,
+        "accepted_index": 3,
+        "proposal_index": 7,
+        "id": "50_30k/introgression/s0.01/selected_00007"
+      },
+      {
+        "display_row": 23,
+        "accepted_index": 5,
+        "proposal_index": 12,
+        "id": "50_30k/introgression/s0.01/selected_00012"
+      },
+      {
+        "display_row": 24,
+        "accepted_index": 8,
+        "proposal_index": 16,
+        "id": "50_30k/introgression/s0.01/selected_00016"
+      },
+      {
+        "display_row": 25,
+        "accepted_index": 9,
+        "proposal_index": 17,
+        "id": "50_30k/introgression/s0.01/selected_00017"
+      },
+      {
+        "display_row": 26,
+        "accepted_index": 12,
+        "proposal_index": 24,
+        "id": "50_30k/introgression/s0.01/selected_00024"
+      },
+      {
+        "display_row": 27,
+        "accepted_index": 14,
+        "proposal_index": 26,
+        "id": "50_30k/introgression/s0.01/selected_00026"
+      },
+      {
+        "display_row": 28,
+        "accepted_index": 15,
+        "proposal_index": 27,
+        "id": "50_30k/introgression/s0.01/selected_00027"
+      },
+      {
+        "display_row": 29,
+        "accepted_index": 16,
+        "proposal_index": 29,
+        "id": "50_30k/introgression/s0.01/selected_00029"
+      },
+      {
+        "display_row": 30,
+        "accepted_index": 17,
+        "proposal_index": 33,
+        "id": "50_30k/introgression/s0.01/selected_00033"
+      },
+      {
+        "display_row": 31,
+        "accepted_index": 18,
+        "proposal_index": 34,
+        "id": "50_30k/introgression/s0.01/selected_00034"
+      },
+      {
+        "display_row": 32,
+        "accepted_index": 19,
+        "proposal_index": 35,
+        "id": "50_30k/introgression/s0.01/selected_00035"
+      },
+      {
+        "display_row": 33,
+        "accepted_index": 21,
+        "proposal_index": 37,
+        "id": "50_30k/introgression/s0.01/selected_00037"
+      },
+      {
+        "display_row": 34,
+        "accepted_index": 22,
+        "proposal_index": 38,
+        "id": "50_30k/introgression/s0.01/selected_00038"
+      },
+      {
+        "display_row": 35,
+        "accepted_index": 23,
+        "proposal_index": 39,
+        "id": "50_30k/introgression/s0.01/selected_00039"
+      },
+      {
+        "display_row": 36,
+        "accepted_index": 24,
+        "proposal_index": 41,
+        "id": "50_30k/introgression/s0.01/selected_00041"
+      },
+      {
+        "display_row": 37,
+        "accepted_index": 25,
+        "proposal_index": 42,
+        "id": "50_30k/introgression/s0.01/selected_00042"
+      },
+      {
+        "display_row": 38,
+        "accepted_index": 27,
+        "proposal_index": 50,
+        "id": "50_30k/introgression/s0.01/selected_00050"
+      },
+      {
+        "display_row": 39,
+        "accepted_index": 28,
+        "proposal_index": 51,
+        "id": "50_30k/introgression/s0.01/selected_00051"
+      },
+      {
+        "display_row": 40,
+        "accepted_index": 29,
+        "proposal_index": 54,
+        "id": "50_30k/introgression/s0.01/selected_00054"
+      },
+      {
+        "display_row": 41,
+        "accepted_index": 30,
+        "proposal_index": 59,
+        "id": "50_30k/introgression/s0.01/selected_00059"
+      },
+      {
+        "display_row": 42,
+        "accepted_index": 31,
+        "proposal_index": 63,
+        "id": "50_30k/introgression/s0.01/selected_00063"
+      },
+      {
+        "display_row": 43,
+        "accepted_index": 33,
+        "proposal_index": 68,
+        "id": "50_30k/introgression/s0.01/selected_00068"
+      },
+      {
+        "display_row": 44,
+        "accepted_index": 34,
+        "proposal_index": 69,
+        "id": "50_30k/introgression/s0.01/selected_00069"
+      },
+      {
+        "display_row": 45,
+        "accepted_index": 36,
+        "proposal_index": 79,
+        "id": "50_30k/introgression/s0.01/selected_00079"
+      },
+      {
+        "display_row": 46,
+        "accepted_index": 37,
+        "proposal_index": 81,
+        "id": "50_30k/introgression/s0.01/selected_00081"
+      },
+      {
+        "display_row": 47,
+        "accepted_index": 38,
+        "proposal_index": 82,
+        "id": "50_30k/introgression/s0.01/selected_00082"
+      },
+      {
+        "display_row": 48,
+        "accepted_index": 41,
+        "proposal_index": 89,
+        "id": "50_30k/introgression/s0.01/selected_00089"
+      },
+      {
+        "display_row": 49,
+        "accepted_index": 42,
+        "proposal_index": 93,
+        "id": "50_30k/introgression/s0.01/selected_00093"
+      },
+      {
+        "display_row": 50,
+        "accepted_index": 43,
+        "proposal_index": 96,
+        "id": "50_30k/introgression/s0.01/selected_00096"
+      },
+      {
+        "display_row": 51,
+        "accepted_index": 44,
+        "proposal_index": 97,
+        "id": "50_30k/introgression/s0.01/selected_00097"
+      },
+      {
+        "display_row": 52,
+        "accepted_index": 45,
+        "proposal_index": 99,
+        "id": "50_30k/introgression/s0.01/selected_00099"
+      },
+      {
+        "display_row": 53,
+        "accepted_index": 46,
+        "proposal_index": 100,
+        "id": "50_30k/introgression/s0.01/selected_00100"
+      },
+      {
+        "display_row": 54,
+        "accepted_index": 47,
+        "proposal_index": 103,
+        "id": "50_30k/introgression/s0.01/selected_00103"
+      },
+      {
+        "display_row": 55,
+        "accepted_index": 49,
+        "proposal_index": 106,
+        "id": "50_30k/introgression/s0.01/selected_00106"
+      },
+      {
+        "display_row": 56,
+        "accepted_index": 50,
+        "proposal_index": 111,
+        "id": "50_30k/introgression/s0.01/selected_00111"
+      },
+      {
+        "display_row": 57,
+        "accepted_index": 51,
+        "proposal_index": 114,
+        "id": "50_30k/introgression/s0.01/selected_00114"
+      },
+      {
+        "display_row": 58,
+        "accepted_index": 52,
+        "proposal_index": 117,
+        "id": "50_30k/introgression/s0.01/selected_00117"
+      },
+      {
+        "display_row": 59,
+        "accepted_index": 53,
+        "proposal_index": 119,
+        "id": "50_30k/introgression/s0.01/selected_00119"
+      },
+      {
+        "display_row": 60,
+        "accepted_index": 54,
+        "proposal_index": 120,
+        "id": "50_30k/introgression/s0.01/selected_00120"
+      },
+      {
+        "display_row": 61,
+        "accepted_index": 55,
+        "proposal_index": 124,
+        "id": "50_30k/introgression/s0.01/selected_00124"
+      },
+      {
+        "display_row": 62,
+        "accepted_index": 56,
+        "proposal_index": 125,
+        "id": "50_30k/introgression/s0.01/selected_00125"
+      },
+      {
+        "display_row": 63,
+        "accepted_index": 57,
+        "proposal_index": 126,
+        "id": "50_30k/introgression/s0.01/selected_00126"
+      },
+      {
+        "display_row": 64,
+        "accepted_index": 58,
+        "proposal_index": 132,
+        "id": "50_30k/introgression/s0.01/selected_00132"
+      },
+      {
+        "display_row": 65,
+        "accepted_index": 59,
+        "proposal_index": 133,
+        "id": "50_30k/introgression/s0.01/selected_00133"
+      },
+      {
+        "display_row": 66,
+        "accepted_index": 61,
+        "proposal_index": 135,
+        "id": "50_30k/introgression/s0.01/selected_00135"
+      },
+      {
+        "display_row": 67,
+        "accepted_index": 62,
+        "proposal_index": 137,
+        "id": "50_30k/introgression/s0.01/selected_00137"
+      },
+      {
+        "display_row": 68,
+        "accepted_index": 65,
+        "proposal_index": 140,
+        "id": "50_30k/introgression/s0.01/selected_00140"
+      },
+      {
+        "display_row": 69,
+        "accepted_index": 66,
+        "proposal_index": 141,
+        "id": "50_30k/introgression/s0.01/selected_00141"
+      },
+      {
+        "display_row": 70,
+        "accepted_index": 67,
+        "proposal_index": 144,
+        "id": "50_30k/introgression/s0.01/selected_00144"
+      },
+      {
+        "display_row": 71,
+        "accepted_index": 68,
+        "proposal_index": 145,
+        "id": "50_30k/introgression/s0.01/selected_00145"
+      },
+      {
+        "display_row": 72,
+        "accepted_index": 69,
+        "proposal_index": 147,
+        "id": "50_30k/introgression/s0.01/selected_00147"
+      },
+      {
+        "display_row": 73,
+        "accepted_index": 70,
+        "proposal_index": 148,
+        "id": "50_30k/introgression/s0.01/selected_00148"
+      },
+      {
+        "display_row": 74,
+        "accepted_index": 71,
+        "proposal_index": 149,
+        "id": "50_30k/introgression/s0.01/selected_00149"
+      },
+      {
+        "display_row": 75,
+        "accepted_index": 72,
+        "proposal_index": 153,
+        "id": "50_30k/introgression/s0.01/selected_00153"
+      },
+      {
+        "display_row": 76,
+        "accepted_index": 73,
+        "proposal_index": 157,
+        "id": "50_30k/introgression/s0.01/selected_00157"
+      },
+      {
+        "display_row": 77,
+        "accepted_index": 74,
+        "proposal_index": 158,
+        "id": "50_30k/introgression/s0.01/selected_00158"
+      },
+      {
+        "display_row": 78,
+        "accepted_index": 75,
+        "proposal_index": 160,
+        "id": "50_30k/introgression/s0.01/selected_00160"
+      },
+      {
+        "display_row": 79,
+        "accepted_index": 76,
+        "proposal_index": 161,
+        "id": "50_30k/introgression/s0.01/selected_00161"
+      },
+      {
+        "display_row": 80,
+        "accepted_index": 77,
+        "proposal_index": 162,
+        "id": "50_30k/introgression/s0.01/selected_00162"
+      },
+      {
+        "display_row": 81,
+        "accepted_index": 78,
+        "proposal_index": 164,
+        "id": "50_30k/introgression/s0.01/selected_00164"
+      },
+      {
+        "display_row": 82,
+        "accepted_index": 79,
+        "proposal_index": 165,
+        "id": "50_30k/introgression/s0.01/selected_00165"
+      },
+      {
+        "display_row": 83,
+        "accepted_index": 80,
+        "proposal_index": 166,
+        "id": "50_30k/introgression/s0.01/selected_00166"
+      },
+      {
+        "display_row": 84,
+        "accepted_index": 81,
+        "proposal_index": 167,
+        "id": "50_30k/introgression/s0.01/selected_00167"
+      },
+      {
+        "display_row": 85,
+        "accepted_index": 82,
+        "proposal_index": 170,
+        "id": "50_30k/introgression/s0.01/selected_00170"
+      },
+      {
+        "display_row": 86,
+        "accepted_index": 83,
+        "proposal_index": 171,
+        "id": "50_30k/introgression/s0.01/selected_00171"
+      },
+      {
+        "display_row": 87,
+        "accepted_index": 84,
+        "proposal_index": 174,
+        "id": "50_30k/introgression/s0.01/selected_00174"
+      },
+      {
+        "display_row": 88,
+        "accepted_index": 85,
+        "proposal_index": 176,
+        "id": "50_30k/introgression/s0.01/selected_00176"
+      },
+      {
+        "display_row": 89,
+        "accepted_index": 86,
+        "proposal_index": 177,
+        "id": "50_30k/introgression/s0.01/selected_00177"
+      },
+      {
+        "display_row": 90,
+        "accepted_index": 89,
+        "proposal_index": 182,
+        "id": "50_30k/introgression/s0.01/selected_00182"
+      },
+      {
+        "display_row": 91,
+        "accepted_index": 90,
+        "proposal_index": 183,
+        "id": "50_30k/introgression/s0.01/selected_00183"
+      },
+      {
+        "display_row": 92,
+        "accepted_index": 91,
+        "proposal_index": 184,
+        "id": "50_30k/introgression/s0.01/selected_00184"
+      },
+      {
+        "display_row": 93,
+        "accepted_index": 92,
+        "proposal_index": 189,
+        "id": "50_30k/introgression/s0.01/selected_00189"
+      },
+      {
+        "display_row": 94,
+        "accepted_index": 93,
+        "proposal_index": 190,
+        "id": "50_30k/introgression/s0.01/selected_00190"
+      },
+      {
+        "display_row": 95,
+        "accepted_index": 94,
+        "proposal_index": 191,
+        "id": "50_30k/introgression/s0.01/selected_00191"
+      },
+      {
+        "display_row": 96,
+        "accepted_index": 95,
+        "proposal_index": 192,
+        "id": "50_30k/introgression/s0.01/selected_00192"
+      },
+      {
+        "display_row": 97,
+        "accepted_index": 96,
+        "proposal_index": 194,
+        "id": "50_30k/introgression/s0.01/selected_00194"
+      },
+      {
+        "display_row": 98,
+        "accepted_index": 97,
+        "proposal_index": 195,
+        "id": "50_30k/introgression/s0.01/selected_00195"
+      },
+      {
+        "display_row": 99,
+        "accepted_index": 98,
+        "proposal_index": 197,
+        "id": "50_30k/introgression/s0.01/selected_00197"
+      },
+      {
+        "display_row": 100,
+        "accepted_index": 100,
+        "proposal_index": 200,
+        "id": "50_30k/introgression/s0.01/selected_00200"
+      }
+    ],
+    "10k_s001": [
+      {
+        "display_row": 1,
+        "accepted_index": 56,
+        "proposal_index": 640,
+        "id": "10k/introgression/s0.01/selected_00640"
+      },
+      {
+        "display_row": 2,
+        "accepted_index": 23,
+        "proposal_index": 187,
+        "id": "10k/introgression/s0.01/selected_00187"
+      },
+      {
+        "display_row": 3,
+        "accepted_index": 84,
+        "proposal_index": 966,
+        "id": "10k/introgression/s0.01/selected_00966"
+      },
+      {
+        "display_row": 4,
+        "accepted_index": 31,
+        "proposal_index": 287,
+        "id": "10k/introgression/s0.01/selected_00287"
+      },
+      {
+        "display_row": 5,
+        "accepted_index": 68,
+        "proposal_index": 803,
+        "id": "10k/introgression/s0.01/selected_00803"
+      },
+      {
+        "display_row": 6,
+        "accepted_index": 96,
+        "proposal_index": 1178,
+        "id": "10k/introgression/s0.01/selected_01178"
+      },
+      {
+        "display_row": 7,
+        "accepted_index": 18,
+        "proposal_index": 162,
+        "id": "10k/introgression/s0.01/selected_00162"
+      },
+      {
+        "display_row": 8,
+        "accepted_index": 42,
+        "proposal_index": 503,
+        "id": "10k/introgression/s0.01/selected_00503"
+      },
+      {
+        "display_row": 9,
+        "accepted_index": 67,
+        "proposal_index": 798,
+        "id": "10k/introgression/s0.01/selected_00798"
+      },
+      {
+        "display_row": 10,
+        "accepted_index": 1,
+        "proposal_index": 20,
+        "id": "10k/introgression/s0.01/selected_00020"
+      },
+      {
+        "display_row": 11,
+        "accepted_index": 43,
+        "proposal_index": 508,
+        "id": "10k/introgression/s0.01/selected_00508"
+      },
+      {
+        "display_row": 12,
+        "accepted_index": 4,
+        "proposal_index": 50,
+        "id": "10k/introgression/s0.01/selected_00050"
+      },
+      {
+        "display_row": 13,
+        "accepted_index": 6,
+        "proposal_index": 68,
+        "id": "10k/introgression/s0.01/selected_00068"
+      },
+      {
+        "display_row": 14,
+        "accepted_index": 15,
+        "proposal_index": 130,
+        "id": "10k/introgression/s0.01/selected_00130"
+      },
+      {
+        "display_row": 15,
+        "accepted_index": 44,
+        "proposal_index": 530,
+        "id": "10k/introgression/s0.01/selected_00530"
+      },
+      {
+        "display_row": 16,
+        "accepted_index": 99,
+        "proposal_index": 1211,
+        "id": "10k/introgression/s0.01/selected_01211"
+      },
+      {
+        "display_row": 17,
+        "accepted_index": 13,
+        "proposal_index": 122,
+        "id": "10k/introgression/s0.01/selected_00122"
+      },
+      {
+        "display_row": 18,
+        "accepted_index": 40,
+        "proposal_index": 446,
+        "id": "10k/introgression/s0.01/selected_00446"
+      },
+      {
+        "display_row": 19,
+        "accepted_index": 33,
+        "proposal_index": 307,
+        "id": "10k/introgression/s0.01/selected_00307"
+      },
+      {
+        "display_row": 20,
+        "accepted_index": 85,
+        "proposal_index": 982,
+        "id": "10k/introgression/s0.01/selected_00982"
+      },
+      {
+        "display_row": 21,
+        "accepted_index": 82,
+        "proposal_index": 947,
+        "id": "10k/introgression/s0.01/selected_00947"
+      },
+      {
+        "display_row": 22,
+        "accepted_index": 89,
+        "proposal_index": 1069,
+        "id": "10k/introgression/s0.01/selected_01069"
+      },
+      {
+        "display_row": 23,
+        "accepted_index": 75,
+        "proposal_index": 891,
+        "id": "10k/introgression/s0.01/selected_00891"
+      },
+      {
+        "display_row": 24,
+        "accepted_index": 48,
+        "proposal_index": 551,
+        "id": "10k/introgression/s0.01/selected_00551"
+      },
+      {
+        "display_row": 25,
+        "accepted_index": 81,
+        "proposal_index": 943,
+        "id": "10k/introgression/s0.01/selected_00943"
+      },
+      {
+        "display_row": 26,
+        "accepted_index": 66,
+        "proposal_index": 789,
+        "id": "10k/introgression/s0.01/selected_00789"
+      },
+      {
+        "display_row": 27,
+        "accepted_index": 2,
+        "proposal_index": 36,
+        "id": "10k/introgression/s0.01/selected_00036"
+      },
+      {
+        "display_row": 28,
+        "accepted_index": 3,
+        "proposal_index": 46,
+        "id": "10k/introgression/s0.01/selected_00046"
+      },
+      {
+        "display_row": 29,
+        "accepted_index": 5,
+        "proposal_index": 59,
+        "id": "10k/introgression/s0.01/selected_00059"
+      },
+      {
+        "display_row": 30,
+        "accepted_index": 7,
+        "proposal_index": 70,
+        "id": "10k/introgression/s0.01/selected_00070"
+      },
+      {
+        "display_row": 31,
+        "accepted_index": 8,
+        "proposal_index": 87,
+        "id": "10k/introgression/s0.01/selected_00087"
+      },
+      {
+        "display_row": 32,
+        "accepted_index": 9,
+        "proposal_index": 88,
+        "id": "10k/introgression/s0.01/selected_00088"
+      },
+      {
+        "display_row": 33,
+        "accepted_index": 10,
+        "proposal_index": 110,
+        "id": "10k/introgression/s0.01/selected_00110"
+      },
+      {
+        "display_row": 34,
+        "accepted_index": 11,
+        "proposal_index": 111,
+        "id": "10k/introgression/s0.01/selected_00111"
+      },
+      {
+        "display_row": 35,
+        "accepted_index": 12,
+        "proposal_index": 118,
+        "id": "10k/introgression/s0.01/selected_00118"
+      },
+      {
+        "display_row": 36,
+        "accepted_index": 14,
+        "proposal_index": 128,
+        "id": "10k/introgression/s0.01/selected_00128"
+      },
+      {
+        "display_row": 37,
+        "accepted_index": 16,
+        "proposal_index": 147,
+        "id": "10k/introgression/s0.01/selected_00147"
+      },
+      {
+        "display_row": 38,
+        "accepted_index": 17,
+        "proposal_index": 161,
+        "id": "10k/introgression/s0.01/selected_00161"
+      },
+      {
+        "display_row": 39,
+        "accepted_index": 19,
+        "proposal_index": 168,
+        "id": "10k/introgression/s0.01/selected_00168"
+      },
+      {
+        "display_row": 40,
+        "accepted_index": 20,
+        "proposal_index": 171,
+        "id": "10k/introgression/s0.01/selected_00171"
+      },
+      {
+        "display_row": 41,
+        "accepted_index": 21,
+        "proposal_index": 177,
+        "id": "10k/introgression/s0.01/selected_00177"
+      },
+      {
+        "display_row": 42,
+        "accepted_index": 22,
+        "proposal_index": 179,
+        "id": "10k/introgression/s0.01/selected_00179"
+      },
+      {
+        "display_row": 43,
+        "accepted_index": 24,
+        "proposal_index": 190,
+        "id": "10k/introgression/s0.01/selected_00190"
+      },
+      {
+        "display_row": 44,
+        "accepted_index": 25,
+        "proposal_index": 214,
+        "id": "10k/introgression/s0.01/selected_00214"
+      },
+      {
+        "display_row": 45,
+        "accepted_index": 26,
+        "proposal_index": 226,
+        "id": "10k/introgression/s0.01/selected_00226"
+      },
+      {
+        "display_row": 46,
+        "accepted_index": 27,
+        "proposal_index": 243,
+        "id": "10k/introgression/s0.01/selected_00243"
+      },
+      {
+        "display_row": 47,
+        "accepted_index": 28,
+        "proposal_index": 251,
+        "id": "10k/introgression/s0.01/selected_00251"
+      },
+      {
+        "display_row": 48,
+        "accepted_index": 29,
+        "proposal_index": 279,
+        "id": "10k/introgression/s0.01/selected_00279"
+      },
+      {
+        "display_row": 49,
+        "accepted_index": 30,
+        "proposal_index": 286,
+        "id": "10k/introgression/s0.01/selected_00286"
+      },
+      {
+        "display_row": 50,
+        "accepted_index": 32,
+        "proposal_index": 289,
+        "id": "10k/introgression/s0.01/selected_00289"
+      },
+      {
+        "display_row": 51,
+        "accepted_index": 34,
+        "proposal_index": 322,
+        "id": "10k/introgression/s0.01/selected_00322"
+      },
+      {
+        "display_row": 52,
+        "accepted_index": 35,
+        "proposal_index": 331,
+        "id": "10k/introgression/s0.01/selected_00331"
+      },
+      {
+        "display_row": 53,
+        "accepted_index": 36,
+        "proposal_index": 342,
+        "id": "10k/introgression/s0.01/selected_00342"
+      },
+      {
+        "display_row": 54,
+        "accepted_index": 37,
+        "proposal_index": 352,
+        "id": "10k/introgression/s0.01/selected_00352"
+      },
+      {
+        "display_row": 55,
+        "accepted_index": 38,
+        "proposal_index": 410,
+        "id": "10k/introgression/s0.01/selected_00410"
+      },
+      {
+        "display_row": 56,
+        "accepted_index": 39,
+        "proposal_index": 420,
+        "id": "10k/introgression/s0.01/selected_00420"
+      },
+      {
+        "display_row": 57,
+        "accepted_index": 41,
+        "proposal_index": 484,
+        "id": "10k/introgression/s0.01/selected_00484"
+      },
+      {
+        "display_row": 58,
+        "accepted_index": 45,
+        "proposal_index": 535,
+        "id": "10k/introgression/s0.01/selected_00535"
+      },
+      {
+        "display_row": 59,
+        "accepted_index": 46,
+        "proposal_index": 539,
+        "id": "10k/introgression/s0.01/selected_00539"
+      },
+      {
+        "display_row": 60,
+        "accepted_index": 47,
+        "proposal_index": 547,
+        "id": "10k/introgression/s0.01/selected_00547"
+      },
+      {
+        "display_row": 61,
+        "accepted_index": 49,
+        "proposal_index": 557,
+        "id": "10k/introgression/s0.01/selected_00557"
+      },
+      {
+        "display_row": 62,
+        "accepted_index": 50,
+        "proposal_index": 560,
+        "id": "10k/introgression/s0.01/selected_00560"
+      },
+      {
+        "display_row": 63,
+        "accepted_index": 51,
+        "proposal_index": 592,
+        "id": "10k/introgression/s0.01/selected_00592"
+      },
+      {
+        "display_row": 64,
+        "accepted_index": 52,
+        "proposal_index": 596,
+        "id": "10k/introgression/s0.01/selected_00596"
+      },
+      {
+        "display_row": 65,
+        "accepted_index": 53,
+        "proposal_index": 598,
+        "id": "10k/introgression/s0.01/selected_00598"
+      },
+      {
+        "display_row": 66,
+        "accepted_index": 54,
+        "proposal_index": 599,
+        "id": "10k/introgression/s0.01/selected_00599"
+      },
+      {
+        "display_row": 67,
+        "accepted_index": 55,
+        "proposal_index": 627,
+        "id": "10k/introgression/s0.01/selected_00627"
+      },
+      {
+        "display_row": 68,
+        "accepted_index": 57,
+        "proposal_index": 652,
+        "id": "10k/introgression/s0.01/selected_00652"
+      },
+      {
+        "display_row": 69,
+        "accepted_index": 58,
+        "proposal_index": 687,
+        "id": "10k/introgression/s0.01/selected_00687"
+      },
+      {
+        "display_row": 70,
+        "accepted_index": 59,
+        "proposal_index": 706,
+        "id": "10k/introgression/s0.01/selected_00706"
+      },
+      {
+        "display_row": 71,
+        "accepted_index": 60,
+        "proposal_index": 712,
+        "id": "10k/introgression/s0.01/selected_00712"
+      },
+      {
+        "display_row": 72,
+        "accepted_index": 61,
+        "proposal_index": 732,
+        "id": "10k/introgression/s0.01/selected_00732"
+      },
+      {
+        "display_row": 73,
+        "accepted_index": 62,
+        "proposal_index": 747,
+        "id": "10k/introgression/s0.01/selected_00747"
+      },
+      {
+        "display_row": 74,
+        "accepted_index": 63,
+        "proposal_index": 752,
+        "id": "10k/introgression/s0.01/selected_00752"
+      },
+      {
+        "display_row": 75,
+        "accepted_index": 64,
+        "proposal_index": 753,
+        "id": "10k/introgression/s0.01/selected_00753"
+      },
+      {
+        "display_row": 76,
+        "accepted_index": 65,
+        "proposal_index": 758,
+        "id": "10k/introgression/s0.01/selected_00758"
+      },
+      {
+        "display_row": 77,
+        "accepted_index": 69,
+        "proposal_index": 818,
+        "id": "10k/introgression/s0.01/selected_00818"
+      },
+      {
+        "display_row": 78,
+        "accepted_index": 70,
+        "proposal_index": 820,
+        "id": "10k/introgression/s0.01/selected_00820"
+      },
+      {
+        "display_row": 79,
+        "accepted_index": 71,
+        "proposal_index": 852,
+        "id": "10k/introgression/s0.01/selected_00852"
+      },
+      {
+        "display_row": 80,
+        "accepted_index": 72,
+        "proposal_index": 854,
+        "id": "10k/introgression/s0.01/selected_00854"
+      },
+      {
+        "display_row": 81,
+        "accepted_index": 73,
+        "proposal_index": 870,
+        "id": "10k/introgression/s0.01/selected_00870"
+      },
+      {
+        "display_row": 82,
+        "accepted_index": 74,
+        "proposal_index": 880,
+        "id": "10k/introgression/s0.01/selected_00880"
+      },
+      {
+        "display_row": 83,
+        "accepted_index": 76,
+        "proposal_index": 896,
+        "id": "10k/introgression/s0.01/selected_00896"
+      },
+      {
+        "display_row": 84,
+        "accepted_index": 77,
+        "proposal_index": 920,
+        "id": "10k/introgression/s0.01/selected_00920"
+      },
+      {
+        "display_row": 85,
+        "accepted_index": 78,
+        "proposal_index": 921,
+        "id": "10k/introgression/s0.01/selected_00921"
+      },
+      {
+        "display_row": 86,
+        "accepted_index": 79,
+        "proposal_index": 923,
+        "id": "10k/introgression/s0.01/selected_00923"
+      },
+      {
+        "display_row": 87,
+        "accepted_index": 80,
+        "proposal_index": 928,
+        "id": "10k/introgression/s0.01/selected_00928"
+      },
+      {
+        "display_row": 88,
+        "accepted_index": 83,
+        "proposal_index": 952,
+        "id": "10k/introgression/s0.01/selected_00952"
+      },
+      {
+        "display_row": 89,
+        "accepted_index": 86,
+        "proposal_index": 1028,
+        "id": "10k/introgression/s0.01/selected_01028"
+      },
+      {
+        "display_row": 90,
+        "accepted_index": 87,
+        "proposal_index": 1032,
+        "id": "10k/introgression/s0.01/selected_01032"
+      },
+      {
+        "display_row": 91,
+        "accepted_index": 88,
+        "proposal_index": 1040,
+        "id": "10k/introgression/s0.01/selected_01040"
+      },
+      {
+        "display_row": 92,
+        "accepted_index": 90,
+        "proposal_index": 1108,
+        "id": "10k/introgression/s0.01/selected_01108"
+      },
+      {
+        "display_row": 93,
+        "accepted_index": 91,
+        "proposal_index": 1110,
+        "id": "10k/introgression/s0.01/selected_01110"
+      },
+      {
+        "display_row": 94,
+        "accepted_index": 92,
+        "proposal_index": 1125,
+        "id": "10k/introgression/s0.01/selected_01125"
+      },
+      {
+        "display_row": 95,
+        "accepted_index": 93,
+        "proposal_index": 1149,
+        "id": "10k/introgression/s0.01/selected_01149"
+      },
+      {
+        "display_row": 96,
+        "accepted_index": 94,
+        "proposal_index": 1154,
+        "id": "10k/introgression/s0.01/selected_01154"
+      },
+      {
+        "display_row": 97,
+        "accepted_index": 95,
+        "proposal_index": 1161,
+        "id": "10k/introgression/s0.01/selected_01161"
+      },
+      {
+        "display_row": 98,
+        "accepted_index": 97,
+        "proposal_index": 1187,
+        "id": "10k/introgression/s0.01/selected_01187"
+      },
+      {
+        "display_row": 99,
+        "accepted_index": 98,
+        "proposal_index": 1188,
+        "id": "10k/introgression/s0.01/selected_01188"
+      },
+      {
+        "display_row": 100,
+        "accepted_index": 100,
+        "proposal_index": 1221,
+        "id": "10k/introgression/s0.01/selected_01221"
+      }
+    ],
+    "50k_s001": [
+      {
+        "display_row": 1,
+        "accepted_index": 1,
+        "proposal_index": 1,
+        "id": "50k/introgression/s0.01/selected_00001"
+      },
+      {
+        "display_row": 2,
+        "accepted_index": 2,
+        "proposal_index": 4,
+        "id": "50k/introgression/s0.01/selected_00004"
+      },
+      {
+        "display_row": 3,
+        "accepted_index": 3,
+        "proposal_index": 17,
+        "id": "50k/introgression/s0.01/selected_00017"
+      },
+      {
+        "display_row": 4,
+        "accepted_index": 4,
+        "proposal_index": 18,
+        "id": "50k/introgression/s0.01/selected_00018"
+      },
+      {
+        "display_row": 5,
+        "accepted_index": 6,
+        "proposal_index": 22,
+        "id": "50k/introgression/s0.01/selected_00022"
+      },
+      {
+        "display_row": 6,
+        "accepted_index": 7,
+        "proposal_index": 26,
+        "id": "50k/introgression/s0.01/selected_00026"
+      },
+      {
+        "display_row": 7,
+        "accepted_index": 8,
+        "proposal_index": 29,
+        "id": "50k/introgression/s0.01/selected_00029"
+      },
+      {
+        "display_row": 8,
+        "accepted_index": 9,
+        "proposal_index": 34,
+        "id": "50k/introgression/s0.01/selected_00034"
+      },
+      {
+        "display_row": 9,
+        "accepted_index": 11,
+        "proposal_index": 41,
+        "id": "50k/introgression/s0.01/selected_00041"
+      },
+      {
+        "display_row": 10,
+        "accepted_index": 12,
+        "proposal_index": 42,
+        "id": "50k/introgression/s0.01/selected_00042"
+      },
+      {
+        "display_row": 11,
+        "accepted_index": 13,
+        "proposal_index": 43,
+        "id": "50k/introgression/s0.01/selected_00043"
+      },
+      {
+        "display_row": 12,
+        "accepted_index": 16,
+        "proposal_index": 55,
+        "id": "50k/introgression/s0.01/selected_00055"
+      },
+      {
+        "display_row": 13,
+        "accepted_index": 18,
+        "proposal_index": 62,
+        "id": "50k/introgression/s0.01/selected_00062"
+      },
+      {
+        "display_row": 14,
+        "accepted_index": 19,
+        "proposal_index": 69,
+        "id": "50k/introgression/s0.01/selected_00069"
+      },
+      {
+        "display_row": 15,
+        "accepted_index": 20,
+        "proposal_index": 70,
+        "id": "50k/introgression/s0.01/selected_00070"
+      },
+      {
+        "display_row": 16,
+        "accepted_index": 21,
+        "proposal_index": 72,
+        "id": "50k/introgression/s0.01/selected_00072"
+      },
+      {
+        "display_row": 17,
+        "accepted_index": 23,
+        "proposal_index": 80,
+        "id": "50k/introgression/s0.01/selected_00080"
+      },
+      {
+        "display_row": 18,
+        "accepted_index": 24,
+        "proposal_index": 87,
+        "id": "50k/introgression/s0.01/selected_00087"
+      },
+      {
+        "display_row": 19,
+        "accepted_index": 25,
+        "proposal_index": 89,
+        "id": "50k/introgression/s0.01/selected_00089"
+      },
+      {
+        "display_row": 20,
+        "accepted_index": 26,
+        "proposal_index": 91,
+        "id": "50k/introgression/s0.01/selected_00091"
+      },
+      {
+        "display_row": 21,
+        "accepted_index": 27,
+        "proposal_index": 92,
+        "id": "50k/introgression/s0.01/selected_00092"
+      },
+      {
+        "display_row": 22,
+        "accepted_index": 28,
+        "proposal_index": 93,
+        "id": "50k/introgression/s0.01/selected_00093"
+      },
+      {
+        "display_row": 23,
+        "accepted_index": 29,
+        "proposal_index": 94,
+        "id": "50k/introgression/s0.01/selected_00094"
+      },
+      {
+        "display_row": 24,
+        "accepted_index": 30,
+        "proposal_index": 100,
+        "id": "50k/introgression/s0.01/selected_00100"
+      },
+      {
+        "display_row": 25,
+        "accepted_index": 31,
+        "proposal_index": 101,
+        "id": "50k/introgression/s0.01/selected_00101"
+      },
+      {
+        "display_row": 26,
+        "accepted_index": 32,
+        "proposal_index": 103,
+        "id": "50k/introgression/s0.01/selected_00103"
+      },
+      {
+        "display_row": 27,
+        "accepted_index": 33,
+        "proposal_index": 105,
+        "id": "50k/introgression/s0.01/selected_00105"
+      },
+      {
+        "display_row": 28,
+        "accepted_index": 35,
+        "proposal_index": 112,
+        "id": "50k/introgression/s0.01/selected_00112"
+      },
+      {
+        "display_row": 29,
+        "accepted_index": 36,
+        "proposal_index": 117,
+        "id": "50k/introgression/s0.01/selected_00117"
+      },
+      {
+        "display_row": 30,
+        "accepted_index": 37,
+        "proposal_index": 121,
+        "id": "50k/introgression/s0.01/selected_00121"
+      },
+      {
+        "display_row": 31,
+        "accepted_index": 38,
+        "proposal_index": 125,
+        "id": "50k/introgression/s0.01/selected_00125"
+      },
+      {
+        "display_row": 32,
+        "accepted_index": 39,
+        "proposal_index": 128,
+        "id": "50k/introgression/s0.01/selected_00128"
+      },
+      {
+        "display_row": 33,
+        "accepted_index": 40,
+        "proposal_index": 129,
+        "id": "50k/introgression/s0.01/selected_00129"
+      },
+      {
+        "display_row": 34,
+        "accepted_index": 41,
+        "proposal_index": 146,
+        "id": "50k/introgression/s0.01/selected_00146"
+      },
+      {
+        "display_row": 35,
+        "accepted_index": 42,
+        "proposal_index": 147,
+        "id": "50k/introgression/s0.01/selected_00147"
+      },
+      {
+        "display_row": 36,
+        "accepted_index": 45,
+        "proposal_index": 155,
+        "id": "50k/introgression/s0.01/selected_00155"
+      },
+      {
+        "display_row": 37,
+        "accepted_index": 46,
+        "proposal_index": 164,
+        "id": "50k/introgression/s0.01/selected_00164"
+      },
+      {
+        "display_row": 38,
+        "accepted_index": 49,
+        "proposal_index": 172,
+        "id": "50k/introgression/s0.01/selected_00172"
+      },
+      {
+        "display_row": 39,
+        "accepted_index": 51,
+        "proposal_index": 186,
+        "id": "50k/introgression/s0.01/selected_00186"
+      },
+      {
+        "display_row": 40,
+        "accepted_index": 53,
+        "proposal_index": 197,
+        "id": "50k/introgression/s0.01/selected_00197"
+      },
+      {
+        "display_row": 41,
+        "accepted_index": 54,
+        "proposal_index": 198,
+        "id": "50k/introgression/s0.01/selected_00198"
+      },
+      {
+        "display_row": 42,
+        "accepted_index": 55,
+        "proposal_index": 199,
+        "id": "50k/introgression/s0.01/selected_00199"
+      },
+      {
+        "display_row": 43,
+        "accepted_index": 56,
+        "proposal_index": 201,
+        "id": "50k/introgression/s0.01/selected_00201"
+      },
+      {
+        "display_row": 44,
+        "accepted_index": 57,
+        "proposal_index": 203,
+        "id": "50k/introgression/s0.01/selected_00203"
+      },
+      {
+        "display_row": 45,
+        "accepted_index": 58,
+        "proposal_index": 206,
+        "id": "50k/introgression/s0.01/selected_00206"
+      },
+      {
+        "display_row": 46,
+        "accepted_index": 61,
+        "proposal_index": 214,
+        "id": "50k/introgression/s0.01/selected_00214"
+      },
+      {
+        "display_row": 47,
+        "accepted_index": 63,
+        "proposal_index": 219,
+        "id": "50k/introgression/s0.01/selected_00219"
+      },
+      {
+        "display_row": 48,
+        "accepted_index": 66,
+        "proposal_index": 230,
+        "id": "50k/introgression/s0.01/selected_00230"
+      },
+      {
+        "display_row": 49,
+        "accepted_index": 67,
+        "proposal_index": 235,
+        "id": "50k/introgression/s0.01/selected_00235"
+      },
+      {
+        "display_row": 50,
+        "accepted_index": 68,
+        "proposal_index": 238,
+        "id": "50k/introgression/s0.01/selected_00238"
+      },
+      {
+        "display_row": 51,
+        "accepted_index": 69,
+        "proposal_index": 243,
+        "id": "50k/introgression/s0.01/selected_00243"
+      },
+      {
+        "display_row": 52,
+        "accepted_index": 70,
+        "proposal_index": 245,
+        "id": "50k/introgression/s0.01/selected_00245"
+      },
+      {
+        "display_row": 53,
+        "accepted_index": 72,
+        "proposal_index": 252,
+        "id": "50k/introgression/s0.01/selected_00252"
+      },
+      {
+        "display_row": 54,
+        "accepted_index": 76,
+        "proposal_index": 260,
+        "id": "50k/introgression/s0.01/selected_00260"
+      },
+      {
+        "display_row": 55,
+        "accepted_index": 81,
+        "proposal_index": 277,
+        "id": "50k/introgression/s0.01/selected_00277"
+      },
+      {
+        "display_row": 56,
+        "accepted_index": 82,
+        "proposal_index": 278,
+        "id": "50k/introgression/s0.01/selected_00278"
+      },
+      {
+        "display_row": 57,
+        "accepted_index": 84,
+        "proposal_index": 283,
+        "id": "50k/introgression/s0.01/selected_00283"
+      },
+      {
+        "display_row": 58,
+        "accepted_index": 85,
+        "proposal_index": 284,
+        "id": "50k/introgression/s0.01/selected_00284"
+      },
+      {
+        "display_row": 59,
+        "accepted_index": 86,
+        "proposal_index": 288,
+        "id": "50k/introgression/s0.01/selected_00288"
+      },
+      {
+        "display_row": 60,
+        "accepted_index": 88,
+        "proposal_index": 290,
+        "id": "50k/introgression/s0.01/selected_00290"
+      },
+      {
+        "display_row": 61,
+        "accepted_index": 89,
+        "proposal_index": 291,
+        "id": "50k/introgression/s0.01/selected_00291"
+      },
+      {
+        "display_row": 62,
+        "accepted_index": 90,
+        "proposal_index": 293,
+        "id": "50k/introgression/s0.01/selected_00293"
+      },
+      {
+        "display_row": 63,
+        "accepted_index": 93,
+        "proposal_index": 299,
+        "id": "50k/introgression/s0.01/selected_00299"
+      },
+      {
+        "display_row": 64,
+        "accepted_index": 94,
+        "proposal_index": 311,
+        "id": "50k/introgression/s0.01/selected_00311"
+      },
+      {
+        "display_row": 65,
+        "accepted_index": 95,
+        "proposal_index": 314,
+        "id": "50k/introgression/s0.01/selected_00314"
+      },
+      {
+        "display_row": 66,
+        "accepted_index": 98,
+        "proposal_index": 320,
+        "id": "50k/introgression/s0.01/selected_00320"
+      },
+      {
+        "display_row": 67,
+        "accepted_index": 100,
+        "proposal_index": 324,
+        "id": "50k/introgression/s0.01/selected_00324"
+      },
+      {
+        "display_row": 68,
+        "accepted_index": 64,
+        "proposal_index": 220,
+        "id": "50k/introgression/s0.01/selected_00220"
+      },
+      {
+        "display_row": 69,
+        "accepted_index": 71,
+        "proposal_index": 246,
+        "id": "50k/introgression/s0.01/selected_00246"
+      },
+      {
+        "display_row": 70,
+        "accepted_index": 79,
+        "proposal_index": 271,
+        "id": "50k/introgression/s0.01/selected_00271"
+      },
+      {
+        "display_row": 71,
+        "accepted_index": 92,
+        "proposal_index": 296,
+        "id": "50k/introgression/s0.01/selected_00296"
+      },
+      {
+        "display_row": 72,
+        "accepted_index": 87,
+        "proposal_index": 289,
+        "id": "50k/introgression/s0.01/selected_00289"
+      },
+      {
+        "display_row": 73,
+        "accepted_index": 15,
+        "proposal_index": 52,
+        "id": "50k/introgression/s0.01/selected_00052"
+      },
+      {
+        "display_row": 74,
+        "accepted_index": 74,
+        "proposal_index": 254,
+        "id": "50k/introgression/s0.01/selected_00254"
+      },
+      {
+        "display_row": 75,
+        "accepted_index": 48,
+        "proposal_index": 169,
+        "id": "50k/introgression/s0.01/selected_00169"
+      },
+      {
+        "display_row": 76,
+        "accepted_index": 65,
+        "proposal_index": 224,
+        "id": "50k/introgression/s0.01/selected_00224"
+      },
+      {
+        "display_row": 77,
+        "accepted_index": 83,
+        "proposal_index": 281,
+        "id": "50k/introgression/s0.01/selected_00281"
+      },
+      {
+        "display_row": 78,
+        "accepted_index": 78,
+        "proposal_index": 263,
+        "id": "50k/introgression/s0.01/selected_00263"
+      },
+      {
+        "display_row": 79,
+        "accepted_index": 60,
+        "proposal_index": 213,
+        "id": "50k/introgression/s0.01/selected_00213"
+      },
+      {
+        "display_row": 80,
+        "accepted_index": 80,
+        "proposal_index": 276,
+        "id": "50k/introgression/s0.01/selected_00276"
+      },
+      {
+        "display_row": 81,
+        "accepted_index": 50,
+        "proposal_index": 182,
+        "id": "50k/introgression/s0.01/selected_00182"
+      },
+      {
+        "display_row": 82,
+        "accepted_index": 17,
+        "proposal_index": 61,
+        "id": "50k/introgression/s0.01/selected_00061"
+      },
+      {
+        "display_row": 83,
+        "accepted_index": 47,
+        "proposal_index": 166,
+        "id": "50k/introgression/s0.01/selected_00166"
+      },
+      {
+        "display_row": 84,
+        "accepted_index": 5,
+        "proposal_index": 21,
+        "id": "50k/introgression/s0.01/selected_00021"
+      },
+      {
+        "display_row": 85,
+        "accepted_index": 34,
+        "proposal_index": 109,
+        "id": "50k/introgression/s0.01/selected_00109"
+      },
+      {
+        "display_row": 86,
+        "accepted_index": 59,
+        "proposal_index": 211,
+        "id": "50k/introgression/s0.01/selected_00211"
+      },
+      {
+        "display_row": 87,
+        "accepted_index": 97,
+        "proposal_index": 318,
+        "id": "50k/introgression/s0.01/selected_00318"
+      },
+      {
+        "display_row": 88,
+        "accepted_index": 14,
+        "proposal_index": 50,
+        "id": "50k/introgression/s0.01/selected_00050"
+      },
+      {
+        "display_row": 89,
+        "accepted_index": 22,
+        "proposal_index": 78,
+        "id": "50k/introgression/s0.01/selected_00078"
+      },
+      {
+        "display_row": 90,
+        "accepted_index": 77,
+        "proposal_index": 261,
+        "id": "50k/introgression/s0.01/selected_00261"
+      },
+      {
+        "display_row": 91,
+        "accepted_index": 44,
+        "proposal_index": 150,
+        "id": "50k/introgression/s0.01/selected_00150"
+      },
+      {
+        "display_row": 92,
+        "accepted_index": 91,
+        "proposal_index": 295,
+        "id": "50k/introgression/s0.01/selected_00295"
+      },
+      {
+        "display_row": 93,
+        "accepted_index": 43,
+        "proposal_index": 148,
+        "id": "50k/introgression/s0.01/selected_00148"
+      },
+      {
+        "display_row": 94,
+        "accepted_index": 10,
+        "proposal_index": 39,
+        "id": "50k/introgression/s0.01/selected_00039"
+      },
+      {
+        "display_row": 95,
+        "accepted_index": 73,
+        "proposal_index": 253,
+        "id": "50k/introgression/s0.01/selected_00253"
+      },
+      {
+        "display_row": 96,
+        "accepted_index": 75,
+        "proposal_index": 257,
+        "id": "50k/introgression/s0.01/selected_00257"
+      },
+      {
+        "display_row": 97,
+        "accepted_index": 52,
+        "proposal_index": 188,
+        "id": "50k/introgression/s0.01/selected_00188"
+      },
+      {
+        "display_row": 98,
+        "accepted_index": 62,
+        "proposal_index": 218,
+        "id": "50k/introgression/s0.01/selected_00218"
+      },
+      {
+        "display_row": 99,
+        "accepted_index": 96,
+        "proposal_index": 315,
+        "id": "50k/introgression/s0.01/selected_00315"
+      },
+      {
+        "display_row": 100,
+        "accepted_index": 99,
+        "proposal_index": 321,
+        "id": "50k/introgression/s0.01/selected_00321"
+      }
+    ],
+    "50k_s0005": [
+      {
+        "display_row": 1,
+        "accepted_index": 2,
+        "proposal_index": 2,
+        "id": "50k/introgression/s0.005/selected_00002"
+      },
+      {
+        "display_row": 2,
+        "accepted_index": 11,
+        "proposal_index": 46,
+        "id": "50k/introgression/s0.005/selected_00046"
+      },
+      {
+        "display_row": 3,
+        "accepted_index": 19,
+        "proposal_index": 74,
+        "id": "50k/introgression/s0.005/selected_00074"
+      },
+      {
+        "display_row": 4,
+        "accepted_index": 20,
+        "proposal_index": 75,
+        "id": "50k/introgression/s0.005/selected_00075"
+      },
+      {
+        "display_row": 5,
+        "accepted_index": 22,
+        "proposal_index": 87,
+        "id": "50k/introgression/s0.005/selected_00087"
+      },
+      {
+        "display_row": 6,
+        "accepted_index": 27,
+        "proposal_index": 112,
+        "id": "50k/introgression/s0.005/selected_00112"
+      },
+      {
+        "display_row": 7,
+        "accepted_index": 29,
+        "proposal_index": 120,
+        "id": "50k/introgression/s0.005/selected_00120"
+      },
+      {
+        "display_row": 8,
+        "accepted_index": 31,
+        "proposal_index": 122,
+        "id": "50k/introgression/s0.005/selected_00122"
+      },
+      {
+        "display_row": 9,
+        "accepted_index": 33,
+        "proposal_index": 131,
+        "id": "50k/introgression/s0.005/selected_00131"
+      },
+      {
+        "display_row": 10,
+        "accepted_index": 34,
+        "proposal_index": 143,
+        "id": "50k/introgression/s0.005/selected_00143"
+      },
+      {
+        "display_row": 11,
+        "accepted_index": 45,
+        "proposal_index": 177,
+        "id": "50k/introgression/s0.005/selected_00177"
+      },
+      {
+        "display_row": 12,
+        "accepted_index": 61,
+        "proposal_index": 217,
+        "id": "50k/introgression/s0.005/selected_00217"
+      },
+      {
+        "display_row": 13,
+        "accepted_index": 69,
+        "proposal_index": 242,
+        "id": "50k/introgression/s0.005/selected_00242"
+      },
+      {
+        "display_row": 14,
+        "accepted_index": 73,
+        "proposal_index": 250,
+        "id": "50k/introgression/s0.005/selected_00250"
+      },
+      {
+        "display_row": 15,
+        "accepted_index": 74,
+        "proposal_index": 251,
+        "id": "50k/introgression/s0.005/selected_00251"
+      },
+      {
+        "display_row": 16,
+        "accepted_index": 78,
+        "proposal_index": 259,
+        "id": "50k/introgression/s0.005/selected_00259"
+      },
+      {
+        "display_row": 17,
+        "accepted_index": 85,
+        "proposal_index": 282,
+        "id": "50k/introgression/s0.005/selected_00282"
+      },
+      {
+        "display_row": 18,
+        "accepted_index": 92,
+        "proposal_index": 310,
+        "id": "50k/introgression/s0.005/selected_00310"
+      },
+      {
+        "display_row": 19,
+        "accepted_index": 83,
+        "proposal_index": 277,
+        "id": "50k/introgression/s0.005/selected_00277"
+      },
+      {
+        "display_row": 20,
+        "accepted_index": 62,
+        "proposal_index": 220,
+        "id": "50k/introgression/s0.005/selected_00220"
+      },
+      {
+        "display_row": 21,
+        "accepted_index": 80,
+        "proposal_index": 273,
+        "id": "50k/introgression/s0.005/selected_00273"
+      },
+      {
+        "display_row": 22,
+        "accepted_index": 86,
+        "proposal_index": 285,
+        "id": "50k/introgression/s0.005/selected_00285"
+      },
+      {
+        "display_row": 23,
+        "accepted_index": 75,
+        "proposal_index": 253,
+        "id": "50k/introgression/s0.005/selected_00253"
+      },
+      {
+        "display_row": 24,
+        "accepted_index": 15,
+        "proposal_index": 62,
+        "id": "50k/introgression/s0.005/selected_00062"
+      },
+      {
+        "display_row": 25,
+        "accepted_index": 25,
+        "proposal_index": 109,
+        "id": "50k/introgression/s0.005/selected_00109"
+      },
+      {
+        "display_row": 26,
+        "accepted_index": 50,
+        "proposal_index": 186,
+        "id": "50k/introgression/s0.005/selected_00186"
+      },
+      {
+        "display_row": 27,
+        "accepted_index": 72,
+        "proposal_index": 249,
+        "id": "50k/introgression/s0.005/selected_00249"
+      },
+      {
+        "display_row": 28,
+        "accepted_index": 5,
+        "proposal_index": 33,
+        "id": "50k/introgression/s0.005/selected_00033"
+      },
+      {
+        "display_row": 29,
+        "accepted_index": 97,
+        "proposal_index": 343,
+        "id": "50k/introgression/s0.005/selected_00343"
+      },
+      {
+        "display_row": 30,
+        "accepted_index": 8,
+        "proposal_index": 37,
+        "id": "50k/introgression/s0.005/selected_00037"
+      },
+      {
+        "display_row": 31,
+        "accepted_index": 98,
+        "proposal_index": 344,
+        "id": "50k/introgression/s0.005/selected_00344"
+      },
+      {
+        "display_row": 32,
+        "accepted_index": 87,
+        "proposal_index": 286,
+        "id": "50k/introgression/s0.005/selected_00286"
+      },
+      {
+        "display_row": 33,
+        "accepted_index": 100,
+        "proposal_index": 350,
+        "id": "50k/introgression/s0.005/selected_00350"
+      },
+      {
+        "display_row": 34,
+        "accepted_index": 46,
+        "proposal_index": 179,
+        "id": "50k/introgression/s0.005/selected_00179"
+      },
+      {
+        "display_row": 35,
+        "accepted_index": 30,
+        "proposal_index": 121,
+        "id": "50k/introgression/s0.005/selected_00121"
+      },
+      {
+        "display_row": 36,
+        "accepted_index": 32,
+        "proposal_index": 129,
+        "id": "50k/introgression/s0.005/selected_00129"
+      },
+      {
+        "display_row": 37,
+        "accepted_index": 59,
+        "proposal_index": 210,
+        "id": "50k/introgression/s0.005/selected_00210"
+      },
+      {
+        "display_row": 38,
+        "accepted_index": 7,
+        "proposal_index": 35,
+        "id": "50k/introgression/s0.005/selected_00035"
+      },
+      {
+        "display_row": 39,
+        "accepted_index": 95,
+        "proposal_index": 324,
+        "id": "50k/introgression/s0.005/selected_00324"
+      },
+      {
+        "display_row": 40,
+        "accepted_index": 18,
+        "proposal_index": 70,
+        "id": "50k/introgression/s0.005/selected_00070"
+      },
+      {
+        "display_row": 41,
+        "accepted_index": 37,
+        "proposal_index": 149,
+        "id": "50k/introgression/s0.005/selected_00149"
+      },
+      {
+        "display_row": 42,
+        "accepted_index": 56,
+        "proposal_index": 200,
+        "id": "50k/introgression/s0.005/selected_00200"
+      },
+      {
+        "display_row": 43,
+        "accepted_index": 54,
+        "proposal_index": 197,
+        "id": "50k/introgression/s0.005/selected_00197"
+      },
+      {
+        "display_row": 44,
+        "accepted_index": 77,
+        "proposal_index": 258,
+        "id": "50k/introgression/s0.005/selected_00258"
+      },
+      {
+        "display_row": 45,
+        "accepted_index": 39,
+        "proposal_index": 155,
+        "id": "50k/introgression/s0.005/selected_00155"
+      },
+      {
+        "display_row": 46,
+        "accepted_index": 55,
+        "proposal_index": 198,
+        "id": "50k/introgression/s0.005/selected_00198"
+      },
+      {
+        "display_row": 47,
+        "accepted_index": 66,
+        "proposal_index": 229,
+        "id": "50k/introgression/s0.005/selected_00229"
+      },
+      {
+        "display_row": 48,
+        "accepted_index": 93,
+        "proposal_index": 312,
+        "id": "50k/introgression/s0.005/selected_00312"
+      },
+      {
+        "display_row": 49,
+        "accepted_index": 10,
+        "proposal_index": 42,
+        "id": "50k/introgression/s0.005/selected_00042"
+      },
+      {
+        "display_row": 50,
+        "accepted_index": 16,
+        "proposal_index": 63,
+        "id": "50k/introgression/s0.005/selected_00063"
+      },
+      {
+        "display_row": 51,
+        "accepted_index": 88,
+        "proposal_index": 302,
+        "id": "50k/introgression/s0.005/selected_00302"
+      },
+      {
+        "display_row": 52,
+        "accepted_index": 24,
+        "proposal_index": 97,
+        "id": "50k/introgression/s0.005/selected_00097"
+      },
+      {
+        "display_row": 53,
+        "accepted_index": 1,
+        "proposal_index": 1,
+        "id": "50k/introgression/s0.005/selected_00001"
+      },
+      {
+        "display_row": 54,
+        "accepted_index": 44,
+        "proposal_index": 173,
+        "id": "50k/introgression/s0.005/selected_00173"
+      },
+      {
+        "display_row": 55,
+        "accepted_index": 9,
+        "proposal_index": 40,
+        "id": "50k/introgression/s0.005/selected_00040"
+      },
+      {
+        "display_row": 56,
+        "accepted_index": 67,
+        "proposal_index": 232,
+        "id": "50k/introgression/s0.005/selected_00232"
+      },
+      {
+        "display_row": 57,
+        "accepted_index": 28,
+        "proposal_index": 113,
+        "id": "50k/introgression/s0.005/selected_00113"
+      },
+      {
+        "display_row": 58,
+        "accepted_index": 94,
+        "proposal_index": 314,
+        "id": "50k/introgression/s0.005/selected_00314"
+      },
+      {
+        "display_row": 59,
+        "accepted_index": 99,
+        "proposal_index": 346,
+        "id": "50k/introgression/s0.005/selected_00346"
+      },
+      {
+        "display_row": 60,
+        "accepted_index": 40,
+        "proposal_index": 157,
+        "id": "50k/introgression/s0.005/selected_00157"
+      },
+      {
+        "display_row": 61,
+        "accepted_index": 17,
+        "proposal_index": 69,
+        "id": "50k/introgression/s0.005/selected_00069"
+      },
+      {
+        "display_row": 62,
+        "accepted_index": 79,
+        "proposal_index": 271,
+        "id": "50k/introgression/s0.005/selected_00271"
+      },
+      {
+        "display_row": 63,
+        "accepted_index": 36,
+        "proposal_index": 148,
+        "id": "50k/introgression/s0.005/selected_00148"
+      },
+      {
+        "display_row": 64,
+        "accepted_index": 53,
+        "proposal_index": 191,
+        "id": "50k/introgression/s0.005/selected_00191"
+      },
+      {
+        "display_row": 65,
+        "accepted_index": 76,
+        "proposal_index": 257,
+        "id": "50k/introgression/s0.005/selected_00257"
+      },
+      {
+        "display_row": 66,
+        "accepted_index": 64,
+        "proposal_index": 225,
+        "id": "50k/introgression/s0.005/selected_00225"
+      },
+      {
+        "display_row": 67,
+        "accepted_index": 68,
+        "proposal_index": 237,
+        "id": "50k/introgression/s0.005/selected_00237"
+      },
+      {
+        "display_row": 68,
+        "accepted_index": 3,
+        "proposal_index": 19,
+        "id": "50k/introgression/s0.005/selected_00019"
+      },
+      {
+        "display_row": 69,
+        "accepted_index": 4,
+        "proposal_index": 24,
+        "id": "50k/introgression/s0.005/selected_00024"
+      },
+      {
+        "display_row": 70,
+        "accepted_index": 6,
+        "proposal_index": 34,
+        "id": "50k/introgression/s0.005/selected_00034"
+      },
+      {
+        "display_row": 71,
+        "accepted_index": 12,
+        "proposal_index": 51,
+        "id": "50k/introgression/s0.005/selected_00051"
+      },
+      {
+        "display_row": 72,
+        "accepted_index": 13,
+        "proposal_index": 56,
+        "id": "50k/introgression/s0.005/selected_00056"
+      },
+      {
+        "display_row": 73,
+        "accepted_index": 14,
+        "proposal_index": 58,
+        "id": "50k/introgression/s0.005/selected_00058"
+      },
+      {
+        "display_row": 74,
+        "accepted_index": 21,
+        "proposal_index": 76,
+        "id": "50k/introgression/s0.005/selected_00076"
+      },
+      {
+        "display_row": 75,
+        "accepted_index": 23,
+        "proposal_index": 90,
+        "id": "50k/introgression/s0.005/selected_00090"
+      },
+      {
+        "display_row": 76,
+        "accepted_index": 26,
+        "proposal_index": 110,
+        "id": "50k/introgression/s0.005/selected_00110"
+      },
+      {
+        "display_row": 77,
+        "accepted_index": 35,
+        "proposal_index": 144,
+        "id": "50k/introgression/s0.005/selected_00144"
+      },
+      {
+        "display_row": 78,
+        "accepted_index": 38,
+        "proposal_index": 152,
+        "id": "50k/introgression/s0.005/selected_00152"
+      },
+      {
+        "display_row": 79,
+        "accepted_index": 41,
+        "proposal_index": 164,
+        "id": "50k/introgression/s0.005/selected_00164"
+      },
+      {
+        "display_row": 80,
+        "accepted_index": 42,
+        "proposal_index": 166,
+        "id": "50k/introgression/s0.005/selected_00166"
+      },
+      {
+        "display_row": 81,
+        "accepted_index": 43,
+        "proposal_index": 168,
+        "id": "50k/introgression/s0.005/selected_00168"
+      },
+      {
+        "display_row": 82,
+        "accepted_index": 47,
+        "proposal_index": 180,
+        "id": "50k/introgression/s0.005/selected_00180"
+      },
+      {
+        "display_row": 83,
+        "accepted_index": 48,
+        "proposal_index": 183,
+        "id": "50k/introgression/s0.005/selected_00183"
+      },
+      {
+        "display_row": 84,
+        "accepted_index": 49,
+        "proposal_index": 184,
+        "id": "50k/introgression/s0.005/selected_00184"
+      },
+      {
+        "display_row": 85,
+        "accepted_index": 51,
+        "proposal_index": 187,
+        "id": "50k/introgression/s0.005/selected_00187"
+      },
+      {
+        "display_row": 86,
+        "accepted_index": 52,
+        "proposal_index": 190,
+        "id": "50k/introgression/s0.005/selected_00190"
+      },
+      {
+        "display_row": 87,
+        "accepted_index": 57,
+        "proposal_index": 203,
+        "id": "50k/introgression/s0.005/selected_00203"
+      },
+      {
+        "display_row": 88,
+        "accepted_index": 58,
+        "proposal_index": 209,
+        "id": "50k/introgression/s0.005/selected_00209"
+      },
+      {
+        "display_row": 89,
+        "accepted_index": 60,
+        "proposal_index": 213,
+        "id": "50k/introgression/s0.005/selected_00213"
+      },
+      {
+        "display_row": 90,
+        "accepted_index": 63,
+        "proposal_index": 222,
+        "id": "50k/introgression/s0.005/selected_00222"
+      },
+      {
+        "display_row": 91,
+        "accepted_index": 65,
+        "proposal_index": 226,
+        "id": "50k/introgression/s0.005/selected_00226"
+      },
+      {
+        "display_row": 92,
+        "accepted_index": 70,
+        "proposal_index": 244,
+        "id": "50k/introgression/s0.005/selected_00244"
+      },
+      {
+        "display_row": 93,
+        "accepted_index": 71,
+        "proposal_index": 248,
+        "id": "50k/introgression/s0.005/selected_00248"
+      },
+      {
+        "display_row": 94,
+        "accepted_index": 81,
+        "proposal_index": 274,
+        "id": "50k/introgression/s0.005/selected_00274"
+      },
+      {
+        "display_row": 95,
+        "accepted_index": 82,
+        "proposal_index": 276,
+        "id": "50k/introgression/s0.005/selected_00276"
+      },
+      {
+        "display_row": 96,
+        "accepted_index": 84,
+        "proposal_index": 281,
+        "id": "50k/introgression/s0.005/selected_00281"
+      },
+      {
+        "display_row": 97,
+        "accepted_index": 89,
+        "proposal_index": 303,
+        "id": "50k/introgression/s0.005/selected_00303"
+      },
+      {
+        "display_row": 98,
+        "accepted_index": 90,
+        "proposal_index": 305,
+        "id": "50k/introgression/s0.005/selected_00305"
+      },
+      {
+        "display_row": 99,
+        "accepted_index": 91,
+        "proposal_index": 306,
+        "id": "50k/introgression/s0.005/selected_00306"
+      },
+      {
+        "display_row": 100,
+        "accepted_index": 96,
+        "proposal_index": 325,
+        "id": "50k/introgression/s0.005/selected_00325"
+      }
+    ]
+  }
+}

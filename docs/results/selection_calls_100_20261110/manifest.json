@@ -75,7 +75,7 @@
   ],
   "multiple_testing": "Pointwise only; no adjustment across times or loci.",
   "comparison": "Exact integer pair counts for truth/median; original continuous values for posterior mass.",
-  "rows": "Accepted replicate index 1..100 in fixed proposal order, identical ordering across statistics and thresholds.",
+  "rows": "Posterior mass: earliest significant time ascending, summed significant spans across panels descending, significant-test count descending, proposal index ascending; based on p<0.05 and shared across panels/thresholds. No-call simulations last. Other methods retain proposal order.",
   "selected_ascertainment": "Present-day segregation only; no selection by inferred signal.",
   "workers": 4,
   "simulation_configurations": {
