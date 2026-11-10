@@ -1,0 +1,91 @@
+{
+  "elapsed_seconds": 4451.510354042053,
+  "deadline_epoch": 1794363084.159366,
+  "pending": 0,
+  "strata": [
+    {
+      "key": "10k_s0.05",
+      "regime": "10k",
+      "selection": 0.05,
+      "start": 10000,
+      "end": 0,
+      "reused": 91,
+      "new_completed": 91,
+      "accepted": 100,
+      "target": 100,
+      "lost": 81,
+      "fixed": 1,
+      "submitted": 91
+    },
+    {
+      "key": "10k_s0.1",
+      "regime": "10k",
+      "selection": 0.1,
+      "start": 10000,
+      "end": 0,
+      "reused": 0,
+      "new_completed": 5000,
+      "accepted": 3,
+      "target": 100,
+      "lost": 4538,
+      "fixed": 459,
+      "submitted": 5000
+    },
+    {
+      "key": "50k_s0.05",
+      "regime": "50k",
+      "selection": 0.05,
+      "start": 50000,
+      "end": 0,
+      "reused": 0,
+      "new_completed": 5000,
+      "accepted": 0,
+      "target": 100,
+      "lost": 144,
+      "fixed": 4856,
+      "submitted": 5000
+    },
+    {
+      "key": "50k_s0.1",
+      "regime": "50k",
+      "selection": 0.1,
+      "start": 50000,
+      "end": 0,
+      "reused": 0,
+      "new_completed": 5000,
+      "accepted": 0,
+      "target": 100,
+      "lost": 1,
+      "fixed": 4999,
+      "submitted": 5000
+    },
+    {
+      "key": "50_30k_s0.05",
+      "regime": "50_30k",
+      "selection": 0.05,
+      "start": 50000,
+      "end": 30000,
+      "reused": 0,
+      "new_completed": 5000,
+      "accepted": 0,
+      "target": 100,
+      "lost": 146,
+      "fixed": 4854,
+      "submitted": 5000
+    },
+    {
+      "key": "50_30k_s0.1",
+      "regime": "50_30k",
+      "selection": 0.1,
+      "start": 50000,
+      "end": 30000,
+      "reused": 0,
+      "new_completed": 5000,
+      "accepted": 0,
+      "target": 100,
+      "lost": 10,
+      "fixed": 4990,
+      "submitted": 5000
+    }
+  ]
+}

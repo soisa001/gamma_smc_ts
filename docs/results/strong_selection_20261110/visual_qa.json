@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "png_count": 27,
+  "pdf_count": 36,
+  "pdf_pages": 61,
+  "visual_review": "All 27 PNGs inspected: 24 statistic/call figures through six contact sheets and full-size spot checks, two AF figures and the six-treatment allele-fate figure. Titles and subtitles separated; legends above panels; actual cohort sizes (100 and 3) labelled; rare-cohort AF curves made prominent; no clipped or overlapping labels.",
+  "numerical_review": "check_strong_selection_report.py independently recomputed empirical ranks and checked six-treatment accounting, segregation, benchmark counts, F1 values, output hashes and all figure files.",
+  "pdf_review": "Embedded editable TrueType text, vector graphics without raster image objects, valid EOF and expected page counts.",
+  "render_script_sha256": "9371c4a3c6a0e42249acf4ae2183550012fe534b1db254b6a3d4899163d6883a",
+  "generic_plot_script_sha256": "12d0ac40d4711574b24e14344d35540f4d71db6f74541cb7106d4da725767d87"
+}

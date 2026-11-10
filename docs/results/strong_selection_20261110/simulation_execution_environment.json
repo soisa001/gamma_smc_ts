@@ -1,0 +1,18 @@
+{
+  "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+  "packages": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "msprime": "1.4.2",
+    "pyslim": "1.1.1",
+    "tskit": "1.0.3",
+    "matplotlib": "3.11.1",
+    "pandas": "3.0.3",
+    "zstandard": "0.25.0"
+  },
+  "threads_per_worker": 1,
+  "workers": 20,
+  "native_library_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/lib",
+  "total_concurrent_simulation_workers_limit": 24,
+  "scientific_rng_seeds_unchanged_by_scheduling": true
+}

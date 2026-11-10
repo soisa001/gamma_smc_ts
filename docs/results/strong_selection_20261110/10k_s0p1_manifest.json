@@ -1,0 +1,139 @@
+{
+  "case": {
+    "key": "10k_s0p1",
+    "regime": "10k",
+    "selection": 0.1,
+    "window": [
+      0.0,
+      10.0
+    ],
+    "label": "10 kya\u2013present \u00b7 s=0.1"
+  },
+  "contract": {
+    "ids": [
+      "strong_v1/10k/introgression/s0.1/selected_01274",
+      "strong_v1/10k/introgression/s0.1/selected_02886",
+      "strong_v1/10k/introgression/s0.1/selected_04456"
+    ],
+    "position_bp": 500000,
+    "choice": "Frozen surviving historical cohort first, followed by new surviving proposals in ascending index order; no AF or inferred-signal ascertainment beyond segregation.",
+    "conditioning": "Original focal allele remains segregating today: 0 < whole-population AF < 1; fixed/lost proposals excluded."
+  },
+  "inputs": [
+    {
+      "id": "10k/introgression/s0.1/selected_01274",
+      "unit": "introgression/s0.1/selected_01274",
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.1,
+      "replicate": 1274,
+      "seed": 625395821,
+      "config_sha256": "36cf49036b2f465c523440d64a4bccd4ac563c38bce26cc83790b4c326206e27",
+      "accepted": true,
+      "initial_frequency": 0.010049559471365639,
+      "final_frequency": 0.9998405824056115,
+      "selection_onset_frequency": 0.0018695471541337765,
+      "rejection": null,
+      "stop_years_ago": 0.0,
+      "selected_reproduction_ticks": [
+        1602,
+        2001
+      ],
+      "selection_start_years": 10000,
+      "selection_end_years": 0,
+      "seed_namespace": "strong-selection-v1:10k:",
+      "ancestry_start_years": 50000,
+      "trajectory_rows": 2001,
+      "simulation_seconds": 39.63394230299991,
+      "onset_sha256": "39fe69de5f0ba7c7bf50c949731b6cec738204a593e6703e8b9cde5e29e95f69",
+      "trajectory_sha256": "731559f61ab528420c38cc289570b5d72e941c7fbc1b6a830572265e0fa677f9",
+      "observed_sha256": "53080ef1471a50c3e72095f8207f0103b3bfdd28a5105dccbc4b8a4a1dd18a08",
+      "sites": 2178,
+      "trees": 1464,
+      "score_seconds": 44.136065902000155,
+      "posterior_sha256": "ab401c3e45e68b7e7c68613c54d55592c64c354250b0a6805e971d5daf759ef4",
+      "scores_sha256": "7fb1ac5e7abbdc7a4810d73913f5ecb382c12f1c9f6c237d3f198e80d4c192f9",
+      "source_directory": "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_01274"
+    },
+    {
+      "id": "10k/introgression/s0.1/selected_02886",
+      "unit": "introgression/s0.1/selected_02886",
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.1,
+      "replicate": 2886,
+      "seed": 401351453,
+      "config_sha256": "36cf49036b2f465c523440d64a4bccd4ac563c38bce26cc83790b4c326206e27",
+      "accepted": true,
+      "initial_frequency": 0.010049559471365639,
+      "final_frequency": 0.9999468608018705,
+      "selection_onset_frequency": 0.04206481096800997,
+      "rejection": null,
+      "stop_years_ago": 0.0,
+      "selected_reproduction_ticks": [
+        1602,
+        2001
+      ],
+      "selection_start_years": 10000,
+      "selection_end_years": 0,
+      "seed_namespace": "strong-selection-v1:10k:",
+      "ancestry_start_years": 50000,
+      "trajectory_rows": 2001,
+      "simulation_seconds": 36.65720729499981,
+      "onset_sha256": "b7134ec2c82a12c2ddca1f4a8c3f21d87a44f32725d5ae85873e11be1d068477",
+      "trajectory_sha256": "48c9f98ba7de0ca6b077e9a392c768d19b90a75783c7afc09723364074786005",
+      "observed_sha256": "9034d683b4b89224b0b30c2cb7414c6aaffd0742f110beb8ada06adcad7dca07",
+      "sites": 2445,
+      "trees": 1626,
+      "score_seconds": 30.67612869300001,
+      "posterior_sha256": "5c39515e58ed1856d4f453409ae5406a2f76784a97dd8c20205e69ed4fc2f770",
+      "scores_sha256": "e5099cd5d3b21fe2d5ec72bf9ffa90e5344f52645d6dfa1883fb4cf6af828a22",
+      "source_directory": "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_02886"
+    },
+    {
+      "id": "10k/introgression/s0.1/selected_04456",
+      "unit": "introgression/s0.1/selected_04456",
+      "regime": "10k",
+      "origin": "introgression",
+      "cohort": "selected",
+      "selection": 0.1,
+      "replicate": 4456,
+      "seed": 1040264052,
+      "config_sha256": "36cf49036b2f465c523440d64a4bccd4ac563c38bce26cc83790b4c326206e27",
+      "accepted": true,
+      "initial_frequency": 0.010049559471365639,
+      "final_frequency": 0.9998804368042086,
+      "selection_onset_frequency": 0.008984212712920648,
+      "rejection": null,
+      "stop_years_ago": 0.0,
+      "selected_reproduction_ticks": [
+        1602,
+        2001
+      ],
+      "selection_start_years": 10000,
+      "selection_end_years": 0,
+      "seed_namespace": "strong-selection-v1:10k:",
+      "ancestry_start_years": 50000,
+      "trajectory_rows": 2001,
+      "simulation_seconds": 40.6008934649999,
+      "onset_sha256": "06aec68648e5919d3767f11a4db7322697bc986a82ac0c00f83c477f204e60da",
+      "trajectory_sha256": "86bded8a0f657c70550c52a4b5257aace34d9c40134e2212be691be2aa3cf6b9",
+      "observed_sha256": "0ba35efbc5b374e209cb5135b295b70784ad54c47db6d6eec31772bdcf6c2701",
+      "sites": 2401,
+      "trees": 1528,
+      "score_seconds": 29.352417287999742,
+      "posterior_sha256": "6a961346e4edbb8bf9e9b986028553bf53e9d8187a08c8e57bd3272a3f94f9c4",
+      "scores_sha256": "d86f147b28b68bd8f01c5abb8398ed47b303e6a169a3880ea0e001fc8243e59c",
+      "source_directory": "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_04456"
+    }
+  ],
+  "cache_sha256": "93a883eedef0dca4e6b119bf2ec42c842c451b91999ef28b531e66fec9b454a1",
+  "source": {
+    "path": "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k_s0.1_cohort.json",
+    "sha256": "8ff20a4150375e54c69c4a7be0418d896b677805e4d647cd2fa5055dcf2af9c4"
+  },
+  "row_identity": "proposal_indices is the cohort ordinal (historical survivors then new proposals); original_proposal_indices retains each source proposal index. IDs disambiguate the two seed namespaces.",
+  "validation": "All score/tree/posterior/AF hashes, selection schedules, AF copy counts, pair panel and focal coordinate checked."
+}

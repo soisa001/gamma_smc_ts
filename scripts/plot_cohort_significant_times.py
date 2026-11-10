@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Show each of 100 selected simulations' pointwise calls in four treatments.
+"""Show each selected simulation's pointwise calls against a 100-neutral bank.
 
 prepare verifies and caches the selected-site scores. --available-only permits
 caching finished cohorts while the 50-30-kya simulations run. report needs only
 the portable cache and renders vector PDFs and PNGs at p<.05 and p<.01.
+The report function also accepts explicitly labelled partial selected cohorts.
 """
 import os
 os.environ['MPLBACKEND']='Agg'
@@ -49,7 +50,7 @@ def mass_order(data):
         count=sum(len(h) for h in hits)
         return first,-span,-count,int(data['proposal_indices'][i])
     order=np.array(sorted(range(len(masks[0])),key=key))
-    np.testing.assert_array_equal(np.sort(order),np.arange(100))
+    np.testing.assert_array_equal(np.sort(order),np.arange(len(masks[0])))
     return order
 
 
@@ -207,6 +208,7 @@ def report(out,available_only=False,calls_only=False):
         with PdfPages(out/f'all_statistic_curves_{tag}.pdf') as book, PdfPages(out/f'posterior_mass_curves_{tag}.pdf') as mass_book:
             for entry,data in zip(meta['cases'],datasets):
                 case=entry['case']
+                n_selected=len(data['ids'])
                 for method,name in enumerate(METHODS):
                     selected=data['cdfs'][:,method]
                     null=neutral[:,method]
@@ -219,7 +221,7 @@ def report(out,available_only=False,calls_only=False):
                         ax.axvspan(*case['window'],color='.93',zorder=0)
                         ax.plot(x,n.T,color='.55',alpha=.18,lw=.65,zorder=1)
                         ax.plot(x,y.T,color=color,alpha=.19,lw=.7,zorder=2)
-                        for row in range(100):
+                        for row in range(n_selected):
                             ax.plot(x,np.where(mask[row],y[row],np.nan),color=color,alpha=.65,lw=1.2,marker='o',markersize=1.8,zorder=3)
                         ax.set(title=title,xlim=(0,50.5),xlabel='Time before present (kya)',ylim=(0,None))
                         ax.set_ylabel('Pairwise coalescence fraction' if col==0 else 'Pairwise fraction in 1-kyr bin')
@@ -227,10 +229,10 @@ def report(out,available_only=False,calls_only=False):
                         ax.grid(alpha=.15)
                         for spine in ('top','right'):ax.spines[spine].set_visible(False)
                     fig.suptitle(case['label'],y=.98,fontsize=21)
-                    fig.text(.5,.935,f'{name} · all 100 selected simulations · selected site: 500 kb',ha='center',fontsize=15)
-                    handles=[Line2D([],[],color='.55',lw=1,label=neutral_label),Line2D([],[],color=blue,alpha=.4,lw=1,label='100 selected curves'),
+                    fig.text(.5,.925,f'{name} · all {n_selected} selected simulations · selected site: 500 kb',ha='center',va='center',fontsize=15)
+                    handles=[Line2D([],[],color='.55',lw=1,label=neutral_label),Line2D([],[],color=blue,alpha=.4,lw=1,label=f'{n_selected} selected curves'),
                         Line2D([],[],color=blue,lw=2,marker='o',markersize=4,label=f'Selected points: p < {threshold:g}'),Patch(facecolor='.93',label='Selection active')]
-                    fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.89),ncol=2,frameon=False,fontsize=12)
+                    fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.87),ncol=2,frameon=False,fontsize=12)
                     fig.subplots_adjust(top=.74,bottom=.16,left=.10,right=.97,wspace=.40)
                     fig.text(.5,.06,f'Bold points use each simulation’s own p value against the same {neutral_label}.',ha='center',fontsize=11.5)
                     fig.text(.5,.025,'Pointwise tests; no correction across times/loci. Interval values are plotted at bin midpoints.',ha='center',fontsize=11)
@@ -244,9 +246,10 @@ def report(out,available_only=False,calls_only=False):
         with PdfPages(out/f'all_statistics_{tag}.pdf') as book, PdfPages(out/f'posterior_mass_{tag}.pdf') as mass_book:
             for case_entry,data in zip(meta['cases'],datasets):
                 case=case_entry['case']
+                n_selected=len(data['ids'])
                 for method,name in enumerate(METHODS):
                     masks=[data['p_cumulative'][:,method]<threshold,data['p_interval'][:,method]<threshold]
-                    order=orders[case['key']] if method==2 else np.arange(100)
+                    order=orders[case['key']] if method==2 else np.arange(n_selected)
                     display_rows=np.argsort(order)+1
                     fig,axes=plt.subplots(1,2,figsize=(11,8.5),sharey=True)
                     for col,(ax,mask,color,title) in enumerate(zip(axes,masks,[blue,purple],['Cumulative cutoff','1-kyr interval'])):
@@ -259,18 +262,18 @@ def report(out,available_only=False,calls_only=False):
                                     ax.plot(x,np.full(len(x),row+1),color=color,lw=1.25,marker='o',markersize=1.5)
                                 else:
                                     ax.broken_barh([(start+1,end-start+1)],(row+.66,.68),facecolors=color,edgecolors='none')
-                        ax.set(title=title,xlim=(0,50.5),ylim=(100.8,.2),xlabel='Time before present (kya)')
-                        ax.set_xticks(np.arange(0,51,10));ax.set_yticks([1,25,50,75,100])
+                        ax.set(title=title,xlim=(0,50.5),ylim=(n_selected+.8,.2),xlabel='Time before present (kya)')
+                        ax.set_xticks(np.arange(0,51,10));ax.set_yticks([1,25,50,75,100] if n_selected==100 else np.unique(np.linspace(1,n_selected,min(5,n_selected)).astype(int)))
                         ax.grid(axis='x',alpha=.15)
                         for spine in ('top','right'):ax.spines[spine].set_visible(False)
                         count=int(mask.any(1).sum())
-                        ax.text(.5,-.19,f'{count}/100 with ≥1 significant test',transform=ax.transAxes,ha='center',fontsize=12)
+                        ax.text(.5,-.19,f'{count}/{n_selected} with ≥1 significant test',transform=ax.transAxes,ha='center',fontsize=12)
                     axes[0].set_ylabel('Selected simulation (sorted)' if method==2 else 'Selected simulation (proposal order)')
                     fig.suptitle(case['label'],y=.98,fontsize=21)
-                    fig.text(.5,.935,f'{name} · pointwise p < {threshold:g} · selected site: 500 kb',ha='center',fontsize=15)
+                    fig.text(.5,.925,f'{name} · pointwise p < {threshold:g} · selected site: 500 kb',ha='center',va='center',fontsize=15)
                     handles=[Line2D([],[],color=blue,marker='o',lw=2,markersize=4,label='Significant cutoff'),
                         Line2D([],[],color=purple,lw=6,label='Significant bin'),Patch(facecolor='.91',label='Selection active')]
-                    fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.9),ncol=3,frameon=False,fontsize=12)
+                    fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.87),ncol=3,frameon=False,fontsize=12)
                     if method==2:
                         fig.text(.5,.075,'Order: first significant time, then longer spans · based on p < 0.05 in both panels',ha='center',fontsize=11)
                     fig.text(.5,.05,f'Same {neutral_label} · 1,000 pairs · p = (1 + neutral exceedances) / 101',ha='center',fontsize=11.5)
@@ -281,10 +284,10 @@ def report(out,available_only=False,calls_only=False):
                     book.savefig(fig)
                     if method==2:mass_book.savefig(fig)
                     plt.close(fig)
-                    summary.append(dict(case=case['key'],label=case['label'],method=name,threshold=threshold,
+                    summary.append(dict(case=case['key'],label=case['label'],method=name,threshold=threshold,n_selected=n_selected,
                         cumulative_any_count=int(masks[0].any(1).sum()),interval_any_count=int(masks[1].any(1).sum()),
                         cumulative_fraction_by_cutoff=masks[0].mean(0).tolist(),interval_fraction_by_bin=masks[1].mean(0).tolist()))
-                    for i in range(100):
+                    for i in range(n_selected):
                         replicate_records.append(dict(case=case['key'],accepted_index=i+1,id=str(data['ids'][i]),
                             display_row=int(display_rows[i]),
                             proposal_index=int(data['proposal_indices'][i]),method=name,threshold=threshold,

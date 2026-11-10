@@ -180,7 +180,7 @@ def report(args):
             handles=[Line2D([],[],color=c,lw=2,label=m) for c,m in zip(COLORS,METHODS)]
             fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.90),ncol=3,frameon=False,fontsize=12)
             fig.subplots_adjust(left=.11,right=.97,top=.78,bottom=.19,wspace=.20)
-            fig.text(.5,.08,'100 independent test neutrals vs 100 fixed reference neutrals · focal site: 500 kb',ha='center',fontsize=12)
+            fig.text(.5,.08,'100 independent test neutrals vs 100 reference neutrals · focal site: 500 kb',ha='center',fontsize=12)
             fig.text(.5,.04,'Both cohorts segregating today · dashed line: nominal threshold · 1,000 pairs',ha='center',fontsize=12)
             save(fig,f'fpr_pointwise_{tag}',book)
     fig,axes=plt.subplots(1,2,figsize=(11,8.5),sharey=True)

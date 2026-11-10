@@ -12,8 +12,10 @@ for key in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS','MKL_NUM_THREADS'):
 import argparse
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, wait, FIRST_COMPLETED
 import json
+import importlib.metadata
 from pathlib import Path
 import shutil
+import sys
 import time
 import numpy as np
 import pandas as pd
@@ -130,6 +132,8 @@ def run(args):
     base.save(raw/'schedule.json',dict(workers=args.workers,seconds=args.seconds,attempts=args.attempts,
         target=args.target,started_epoch=started,deadline_epoch=deadline,raw=str(raw),out=str(args.out),
         script_sha256=base.digest(__file__),native_library_path=str(native_lib)))
+    base.save(raw/'execution_environment.json',dict(python=sys.version,threads_per_worker=1,workers=args.workers,
+        native_library_path=str(native_lib),packages={name:importlib.metadata.version(name) for name in ('numpy','scipy','msprime','pyslim','tskit','matplotlib','pandas','zstandard')}))
     records=[];accepted=list(reused);next_index=0;pending={}
     print(f'Reused {len(reused)} segregating neutrals; target {args.target}.',flush=True)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
