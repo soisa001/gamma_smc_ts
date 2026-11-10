@@ -1,0 +1,356 @@
+[
+  {
+    "label": "50\u201330 kya; s=0.01",
+    "id": "50_30k/introgression/s0.01/selected_00000",
+    "selection_window_kya": [
+      30,
+      50
+    ],
+    "methods": {
+      "True TMRCA": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            45,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            7,
+            8
+          ],
+          [
+            40,
+            41
+          ],
+          [
+            43,
+            45
+          ]
+        ],
+        "min_cumulative_p": 0.0297029702970297,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior median": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            9,
+            9
+          ],
+          [
+            11,
+            25
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            6,
+            7
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            10,
+            11
+          ],
+          [
+            12,
+            13
+          ]
+        ],
+        "min_cumulative_p": 0.039603960396039604,
+        "min_interval_p": 0.0297029702970297
+      },
+      "Posterior-weighted mass": {
+        "significant_cumulative_cutoff_runs_kya": [],
+        "significant_1kyr_interval_runs_kya": [],
+        "min_cumulative_p": 0.06930693069306931,
+        "min_interval_p": 0.06930693069306931
+      }
+    }
+  },
+  {
+    "label": "10 kya\u2013present; s=0.01",
+    "id": "10k/introgression/s0.01/selected_00020",
+    "selection_window_kya": [
+      0,
+      10
+    ],
+    "methods": {
+      "True TMRCA": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            7,
+            7
+          ],
+          [
+            9,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            4,
+            6
+          ],
+          [
+            10,
+            11
+          ],
+          [
+            15,
+            18
+          ],
+          [
+            19,
+            21
+          ],
+          [
+            26,
+            27
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior median": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            4,
+            41
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            2,
+            13
+          ],
+          [
+            14,
+            15
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior-weighted mass": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            1,
+            42
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            1,
+            14
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      }
+    }
+  },
+  {
+    "label": "50 kya\u2013present; s=0.01",
+    "id": "50k/introgression/s0.01/selected_00001",
+    "selection_window_kya": [
+      0,
+      50
+    ],
+    "methods": {
+      "True TMRCA": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            35,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            6,
+            7
+          ],
+          [
+            30,
+            31
+          ],
+          [
+            32,
+            33
+          ],
+          [
+            34,
+            35
+          ],
+          [
+            42,
+            44
+          ],
+          [
+            45,
+            46
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior median": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            11,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            10,
+            12
+          ],
+          [
+            13,
+            17
+          ],
+          [
+            19,
+            25
+          ],
+          [
+            26,
+            28
+          ],
+          [
+            31,
+            32
+          ],
+          [
+            33,
+            38
+          ],
+          [
+            39,
+            47
+          ],
+          [
+            48,
+            49
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior-weighted mass": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            1,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            1,
+            50
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      }
+    }
+  },
+  {
+    "label": "50 kya\u2013present; s=0.005",
+    "id": "50k/introgression/s0.005/selected_00001",
+    "selection_window_kya": [
+      0,
+      50
+    ],
+    "methods": {
+      "True TMRCA": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            22,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            14,
+            15
+          ],
+          [
+            21,
+            22
+          ],
+          [
+            24,
+            25
+          ],
+          [
+            31,
+            33
+          ],
+          [
+            39,
+            40
+          ]
+        ],
+        "min_cumulative_p": 0.009900990099009901,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior median": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            6,
+            50
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            18,
+            23
+          ],
+          [
+            24,
+            25
+          ],
+          [
+            44,
+            45
+          ]
+        ],
+        "min_cumulative_p": 0.019801980198019802,
+        "min_interval_p": 0.009900990099009901
+      },
+      "Posterior-weighted mass": {
+        "significant_cumulative_cutoff_runs_kya": [
+          [
+            1,
+            39
+          ]
+        ],
+        "significant_1kyr_interval_runs_kya": [
+          [
+            1,
+            15
+          ]
+        ],
+        "min_cumulative_p": 0.0297029702970297,
+        "min_interval_p": 0.0297029702970297
+      }
+    }
+  }
+]

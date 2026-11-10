@@ -1,0 +1,58 @@
+{
+  "inputs": [
+    {
+      "path": "/mnt/d/phase2simselection/code/docs/results/selected_site_posteriors_20261106",
+      "manifest_sha256": "a437fbaf020089dbad5a02aa1c5b95283fc2e63661e4483d5ab15f77f6e57c0d",
+      "parameters_sha256": "91cafaffdd3776519d91ea58338a38dce9685bc9a0d35707fcf4d236864d6239"
+    },
+    {
+      "path": "/mnt/d/phase2simselection/code/docs/results/ongoing_50k_examples_20261109",
+      "manifest_sha256": "0265da6a4ec3d02c2a0a3af38ce7e5b0c1f6d09e9cf036d9d8de65bf049c8fb9",
+      "parameters_sha256": "4ecdd411eac0372e3bbcb9890ea4e774e2216200821c0abccc515d0c02be72a0"
+    }
+  ],
+  "selected_ids": [
+    "50_30k/introgression/s0.01/selected_00000",
+    "10k/introgression/s0.01/selected_00020",
+    "50k/introgression/s0.01/selected_00001",
+    "50k/introgression/s0.005/selected_00001"
+  ],
+  "position_bp": 500000,
+  "methods": [
+    "True TMRCA",
+    "Posterior median",
+    "Posterior-weighted mass"
+  ],
+  "selection_windows": [
+    [
+      30,
+      50
+    ],
+    [
+      0,
+      10
+    ],
+    [
+      0,
+      50
+    ],
+    [
+      0,
+      50
+    ]
+  ],
+  "grid": "Cumulative cutoffs 1..50 kya; intervals [1,2),...,[49,50) kya.",
+  "p_definition": "(1 + number of neutral simulations with statistic >= selected) / 101",
+  "threshold": 0.05,
+  "comparison": "strictly less",
+  "multiple_testing": "None; pointwise descriptive comparison, not a scan-adjusted call or timing confidence interval.",
+  "neutral_pool": "Same 50 held-out plus 50 calibration simulations across all scenarios.",
+  "ascertainment": "50\u201330 and ongoing examples first surviving proposals; 10-kya example previously chosen for a mass call at 420 kb.",
+  "validation": "Verified both caches, identical neutral IDs/CDFs and identical pair panel; threshold masks agree exactly with neutral exceedance counts <=4.",
+  "script_sha256": "a1301e60120fd8051e751894fc484f332c960773840bd7fdd59a8dd63136fc19",
+  "workers": 4,
+  "versions": {
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.1"
+  }
+}

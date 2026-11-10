@@ -1,0 +1,14 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "all_statistics.pdf": "f340e485895786c1eb98c4dfa74d0a142381e6d33a10c5c0d58074000333f73b",
+  "manifest.json": "5b16f8375bd9ac7722725295fdfdbe56c36194aad482d614f794ea90ad74082b",
+  "p_values.npz": "364a02de7a99dd1c488f4b4ba3252a542527437d131ab3dde2960a0fa3290cb3",
+  "posterior_mass.pdf": "4ccb6157aa8e5531b2e51568f48e5bff7ccd5e3ac6bac3ed2ed6981012a6a576",
+  "posterior_mass.png": "4ee157c3104dd10da51d4be3013bac5011f19a1f1dc75d99187e4858e42a64af",
+  "posterior_median.pdf": "38a659215fa47d5b348337cfeec7f7ad0c2045a0314d33cfcbd6086276a67973",
+  "posterior_median.png": "98c09eab3b1338cec90697c5dd8377cd68a709113a3219fe672082b7e47fd9b3",
+  "summary.json": "6757de946ed5e5265c95d8de7e63d914e6f96a719f73b30d029ce54a56e456db",
+  "true_tmrca.pdf": "25a7cdfa935bea0e24009e835bc9ab86a12828a1fda06669a2289582adf57976",
+  "true_tmrca.png": "36a58d0cae1c6d51c8d1ff776c0cdfee99d14dd08aacdc8e1bb24c8456bf4c7b",
+  "visual_qa.json": "fa606c4f0aeeb0c05f4f22b4fb016608bd7cc8025beff5ecfd6346c33cbd6e3a"
+}

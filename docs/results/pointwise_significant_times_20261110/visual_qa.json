@@ -1,0 +1,6 @@
+{
+  "figures": ["true_tmrca.png", "posterior_median.png", "posterior_mass.png"],
+  "visual_check": "All three figures inspected. Readable large text, legend above axes, clear scenario labels and selection windows; no clipping or overlap. Isolated significant cutoffs remain individual dots, and gaps in significant bins are preserved.",
+  "pdf_check": "Three individual PDFs and the combined three-page PDF contain embedded TrueType fonts and vector paths without raster image objects.",
+  "numerical_check": "Identical neutral IDs, CDF arrays and pair panels across source caches; pointwise p<0.05 masks verified against at most four neutral exceedances. Interval endpoints checked against 1-kyr bin indices."
+}
