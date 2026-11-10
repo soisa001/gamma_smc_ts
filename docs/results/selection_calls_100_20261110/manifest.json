@@ -1,0 +1,215 @@
+{
+  "cases": [
+    {
+      "case": {
+        "key": "50_30k_s001",
+        "regime": "50_30k",
+        "selection": 0.01,
+        "window": [
+          30,
+          50
+        ],
+        "label": "50\u201330 kya \u00b7 s=0.01"
+      },
+      "cache": "50_30k_s001.npz",
+      "manifest": "50_30k_s001_manifest.json",
+      "cache_sha256": "492d148469ec57f50c5bdaf4bf716d3f2802cddc876183c298e6beec648f7e9d"
+    },
+    {
+      "case": {
+        "key": "10k_s001",
+        "regime": "10k",
+        "selection": 0.01,
+        "window": [
+          0,
+          10
+        ],
+        "label": "10 kya\u2013present \u00b7 s=0.01"
+      },
+      "cache": "10k_s001.npz",
+      "manifest": "10k_s001_manifest.json",
+      "cache_sha256": "df819123ecc4dc35ca9d63ba95de5bf96ea51161ba99267211fc65211919dbec"
+    },
+    {
+      "case": {
+        "key": "50k_s001",
+        "regime": "50k",
+        "selection": 0.01,
+        "window": [
+          0,
+          50
+        ],
+        "label": "50 kya\u2013present \u00b7 s=0.01"
+      },
+      "cache": "50k_s001.npz",
+      "manifest": "50k_s001_manifest.json",
+      "cache_sha256": "aed52253388afbc65bf2bf8f9d8824a772ffbd1981548d65ab379271990858e7"
+    },
+    {
+      "case": {
+        "key": "50k_s0005",
+        "regime": "50k",
+        "selection": 0.005,
+        "window": [
+          0,
+          50
+        ],
+        "label": "50 kya\u2013present \u00b7 s=0.005"
+      },
+      "cache": "50k_s0005.npz",
+      "manifest": "50k_s0005_manifest.json",
+      "cache_sha256": "02c0ae239a29bddb5bc252537c705c6bbed8339654b42c631b2b7497df078c4e"
+    }
+  ],
+  "pending": [],
+  "neutral_cache_sha256": "714c2e72d0d03ce1fe747b040d901edff45e186f8c6d08d6d8123882a5917453",
+  "neutral_source_parameters_sha256": "91cafaffdd3776519d91ea58338a38dce9685bc9a0d35707fcf4d236864d6239",
+  "position_bp": 500000,
+  "pair_count": 1000,
+  "neutral_count": 100,
+  "neutral_pool": "50 held-out neutral_test plus 50 calibration; same pool across all cases.",
+  "p_definition": "One-sided empirical p=(1+# neutrals >= selected)/101; strict p<alpha.",
+  "thresholds": [
+    0.05,
+    0.01
+  ],
+  "multiple_testing": "Pointwise only; no adjustment across times or loci.",
+  "comparison": "Exact integer pair counts for truth/median; original continuous values for posterior mass.",
+  "rows": "Accepted replicate index 1..100 in fixed proposal order, identical ordering across statistics and thresholds.",
+  "selected_ascertainment": "Present-day segregation only; no selection by inferred signal.",
+  "workers": 4,
+  "simulation_configurations": {
+    "50_30k_s001": {
+      "length": 1000000,
+      "diploids": 100,
+      "pairs": 1000,
+      "stride": 10000,
+      "generation_time": 25,
+      "dominance": 0.5,
+      "pulse_years": 50000,
+      "pulse_fraction": 0.01,
+      "archaic_split_years": 500000,
+      "archaic_ne": 3600,
+      "scaling": 1,
+      "mutation_rate": 1.29e-08,
+      "recombination_rate": 1e-08,
+      "base_seed": 20380101,
+      "pair_seed": 1729,
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "selected_condition": "0 < whole-population focal AF < 1 at present",
+      "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+      "source_sha256": "4cb78bbd8a46fe940cc1d32292169741c614550216f8d1f5083032c71a5fcda4",
+      "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+      "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+      "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+      "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+      "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+      "selection_start_years": 50000,
+      "selection_end_years": 30000,
+      "seed_namespace": "episode-v1:50_30k:",
+      "historical_source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+      "source_compatibility": "Simulation/timing/worker AST exactly matches historical executed source; scheduler-only changes allowed."
+    },
+    "10k_s001": {
+      "length": 1000000,
+      "diploids": 100,
+      "pairs": 1000,
+      "stride": 10000,
+      "generation_time": 25,
+      "dominance": 0.5,
+      "pulse_years": 50000,
+      "pulse_fraction": 0.01,
+      "archaic_split_years": 500000,
+      "archaic_ne": 3600,
+      "scaling": 1,
+      "mutation_rate": 1.29e-08,
+      "recombination_rate": 1e-08,
+      "base_seed": 20380101,
+      "pair_seed": 1729,
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "selected_condition": "0 < whole-population focal AF < 1 at present",
+      "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+      "source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+      "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+      "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+      "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+      "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+      "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+      "selection_start_years": 10000,
+      "selection_end_years": 0,
+      "seed_namespace": "recent-v1:"
+    },
+    "50k_s001": {
+      "length": 1000000,
+      "diploids": 100,
+      "pairs": 1000,
+      "stride": 10000,
+      "generation_time": 25,
+      "dominance": 0.5,
+      "pulse_years": 50000,
+      "pulse_fraction": 0.01,
+      "archaic_split_years": 500000,
+      "archaic_ne": 3600,
+      "scaling": 1,
+      "mutation_rate": 1.29e-08,
+      "recombination_rate": 1e-08,
+      "base_seed": 20380101,
+      "pair_seed": 1729,
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "selected_condition": "0 < whole-population focal AF < 1 at present",
+      "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+      "source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+      "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+      "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+      "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+      "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+      "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+      "selection_start_years": 50000,
+      "selection_end_years": 0,
+      "seed_namespace": "episode-v1:50k:"
+    },
+    "50k_s0005": {
+      "length": 1000000,
+      "diploids": 100,
+      "pairs": 1000,
+      "stride": 10000,
+      "generation_time": 25,
+      "dominance": 0.5,
+      "pulse_years": 50000,
+      "pulse_fraction": 0.01,
+      "archaic_split_years": 500000,
+      "archaic_ne": 3600,
+      "scaling": 1,
+      "mutation_rate": 1.29e-08,
+      "recombination_rate": 1e-08,
+      "base_seed": 20380101,
+      "pair_seed": 1729,
+      "slim": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/bin/slim",
+      "decoder": "/mnt/d/phase2simselection/code/bin/gamma_smc",
+      "selected_condition": "0 < whole-population focal AF < 1 at present",
+      "null_condition": "unconditioned; focal label nearest sample-polymorphic site",
+      "source_sha256": "6a7bc3f2ffde9f5198cddc312b42af52be41fecfcd662d9265ecdd0209f9b4f1",
+      "ancestry_source_sha256": "150567ee83d739d72511a8f16cbd7252c4ed69aef4367b1b136b0cbd39e1075f",
+      "score_source_sha256": "e422a72f33de498a79fa3e1cd4d0bd9ce436a5fbb0511cba76a27581be2037cc",
+      "slim_sha256": "7af149c29dc65d4aceb0dea19b2745b385eee4c254a71e18ebfff8f76735751a",
+      "decoder_sha256": "05bc30adeb6a93f08a4a51d5d80eb1e26b8b1ce1c728273dde7a1b28702dbd54",
+      "phlash_sha256": "a5bdfd843629d48050cd56a84da4d70e356d0339017d3c1f67be646d727db928",
+      "selection_start_years": 50000,
+      "selection_end_years": 0,
+      "seed_namespace": "episode-v1:50k:"
+    }
+  },
+  "source_simulation_manifests": [
+    {
+      "path": "/mnt/d/phase2simselection/code/docs/results/selection_arrays_eas_20261105_4h/manifest.json",
+      "sha256": "15c76d658f3a57dcf865a4e41079b6ad2d43ca9a45d7ec805d4d2de8e1e0390a"
+    },
+    {
+      "path": "/mnt/d/phase2simselection/sim/selection_50_30k_demo_20261106/manifest.json",
+      "sha256": "b59d9cdd1b7c5a0619b0398d477d8b0f6922d197611678cc9ffd2abe6feeef21"
+    }
+  ]
+}

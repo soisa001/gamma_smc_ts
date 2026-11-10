@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Simulate one survival-conditioned 50-30-kya selection example and plot it.
+"""Simulate survival-conditioned 50-30-kya selection examples.
 
-Phases: run (bounded four-worker batches until first survivor) and report (cache
+Phases: run (bounded four-worker batches until the survivor target) and report (cache
 only, no raw simulations needed). Reuses the established EAS SLiM simulator and
 Gamma-SMC scorer. Fixed original RNG scheme; select by proposal order, not signal.
 """
@@ -111,15 +111,21 @@ def run(args):
             combined = {r['id']: r for r in previous + receipts}
             save_json(ledger, sorted(combined.values(), key=lambda r: r['replicate']))
             hits = [r for r in receipts if r.get('accepted')]
-            if hits:
+            save_json(args.raw / 'cohort_progress.json', dict(target=args.target, accepted=len(hits),
+                completed=len(receipts), lost=sum(r.get('rejection')=='loss' for r in receipts),
+                fixed=sum(r.get('rejection')=='fixation' for r in receipts),
+                last_proposal=max(r['replicate'] for r in receipts), updated_epoch=time.time(),
+                deadline_epoch=deadline, workers=args.workers))
+            if len(hits) >= args.target:
                 accepted = hits[0]
                 break
     if accepted is None:
-        raise RuntimeError('No survivor within bounded proposal budget; proposal ledger retained for resume.')
+        raise RuntimeError('Survivor target not reached within bounded proposal budget; proposal ledger retained for resume.')
     if args.simulation_only:
-        save_json(args.raw / f'rerun_{args.start_replicate:05d}.json', dict(selected=accepted,
+        filename = f'rerun_{args.start_replicate:05d}.json' if args.target==1 else f'cohort_{args.target:05d}.json'
+        save_json(args.raw / filename, dict(selected=accepted, selected_cohort=hits[:args.target],
             proposals=receipts, start_replicate=args.start_replicate, workers=args.workers,
-            seconds=args.seconds, attempts=args.attempts, script_sha256=sha(Path(__file__))))
+            seconds=args.seconds, attempts=args.attempts, target=args.target, script_sha256=sha(Path(__file__))))
         return
     directory = args.raw / accepted['id']
     trajectory = np.loadtxt(directory / 'trajectory.tsv', skiprows=1)
@@ -235,8 +241,11 @@ def main():
     parser.add_argument('--attempts', type=int, default=64)
     parser.add_argument('--start-replicate', type=int, default=0)
     parser.add_argument('--simulation-only', action='store_true', help='Skip historical 420-kb report; use plot_selected_site_posteriors.py for 500-kb figures.')
+    parser.add_argument('--target', type=int, default=1, help='Number of accepted simulations in proposal order; use --simulation-only for cohorts.')
     args = parser.parse_args()
     assert 1 <= args.workers <= 24 and args.seconds > 0 and args.attempts > 0
+    assert args.target > 0 and args.start_replicate >= 0
+    assert args.target == 1 or args.simulation_only
     if args.phase == 'run':
         run(args)
     if not args.simulation_only:

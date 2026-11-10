@@ -1,6 +1,11 @@
 {
-  "figures": ["true_tmrca.png", "posterior_median.png", "posterior_mass.png"],
+  "figures": [
+    "true_tmrca.png",
+    "posterior_median.png",
+    "posterior_mass.png"
+  ],
   "visual_check": "All three figures inspected. Readable large text, legend above axes, clear scenario labels and selection windows; no clipping or overlap. Isolated significant cutoffs remain individual dots, and gaps in significant bins are preserved.",
   "pdf_check": "Three individual PDFs and the combined three-page PDF contain embedded TrueType fonts and vector paths without raster image objects.",
-  "numerical_check": "Identical neutral IDs, CDF arrays and pair panels across source caches; pointwise p<0.05 masks verified against at most four neutral exceedances. Interval endpoints checked against 1-kyr bin indices."
+  "numerical_check": "Identical neutral IDs, CDF arrays and pair panels across source caches; pointwise p<0.05 masks verified against at most four neutral exceedances. Interval endpoints checked against 1-kyr bin indices.",
+  "tie_correction": "Rerendered with exact integer-count comparisons for true TMRCA and posterior median; four targeted tests passed. Reinspected corrected posterior_median.png: no overlap or clipping. Two formerly significant median interval bins are removed (50-30-kya example: 8-9 kya; ongoing s=0.01: 37-38 kya). Posterior mass is unchanged."
 }

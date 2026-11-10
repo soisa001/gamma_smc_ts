@@ -21,6 +21,7 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 import numpy as np
 from plot_selection_episode_series import sha,save_json
+from pointwise_time_tests import exceedance_counts
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCES=[ROOT/'docs/results/selected_site_posteriors_20261106',
@@ -67,8 +68,7 @@ def main():
                  '50k/introgression/s0.01/selected_00001','50k/introgression/s0.005/selected_00001']
     assert np.isfinite(selected).all() and np.isfinite(neutral).all()
     assert np.diff(selected,axis=-1).min()>=-1e-12 and np.diff(neutral,axis=-1).min()>=-1e-12
-    counts_c=(neutral[None,:,:,:]>=selected[:,None,:,:]).sum(axis=1)
-    counts_i=(np.diff(neutral,axis=-1)[None,:,:,:]>=np.diff(selected,axis=-1)[:,None,:,:]).sum(axis=1)
+    counts_c,counts_i=exceedance_counts(selected,neutral)
     p_c=(1+counts_c)/101
     p_i=(1+counts_i)/101
     sig_c=p_c<.05;sig_i=p_i<.05
@@ -126,11 +126,13 @@ def main():
         position_bp=500000,methods=METHODS,selection_windows=WINDOWS,
         grid='Cumulative cutoffs 1..50 kya; intervals [1,2),...,[49,50) kya.',
         p_definition='(1 + number of neutral simulations with statistic >= selected) / 101',threshold=.05,comparison='strictly less',
+        numerical_comparison='Exact integer pair counts for truth/median; original continuous values for posterior mass.',
         multiple_testing='None; pointwise descriptive comparison, not a scan-adjusted call or timing confidence interval.',
         neutral_pool='Same 50 held-out plus 50 calibration simulations across all scenarios.',
         ascertainment='50–30 and ongoing examples first surviving proposals; 10-kya example previously chosen for a mass call at 420 kb.',
         validation='Verified both caches, identical neutral IDs/CDFs and identical pair panel; threshold masks agree exactly with neutral exceedance counts <=4.',
-        script_sha256=sha(Path(__file__)),workers=args.workers,versions=dict(numpy=np.__version__,matplotlib=matplotlib.__version__)))
+        script_sha256=sha(Path(__file__)),comparison_source_sha256=sha(Path(__file__).with_name('pointwise_time_tests.py')),
+        workers=args.workers,versions=dict(numpy=np.__version__,matplotlib=matplotlib.__version__)))
     (args.out/'.gitattributes').write_text('* -text\n')
     save_json(args.out/'output_hashes.json',{p.name:sha(p) for p in sorted(args.out.iterdir()) if p.is_file() and p.name!='output_hashes.json'})
     print(json.dumps(summary,indent=2),flush=True)

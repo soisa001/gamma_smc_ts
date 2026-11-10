@@ -29,7 +29,7 @@
           ]
         ],
         "min_cumulative_p": 0.0297029702970297,
-        "min_interval_p": 0.009900990099009901
+        "min_interval_p": 0.019801980198019802
       },
       "Posterior median": {
         "significant_cumulative_cutoff_runs_kya": [
@@ -46,10 +46,6 @@
           [
             6,
             7
-          ],
-          [
-            8,
-            9
           ],
           [
             10,
@@ -227,7 +223,7 @@
           ],
           [
             33,
-            38
+            37
           ],
           [
             39,
