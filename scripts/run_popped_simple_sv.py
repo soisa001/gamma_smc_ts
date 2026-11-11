@@ -215,6 +215,8 @@ def collapse(args, prepared, similarity, kind):
     key = {"version": VERSION, "prepare": prepared, "similarity": similarity, "type": kind,
            "truvari": "5.5.0", "keep": "common", "gt": "all", "refdist": 500, "pctovl": 0,
            "sizemin": 0, "sizemax": -1, "hap": False, "chain": False, "genotypes": "native"}
+    if getattr(args, "same_start", False):
+        key["candidate_grouping"] = "same_trimmed_CHROM_POS_v1"
     region = merge_region(args, prepared, kind)
     if region:
         key["merge_region"] = region
@@ -227,6 +229,8 @@ def collapse(args, prepared, similarity, kind):
         "-s", 0, "-S", -1, "--keep", "common", "--gt", "all"]
     if region:
         command.extend(["--bed", region["path"]])
+    if getattr(args, "same_start", False):
+        command[:2] = [sys.executable, str(Path(__file__).with_name("collapse_same_start.py"))]
     pilot.command(args, command, f"p{round(similarity*100)}-{kind}-collapse")
     paths = [directory / f"{name}.vcf.gz" for name in ("retained", "collapsed")]
     ns = [finish(args, temp, path, directory.parent.name + "-" + kind + "-" + path.stem, sort=True)
@@ -253,7 +257,8 @@ def merge(args, prepared):
     rows = []
     for similarity in args.similarities:
         tag = f"p{round(similarity * 100)}"
-        print(f"Starting {tag}: native collapse separately for simple INS and DEL.", flush=True)
+        policy = "same trimmed start" if getattr(args, "same_start", False) else "native distance matching"
+        print(f"Starting {tag}: {policy}; separate simple INS and DEL.", flush=True)
         jobs = min(2, args.threads)
         part_args = copy.copy(args)
         part_args.memory_gb = max(4, args.memory_gb // jobs)
@@ -263,6 +268,8 @@ def merge(args, prepared):
         directory = args.root / tag
         key = {"version": VERSION, "prepare": prepared, "parts": reports, "similarity": similarity,
                "final_min_net_bp": 50, "symbolic": "unchanged"}
+        if getattr(args, "same_start", False):
+            key["candidate_grouping"] = "same_trimmed_CHROM_POS_v1"
         before = prepared["key"]["counts_sv50"]
         after = Counter(before["passthrough"])
         for report in reports.values():
@@ -315,6 +322,8 @@ def main(argv=None):
     parser.add_argument("--memory-gb", type=int, default=26)
     parser.add_argument("--bcftools", default=os.environ.get("BCFTOOLS_BIN", "bcftools"))
     parser.add_argument("--billing-project", default=None)
+    parser.add_argument("--same-start", action="store_true", help="Only compare records with the same CHROM/POS after trimming")
+    parser.add_argument("--reuse-prepared", type=Path, help="Existing simple-run root; link its verified preparation without restaging")
     opts = parser.parse_args(argv)
     if len(set(opts.similarities)) != len(opts.similarities):
         parser.error("Similarity thresholds must be unique")
@@ -323,6 +332,10 @@ def main(argv=None):
         "--memory-gb", str(opts.memory_gb), "--bcftools", opts.bcftools])
     args.input_bcf = opts.input_bcf.resolve() if opts.input_bcf else None
     args.similarities, args.phase, args.billing_project = opts.similarities, opts.phase, opts.billing_project
+    args.same_start = opts.same_start
+    args.reuse_prepared = opts.reuse_prepared.resolve() if opts.reuse_prepared else None
+    if args.reuse_prepared and (args.reuse_prepared == args.root or args.phase == "prepare" or args.input_bcf):
+        parser.error("--reuse-prepared needs a separate root, merge/all phase, and no --input-bcf")
     (args.root / "logs").mkdir(parents=True, exist_ok=True)
     logging.basicConfig(filename=args.root / "logs/workflow.log", level=logging.INFO,
                         format="%(asctime)s %(levelname)s %(message)s", force=True)
@@ -340,11 +353,24 @@ def main(argv=None):
         logging.info("PROVENANCE %s", json.dumps(provenance, default=str))
         (args.root / "logs" / f"run-{time.time_ns()}.json").write_text(json.dumps(provenance, default=str, indent=2))
         try:
-            prepared = prepare(args) if args.phase in {"prepare", "all"} else pilot.require_manifest(args.root / "prepare")
-            if prepared["key"]["settings"]["version"] != VERSION:
-                raise ValueError("Preparation version changed; run prepare again")
-            if args.phase in {"merge", "all"}:
-                merge(args, prepared)
+            with ExitStack() as stack:
+                if args.reuse_prepared:
+                    source_lock = stack.enter_context(open(args.reuse_prepared / ".simple_merge.lock", "a"))
+                    fcntl.flock(source_lock, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                    original = args.reuse_prepared / "prepare"
+                    prepared = pilot.require_manifest(original)
+                    link = args.root / "prepare"
+                    if link.is_symlink() or link.exists():
+                        if not link.is_symlink() or link.resolve() != original.resolve():
+                            raise ValueError("Output root already has a different preparation; use a new root")
+                    else:
+                        link.symlink_to(original, target_is_directory=True)
+                else:
+                    prepared = prepare(args) if args.phase in {"prepare", "all"} else pilot.require_manifest(args.root / "prepare")
+                if prepared["key"]["settings"]["version"] != VERSION:
+                    raise ValueError("Preparation version changed; run prepare again")
+                if args.phase in {"merge", "all"}:
+                    merge(args, prepared)
         except Exception:
             logging.exception("Simple SV workflow failed")
             raise SystemExit(f"Failed; inspect {args.root / 'logs/workflow.log'} on the VM") from None
