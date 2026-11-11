@@ -222,7 +222,9 @@ def report(args):
             fig.subplots_adjust(left=.11, right=.97, top=.73, bottom=.16, wspace=.30)
             fig.suptitle('Neutral references: ' + title, y=.98, fontsize=20)
             handles = [Line2D([], [], color=color, lw=2, label=f"{label} (n={len(data[key]['ids'])})") for key, label, color in null_groups]
-            handles += [Line2D([], [], color='black', lw=2, label='Solid: cohort median'), Line2D([], [], color='black', ls='--', label='Dashed: p<0.05 boundary')]
+            handles += [Line2D([], [], color='black', lw=2, label='Solid: cohort median'),
+                        Line2D([], [], color='black', ls='--', label='Dashed: p<0.05 boundary'),
+                        Line2D([], [], color='black', ls=':', label='Dotted: p<0.01 boundary')]
             fig.legend(handles=handles, loc='upper center', bbox_to_anchor=(.5, .91), ncol=2, frameon=False, fontsize=12)
             for col, ax in enumerate(axes):
                 x = np.arange(1, 51) if col==0 else np.arange(1.5, 50)
@@ -233,6 +235,8 @@ def report(args):
                     if len(values): ax.plot(x, np.median(values, axis=0), color=color, lw=2)
                     cutoff = boundary(values, .05)
                     if cutoff is not None: ax.plot(x, cutoff, color=color, ls='--', lw=1.8)
+                    cutoff = boundary(values, .01)
+                    if cutoff is not None: ax.plot(x, cutoff, color=color, ls=':', lw=1.8)
                 ax.set(title='Cumulative cutoff' if col==0 else '1-kya interval', xlim=(1, 50), ylim=(0, None),
                        xlabel='Cutoff / bin midpoint (kya)', ylabel='Pair fraction')
                 ax.yaxis.set_major_formatter(PercentFormatter(1)); clean(ax)
@@ -258,6 +262,21 @@ def report(args):
             axes[0].set_ylabel('Focal allele frequency')
             footer(fig, 'De novo: one copy at selection onset. Introgression: 1% at 50 kya. Both use EAS demography.')
             save(fig, case['key'] + '_af_comparison', book)
+            if case['regime']=='10k' and case['selection']<.05:
+                sel, null = data[case['selected']['de_novo']], data[case['neutral']['de_novo']]
+                fig, ax = plt.subplots(figsize=(11, 8.5))
+                fig.subplots_adjust(top=.76, bottom=.16, left=.12, right=.97)
+                header(fig, case, 'De novo AF zoom · one copy introduced at 10 kya')
+                ax.plot(null['af_times_kya'], null['af'].T, color='.45', alpha=.4, lw=.7)
+                ax.plot(sel['af_times_kya'], sel['af'].T, color=COLORS[0], alpha=.4, lw=.85)
+                maximum = max([.01] + [float(d['af'].max()) for d in (sel, null) if d['af'].size])
+                ax.set(xlim=(10, 0), ylim=(0, min(1, maximum*1.05)), xlabel='Time before present (kya)', ylabel='Focal allele frequency')
+                ax.yaxis.set_major_formatter(PercentFormatter(1)); clean(ax)
+                fig.legend(handles=[Line2D([], [], color=COLORS[0], label=f"{len(sel['ids'])} selected trajectories"),
+                    Line2D([], [], color='.45', label=f"{len(null['ids'])} neutral trajectories")],
+                    loc='upper center', bbox_to_anchor=(.5, .87), ncol=2, frameon=False, fontsize=14)
+                footer(fig, 'Expanded AF scale; every retained trajectory is shown. Original focal alleles segregate today.')
+                save(fig, case['key'] + '_denovo_af_zoom', book)
 
     with PdfPages(out / 'coalescence_comparison.pdf') as book, PdfPages(out / 'posterior_mass_comparison.pdf') as massbook:
         for case in meta['cases']:
@@ -266,8 +285,10 @@ def report(args):
                 fig.subplots_adjust(top=.76, bottom=.15, left=.11, right=.97, wspace=.35, hspace=.55)
                 header(fig, case, title + ' · focal site 500 kb · 1,000 fixed pairs')
                 fig.legend(handles=[Line2D([], [], color='.5', label='Each neutral'), Line2D([], [], color=COLORS[0], label='Each de novo selected'),
-                    Line2D([], [], color=COLORS[1], label='Each introgressed selected'), Line2D([], [], color='black', ls='--', label='Own-null p < 0.05 boundary')],
-                    loc='upper center', bbox_to_anchor=(.5, .885), ncol=2, frameon=False, fontsize=12)
+                    Line2D([], [], color=COLORS[1], label='Each introgressed selected'),
+                    Line2D([], [], color='black', ls='--', label='Null p < 0.05 boundary'),
+                    Line2D([], [], color='black', ls=':', label='Null p < 0.01 boundary')],
+                    loc='upper center', bbox_to_anchor=(.5, .885), ncol=3, frameon=False, fontsize=11.5)
                 for row, (origin, label, color) in enumerate(zip(ORIGINS, ORIGIN_LABELS, COLORS)):
                     sel, null = data[case['selected'][origin]], data[case['neutral'][origin]]
                     for col, kind in enumerate(['cumulative', 'interval']):
@@ -279,6 +300,8 @@ def report(args):
                         ax.plot(x, y.T, color=color, alpha=.3, lw=.7)
                         cutoff = boundary(n, .05)
                         if cutoff is not None: ax.plot(x, cutoff, color='black', ls='--', lw=1.5)
+                        cutoff = boundary(n, .01)
+                        if cutoff is not None: ax.plot(x, cutoff, color='black', ls=':', lw=1.5)
                         ax.set(title=f'{label}: {kind}', xlim=(1, 50), ylim=(0, None), ylabel='Pair fraction')
                         ax.yaxis.set_major_formatter(PercentFormatter(1)); clean(ax)
                         ax.text(.02, .96, f"Selected n={len(sel['ids'])}; null n={len(null['ids'])}", va='top', transform=ax.transAxes, fontsize=10)
@@ -309,7 +332,7 @@ def report(args):
                                 bins = np.flatnonzero(mask[i])
                                 if col:
                                     ax.broken_barh([(int(b)+1, 1) for b in bins], (display+.65, .7), facecolors=color)
-                                else: ax.scatter(bins+1, np.full(len(bins), display+1), c=color, s=4)
+                                else: ax.scatter(bins+1, np.full(len(bins), display+1), c=color, s=1)
                             ax.set(title=f'{label}: {kind}', xlim=(0, 50), ylim=(max(n, 1)+.8, .2), xlabel='Time before present (kya)')
                             ax.set_yticks(np.unique(np.linspace(1, n, min(n, 4)).astype(int)) if n else [])
                             if col == 0: ax.set_ylabel('Simulation (sorted)' if method == 2 else 'Simulation')
@@ -346,7 +369,7 @@ def report(args):
                     ax.set(title=kind.capitalize(), xlim=(-.03, 1.04), ylim=(len(meta['cases'])-.5, -.6), xlabel='Fraction with any call')
                     ax.xaxis.set_major_formatter(PercentFormatter(1)); ax.set_xticks([0, .5, 1])
                     ax.set_yticks(range(len(meta['cases'])))
-                    if col == 0: ax.set_yticklabels([f"{LABELS[c['regime']]}\ns = {c['selection']:g}" for c in meta['cases']], fontsize=12)
+                    if col == 0: ax.set_yticklabels([f"{LABELS[c['regime']]}\ns = {c['selection']:g}" for c in meta['cases']], fontsize=14)
                     clean(ax)
                 footer(fig, 'Focal-site detection, without scan-wide correction. NA: no survivors or insufficient neutral resolution.')
                 save(fig, METHOD_KEYS[method] + '_detection_' + tag, book)

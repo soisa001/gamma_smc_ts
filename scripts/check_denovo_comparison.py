@@ -33,6 +33,22 @@ def main():
         assert np.all((d['af'][:, -1] > 0) & (d['af'][:, -1] < 1))
         assert np.all((d['cdfs'] >= 0) & (d['cdfs'] <= 1+1e-12))
         assert np.all(np.diff(d['cdfs']) >= -1e-12)
+    founders, observed = [], []
+    for key, entry in meta['cohorts'].items():
+        if not key.startswith('de_novo_'): continue
+        records = entry['provenance']['records']
+        assert len(records) == entry['n']
+        assert all(r['origin']=='de_novo' and 0<r['final_frequency']<1 for r in records)
+        founders.extend(r['onset_sha256'] for r in records)
+        observed.extend(r['observed_sha256'] for r in records)
+    assert len(set(founders)) == len(founders), 'Retained simulations share a founder genealogy'
+    assert len(set(observed)) == len(observed), 'Duplicate retained simulation'
+    if not meta['live_snapshot']:
+        for row in meta['progress']['strata']:
+            key = 'de_novo_' + row['key'].replace('.', 'p')
+            assert row['accepted'] == meta['cohorts'][key]['n']
+            assert row['reused'] == len(meta['simulation']['reused'][row['key']])
+            assert row['accepted']-row['reused']+row['lost']+row['fixed'] == row['new_completed']
     names = ['True TMRCA', 'Posterior median', 'Posterior-weighted mass']
     for case in meta['cases']:
         for origin in ('de_novo', 'introgression'):
@@ -60,7 +76,8 @@ def main():
                         assert row['any_time_count'] == count
                         assert row['any_time_fraction'] == (count/n if count is not None else None)
     pngs, pdfs = list(out.glob('*.png')), list(out.glob('*.pdf'))
-    assert len(pngs) == 10*len(meta['cases'])+10 and len(pdfs) == len(pngs)+9
+    zooms = sum(c['regime']=='10k' and c['selection']<.05 for c in meta['cases'])
+    assert len(pngs) == 10*len(meta['cases'])+10+zooms and len(pdfs) == len(pngs)+9
     for path in pngs:
         with Image.open(path) as im:
             assert im.size == (1650, 1275)
@@ -72,7 +89,7 @@ def main():
         assert b'/FontFile2' in content and not re.search(rb'/Subtype\s*/Image', content)
         count = len(re.findall(rb'/Type\s*/Page\b', content)); assert count >= 1
         pages += count
-    assert pages == 23*len(meta['cases'])+20
+    assert pages == 23*len(meta['cases'])+20+2*zooms
     result = dict(validated=True, cases=len(meta['cases']), p_value_rows=len(summary), pngs=len(pngs), vector_pdfs=len(pdfs), pdf_pages=pages,
                   checks='Input/output hashes; unique IDs; final population segregation; age-matched nulls; independent integer-tie-aware ranks; summary counts; image integrity; editable PDF text and no raster images.')
     print(json.dumps(result, indent=2))
