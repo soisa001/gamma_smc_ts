@@ -22,7 +22,7 @@ def main():
     accounting=json.loads((out/'proposal_accounting.json').read_text())['strata']
     summary=json.loads((out/'summary.json').read_text())['results']
     benchmark=json.loads((out/'focal_site_detection_benchmark.json').read_text())['results']
-    n_cases=len(meta['cases']);assert len(accounting)==6
+    n_cases=len(meta['cases']);assert len(accounting)==len(meta['simulation_configuration']['strata'])
     assert len(summary)==6*n_cases and len(benchmark)==12*n_cases
     with np.load(out/'neutral.npz') as data:neutral=data['cdfs'].copy()
     with np.load(out/'neutral_af.npz') as data:
@@ -70,7 +70,7 @@ def main():
         count=len(re.findall(rb'/Type\s*/Page\b',content));assert count==expected,(path.name,count,expected)
         pages+=count
     assert pages==30*n_cases+1
-    print(f'PASS: six-treatment accounting, segregation, independent empirical ranks, benchmark counts, hashes, {len(pngs)} PNGs and {len(pdfs)} vector PDFs ({pages} pages).')
+    print(f'PASS: {len(accounting)}-treatment accounting, segregation, independent empirical ranks, benchmark counts, hashes, {len(pngs)} PNGs and {len(pdfs)} vector PDFs ({pages} pages).')
 
 
 if __name__=='__main__':main()

@@ -186,13 +186,16 @@ def report(args):
         left+=rates
     for i,row in enumerate(accounting):
         survivors=row['accepted']-row['reused']
-        ax.text(1.025,i,f"{survivors:,} / {row['new_completed']:,}",va='center',fontsize=14)
+        label=f"{survivors:,} / {row['new_completed']:,}" if row['new_completed'] else '—'
+        ax.text(1.025,i,label,va='center',fontsize=14)
+        if not row['new_completed']:
+            ax.text(.03,i,f"{row['reused']} historical simulations reused; no new proposals",va='center',fontsize=13,color='.35')
     ax.set(yticks=ypos,yticklabels=[f"{labels[r['regime']]}\ns = {r['selection']:g}" for r in accounting],
         xlim=(0,1.27),ylim=(len(accounting)-.45,-.8),xlabel='Fraction of new simulation proposals')
     ax.set_xticks([0,.25,.5,.75,1]);ax.xaxis.set_major_formatter(PercentFormatter(1))
     for spine in ('top','right'):ax.spines[spine].set_visible(False)
     ax.text(1.025,-.60,'Segregating / total',fontsize=11)
-    fig.suptitle('Present-day allele fate under strong selection',fontsize=21,y=.97)
+    fig.suptitle('Present-day allele fate under selection',fontsize=21,y=.97)
     fig.legend(*ax.get_legend_handles_labels(),loc='upper center',bbox_to_anchor=(.5,.90),ncol=3,frameon=False,fontsize=14)
     fig.subplots_adjust(left=.25,right=.98,top=.79,bottom=.19)
     reused=sum(r['reused'] for r in accounting)

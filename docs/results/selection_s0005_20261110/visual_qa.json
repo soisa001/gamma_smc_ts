@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "png_count": 40,
+  "pdf_count": 49,
+  "pdf_pages": 91,
+  "visual_review": "All 40 PNGs inspected: 36 statistic/call figures through six contact sheets, three AF figures and the proposal-outcome figure. Large readable text, separated titles/subtitles, legends above panels, no clipping or label overlap. Reused cohorts explicitly labelled in proposal accounting.",
+  "numerical_review": "Independent empirical-rank, FPR-benchmark, F1, segregation, proposal-accounting and file-hash checks passed for all three cohorts of 100.",
+  "frozen_reuse_review": "50-kya-to-present AF trajectories, CDFs, cohort IDs, original proposal indices and both p-value arrays match the previous conditioned-null report exactly.",
+  "pdf_review": "Embedded editable TrueType text and vector graphics without raster image objects; valid EOF and expected page counts.",
+  "render_script_sha256": "0fde9c1a4cc3b9916a40470afee850581e2e6979492c43ead4b384f084a442cf",
+  "generic_plot_script_sha256": "12d0ac40d4711574b24e14344d35540f4d71db6f74541cb7106d4da725767d87",
+  "previous_50k_cache_sha256": "abf544837a68e512fe100da98b050b27d2016768883f9b5fb68dd44792e5584c"
+}

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Bounded six-treatment strong-selection extension with segregation conditioning.
+"""Bounded selection extension with segregation conditioning.
 
-Keep the original EAS/introgression physics. Reuse the frozen 91 accepted recent
-s=.05 simulations; generate independent additional proposals in fixed order.
+Keep the original EAS/introgression physics. Reuse compatible frozen survivors;
+generate independent additional proposals in fixed order.
 Completed and rejected receipts are resumable and all parameters are recorded.
 """
 import os
@@ -26,24 +26,28 @@ base=arrays.base
 ROOT=Path(__file__).resolve().parents[1]
 BASE=ROOT/'docs/results/selection_arrays_eas_20261105_4h'
 REFERENCE=ROOT/'docs/results/selection_calls_100_segregating_null_20261110'
-STRATA=[dict(key=f'{regime}_s{s:g}',regime=regime,selection=s,start=start,end=end)
-        for regime,start,end in [('10k',10000,0),('50k',50000,0),('50_30k',50000,30000)] for s in (.05,.1)]
+def strata_for(selections):
+    return [dict(key=f'{regime}_s{s:g}',regime=regime,selection=s,start=start,end=end)
+        for regime,start,end in [('10k',10000,0),('50k',50000,0),('50_30k',50000,30000)] for s in selections]
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--raw',type=Path,default=ROOT.parent/'sim/strong_selection_20261110')
     p.add_argument('--target',type=int,default=100)
+    p.add_argument('--selection',type=float,nargs='+',default=[.05,.1])
     p.add_argument('--workers',type=int,default=4)
     p.add_argument('--seconds',type=int,default=14400)
     p.add_argument('--deadline-epoch',type=float)
     p.add_argument('--attempts',type=int,default=5000,help='Maximum new proposals per treatment, also bounded by wall time.')
     args=p.parse_args();assert 1<=args.workers<=24 and args.target>0 and args.seconds>0
+    assert all(np.isfinite(s) and s>0 for s in args.selection) and len(set(args.selection))==len(args.selection)
+    strata=strata_for(args.selection)
     raw=args.raw;raw.mkdir(parents=True,exist_ok=True)
     reference=json.loads((REFERENCE/'manifest.json').read_text())
     template=reference['simulation_configurations']['50k_s001']
     configs={s['regime']:dict(template,selection_start_years=s['start'],selection_end_years=s['end'],
-        seed_namespace=f"strong-selection-v1:{s['regime']}:") for s in STRATA}
+        seed_namespace=f"strong-selection-v1:{s['regime']}:") for s in strata}
     for key,path in [('ancestry_source_sha256',arrays.ancestor.__file__),('score_source_sha256',base.__file__),
                      ('slim_sha256',template['slim']),('decoder_sha256',template['decoder']),
                      ('phlash_sha256',ROOT/'no_introgression_EAS_sim/resources/EAS.npz')]:
@@ -53,8 +57,8 @@ def main():
     inventory=json.loads((BASE/'output_hashes.json').read_text())
     assert base.digest(BASE/'completed_units.tsv')==inventory['completed_units.tsv']
     table=pd.read_csv(BASE/'completed_units.tsv',sep='\t')
-    reused={s['key']:[] for s in STRATA}
-    for s in STRATA:
+    reused={s['key']:[] for s in strata}
+    for s in strata:
         rows=table[(table.origin=='introgression')&(table.cohort=='selected')&(table.regime==s['regime'])&(table.selection==s['selection'])].sort_values('replicate').iloc[:args.target]
         if s['regime']=='50_30k':assert rows.empty
         for r in json.loads(rows.to_json(orient='records',double_precision=15)):
@@ -63,7 +67,7 @@ def main():
             assert base.digest(directory/'trajectory.tsv')==r['trajectory_sha256']
             assert r['accepted'] and 0<r['final_frequency']<1
             reused[s['key']].append(r)
-    contract=dict(configs=configs,strata=STRATA,target=args.target,reused=reused,
+    contract=dict(configs=configs,strata=strata,target=args.target,reused=reused,
         conditioning='Original focal allele remains segregating today: 0 < whole-population AF < 1; fixed/lost proposals excluded.',
         selection_rule='Frozen surviving historical cohort first, followed by new surviving proposals in ascending index order; no AF or inferred-signal ascertainment beyond segregation.',
         source_table_sha256=inventory['completed_units.tsv'],reference_manifest_sha256=base.digest(REFERENCE/'manifest.json'),
@@ -88,20 +92,20 @@ def main():
         attempts_per_treatment=args.attempts,target=args.target,script_sha256=base.digest(__file__),native_library_path=str(lib)))
     base.save(raw/'execution_environment.json',dict(python=sys.version,threads_per_worker=1,workers=args.workers,
         native_library_path=str(lib),packages={name:importlib.metadata.version(name) for name in ('numpy','scipy','msprime','pyslim','tskit','matplotlib','pandas','zstandard')}))
-    completed={s['key']:[] for s in STRATA};next_index={s['key']:0 for s in STRATA};pending={};cursor=0
+    completed={s['key']:[] for s in strata};next_index={s['key']:0 for s in strata};pending={};cursor=0
     last_ledger=0.;last_log=0.
     def accepted(s):return len(reused[s['key']])+sum(r['accepted'] for r in completed[s['key']])
     def progress():
         return dict(elapsed_seconds=time.time()-start,deadline_epoch=deadline,pending=len(pending),strata=[dict(s,
             reused=len(reused[s['key']]),new_completed=len(completed[s['key']]),accepted=accepted(s),target=args.target,
             lost=sum(r['rejection']=='loss' for r in completed[s['key']]),fixed=sum(r['rejection']=='fixation' for r in completed[s['key']]),
-            submitted=next_index[s['key']]) for s in STRATA])
+            submitted=next_index[s['key']]) for s in strata])
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         while True:
             while len(pending)<args.workers and time.time()<deadline-120:
                 chosen=None
-                for _ in STRATA:
-                    s=STRATA[cursor%len(STRATA)];cursor+=1
+                for _ in strata:
+                    s=strata[cursor%len(strata)];cursor+=1
                     if accepted(s)<args.target and next_index[s['key']]<args.attempts:chosen=s;break
                 if chosen is None:break
                 s=chosen;i=next_index[s['key']];next_index[s['key']]+=1
@@ -124,7 +128,7 @@ def main():
             if time.time()-last_log>=10:
                 print(json.dumps(value),flush=True);last_log=time.time()
     arrays.save_ledger(raw/'proposal_ledger.json',completed)
-    for s in STRATA:
+    for s in strata:
         rows=completed[s['key']]
         assert [r['replicate'] for r in rows]==list(range(next_index[s['key']]))
         kept=(reused[s['key']]+[r for r in rows if r['accepted']])[:args.target]

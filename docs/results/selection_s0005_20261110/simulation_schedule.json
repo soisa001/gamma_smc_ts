@@ -1,0 +1,10 @@
+{
+  "started_epoch": 1794366005.7110324,
+  "deadline_epoch": 1794380405.7110324,
+  "seconds": 14400,
+  "workers": 20,
+  "attempts_per_treatment": 5000,
+  "target": 100,
+  "script_sha256": "f00ca2c07f240f94ea5f2875a189c19dde4106a920a62c9babdcac6674a5793a",
+  "native_library_path": "/home/mew/AllOfUs_Phase2/gamma_smc_ts/.native/lib"
+}
