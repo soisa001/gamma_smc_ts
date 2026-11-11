@@ -11,6 +11,7 @@ only sequence-resolved INS can collapse. No uploads.
 import argparse
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
+import copy
 import csv
 from datetime import datetime, timezone
 import hashlib
@@ -19,6 +20,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 
@@ -251,8 +253,98 @@ def validate_and_finalize(raw, final, partition, samples):
     return count, gt50, ids, totals_hash(dosage), totals_hash(carriers)
 
 
+def trim_literal(record):
+    """Minimal VCF anchoring, matching the TRUVARI chat; no left alignment."""
+    ref, alt = record.ref, record.alts[0]
+    prefix = 0
+    while prefix < min(len(ref), len(alt)) and ref[prefix].upper() == alt[prefix].upper():
+        prefix += 1
+    suffix = 0
+    while suffix < min(len(ref), len(alt)) - prefix and ref[-suffix-1].upper() == alt[-suffix-1].upper():
+        suffix += 1
+    start = prefix - 1 if prefix else 0
+    end_ref = len(ref) - suffix + (0 if prefix else 1)
+    end_alt = len(alt) - suffix + (0 if prefix else 1)
+    newref, newalt = ref[start:end_ref], alt[start:end_alt]
+    if not newref or not newalt or min(len(newref), len(newalt)) != 1:
+        raise ValueError("Expected a pure, anchored literal indel")
+    pos = record.pos + start
+    record.alleles = (newref, newalt)
+    record.pos = pos
+    record.stop = pos - 1 + len(newref)
+
+
+def prepare_same_start(prepared, source_folder, out):
+    """Reuse symbolic partitions and derive only the trimmed literal partitions."""
+    folder = out / "partitions"
+    folder.mkdir(parents=True, exist_ok=True)
+    if folder.resolve() == source_folder.resolve():
+        raise ValueError("Same-start results must use a different output directory from the baseline")
+    key = dict(source=prepared["input"], hashes=prepared["hashes"], trim_version=1,
+               samples_sha256=totals_hash(prepared["samples"]))
+    receipt = folder / "manifest.json"
+    if receipt.exists():
+        cached = json.loads(receipt.read_text())
+        if cached["input"] == key and files_valid(folder, cached["hashes"]):
+            print("Reusing validated same-start partitions", flush=True)
+            return cached
+    metadata = copy.deepcopy(prepared["partitions"])
+    hashes, audit = {}, []
+    for slug, m in metadata.items():
+        source = source_folder / m["filename"]
+        final = folder / m["filename"]
+        if m["mode"] == "sequence_resolved":
+            with pysam.VariantFile(source) as vcf:
+                header = vcf.header.copy()
+                if "RC_PRETRIM_POS" not in header.info:
+                    header.add_line('##INFO=<ID=RC_PRETRIM_POS,Number=1,Type=Integer,Description="POS before minimal allele trimming">')
+                with pysam.VariantFile(final, "wz", header=header) as writer:
+                    for record in vcf:
+                        record.translate(header)
+                        oldpos = record.pos
+                        oldlengths = (len(record.ref), len(record.alts[0]))
+                        record.info["RC_PRETRIM_POS"] = oldpos
+                        trim_literal(record)
+                        audit.append((record.id, record.chrom, oldpos, record.pos, *oldlengths,
+                                      len(record.ref), len(record.alts[0])))
+                        writer.write(record)
+            sorted_path = folder / (slug + ".sorted.vcf.gz")
+            run(["bcftools", "sort", "-Oz", "-o", sorted_path, final], folder / "prepare.log")
+            sorted_path.replace(final)
+            pysam.tabix_index(str(final), preset="vcf", force=True)
+            # This verifies record decoding, order, and all sample dosage/carrier
+            # totals after trimming before the adapter ever sees these alleles.
+            check = folder / (slug + ".checked.vcf.gz")
+            count, _, _, _, _ = validate_and_finalize(final, check, m, prepared["samples"])
+            if count != m["records"]:
+                raise ValueError("Trimming changed the number of records")
+            check.replace(final)
+            Path(str(check) + ".tbi").replace(Path(str(final) + ".tbi"))
+        else:
+            shutil.copy2(source, final)
+            shutil.copy2(Path(str(source) + ".tbi"), Path(str(final) + ".tbi"))
+        shutil.copy2(source_folder / m["bed"], folder / m["bed"])
+        for path in (final, Path(str(final) + ".tbi"), folder / m["bed"]):
+            hashes[path.name] = digest(path)
+    shutil.copy2(source_folder / "source_records.tsv", folder / "source_records.tsv")
+    with (folder / "trimmed_positions.tsv").open("w", newline="") as handle:
+        writer = csv.writer(handle, delimiter="\t")
+        writer.writerow(["audit_ID", "CHROM", "original_POS", "trimmed_POS", "original_REF_length",
+                         "original_ALT_length", "trimmed_REF_length", "trimmed_ALT_length"])
+        writer.writerows(audit)
+    for name in ("source_records.tsv", "trimmed_positions.tsv"):
+        hashes[name] = digest(folder / name)
+    if not files_valid(source_folder, prepared["hashes"]):
+        raise ValueError("Baseline partitions changed during preparation")
+    saved = dict(input=key, samples=prepared["samples"], partitions=metadata, hashes=hashes,
+                 skipped=prepared["skipped"])
+    write_json(receipt, saved)
+    print(f"Prepared exact-position trial; trimmed {sum(r[2] != r[3] or r[4:6] != r[6:8] for r in audit):,} literal records", flush=True)
+    return saved
+
+
 def collapse_job(task):
-    root, slug, m, samples, threshold, refdist = task
+    root, slug, m, samples, threshold, refdist, same_start = task
     kind = m["svtype"].split(":")[0]
     mode = m["mode"]
     passthrough = mode == "unresolved_passthrough" or (kind == "INS" and mode != "sequence_resolved")
@@ -276,6 +368,10 @@ def collapse_job(task):
                   sizemax=sizemax, gt="all", keep="common", chain=False,
                   typeignore=False, pctovl=pctovl, truvari=truvari.__version__, mode=mode,
                   bed_sha256=digest(bed))
+    adapter = Path(__file__).with_name("collapse_same_start.py")
+    if same_start:
+        recipe.update(same_start=True, adapter_sha256=digest(adapter),
+                      position_policy="identical CHROM/POS after minimal literal trimming; symbolic POS unchanged")
     receipt = job / "complete.json"
     if receipt.exists():
         saved = json.loads(receipt.read_text())
@@ -287,6 +383,8 @@ def collapse_job(task):
     criteria = "PASSTHROUGH (no collapse)" if passthrough else (
         f"size>={threshold:g}; sequence={sequence_rule}; reciprocal_overlap={overlap_rule}; "
         f"refdist={refdist}; gt=all; keep=common; size max={sizemax}")
+    if same_start:
+        criteria += "; exact same CHROM/POS required"
     print(f"Running {job.parent.name}/{output_slug}: {m['records']:,} records; {criteria}", flush=True)
     raw, removed = job / "retained.raw.vcf", job / "removed.vcf"
     command = [sys.executable, "-m", "truvari", "collapse", "-i", str(source),
@@ -294,6 +392,8 @@ def collapse_job(task):
                "--gt", "all", "--keep", "common", "--pctsize", str(threshold),
                "--pctseq", str(pctseq), "--refdist", str(refdist),
                "--sizemin", "10001", "--sizemax", str(sizemax), "--pctovl", str(pctovl)]
+    if same_start:
+        command = [sys.executable, str(adapter), *command[4:]]
     if passthrough:
         raw = source
         with pysam.VariantFile(source) as vcf:
@@ -338,15 +438,22 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--refdist", type=int, default=500)
+    parser.add_argument("--same-start", action="store_true", help="Only collapse identical CHROM/POS after minimal literal trimming")
+    parser.add_argument("--reuse-prepared", type=Path, help="Baseline output directory whose verified partitions can be reused for --same-start")
     args = parser.parse_args()
     if args.workers < 1 or args.refdist < 0:
         parser.error("Invalid worker count or reference distance")
+    if args.reuse_prepared and not args.same_start:
+        parser.error("--reuse-prepared requires --same-start")
     args.bcf, args.out = args.bcf.resolve(), args.out.resolve()
+    if args.reuse_prepared and args.reuse_prepared.resolve() == args.out:
+        parser.error("Use a separate --out for the same-start trial")
     args.out.mkdir(parents=True, exist_ok=True)
     manifest = dict(utc=datetime.now(timezone.utc).isoformat(), parameters={k: str(v) for k, v in vars(args).items()},
                     script_sha256=digest(Path(__file__)), versions={p: importlib.metadata.version(p) for p in ("truvari", "pysam", "numpy", "pandas")},
                     bcftools=subprocess.check_output(["bcftools", "--version"], text=True).splitlines()[0],
                     thresholds=[0.9, 0.7], random_seed=None, randomness="No random operations",
+                    position_policy="same CHROM/POS after minimal trimming; no left alignment" if args.same_start else "native proximity matching",
                     deletion="Size AND reciprocal overlap at each threshold; pctseq=0; representations stay separate",
                     insertion="Only literal unambiguous pure INS collapse: size AND sequence at each threshold; symbolic/ambiguous INS pass through",
                     other_symbolic="DUP/INV retain separate size/position matching; pctseq=0, pctovl=0",
@@ -355,8 +462,13 @@ def main():
                     scope="Each threshold starts from identical partitions; no cross-type or cross-representation merges; symbolic INS and unresolved calls pass through",
                     note="Already-collapsed representatives cannot reconstruct every original call or cluster")
     write_json(args.out / "run_manifest.json", manifest)
-    prepared = prepare(args.bcf, args.out)
-    tasks = [(args.out, slug, m, prepared["samples"], threshold, args.refdist)
+    if args.same_start:
+        base = args.reuse_prepared.resolve() if args.reuse_prepared else args.out / "untrimmed"
+        prepared = prepare(args.bcf, base)
+        prepared = prepare_same_start(prepared, base / "partitions", args.out)
+    else:
+        prepared = prepare(args.bcf, args.out)
+    tasks = [(args.out, slug, m, prepared["samples"], threshold, args.refdist, args.same_start)
              for threshold in (0.9, 0.7) for slug, m in sorted(prepared["partitions"].items())]
     results = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
@@ -368,6 +480,26 @@ def main():
         writer = csv.DictWriter(handle, fieldnames=list(results[0]), delimiter="\t")
         writer.writeheader()
         writer.writerows(results)
+    if args.reuse_prepared and (args.reuse_prepared / "comparison.tsv").exists():
+        def row_key(row):
+            return float(row["threshold"]), row["svtype"], row["mode"]
+        with (args.reuse_prepared / "comparison.tsv").open() as handle:
+            previous = {row_key(r): r for r in csv.DictReader(handle, delimiter="\t")}
+        compared = []
+        for row in results:
+            old = previous.get(row_key(row))
+            if old is None or int(old["input_records"]) != row["input_records"]:
+                continue
+            compared.append(dict(threshold=row["threshold"], svtype=row["svtype"], mode=row["mode"],
+                input_records=row["input_records"], baseline_retained=int(old["retained_records"]),
+                same_start_retained=row["retained_records"],
+                additional_retained=row["retained_records"] - int(old["retained_records"])))
+        if compared:
+            with (args.out / "comparison_vs_baseline.tsv").open("w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(compared[0]), delimiter="\t")
+                writer.writeheader()
+                writer.writerows(compared)
+            print("Saved comparison_vs_baseline.tsv for matching baseline partitions", flush=True)
     print("\nthreshold\tSVTYPE\tmode\tinput\tretained\tcollapsed\tcollapsed_gt50kb")
     for r in results:
         print("\t".join(str(r[k]) for k in ("threshold", "svtype", "mode", "input_records", "retained_records", "collapsed_records", "collapsed_gt50kb")))

@@ -15,7 +15,7 @@ recollapse = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(recollapse)
 
 
-def make_fixture(path):
+def make_fixture(path, same_start_cases=False):
     header = pysam.VariantHeader()
     header.add_line("##fileformat=VCFv4.2")
     # Deliberately missing contig length: the explicit BED must handle it.
@@ -61,6 +61,25 @@ def make_fixture(path):
         add(845000, "DEL", 60000, "N", "<DEL>", "s2")
         # Ambiguous literal sequence is passed through separately.
         add(1000000, "INS", 60000, "A", "A" + "N"*60000, "s4")
+        if same_start_cases:
+            # Identical insertions 1 bp apart must not merge in the new mode.
+            add(1100000, "INS", 60000, "A", "A" + "C"*60000, "s1")
+            add(1100001, "INS", 60000, "A", "A" + "C"*60000, "s2")
+            # Different raw positions become identical after minimal trimming.
+            add(1200000, "INS", 60000, "GGA", "GGA" + "C"*60000, "s1")
+            add(1200002, "INS", 60000, "A", "A" + "C"*60000, "s2")
+            # Identical raw positions become different after trimming.
+            add(1300000, "INS", 60000, "GA", "GA" + "C"*60000, "s1")
+            add(1300000, "INS", 60000, "A", "A" + "C"*60000, "s2")
+            # Valid right anchors are retained without fetching reference bases.
+            add(1400000, "INS", 60000, "A", "T"*60000 + "A", "s1")
+            add(1400000, "INS", 60000, "A", "T"*60000 + "A", "s2")
+            # Shared-start symbolic DEL size/overlap ratio .8: only 70% merges.
+            add(1500000, "DEL", 60000, "N", "<DEL>", "s1")
+            add(1500000, "DEL", 75000, "N", "<DEL>", "s2")
+            # Even >99.99% overlap cannot merge DELs at different starts.
+            add(1700000, "DEL", 60000, "N", "<DEL>", "s1")
+            add(1700001, "DEL", 60000, "N", "<DEL>", "s2")
 
 
 def test_actual_collapse_and_cache(tmp_path):
@@ -123,3 +142,49 @@ def test_symbolic_span_required_and_ambiguous_sequence_passthrough(tmp_path):
         assert recollapse.classify(duplication)[1] == "unresolved_passthrough"
         ambiguous = records[-1]
         assert recollapse.classify(ambiguous)[1] == "unresolved_passthrough"
+
+
+def test_same_start_native_adapter_and_reuse(tmp_path):
+    source = tmp_path / "input.bcf"
+    make_fixture(source, same_start_cases=True)
+    baseline, out = tmp_path / "baseline", tmp_path / "same_start"
+    command = [sys.executable, str(SCRIPT), "--bcf", str(source), "--workers", "4"]
+    subprocess.run([*command, "--out", str(baseline)], check=True)
+    stamps = {p: p.stat().st_mtime_ns for p in baseline.rglob("*") if p.is_file()}
+    same = [*command, "--out", str(out), "--same-start", "--reuse-prepared", str(baseline)]
+    subprocess.run(same, check=True)
+    assert all(p.stat().st_mtime_ns == stamp for p, stamp in stamps.items())
+    with (out / "comparison_vs_baseline.tsv").open() as handle:
+        comparison = {(r["threshold"], r["svtype"]): r for r in csv.DictReader(handle, delimiter="\t")}
+    assert comparison["0.7", "DEL"]["additional_retained"] == "2"
+    for threshold in (90, 70):
+        for kind, mode in (("DEL", "symbolic_size_overlap"), ("INS", "sequence_resolved")):
+            folder = out / f"pct{threshold}/{kind}.{mode}"
+            with pysam.VariantFile(folder / "retained.vcf.gz") as vcf:
+                kept = list(vcf)
+            with pysam.VariantFile(folder / "removed.vcf.gz") as vcf:
+                removed = list(vcf)
+            reps = {str(r.info["CollapseId"]): r for r in kept if "CollapseId" in r.info}
+            for record in removed:
+                match = record.info["MatchId"]
+                cluster = match[0] if isinstance(match, tuple) else match.split(",")[0]
+                assert (record.chrom, record.pos) == (reps[cluster].chrom, reps[cluster].pos)
+            if kind == "DEL":
+                assert {1700000, 1700001, 600000, 612000, 800000, 845000} <= {r.pos for r in kept}
+                assert len(removed) == (1 if threshold == 90 else 2)
+            else:
+                assert {1100000, 1100001, 1300000, 1300001} <= {r.pos for r in kept}
+                assert sum(r.pos == 1200002 for r in kept) == 1
+                assert sum(r.pos == 1400000 for r in kept) == 1
+            receipt = json.loads((folder / "complete.json").read_text())
+            assert receipt["recipe"]["same_start"] is True
+            assert "collapse_same_start.py" in receipt["command"][1]
+        folder = out / f"pct{threshold}/INS.symbolic_passthrough"
+        receipt = json.loads((folder / "complete.json").read_text())
+        assert receipt["summary"]["retained_records"] == 2
+        assert receipt["command"] is None
+    stamps = {p: p.stat().st_mtime_ns for p in out.rglob("*.vcf.gz")}
+    repeat = subprocess.run(same, check=True, capture_output=True, text=True)
+    assert "Reusing validated same-start partitions" in repeat.stdout
+    assert "Reused pct70/INS.sequence_resolved" in repeat.stdout
+    assert all(p.stat().st_mtime_ns == stamp for p, stamp in stamps.items())

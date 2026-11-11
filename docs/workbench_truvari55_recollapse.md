@@ -83,3 +83,45 @@ cache reuse. Equal-length DELs with 80% overlap merge only at 70%; those with 25
 overlap merge in neither experiment. Symbolic INS pass through even when their
 lengths/positions would previously have allowed merging. Controlled cohort data
 have not been run locally.
+
+## Exact-position trial
+
+The optional `--same-start` mode reuses `scripts/collapse_same_start.py` from the
+TRUVARI chat. It groups by identical CHROM/POS before invoking native Truvari
+collapse functions, with an assertion that every cluster member matches its
+representative's position. It runs one process per type/representation/threshold,
+not one subprocess per site, and does not modify the installed Truvari package.
+
+For sequence-resolved literal alleles, shared prefix/suffix padding is trimmed
+while retaining a VCF anchor, exactly as in that chat. There is no left alignment.
+Symbolic positions remain as reported. This means separate biallelic records at
+the same position, not a requirement for multiple ALT entries in a single record;
+actual multiallelic input rows still fail validation. Singleton groups remain.
+All previous similarity, reciprocal-overlap, genotype, type, and size rules remain
+in force; symbolic INS still pass through without merging.
+
+After the baseline cell finishes, replace its analysis invocation with:
+
+```bash
+"$TOOLS/venv/bin/python" "$REPO/scripts/compare_stringent_recollapse.py" \
+    --bcf "$BCF" \
+    --out "$BASE/v3_stringent_recollapse_same_start_90_70" \
+    --reuse-prepared "$BASE/v3_stringent_recollapse_90_70" \
+    --same-start --workers 4 --refdist 500
+```
+
+The new output directory contains `comparison.tsv` and, when the baseline summary
+exists, `comparison_vs_baseline.tsv`. The latter compares matching
+threshold/type/representation partitions and reports additional retained records.
+Baseline partitions are checksum-validated and reused to derive the new inputs;
+only the literal partitions need trimming and sorting. No source restaging is
+needed. `partitions/trimmed_positions.tsv` and INFO/RC_PRETRIM_POS preserve position
+provenance. The baseline outputs remain untouched. Subsequent runs reuse the
+validated derived partitions and completed jobs.
+
+Three focused tests pass with native Truvari 5.5.0. The exact-position regression
+checks adjacent (1 bp apart) INS and DEL calls cannot merge, padded alleles can
+merge after trimming, raw same-position alleles that trim to different positions
+cannot merge, right anchors remain valid, symbolic INS pass through, thresholds
+and genotype constraints still apply, every native cluster has a single position,
+and baseline files and cached outputs are preserved.
