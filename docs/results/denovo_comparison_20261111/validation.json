@@ -1,0 +1,9 @@
+{
+  "validated": true,
+  "cases": 9,
+  "p_value_rows": 216,
+  "pngs": 102,
+  "vector_pdfs": 111,
+  "pdf_pages": 231,
+  "checks": "Input/output hashes; unique IDs; final population segregation; age-matched nulls; independent integer-tie-aware ranks; summary counts; image integrity; editable PDF text and no raster images."
+}

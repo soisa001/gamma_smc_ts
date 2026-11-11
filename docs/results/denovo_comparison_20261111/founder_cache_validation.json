@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "source_id": "10k/de_novo/s0.01/selected_00007",
+  "source_directory": "/mnt/d/phase2simselection/sim/denovo_comparison_20261111/10k/de_novo/s0.01/selected_00007",
+  "trajectory_exact": true,
+  "genealogy_and_mutation_tables_exact": true,
+  "excluded_fields": [
+    "provenance",
+    "unused nonspatial individual.location"
+  ],
+  "onset_hash_exact": true,
+  "seconds": 0.10124468803405762,
+  "wrapper_sha256": "6bdb25771432ed81dc3ea0d27c843fde431b654839d044192945d7907ff6e405"
+}

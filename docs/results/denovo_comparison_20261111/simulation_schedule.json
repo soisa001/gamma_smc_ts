@@ -1,0 +1,9 @@
+{
+  "started_epoch": 1794428424.0599387,
+  "deadline_epoch": 1794440811.9464138,
+  "workers": 24,
+  "seconds": 14400,
+  "original_run_started": 1794426411.9464138,
+  "script_sha256": "ee62de36e52225679f69ff78a40d15966cae53f0d3dde6ab07e2fb1c042561c8",
+  "previous": "/mnt/d/phase2simselection/sim/denovo_comparison_20261111"
+}

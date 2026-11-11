@@ -1,0 +1,4 @@
+# Rebuild these local artifacts from the committed NPZ caches:
+# uv --no-config run --no-project --with-editable '.[selection]' python scripts/report_denovo_comparison.py report
+*.png
+*.pdf
