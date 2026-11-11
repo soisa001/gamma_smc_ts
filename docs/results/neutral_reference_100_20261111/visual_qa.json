@@ -1,0 +1,42 @@
+{
+  "checks": {
+    "allele_frequency_100_neutrals.pdf": {
+      "pages": 1,
+      "editable_text": true,
+      "raster_images": 0
+    },
+    "all_100_neutrals.pdf": {
+      "pages": 4,
+      "editable_text": true,
+      "raster_images": 0
+    },
+    "posterior_mass_100_neutrals.pdf": {
+      "pages": 1,
+      "editable_text": true,
+      "raster_images": 0
+    },
+    "posterior_median_100_neutrals.pdf": {
+      "pages": 1,
+      "editable_text": true,
+      "raster_images": 0
+    },
+    "true_tmrca_100_neutrals.pdf": {
+      "pages": 1,
+      "editable_text": true,
+      "raster_images": 0
+    },
+    "allele_frequency_100_neutrals.png": {
+      "verified": true
+    },
+    "posterior_mass_100_neutrals.png": {
+      "verified": true
+    },
+    "posterior_median_100_neutrals.png": {
+      "verified": true
+    },
+    "true_tmrca_100_neutrals.png": {
+      "verified": true
+    }
+  },
+  "visual_review": "All four PNGs inspected: readable labels, legends above panels, no overlapping or clipped labels; matching vector PDFs checked structurally."
+}
