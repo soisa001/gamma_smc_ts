@@ -87,6 +87,11 @@ def prepare(args):
     shutil.copy2(raw/'manifest.json',out/'simulation_manifest.json')
     shutil.copy2(raw/'schedule.json',out/'simulation_schedule.json')
     save(out/'simulation_summary.json',status)
+    if (raw/'resource_usage.jsonl').exists():
+        resources=[json.loads(line) for line in (raw/'resource_usage.jsonl').read_text().splitlines()]
+        save(out/'resource_summary.json',dict(samples=len(resources),sampled_peak_rss_gb=max(r['rss_gb'] for r in resources),
+            maximum_affinity_cpu_count=max(len(r['cpu_ids']) for r in resources),
+            note='Sampled RSS includes the simulation process tree and active validation/report helpers; shared pages may be counted more than once.'))
     (out/'.gitattributes').write_text('* -text\n')
     (out/'.gitignore').write_text('# Figures are regenerated from the portable NPZ caches.\n*.png\n*.pdf\n')
     print(json.dumps([{k:c[k] for k in ('key','n','reused_n')} for c in cases]),flush=True)
