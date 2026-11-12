@@ -1,0 +1,19 @@
+{
+  "reviewed_pngs": [
+    "introgression__10k_s0p1_af.png",
+    "introgression__10k_s0p1_posterior_mass_p001.png",
+    "introgression__10k_s0p1_posterior_mass_p005.png",
+    "introgression__10k_s0p1_posterior_median_p001.png",
+    "introgression__10k_s0p1_posterior_median_p005.png",
+    "introgression__10k_s0p1_true_tmrca_p001.png",
+    "introgression__10k_s0p1_true_tmrca_p005.png",
+    "introgression__50_30k_s0p05_af.png",
+    "introgression__50_30k_s0p05_posterior_mass_p001.png",
+    "introgression__50_30k_s0p05_posterior_mass_p005.png",
+    "introgression__50_30k_s0p05_posterior_median_p001.png",
+    "introgression__50_30k_s0p05_posterior_median_p005.png",
+    "introgression__50_30k_s0p05_true_tmrca_p001.png",
+    "introgression__50_30k_s0p05_true_tmrca_p005.png"
+  ],
+  "result": "All 14 final PNGs visually reviewed at full size. Titles, horizontal legends, axis labels, call counts and footnotes are readable without overlap. Matching vector PDF integrity and embedded editable text checked by report validator."
+}

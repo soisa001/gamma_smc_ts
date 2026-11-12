@@ -1,0 +1,35 @@
+{
+  "introgression__10k_s0p1:0": [
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_01274",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_02886",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_04456",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_08867",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_13251"
+  ],
+  "introgression__10k_s0p1:1": [
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_01274",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_02886",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_04456",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_08867",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_13251"
+  ],
+  "introgression__10k_s0p1:2": [
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_13251",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_02886",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_04456",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_08867",
+    "/mnt/d/phase2simselection/sim/strong_selection_20261110/10k/introgression/s0.1/selected_01274"
+  ],
+  "introgression__50_30k_s0p05:0": [
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_11051",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_13577"
+  ],
+  "introgression__50_30k_s0p05:1": [
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_11051",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_13577"
+  ],
+  "introgression__50_30k_s0p05:2": [
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_13577",
+    "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_11051"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "validated": true,
+  "cohorts": 7,
+  "numeric_rows": 84,
+  "pngs": 14,
+  "vector_pdfs": 17,
+  "pdf_pages": 28,
+  "checks": "Input/output hashes, unique simulations, segregation, independent tie-aware ranks, summary counts, image integrity, vector PDFs and editable text."
+}

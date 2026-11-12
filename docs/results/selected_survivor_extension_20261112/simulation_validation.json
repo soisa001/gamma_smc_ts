@@ -1,0 +1,101 @@
+{
+  "validated": true,
+  "final": true,
+  "sample_per_stratum": 0,
+  "workers": 20,
+  "manifest_sha256": "a59a8f005c879068ce3b8990e13c1c0e857b85f7b202cfac9968c17766c4cd58",
+  "audit_source_sha256": "71b90b84566b9a7fd70559f714c99551c475a42d5711d10cd153088ec714587b",
+  "strata": {
+    "de_novo__50k_s0.05": {
+      "submitted": 41204,
+      "checked": 41204,
+      "completed": 41204,
+      "lost": 39229,
+      "fixed": 1975,
+      "accepted": 0,
+      "prefix": 41204,
+      "prefix_lost": 39229,
+      "prefix_fixed": 1975,
+      "prefix_accepted": []
+    },
+    "de_novo__50_30k_s0.05": {
+      "submitted": 40186,
+      "checked": 40186,
+      "completed": 40186,
+      "lost": 38224,
+      "fixed": 1962,
+      "accepted": 0,
+      "prefix": 40186,
+      "prefix_lost": 38224,
+      "prefix_fixed": 1962,
+      "prefix_accepted": []
+    },
+    "introgression__10k_s0.1": {
+      "submitted": 8843,
+      "checked": 8843,
+      "completed": 8843,
+      "lost": 8064,
+      "fixed": 777,
+      "accepted": 2,
+      "prefix": 8843,
+      "prefix_lost": 8064,
+      "prefix_fixed": 777,
+      "prefix_accepted": [
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_08867",
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/10k/introgression/s0.1/selected_13251"
+      ]
+    },
+    "introgression__50k_s0.05": {
+      "submitted": 11617,
+      "checked": 11617,
+      "completed": 11617,
+      "lost": 314,
+      "fixed": 11303,
+      "accepted": 0,
+      "prefix": 11617,
+      "prefix_lost": 314,
+      "prefix_fixed": 11303,
+      "prefix_accepted": []
+    },
+    "introgression__50k_s0.1": {
+      "submitted": 14339,
+      "checked": 14339,
+      "completed": 14339,
+      "lost": 12,
+      "fixed": 14327,
+      "accepted": 0,
+      "prefix": 14339,
+      "prefix_lost": 12,
+      "prefix_fixed": 14327,
+      "prefix_accepted": []
+    },
+    "introgression__50_30k_s0.05": {
+      "submitted": 11604,
+      "checked": 11604,
+      "completed": 11604,
+      "lost": 319,
+      "fixed": 11283,
+      "accepted": 2,
+      "prefix": 11604,
+      "prefix_lost": 319,
+      "prefix_fixed": 11283,
+      "prefix_accepted": [
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_11051",
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261112/50_30k/introgression/s0.05/selected_13577"
+      ]
+    },
+    "introgression__50_30k_s0.1": {
+      "submitted": 14350,
+      "checked": 14350,
+      "completed": 14350,
+      "lost": 15,
+      "fixed": 14335,
+      "accepted": 0,
+      "prefix": 14350,
+      "prefix_lost": 15,
+      "prefix_fixed": 14335,
+      "prefix_accepted": []
+    }
+  },
+  "checks": "Unique proposal identities; unused continuation seeds; unchanged configurations; source-founder hashes; trajectory copy counts; strict population segregation; all retained output hashes; completed-prefix accounting."
+}

@@ -1,0 +1,6 @@
+{
+  "samples": 25,
+  "sampled_peak_rss_gb": 5.685522432,
+  "maximum_affinity_cpu_count": 20,
+  "note": "Sampled RSS includes the simulation process tree and active validation/report helpers; shared pages may be counted more than once."
+}
