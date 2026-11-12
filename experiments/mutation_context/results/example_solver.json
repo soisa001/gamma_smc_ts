@@ -1,0 +1,56 @@
+{
+  "alignment": {
+    "alignment_edit_distance": 20138,
+    "callable_sites": 3999062,
+    "called_mutations": 20039,
+    "correct_mutations": 20039,
+    "masked_sites": 458,
+    "true_mutations": 20138
+  },
+  "expected_changed_alleles": 5834.315739047699,
+  "prediction_sha256": "74041679024a6998c2f2cab31a9a3b88e235dfb63a7f583c45bd40e5036b6e06",
+  "rows": 999880,
+  "selected_method": "5mer",
+  "selection_diagnostics": {
+    "1mer": {
+      "eligible": false,
+      "mean_extra_nll_per_contig": 45.69974505675013,
+      "paired_standard_error": 2.159823130006205
+    },
+    "3mer": {
+      "eligible": false,
+      "mean_extra_nll_per_contig": 12.884001595742095,
+      "paired_standard_error": 0.8569299595939106
+    },
+    "5mer": {
+      "eligible": true,
+      "mean_extra_nll_per_contig": 0.0060929799950932085,
+      "paired_standard_error": 0.01912109646202704
+    },
+    "7mer": {
+      "eligible": true,
+      "mean_extra_nll_per_contig": 0.0,
+      "paired_standard_error": 0.0
+    },
+    "7mer_flat": {
+      "eligible": false,
+      "mean_extra_nll_per_contig": 31.99063801838544,
+      "paired_standard_error": 1.8573956013512067
+    }
+  },
+  "selection_rule": "paired contig one-standard-error, smallest window first",
+  "shrinkage": {
+    "1mer": 2.0,
+    "3mer": 1000.0,
+    "5mer": 10000.0,
+    "7mer": 100000.0,
+    "7mer_flat": 1000.0
+  },
+  "validation_nll": {
+    "1mer": 28765.10672524661,
+    "3mer": 28240.05482987048,
+    "5mer": 28034.00829201853,
+    "7mer": 28033.910804338608,
+    "7mer_flat": 28545.76101263277
+  }
+}

@@ -1,0 +1,924 @@
+2026-11-12 16:05:27,082 parameters={'phase': 'all', 'root': PosixPath('/home/mew/mutation_context_mock/main'), 'output': PosixPath('results'), 'replicates': 12, 'workers': 4, 'memory_gb': 26, 'train_bases': 4000000, 'test_bases': 1000000, 'contig_bases': 50000, 'mean_rate': 0.005, 'target_outer_match': 0.8, 'scenarios': ['constant', 'three', 'five_iid', 'five_shift', 'seven_shift', 'empirical_five'], 'task_dir': None, 'method': '5mer'} cwd=/mnt/d/phase2simselection/code/experiments/mutation_context python=3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ] platform=Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35 git=6fa3d125b58a85525caf92d4ea8950a1aeefc182 script_sha256=18b249591d79bd3601e77e3de08c489eaa1d1a6a90b778f59a91a6d7fc96f545
+2026-11-12 16:05:31,978 prepared constant seed=0
+2026-11-12 16:05:32,118 prepared constant seed=1
+2026-11-12 16:05:32,118 prepared constant seed=2
+2026-11-12 16:05:32,119 prepared constant seed=3
+2026-11-12 16:05:36,968 prepared constant seed=4
+2026-11-12 16:05:37,048 prepared constant seed=5
+2026-11-12 16:05:37,210 prepared constant seed=6
+2026-11-12 16:05:37,211 prepared constant seed=7
+2026-11-12 16:05:41,791 prepared constant seed=8
+2026-11-12 16:05:41,832 prepared constant seed=9
+2026-11-12 16:05:41,865 prepared constant seed=10
+2026-11-12 16:05:42,155 prepared constant seed=11
+2026-11-12 16:05:46,615 prepared three seed=0
+2026-11-12 16:05:46,694 prepared three seed=1
+2026-11-12 16:05:46,827 prepared three seed=2
+2026-11-12 16:05:46,952 prepared three seed=3
+2026-11-12 16:05:51,539 prepared three seed=4
+2026-11-12 16:05:51,654 prepared three seed=5
+2026-11-12 16:05:51,825 prepared three seed=6
+2026-11-12 16:05:51,834 prepared three seed=7
+2026-11-12 16:05:56,203 prepared three seed=8
+2026-11-12 16:05:56,293 prepared three seed=9
+2026-11-12 16:05:56,564 prepared three seed=10
+2026-11-12 16:05:56,564 prepared three seed=11
+2026-11-12 16:06:01,009 prepared five_iid seed=0
+2026-11-12 16:06:01,127 prepared five_iid seed=1
+2026-11-12 16:06:01,240 prepared five_iid seed=2
+2026-11-12 16:06:01,408 prepared five_iid seed=3
+2026-11-12 16:06:06,023 prepared five_iid seed=4
+2026-11-12 16:06:06,032 prepared five_iid seed=5
+2026-11-12 16:06:06,215 prepared five_iid seed=6
+2026-11-12 16:06:06,347 prepared five_iid seed=7
+2026-11-12 16:06:11,021 prepared five_iid seed=8
+2026-11-12 16:06:11,021 prepared five_iid seed=9
+2026-11-12 16:06:11,163 prepared five_iid seed=10
+2026-11-12 16:06:11,309 prepared five_iid seed=11
+2026-11-12 16:06:15,976 prepared five_shift seed=0
+2026-11-12 16:06:15,976 prepared five_shift seed=1
+2026-11-12 16:06:16,064 prepared five_shift seed=2
+2026-11-12 16:06:16,236 prepared five_shift seed=3
+2026-11-12 16:06:20,706 prepared five_shift seed=4
+2026-11-12 16:06:20,841 prepared five_shift seed=5
+2026-11-12 16:06:20,881 prepared five_shift seed=6
+2026-11-12 16:06:21,107 prepared five_shift seed=7
+2026-11-12 16:06:25,488 prepared five_shift seed=8
+2026-11-12 16:06:25,846 prepared five_shift seed=9
+2026-11-12 16:06:25,846 prepared five_shift seed=10
+2026-11-12 16:06:26,127 prepared five_shift seed=11
+2026-11-12 16:06:30,568 prepared seven_shift seed=0
+2026-11-12 16:06:30,624 prepared seven_shift seed=1
+2026-11-12 16:06:31,208 prepared seven_shift seed=2
+2026-11-12 16:06:31,209 prepared seven_shift seed=3
+2026-11-12 16:06:35,724 prepared seven_shift seed=4
+2026-11-12 16:06:35,724 prepared seven_shift seed=5
+2026-11-12 16:06:36,068 prepared seven_shift seed=6
+2026-11-12 16:06:36,406 prepared seven_shift seed=7
+2026-11-12 16:06:39,944 prepared seven_shift seed=8
+2026-11-12 16:06:40,312 prepared seven_shift seed=9
+2026-11-12 16:06:40,575 prepared seven_shift seed=10
+2026-11-12 16:06:40,854 prepared seven_shift seed=11
+2026-11-12 16:06:44,999 prepared empirical_five seed=0
+2026-11-12 16:06:45,311 prepared empirical_five seed=1
+2026-11-12 16:06:45,391 prepared empirical_five seed=2
+2026-11-12 16:06:45,816 prepared empirical_five seed=3
+2026-11-12 16:06:49,864 prepared empirical_five seed=4
+2026-11-12 16:06:50,234 prepared empirical_five seed=5
+2026-11-12 16:06:50,420 prepared empirical_five seed=6
+2026-11-12 16:06:50,754 prepared empirical_five seed=7
+2026-11-12 16:06:54,857 prepared empirical_five seed=8
+2026-11-12 16:06:55,297 prepared empirical_five seed=9
+2026-11-12 16:06:55,490 prepared empirical_five seed=10
+2026-11-12 16:06:55,974 prepared empirical_five seed=11
+2026-11-12 16:07:01,570 fitted constant seed=0 precision=1.000000 recall=0.994969 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:01,721 fitted constant seed=1 precision=1.000000 recall=0.993293 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:01,721 fitted constant seed=2 precision=1.000000 recall=0.993578 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:01,721 fitted constant seed=3 precision=1.000000 recall=0.993858 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:07,475 fitted constant seed=4 precision=1.000000 recall=0.994613 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 10000.0}
+2026-11-12 16:07:07,592 fitted constant seed=5 precision=1.000000 recall=0.992449 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 100000.0}
+2026-11-12 16:07:07,592 fitted constant seed=6 precision=1.000000 recall=0.993805 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 100000.0}
+2026-11-12 16:07:07,637 fitted constant seed=7 precision=1.000000 recall=0.994524 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:13,223 fitted constant seed=8 precision=1.000000 recall=0.994790 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 10000.0}
+2026-11-12 16:07:13,249 fitted constant seed=9 precision=1.000000 recall=0.993993 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:13,359 fitted constant seed=10 precision=1.000000 recall=0.995465 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:13,363 fitted constant seed=11 precision=1.000000 recall=0.995045 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:18,904 fitted three seed=0 precision=1.000000 recall=0.995229 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 100000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:18,948 fitted three seed=1 precision=1.000000 recall=0.994697 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:19,024 fitted three seed=2 precision=1.000000 recall=0.994791 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:19,043 fitted three seed=3 precision=1.000000 recall=0.995695 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000000000000.0, '7mer': 100000.0}
+2026-11-12 16:07:24,713 fitted three seed=4 precision=1.000000 recall=0.995067 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 100000.0}
+2026-11-12 16:07:24,761 fitted three seed=5 precision=1.000000 recall=0.993852 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 100000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:24,925 fitted three seed=6 precision=1.000000 recall=0.995850 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 100000.0}
+2026-11-12 16:07:24,925 fitted three seed=7 precision=1.000000 recall=0.995996 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 100000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:30,258 fitted three seed=8 precision=1.000000 recall=0.995530 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 100000.0, '7mer': 100000.0}
+2026-11-12 16:07:30,308 fitted three seed=9 precision=1.000000 recall=0.994902 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:30,588 fitted three seed=10 precision=1.000000 recall=0.996893 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:30,588 fitted three seed=11 precision=1.000000 recall=0.995951 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:35,865 fitted five_iid seed=0 precision=1.000000 recall=0.995084 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0}
+2026-11-12 16:07:35,976 fitted five_iid seed=1 precision=1.000000 recall=0.995561 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:36,045 fitted five_iid seed=2 precision=1.000000 recall=0.995299 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:36,275 fitted five_iid seed=3 precision=1.000000 recall=0.995114 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:41,805 fitted five_iid seed=4 precision=1.000000 recall=0.994964 shrink={'1mer': 2.0, '3mer': 100.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:41,988 fitted five_iid seed=5 precision=1.000000 recall=0.993997 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:41,989 fitted five_iid seed=6 precision=1.000000 recall=0.994691 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0}
+2026-11-12 16:07:42,228 fitted five_iid seed=7 precision=1.000000 recall=0.994363 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:47,805 fitted five_iid seed=8 precision=1.000000 recall=0.996279 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 100000.0}
+2026-11-12 16:07:48,000 fitted five_iid seed=9 precision=1.000000 recall=0.995123 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0}
+2026-11-12 16:07:48,111 fitted five_iid seed=10 precision=1.000000 recall=0.995422 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:48,209 fitted five_iid seed=11 precision=1.000000 recall=0.996505 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:53,484 fitted five_shift seed=0 precision=1.000000 recall=0.995084 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0}
+2026-11-12 16:07:53,709 fitted five_shift seed=1 precision=1.000000 recall=0.995561 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:53,985 fitted five_shift seed=2 precision=1.000000 recall=0.995299 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:54,006 fitted five_shift seed=3 precision=1.000000 recall=0.995114 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:59,263 fitted five_shift seed=4 precision=1.000000 recall=0.994964 shrink={'1mer': 2.0, '3mer': 100.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:59,441 fitted five_shift seed=5 precision=1.000000 recall=0.993997 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:07:59,885 fitted five_shift seed=6 precision=1.000000 recall=0.994691 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0}
+2026-11-12 16:08:00,110 fitted five_shift seed=7 precision=1.000000 recall=0.994363 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:04,917 fitted five_shift seed=8 precision=1.000000 recall=0.996279 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 100000.0}
+2026-11-12 16:08:05,072 fitted five_shift seed=9 precision=1.000000 recall=0.995123 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0}
+2026-11-12 16:08:05,524 fitted five_shift seed=10 precision=1.000000 recall=0.995422 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:05,837 fitted five_shift seed=11 precision=1.000000 recall=0.996505 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:10,569 fitted seven_shift seed=0 precision=1.000000 recall=0.996558 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:10,686 fitted seven_shift seed=1 precision=1.000000 recall=0.995845 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000.0, '7mer': 1000.0}
+2026-11-12 16:08:11,207 fitted seven_shift seed=2 precision=1.000000 recall=0.996149 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:11,483 fitted seven_shift seed=3 precision=1.000000 recall=0.994299 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000.0}
+2026-11-12 16:08:16,080 fitted seven_shift seed=4 precision=1.000000 recall=0.994881 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:16,279 fitted seven_shift seed=5 precision=1.000000 recall=0.993051 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:16,750 fitted seven_shift seed=6 precision=1.000000 recall=0.994513 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:16,980 fitted seven_shift seed=7 precision=1.000000 recall=0.994008 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000.0}
+2026-11-12 16:08:21,892 fitted seven_shift seed=8 precision=1.000000 recall=0.995445 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:22,169 fitted seven_shift seed=9 precision=1.000000 recall=0.995043 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:22,573 fitted seven_shift seed=10 precision=1.000000 recall=0.994485 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:22,757 fitted seven_shift seed=11 precision=1.000000 recall=0.995607 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 10000.0, '7mer': 1000.0}
+2026-11-12 16:08:27,278 fitted empirical_five seed=0 precision=1.000000 recall=0.997275 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:27,655 fitted empirical_five seed=1 precision=1.000000 recall=0.997680 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:27,992 fitted empirical_five seed=2 precision=1.000000 recall=0.997106 shrink={'1mer': 2.0, '3mer': 100.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:28,246 fitted empirical_five seed=3 precision=1.000000 recall=0.996741 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:33,021 fitted empirical_five seed=4 precision=1.000000 recall=0.996983 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 100000.0}
+2026-11-12 16:08:33,256 fitted empirical_five seed=5 precision=1.000000 recall=0.996333 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:33,707 fitted empirical_five seed=6 precision=1.000000 recall=0.997987 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:33,981 fitted empirical_five seed=7 precision=1.000000 recall=0.997294 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:38,641 fitted empirical_five seed=8 precision=1.000000 recall=0.996656 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 100000.0}
+2026-11-12 16:08:38,902 fitted empirical_five seed=9 precision=1.000000 recall=0.996766 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0}
+2026-11-12 16:08:39,311 fitted empirical_five seed=10 precision=1.000000 recall=0.997444 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000000000000.0}
+2026-11-12 16:08:39,611 fitted empirical_five seed=11 precision=1.000000 recall=0.997586 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0}
+2026-11-12 16:08:40,128 evaluated constant seed=0
+2026-11-12 16:08:40,129 evaluated constant seed=1
+2026-11-12 16:08:40,129 evaluated constant seed=2
+2026-11-12 16:08:40,196 evaluated constant seed=3
+2026-11-12 16:08:40,566 evaluated constant seed=4
+2026-11-12 16:08:40,570 evaluated constant seed=5
+2026-11-12 16:08:40,578 evaluated constant seed=6
+2026-11-12 16:08:40,627 evaluated constant seed=7
+2026-11-12 16:08:40,996 evaluated constant seed=8
+2026-11-12 16:08:40,996 evaluated constant seed=9
+2026-11-12 16:08:41,020 evaluated constant seed=10
+2026-11-12 16:08:41,052 evaluated constant seed=11
+2026-11-12 16:08:41,430 evaluated three seed=0
+2026-11-12 16:08:41,446 evaluated three seed=1
+2026-11-12 16:08:41,458 evaluated three seed=2
+2026-11-12 16:08:41,503 evaluated three seed=3
+2026-11-12 16:08:41,900 evaluated three seed=4
+2026-11-12 16:08:41,932 evaluated three seed=5
+2026-11-12 16:08:41,932 evaluated three seed=6
+2026-11-12 16:08:41,942 evaluated three seed=7
+2026-11-12 16:08:42,349 evaluated three seed=8
+2026-11-12 16:08:42,368 evaluated three seed=9
+2026-11-12 16:08:42,373 evaluated three seed=10
+2026-11-12 16:08:42,374 evaluated three seed=11
+2026-11-12 16:08:42,795 evaluated five_iid seed=0
+2026-11-12 16:08:42,816 evaluated five_iid seed=1
+2026-11-12 16:08:42,816 evaluated five_iid seed=2
+2026-11-12 16:08:42,816 evaluated five_iid seed=3
+2026-11-12 16:08:43,241 evaluated five_iid seed=4
+2026-11-12 16:08:43,241 evaluated five_iid seed=5
+2026-11-12 16:08:43,255 evaluated five_iid seed=6
+2026-11-12 16:08:43,270 evaluated five_iid seed=7
+2026-11-12 16:08:43,661 evaluated five_iid seed=8
+2026-11-12 16:08:43,692 evaluated five_iid seed=9
+2026-11-12 16:08:43,695 evaluated five_iid seed=10
+2026-11-12 16:08:43,702 evaluated five_iid seed=11
+2026-11-12 16:08:44,075 evaluated five_shift seed=0
+2026-11-12 16:08:44,109 evaluated five_shift seed=1
+2026-11-12 16:08:44,116 evaluated five_shift seed=2
+2026-11-12 16:08:44,120 evaluated five_shift seed=3
+2026-11-12 16:08:44,496 evaluated five_shift seed=4
+2026-11-12 16:08:44,525 evaluated five_shift seed=5
+2026-11-12 16:08:44,534 evaluated five_shift seed=6
+2026-11-12 16:08:44,536 evaluated five_shift seed=7
+2026-11-12 16:08:44,920 evaluated five_shift seed=8
+2026-11-12 16:08:44,947 evaluated five_shift seed=9
+2026-11-12 16:08:44,980 evaluated five_shift seed=10
+2026-11-12 16:08:44,980 evaluated five_shift seed=11
+2026-11-12 16:08:45,343 evaluated seven_shift seed=0
+2026-11-12 16:08:45,357 evaluated seven_shift seed=1
+2026-11-12 16:08:45,378 evaluated seven_shift seed=2
+2026-11-12 16:08:45,390 evaluated seven_shift seed=3
+2026-11-12 16:08:45,764 evaluated seven_shift seed=4
+2026-11-12 16:08:45,783 evaluated seven_shift seed=5
+2026-11-12 16:08:45,817 evaluated seven_shift seed=6
+2026-11-12 16:08:45,821 evaluated seven_shift seed=7
+2026-11-12 16:08:46,213 evaluated seven_shift seed=8
+2026-11-12 16:08:46,272 evaluated seven_shift seed=9
+2026-11-12 16:08:46,310 evaluated seven_shift seed=10
+2026-11-12 16:08:46,310 evaluated seven_shift seed=11
+2026-11-12 16:08:46,660 evaluated empirical_five seed=0
+2026-11-12 16:08:46,719 evaluated empirical_five seed=1
+2026-11-12 16:08:46,737 evaluated empirical_five seed=2
+2026-11-12 16:08:46,750 evaluated empirical_five seed=3
+2026-11-12 16:08:47,092 evaluated empirical_five seed=4
+2026-11-12 16:08:47,155 evaluated empirical_five seed=5
+2026-11-12 16:08:47,167 evaluated empirical_five seed=6
+2026-11-12 16:08:47,188 evaluated empirical_five seed=7
+2026-11-12 16:08:47,514 evaluated empirical_five seed=8
+2026-11-12 16:08:47,590 evaluated empirical_five seed=9
+2026-11-12 16:08:47,591 evaluated empirical_five seed=10
+2026-11-12 16:08:47,614 evaluated empirical_five seed=11
+2026-11-12 16:08:49,361 maxp pruned
+2026-11-12 16:08:49,368 cmap pruned
+2026-11-12 16:08:49,369 kern dropped
+2026-11-12 16:08:49,369 post pruned
+2026-11-12 16:08:49,370 FFTM dropped
+2026-11-12 16:08:49,372 GPOS pruned
+2026-11-12 16:08:49,374 GSUB pruned
+2026-11-12 16:08:49,382 glyf pruned
+2026-11-12 16:08:49,384 Added gid0 to subset
+2026-11-12 16:08:49,384 Added first four glyphs to subset
+2026-11-12 16:08:49,384 Closing glyph list over 'MATH': 42 glyphs before
+2026-11-12 16:08:49,384 Glyph names: ['.notdef', '.null', 'A', 'E', 'M', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'five', 'g', 'h', 'hyphen', 'i', 'k', 'l', 'm', 'minus', 'n', 'nonmarkingreturn', 'o', 'one', 'p', 'parenleft', 'parenright', 'period', 'r', 's', 'seven', 'slash', 'space', 't', 'three', 'two', 'u', 'v', 'x', 'y', 'zero']
+2026-11-12 16:08:49,385 Glyph IDs:   [0, 1, 2, 3, 11, 12, 16, 17, 18, 19, 20, 21, 22, 24, 26, 36, 40, 48, 51, 68, 69, 70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 3228]
+2026-11-12 16:08:49,385 Closed glyph list over 'MATH': 48 glyphs after
+2026-11-12 16:08:49,385 Glyph names: ['.notdef', '.null', 'A', 'E', 'M', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'five', 'g', 'h', 'hyphen', 'i', 'k', 'l', 'm', 'minus', 'n', 'nonmarkingreturn', 'o', 'one', 'p', 'parenleft', 'parenright', 'period', 'r', 's', 'seven', 'slash', 'space', 't', 'three', 'two', 'u', 'uni239B', 'uni239C', 'uni239D', 'uni239E', 'uni239F', 'uni23A0', 'v', 'x', 'y', 'zero']
+2026-11-12 16:08:49,386 Glyph IDs:   [0, 1, 2, 3, 11, 12, 16, 17, 18, 19, 20, 21, 22, 24, 26, 36, 40, 48, 51, 68, 69, 70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 3228, 3506, 3507, 3508, 3509, 3510, 3511]
+2026-11-12 16:08:49,386 Closing glyph list over 'GSUB': 48 glyphs before
+2026-11-12 16:08:49,386 Glyph names: ['.notdef', '.null', 'A', 'E', 'M', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'five', 'g', 'h', 'hyphen', 'i', 'k', 'l', 'm', 'minus', 'n', 'nonmarkingreturn', 'o', 'one', 'p', 'parenleft', 'parenright', 'period', 'r', 's', 'seven', 'slash', 'space', 't', 'three', 'two', 'u', 'uni239B', 'uni239C', 'uni239D', 'uni239E', 'uni239F', 'uni23A0', 'v', 'x', 'y', 'zero']
+2026-11-12 16:08:49,386 Glyph IDs:   [0, 1, 2, 3, 11, 12, 16, 17, 18, 19, 20, 21, 22, 24, 26, 36, 40, 48, 51, 68, 69, 70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 3228, 3506, 3507, 3508, 3509, 3510, 3511]
+2026-11-12 16:08:49,391 Closed glyph list over 'GSUB': 53 glyphs after
+2026-11-12 16:08:49,392 Glyph names: ['.notdef', '.null', 'A', 'E', 'M', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'fi', 'five', 'fl', 'g', 'h', 'hyphen', 'i', 'k', 'l', 'm', 'minus', 'n', 'nonmarkingreturn', 'o', 'one', 'p', 'parenleft', 'parenright', 'period', 'r', 's', 'seven', 'slash', 'space', 't', 'three', 'two', 'u', 'uni239B', 'uni239C', 'uni239D', 'uni239E', 'uni239F', 'uni23A0', 'uniFB00', 'uniFB03', 'uniFB04', 'v', 'x', 'y', 'zero']
+2026-11-12 16:08:49,392 Glyph IDs:   [0, 1, 2, 3, 11, 12, 16, 17, 18, 19, 20, 21, 22, 24, 26, 36, 40, 48, 51, 68, 69, 70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 3228, 3506, 3507, 3508, 3509, 3510, 3511, 5038, 5039, 5040, 5041, 5042]
+2026-11-12 16:08:49,392 Closing glyph list over 'glyf': 53 glyphs before
+2026-11-12 16:08:49,392 Glyph names: ['.notdef', '.null', 'A', 'E', 'M', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'fi', 'five', 'fl', 'g', 'h', 'hyphen', 'i', 'k', 'l', 'm', 'minus', 'n', 'nonmarkingreturn', 'o', 'one', 'p', 'parenleft', 'parenright', 'period', 'r', 's', 'seven', 'slash', 'space', 't', 'three', 'two', 'u', 'uni239B', 'uni239C', 'uni239D', 'uni239E', 'uni239F', 'uni23A0', 'uniFB00', 'uniFB03', 'uniFB04', 'v', 'x', 'y', 'zero']
+2026-11-12 16:08:49,392 Glyph IDs:   [0, 1, 2, 3, 11, 12, 16, 17, 18, 19, 20, 21, 22, 24, 26, 36, 40, 48, 51, 68, 69, 70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 3228, 3506, 3507, 3508, 3509, 3510, 3511, 5038, 5039, 5040, 5041, 5042]
+2026-11-12 16:08:49,392 Closed glyph list over 'glyf': 53 glyphs after
+2026-11-12 16:08:49,392 Glyph names: ['.notdef', '.null', 'A', 'E', 'M', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'fi', 'five', 'fl', 'g', 'h', 'hyphen', 'i', 'k', 'l', 'm', 'minus', 'n', 'nonmarkingreturn', 'o', 'one', 'p', 'parenleft', 'parenright', 'period', 'r', 's', 'seven', 'slash', 'space', 't', 'three', 'two', 'u', 'uni239B', 'uni239C', 'uni239D', 'uni239E', 'uni239F', 'uni23A0', 'uniFB00', 'uniFB03', 'uniFB04', 'v', 'x', 'y', 'zero']
+2026-11-12 16:08:49,392 Glyph IDs:   [0, 1, 2, 3, 11, 12, 16, 17, 18, 19, 20, 21, 22, 24, 26, 36, 40, 48, 51, 68, 69, 70, 71, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 3228, 3506, 3507, 3508, 3509, 3510, 3511, 5038, 5039, 5040, 5041, 5042]
+2026-11-12 16:08:49,393 Retaining 53 glyphs
+2026-11-12 16:08:49,393 head subsetting not needed
+2026-11-12 16:08:49,393 hhea subsetting not needed
+2026-11-12 16:08:49,393 maxp subsetting not needed
+2026-11-12 16:08:49,393 OS/2 subsetting not needed
+2026-11-12 16:08:49,399 hmtx subsetted
+2026-11-12 16:08:49,401 cmap subsetted
+2026-11-12 16:08:49,401 fpgm subsetting not needed
+2026-11-12 16:08:49,401 prep subsetting not needed
+2026-11-12 16:08:49,401 cvt  subsetting not needed
+2026-11-12 16:08:49,401 loca subsetting not needed
+2026-11-12 16:08:49,401 post subsetted
+2026-11-12 16:08:49,401 gasp subsetting not needed
+2026-11-12 16:08:49,402 MATH subsetted
+2026-11-12 16:08:49,404 GDEF subsetted
+2026-11-12 16:08:49,429 GPOS subsetted
+2026-11-12 16:08:49,431 GSUB subsetted
+2026-11-12 16:08:49,431 name subsetting not needed
+2026-11-12 16:08:49,432 glyf subsetted
+2026-11-12 16:08:49,433 head pruned
+2026-11-12 16:08:49,433 OS/2 Unicode ranges pruned: [0, 38]
+2026-11-12 16:08:49,433 OS/2 CodePage ranges pruned: [0]
+2026-11-12 16:08:49,434 glyf pruned
+2026-11-12 16:08:49,434 GDEF pruned
+2026-11-12 16:08:49,434 GPOS pruned
+2026-11-12 16:08:49,435 GSUB pruned
+2026-11-12 16:08:49,442 name pruned
+2026-11-12 16:10:13,779 parameters={'phase': 'all', 'root': PosixPath('/home/mew/mutation_context_mock/main'), 'output': PosixPath('results'), 'replicates': 12, 'workers': 4, 'memory_gb': 26, 'train_bases': 4000000, 'test_bases': 1000000, 'contig_bases': 50000, 'mean_rate': 0.005, 'target_outer_match': 0.8, 'scenarios': ['constant', 'three', 'five_iid', 'five_shift', 'seven_shift', 'empirical_five'], 'task_dir': None, 'method': '5mer'} cwd=/mnt/d/phase2simselection/code/experiments/mutation_context python=3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ] platform=Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35 git=6fa3d125b58a85525caf92d4ea8950a1aeefc182 script_sha256=053210710cdd5b9bf48fd30a37dd3948d74e52fd745e7d4b5bcb8b7db6a59a38
+2026-11-12 16:10:13,860 cached samples constant seed=0
+2026-11-12 16:10:13,870 cached samples constant seed=1
+2026-11-12 16:10:13,874 cached samples constant seed=2
+2026-11-12 16:10:13,875 cached samples constant seed=3
+2026-11-12 16:10:13,892 cached samples constant seed=4
+2026-11-12 16:10:13,906 cached samples constant seed=5
+2026-11-12 16:10:13,906 cached samples constant seed=6
+2026-11-12 16:10:13,917 cached samples constant seed=7
+2026-11-12 16:10:13,948 cached samples constant seed=8
+2026-11-12 16:10:13,953 cached samples constant seed=9
+2026-11-12 16:10:13,953 cached samples constant seed=10
+2026-11-12 16:10:13,966 cached samples constant seed=11
+2026-11-12 16:10:13,981 cached samples three seed=0
+2026-11-12 16:10:13,982 cached samples three seed=1
+2026-11-12 16:10:13,983 cached samples three seed=2
+2026-11-12 16:10:13,997 cached samples three seed=3
+2026-11-12 16:10:14,024 cached samples three seed=4
+2026-11-12 16:10:14,025 cached samples three seed=5
+2026-11-12 16:10:14,026 cached samples three seed=6
+2026-11-12 16:10:14,031 cached samples three seed=7
+2026-11-12 16:10:14,053 cached samples three seed=8
+2026-11-12 16:10:14,057 cached samples three seed=9
+2026-11-12 16:10:14,057 cached samples three seed=10
+2026-11-12 16:10:14,063 cached samples three seed=11
+2026-11-12 16:10:14,093 cached samples five_iid seed=0
+2026-11-12 16:10:14,094 cached samples five_iid seed=1
+2026-11-12 16:10:14,108 cached samples five_iid seed=2
+2026-11-12 16:10:14,108 cached samples five_iid seed=3
+2026-11-12 16:10:14,122 cached samples five_iid seed=4
+2026-11-12 16:10:14,123 cached samples five_iid seed=5
+2026-11-12 16:10:14,132 cached samples five_iid seed=6
+2026-11-12 16:10:14,139 cached samples five_iid seed=7
+2026-11-12 16:10:14,156 cached samples five_iid seed=8
+2026-11-12 16:10:14,162 cached samples five_iid seed=9
+2026-11-12 16:10:14,165 cached samples five_iid seed=10
+2026-11-12 16:10:14,170 cached samples five_iid seed=11
+2026-11-12 16:10:14,198 cached samples five_shift seed=0
+2026-11-12 16:10:14,199 cached samples five_shift seed=1
+2026-11-12 16:10:14,199 cached samples five_shift seed=2
+2026-11-12 16:10:14,205 cached samples five_shift seed=3
+2026-11-12 16:10:14,228 cached samples five_shift seed=4
+2026-11-12 16:10:14,228 cached samples five_shift seed=5
+2026-11-12 16:10:14,230 cached samples five_shift seed=6
+2026-11-12 16:10:14,239 cached samples five_shift seed=7
+2026-11-12 16:10:14,258 cached samples five_shift seed=8
+2026-11-12 16:10:14,259 cached samples five_shift seed=9
+2026-11-12 16:10:14,259 cached samples five_shift seed=10
+2026-11-12 16:10:14,274 cached samples five_shift seed=11
+2026-11-12 16:10:14,291 cached samples seven_shift seed=0
+2026-11-12 16:10:14,296 cached samples seven_shift seed=1
+2026-11-12 16:10:14,297 cached samples seven_shift seed=2
+2026-11-12 16:10:14,304 cached samples seven_shift seed=3
+2026-11-12 16:10:14,331 cached samples seven_shift seed=4
+2026-11-12 16:10:14,331 cached samples seven_shift seed=5
+2026-11-12 16:10:14,339 cached samples seven_shift seed=6
+2026-11-12 16:10:14,344 cached samples seven_shift seed=7
+2026-11-12 16:10:14,371 cached samples seven_shift seed=8
+2026-11-12 16:10:14,371 cached samples seven_shift seed=9
+2026-11-12 16:10:14,386 cached samples seven_shift seed=10
+2026-11-12 16:10:14,386 cached samples seven_shift seed=11
+2026-11-12 16:10:14,408 cached samples empirical_five seed=0
+2026-11-12 16:10:14,409 cached samples empirical_five seed=1
+2026-11-12 16:10:14,420 cached samples empirical_five seed=2
+2026-11-12 16:10:14,420 cached samples empirical_five seed=3
+2026-11-12 16:10:14,435 cached samples empirical_five seed=4
+2026-11-12 16:10:14,435 cached samples empirical_five seed=5
+2026-11-12 16:10:14,447 cached samples empirical_five seed=6
+2026-11-12 16:10:14,460 cached samples empirical_five seed=7
+2026-11-12 16:10:14,466 cached samples empirical_five seed=8
+2026-11-12 16:10:14,474 cached samples empirical_five seed=9
+2026-11-12 16:10:14,489 cached samples empirical_five seed=10
+2026-11-12 16:10:14,493 cached samples empirical_five seed=11
+2026-11-12 16:10:14,711 fitted constant seed=0 precision=1.000000 recall=0.994969 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:14,736 fitted constant seed=1 precision=1.000000 recall=0.993293 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:14,736 fitted constant seed=2 precision=1.000000 recall=0.993578 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:14,736 fitted constant seed=3 precision=1.000000 recall=0.993858 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:14,876 fitted constant seed=4 precision=1.000000 recall=0.994613 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 10000.0, '7mer_flat': 10000.0}
+2026-11-12 16:10:14,880 fitted constant seed=5 precision=1.000000 recall=0.992449 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 100000.0, '7mer_flat': 100000.0}
+2026-11-12 16:10:14,905 fitted constant seed=6 precision=1.000000 recall=0.993805 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 100000.0, '7mer_flat': 100000.0}
+2026-11-12 16:10:14,916 fitted constant seed=7 precision=1.000000 recall=0.994524 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:15,063 fitted constant seed=8 precision=1.000000 recall=0.994790 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 10000.0, '7mer_flat': 10000.0}
+2026-11-12 16:10:15,076 fitted constant seed=9 precision=1.000000 recall=0.993993 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:15,098 fitted constant seed=10 precision=1.000000 recall=0.995465 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:15,099 fitted constant seed=11 precision=1.000000 recall=0.995045 shrink={'1mer': 2.0, '3mer': 1000000000000.0, '5mer': 100000.0, '7mer': 1000000000000.0, '7mer_flat': 1000000000000.0}
+2026-11-12 16:10:15,208 fitted three seed=0 precision=1.000000 recall=0.995229 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 100000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,229 fitted three seed=1 precision=1.000000 recall=0.994697 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,229 fitted three seed=2 precision=1.000000 recall=0.994791 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,252 fitted three seed=3 precision=1.000000 recall=0.995695 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000000000000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,358 fitted three seed=4 precision=1.000000 recall=0.995067 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,379 fitted three seed=5 precision=1.000000 recall=0.993852 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 100000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,401 fitted three seed=6 precision=1.000000 recall=0.995850 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,411 fitted three seed=7 precision=1.000000 recall=0.995996 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 100000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,533 fitted three seed=8 precision=1.000000 recall=0.995530 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 100000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,534 fitted three seed=9 precision=1.000000 recall=0.994902 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,562 fitted three seed=10 precision=1.000000 recall=0.996893 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,562 fitted three seed=11 precision=1.000000 recall=0.995951 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000000000000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,684 fitted five_iid seed=0 precision=1.000000 recall=0.995084 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,685 fitted five_iid seed=1 precision=1.000000 recall=0.995561 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,704 fitted five_iid seed=2 precision=1.000000 recall=0.995299 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,721 fitted five_iid seed=3 precision=1.000000 recall=0.995114 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,843 fitted five_iid seed=4 precision=1.000000 recall=0.994964 shrink={'1mer': 2.0, '3mer': 100.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,843 fitted five_iid seed=5 precision=1.000000 recall=0.993997 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,849 fitted five_iid seed=6 precision=1.000000 recall=0.994691 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,876 fitted five_iid seed=7 precision=1.000000 recall=0.994363 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,987 fitted five_iid seed=8 precision=1.000000 recall=0.996279 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,992 fitted five_iid seed=9 precision=1.000000 recall=0.995123 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:15,992 fitted five_iid seed=10 precision=1.000000 recall=0.995422 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,032 fitted five_iid seed=11 precision=1.000000 recall=0.996505 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,138 fitted five_shift seed=0 precision=1.000000 recall=0.995084 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,139 fitted five_shift seed=1 precision=1.000000 recall=0.995561 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,144 fitted five_shift seed=2 precision=1.000000 recall=0.995299 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,182 fitted five_shift seed=3 precision=1.000000 recall=0.995114 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,288 fitted five_shift seed=4 precision=1.000000 recall=0.994964 shrink={'1mer': 2.0, '3mer': 100.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,293 fitted five_shift seed=5 precision=1.000000 recall=0.993997 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,305 fitted five_shift seed=6 precision=1.000000 recall=0.994691 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,333 fitted five_shift seed=7 precision=1.000000 recall=0.994363 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,449 fitted five_shift seed=8 precision=1.000000 recall=0.996279 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,460 fitted five_shift seed=9 precision=1.000000 recall=0.995123 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 10000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,461 fitted five_shift seed=10 precision=1.000000 recall=0.995422 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,502 fitted five_shift seed=11 precision=1.000000 recall=0.996505 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,621 fitted seven_shift seed=0 precision=1.000000 recall=0.996558 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,622 fitted seven_shift seed=1 precision=1.000000 recall=0.995845 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 1000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,627 fitted seven_shift seed=2 precision=1.000000 recall=0.996149 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,662 fitted seven_shift seed=3 precision=1.000000 recall=0.994299 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 1000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,799 fitted seven_shift seed=4 precision=1.000000 recall=0.994881 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,799 fitted seven_shift seed=5 precision=1.000000 recall=0.993051 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,810 fitted seven_shift seed=6 precision=1.000000 recall=0.994513 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,836 fitted seven_shift seed=7 precision=1.000000 recall=0.994008 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 1000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,953 fitted seven_shift seed=8 precision=1.000000 recall=0.995445 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,953 fitted seven_shift seed=9 precision=1.000000 recall=0.995043 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,957 fitted seven_shift seed=10 precision=1.000000 recall=0.994485 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:16,990 fitted seven_shift seed=11 precision=1.000000 recall=0.995607 shrink={'1mer': 2.0, '3mer': 10000.0, '5mer': 10000.0, '7mer': 1000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,094 fitted empirical_five seed=0 precision=1.000000 recall=0.997275 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,164 fitted empirical_five seed=1 precision=1.000000 recall=0.997680 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,164 fitted empirical_five seed=2 precision=1.000000 recall=0.997106 shrink={'1mer': 2.0, '3mer': 100.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,164 fitted empirical_five seed=3 precision=1.000000 recall=0.996741 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,249 fitted empirical_five seed=4 precision=1.000000 recall=0.996983 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,274 fitted empirical_five seed=5 precision=1.000000 recall=0.996333 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,296 fitted empirical_five seed=6 precision=1.000000 recall=0.997987 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,335 fitted empirical_five seed=7 precision=1.000000 recall=0.997294 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,416 fitted empirical_five seed=8 precision=1.000000 recall=0.996656 shrink={'1mer': 2.0, '3mer': 10.0, '5mer': 10000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,433 fitted empirical_five seed=9 precision=1.000000 recall=0.996766 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,442 fitted empirical_five seed=10 precision=1.000000 recall=0.997444 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 1000000000000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:17,483 fitted empirical_five seed=11 precision=1.000000 recall=0.997586 shrink={'1mer': 2.0, '3mer': 1000.0, '5mer': 10000.0, '7mer': 100000.0, '7mer_flat': 1000.0}
+2026-11-12 16:10:18,013 evaluated constant seed=0
+2026-11-12 16:10:18,014 evaluated constant seed=1
+2026-11-12 16:10:18,029 evaluated constant seed=2
+2026-11-12 16:10:18,029 evaluated constant seed=3
+2026-11-12 16:10:18,448 evaluated constant seed=4
+2026-11-12 16:10:18,456 evaluated constant seed=5
+2026-11-12 16:10:18,456 evaluated constant seed=6
+2026-11-12 16:10:18,466 evaluated constant seed=7
+2026-11-12 16:10:18,895 evaluated constant seed=8
+2026-11-12 16:10:18,914 evaluated constant seed=9
+2026-11-12 16:10:18,923 evaluated constant seed=10
+2026-11-12 16:10:18,923 evaluated constant seed=11
+2026-11-12 16:10:19,345 evaluated three seed=0
+2026-11-12 16:10:19,345 evaluated three seed=1
+2026-11-12 16:10:19,345 evaluated three seed=2
+2026-11-12 16:10:19,382 evaluated three seed=3
+2026-11-12 16:10:19,772 evaluated three seed=4
+2026-11-12 16:10:19,785 evaluated three seed=5
+2026-11-12 16:10:19,786 evaluated three seed=6
+2026-11-12 16:10:19,832 evaluated three seed=7
+2026-11-12 16:10:20,185 evaluated three seed=8
+2026-11-12 16:10:20,214 evaluated three seed=9
+2026-11-12 16:10:20,219 evaluated three seed=10
+2026-11-12 16:10:20,265 evaluated three seed=11
+2026-11-12 16:10:20,613 evaluated five_iid seed=0
+2026-11-12 16:10:20,645 evaluated five_iid seed=1
+2026-11-12 16:10:20,648 evaluated five_iid seed=2
+2026-11-12 16:10:20,699 evaluated five_iid seed=3
+2026-11-12 16:10:21,049 evaluated five_iid seed=4
+2026-11-12 16:10:21,075 evaluated five_iid seed=5
+2026-11-12 16:10:21,076 evaluated five_iid seed=6
+2026-11-12 16:10:21,133 evaluated five_iid seed=7
+2026-11-12 16:10:21,500 evaluated five_iid seed=8
+2026-11-12 16:10:21,530 evaluated five_iid seed=9
+2026-11-12 16:10:21,556 evaluated five_iid seed=10
+2026-11-12 16:10:21,612 evaluated five_iid seed=11
+2026-11-12 16:10:21,949 evaluated five_shift seed=0
+2026-11-12 16:10:22,014 evaluated five_shift seed=1
+2026-11-12 16:10:22,040 evaluated five_shift seed=2
+2026-11-12 16:10:22,080 evaluated five_shift seed=3
+2026-11-12 16:10:22,404 evaluated five_shift seed=4
+2026-11-12 16:10:22,471 evaluated five_shift seed=5
+2026-11-12 16:10:22,506 evaluated five_shift seed=6
+2026-11-12 16:10:22,554 evaluated five_shift seed=7
+2026-11-12 16:10:22,848 evaluated five_shift seed=8
+2026-11-12 16:10:22,939 evaluated five_shift seed=9
+2026-11-12 16:10:22,972 evaluated five_shift seed=10
+2026-11-12 16:10:23,011 evaluated five_shift seed=11
+2026-11-12 16:10:23,280 evaluated seven_shift seed=0
+2026-11-12 16:10:23,381 evaluated seven_shift seed=1
+2026-11-12 16:10:23,432 evaluated seven_shift seed=2
+2026-11-12 16:10:23,467 evaluated seven_shift seed=3
+2026-11-12 16:10:23,732 evaluated seven_shift seed=4
+2026-11-12 16:10:23,831 evaluated seven_shift seed=5
+2026-11-12 16:10:23,894 evaluated seven_shift seed=6
+2026-11-12 16:10:23,913 evaluated seven_shift seed=7
+2026-11-12 16:10:24,153 evaluated seven_shift seed=8
+2026-11-12 16:10:24,264 evaluated seven_shift seed=9
+2026-11-12 16:10:24,324 evaluated seven_shift seed=10
+2026-11-12 16:10:24,346 evaluated seven_shift seed=11
+2026-11-12 16:10:24,574 evaluated empirical_five seed=0
+2026-11-12 16:10:24,688 evaluated empirical_five seed=1
+2026-11-12 16:10:24,756 evaluated empirical_five seed=2
+2026-11-12 16:10:24,799 evaluated empirical_five seed=3
+2026-11-12 16:10:25,008 evaluated empirical_five seed=4
+2026-11-12 16:10:25,176 evaluated empirical_five seed=5
+2026-11-12 16:10:25,294 evaluated empirical_five seed=6
+2026-11-12 16:10:25,311 evaluated empirical_five seed=7
+2026-11-12 16:10:25,471 evaluated empirical_five seed=8
+2026-11-12 16:10:25,642 evaluated empirical_five seed=9
+2026-11-12 16:10:25,787 evaluated empirical_five seed=10
+2026-11-12 16:10:25,819 evaluated empirical_five seed=11
+2026-11-12 16:11:59,660 parameters={'phase': 'all', 'root': PosixPath('/home/mew/mutation_context_mock/main'), 'output': PosixPath('results'), 'replicates': 12, 'workers': 4, 'memory_gb': 26, 'train_bases': 4000000, 'test_bases': 1000000, 'contig_bases': 50000, 'mean_rate': 0.005, 'target_outer_match': 0.8, 'scenarios': ['constant', 'three', 'five_iid', 'five_shift', 'seven_shift', 'empirical_five'], 'task_dir': None, 'method': '5mer'} cwd=/mnt/d/phase2simselection/code/experiments/mutation_context python=3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ] platform=Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35 git=6fa3d125b58a85525caf92d4ea8950a1aeefc182 script_sha256=5bb1a67199564e9948cf382dd641e4d04f51454e5e1ae8f54975b77a19058a32
+2026-11-12 16:11:59,880 cached samples constant seed=0
+2026-11-12 16:11:59,881 cached samples constant seed=1
+2026-11-12 16:11:59,881 cached samples constant seed=2
+2026-11-12 16:11:59,903 cached samples constant seed=3
+2026-11-12 16:11:59,904 cached samples constant seed=4
+2026-11-12 16:11:59,904 cached samples constant seed=5
+2026-11-12 16:11:59,951 cached samples constant seed=6
+2026-11-12 16:11:59,952 cached samples constant seed=7
+2026-11-12 16:11:59,963 cached samples constant seed=8
+2026-11-12 16:11:59,963 cached samples constant seed=9
+2026-11-12 16:11:59,988 cached samples constant seed=10
+2026-11-12 16:11:59,988 cached samples constant seed=11
+2026-11-12 16:12:00,018 cached samples three seed=0
+2026-11-12 16:12:00,018 cached samples three seed=1
+2026-11-12 16:12:00,031 cached samples three seed=2
+2026-11-12 16:12:00,031 cached samples three seed=3
+2026-11-12 16:12:00,043 cached samples three seed=4
+2026-11-12 16:12:00,079 cached samples three seed=5
+2026-11-12 16:12:00,079 cached samples three seed=6
+2026-11-12 16:12:00,091 cached samples three seed=7
+2026-11-12 16:12:00,092 cached samples three seed=8
+2026-11-12 16:12:00,112 cached samples three seed=9
+2026-11-12 16:12:00,144 cached samples three seed=10
+2026-11-12 16:12:00,144 cached samples three seed=11
+2026-11-12 16:12:00,150 cached samples five_iid seed=0
+2026-11-12 16:12:00,155 cached samples five_iid seed=1
+2026-11-12 16:12:00,155 cached samples five_iid seed=2
+2026-11-12 16:12:00,195 cached samples five_iid seed=3
+2026-11-12 16:12:00,195 cached samples five_iid seed=4
+2026-11-12 16:12:00,210 cached samples five_iid seed=5
+2026-11-12 16:12:00,210 cached samples five_iid seed=6
+2026-11-12 16:12:00,231 cached samples five_iid seed=7
+2026-11-12 16:12:00,242 cached samples five_iid seed=8
+2026-11-12 16:12:00,266 cached samples five_iid seed=9
+2026-11-12 16:12:00,266 cached samples five_iid seed=10
+2026-11-12 16:12:00,284 cached samples five_iid seed=11
+2026-11-12 16:12:00,312 cached samples five_shift seed=0
+2026-11-12 16:12:00,312 cached samples five_shift seed=1
+2026-11-12 16:12:00,313 cached samples five_shift seed=2
+2026-11-12 16:12:00,320 cached samples five_shift seed=3
+2026-11-12 16:12:00,353 cached samples five_shift seed=4
+2026-11-12 16:12:00,353 cached samples five_shift seed=5
+2026-11-12 16:12:00,357 cached samples five_shift seed=6
+2026-11-12 16:12:00,369 cached samples five_shift seed=7
+2026-11-12 16:12:00,390 cached samples five_shift seed=8
+2026-11-12 16:12:00,412 cached samples five_shift seed=9
+2026-11-12 16:12:00,412 cached samples five_shift seed=10
+2026-11-12 16:12:00,435 cached samples five_shift seed=11
+2026-11-12 16:12:00,448 cached samples seven_shift seed=0
+2026-11-12 16:12:00,452 cached samples seven_shift seed=1
+2026-11-12 16:12:00,472 cached samples seven_shift seed=2
+2026-11-12 16:12:00,475 cached samples seven_shift seed=3
+2026-11-12 16:12:00,492 cached samples seven_shift seed=4
+2026-11-12 16:12:00,492 cached samples seven_shift seed=5
+2026-11-12 16:12:00,516 cached samples seven_shift seed=6
+2026-11-12 16:12:00,516 cached samples seven_shift seed=7
+2026-11-12 16:12:00,520 cached samples seven_shift seed=8
+2026-11-12 16:12:00,531 cached samples seven_shift seed=9
+2026-11-12 16:12:00,547 cached samples seven_shift seed=10
+2026-11-12 16:12:00,553 cached samples seven_shift seed=11
+2026-11-12 16:12:07,231 prepared empirical_five seed=0
+2026-11-12 16:12:07,251 prepared empirical_five seed=1
+2026-11-12 16:12:07,251 prepared empirical_five seed=2
+2026-11-12 16:12:07,251 prepared empirical_five seed=3
+2026-11-12 16:12:13,145 prepared empirical_five seed=4
+2026-11-12 16:12:13,268 prepared empirical_five seed=5
+2026-11-12 16:12:13,269 prepared empirical_five seed=6
+2026-11-12 16:12:13,311 prepared empirical_five seed=7
+2026-11-12 16:12:18,904 prepared empirical_five seed=8
+2026-11-12 16:12:18,904 prepared empirical_five seed=9
+2026-11-12 16:12:19,064 prepared empirical_five seed=10
+2026-11-12 16:12:19,268 prepared empirical_five seed=11
+2026-11-12 16:12:19,349 cached fit constant seed=0
+2026-11-12 16:12:19,357 cached fit constant seed=1
+2026-11-12 16:12:19,362 cached fit constant seed=2
+2026-11-12 16:12:19,362 cached fit constant seed=3
+2026-11-12 16:12:19,390 cached fit constant seed=4
+2026-11-12 16:12:19,397 cached fit constant seed=5
+2026-11-12 16:12:19,404 cached fit constant seed=6
+2026-11-12 16:12:19,405 cached fit constant seed=7
+2026-11-12 16:12:19,428 cached fit constant seed=8
+2026-11-12 16:12:19,436 cached fit constant seed=9
+2026-11-12 16:12:19,436 cached fit constant seed=10
+2026-11-12 16:12:19,444 cached fit constant seed=11
+2026-11-12 16:12:19,460 cached fit three seed=0
+2026-11-12 16:12:19,476 cached fit three seed=1
+2026-11-12 16:12:19,477 cached fit three seed=2
+2026-11-12 16:12:19,484 cached fit three seed=3
+2026-11-12 16:12:19,492 cached fit three seed=4
+2026-11-12 16:12:19,507 cached fit three seed=5
+2026-11-12 16:12:19,509 cached fit three seed=6
+2026-11-12 16:12:19,525 cached fit three seed=7
+2026-11-12 16:12:19,533 cached fit three seed=8
+2026-11-12 16:12:19,550 cached fit three seed=9
+2026-11-12 16:12:19,552 cached fit three seed=10
+2026-11-12 16:12:19,564 cached fit three seed=11
+2026-11-12 16:12:19,571 cached fit five_iid seed=0
+2026-11-12 16:12:19,587 cached fit five_iid seed=1
+2026-11-12 16:12:19,592 cached fit five_iid seed=2
+2026-11-12 16:12:19,600 cached fit five_iid seed=3
+2026-11-12 16:12:19,610 cached fit five_iid seed=4
+2026-11-12 16:12:19,625 cached fit five_iid seed=5
+2026-11-12 16:12:19,625 cached fit five_iid seed=6
+2026-11-12 16:12:19,638 cached fit five_iid seed=7
+2026-11-12 16:12:19,644 cached fit five_iid seed=8
+2026-11-12 16:12:19,660 cached fit five_iid seed=9
+2026-11-12 16:12:19,660 cached fit five_iid seed=10
+2026-11-12 16:12:19,673 cached fit five_iid seed=11
+2026-11-12 16:12:19,677 cached fit five_shift seed=0
+2026-11-12 16:12:19,695 cached fit five_shift seed=1
+2026-11-12 16:12:19,696 cached fit five_shift seed=2
+2026-11-12 16:12:19,709 cached fit five_shift seed=3
+2026-11-12 16:12:19,713 cached fit five_shift seed=4
+2026-11-12 16:12:19,727 cached fit five_shift seed=5
+2026-11-12 16:12:19,730 cached fit five_shift seed=6
+2026-11-12 16:12:19,746 cached fit five_shift seed=7
+2026-11-12 16:12:19,749 cached fit five_shift seed=8
+2026-11-12 16:12:19,763 cached fit five_shift seed=9
+2026-11-12 16:12:19,764 cached fit five_shift seed=10
+2026-11-12 16:12:19,784 cached fit five_shift seed=11
+2026-11-12 16:12:19,788 cached fit seven_shift seed=0
+2026-11-12 16:12:19,800 cached fit seven_shift seed=1
+2026-11-12 16:12:19,810 cached fit seven_shift seed=2
+2026-11-12 16:12:19,827 cached fit seven_shift seed=3
+2026-11-12 16:12:19,827 cached fit seven_shift seed=4
+2026-11-12 16:12:19,838 cached fit seven_shift seed=5
+2026-11-12 16:12:19,844 cached fit seven_shift seed=6
+2026-11-12 16:12:19,865 cached fit seven_shift seed=7
+2026-11-12 16:12:19,866 cached fit seven_shift seed=8
+2026-11-12 16:12:19,875 cached fit seven_shift seed=9
+2026-11-12 16:12:19,892 cached fit seven_shift seed=10
+2026-11-12 16:12:19,906 cached fit seven_shift seed=11
+2026-11-12 16:12:19,908 cached fit empirical_five seed=0
+2026-11-12 16:12:19,922 cached fit empirical_five seed=1
+2026-11-12 16:12:19,947 cached fit empirical_five seed=2
+2026-11-12 16:12:19,948 cached fit empirical_five seed=3
+2026-11-12 16:12:19,950 cached fit empirical_five seed=4
+2026-11-12 16:12:19,965 cached fit empirical_five seed=5
+2026-11-12 16:12:19,992 cached fit empirical_five seed=6
+2026-11-12 16:12:20,017 cached fit empirical_five seed=7
+2026-11-12 16:12:20,017 cached fit empirical_five seed=8
+2026-11-12 16:12:20,017 cached fit empirical_five seed=9
+2026-11-12 16:12:20,025 cached fit empirical_five seed=10
+2026-11-12 16:12:20,039 cached fit empirical_five seed=11
+2026-11-12 16:12:20,116 cached evaluation constant seed=0
+2026-11-12 16:12:20,132 cached evaluation constant seed=1
+2026-11-12 16:12:20,132 cached evaluation constant seed=2
+2026-11-12 16:12:20,132 cached evaluation constant seed=3
+2026-11-12 16:12:20,149 cached evaluation constant seed=4
+2026-11-12 16:12:20,159 cached evaluation constant seed=5
+2026-11-12 16:12:20,169 cached evaluation constant seed=6
+2026-11-12 16:12:20,170 cached evaluation constant seed=7
+2026-11-12 16:12:20,180 cached evaluation constant seed=8
+2026-11-12 16:12:20,201 cached evaluation constant seed=9
+2026-11-12 16:12:20,201 cached evaluation constant seed=10
+2026-11-12 16:12:20,206 cached evaluation constant seed=11
+2026-11-12 16:12:20,214 cached evaluation three seed=0
+2026-11-12 16:12:20,230 cached evaluation three seed=1
+2026-11-12 16:12:20,236 cached evaluation three seed=2
+2026-11-12 16:12:20,242 cached evaluation three seed=3
+2026-11-12 16:12:20,265 cached evaluation three seed=4
+2026-11-12 16:12:20,266 cached evaluation three seed=5
+2026-11-12 16:12:20,272 cached evaluation three seed=6
+2026-11-12 16:12:20,278 cached evaluation three seed=7
+2026-11-12 16:12:20,304 cached evaluation three seed=8
+2026-11-12 16:12:20,304 cached evaluation three seed=9
+2026-11-12 16:12:20,310 cached evaluation three seed=10
+2026-11-12 16:12:20,324 cached evaluation three seed=11
+2026-11-12 16:12:20,341 cached evaluation five_iid seed=0
+2026-11-12 16:12:20,341 cached evaluation five_iid seed=1
+2026-11-12 16:12:20,347 cached evaluation five_iid seed=2
+2026-11-12 16:12:20,364 cached evaluation five_iid seed=3
+2026-11-12 16:12:20,371 cached evaluation five_iid seed=4
+2026-11-12 16:12:20,371 cached evaluation five_iid seed=5
+2026-11-12 16:12:20,393 cached evaluation five_iid seed=6
+2026-11-12 16:12:20,395 cached evaluation five_iid seed=7
+2026-11-12 16:12:20,401 cached evaluation five_iid seed=8
+2026-11-12 16:12:20,404 cached evaluation five_iid seed=9
+2026-11-12 16:12:20,432 cached evaluation five_iid seed=10
+2026-11-12 16:12:20,432 cached evaluation five_iid seed=11
+2026-11-12 16:12:20,437 cached evaluation five_shift seed=0
+2026-11-12 16:12:20,442 cached evaluation five_shift seed=1
+2026-11-12 16:12:20,468 cached evaluation five_shift seed=2
+2026-11-12 16:12:20,469 cached evaluation five_shift seed=3
+2026-11-12 16:12:20,474 cached evaluation five_shift seed=4
+2026-11-12 16:12:20,484 cached evaluation five_shift seed=5
+2026-11-12 16:12:20,510 cached evaluation five_shift seed=6
+2026-11-12 16:12:20,510 cached evaluation five_shift seed=7
+2026-11-12 16:12:20,516 cached evaluation five_shift seed=8
+2026-11-12 16:12:20,520 cached evaluation five_shift seed=9
+2026-11-12 16:12:20,543 cached evaluation five_shift seed=10
+2026-11-12 16:12:20,552 cached evaluation five_shift seed=11
+2026-11-12 16:12:20,559 cached evaluation seven_shift seed=0
+2026-11-12 16:12:20,559 cached evaluation seven_shift seed=1
+2026-11-12 16:12:20,578 cached evaluation seven_shift seed=2
+2026-11-12 16:12:20,590 cached evaluation seven_shift seed=3
+2026-11-12 16:12:20,601 cached evaluation seven_shift seed=4
+2026-11-12 16:12:20,607 cached evaluation seven_shift seed=5
+2026-11-12 16:12:20,623 cached evaluation seven_shift seed=6
+2026-11-12 16:12:20,634 cached evaluation seven_shift seed=7
+2026-11-12 16:12:20,638 cached evaluation seven_shift seed=8
+2026-11-12 16:12:20,652 cached evaluation seven_shift seed=9
+2026-11-12 16:12:20,653 cached evaluation seven_shift seed=10
+2026-11-12 16:12:20,683 cached evaluation seven_shift seed=11
+2026-11-12 16:12:21,195 evaluated empirical_five seed=0
+2026-11-12 16:12:21,241 evaluated empirical_five seed=1
+2026-11-12 16:12:21,241 evaluated empirical_five seed=2
+2026-11-12 16:12:21,308 evaluated empirical_five seed=3
+2026-11-12 16:12:21,741 evaluated empirical_five seed=4
+2026-11-12 16:12:21,803 evaluated empirical_five seed=5
+2026-11-12 16:12:21,805 evaluated empirical_five seed=6
+2026-11-12 16:12:21,920 evaluated empirical_five seed=7
+2026-11-12 16:12:22,281 evaluated empirical_five seed=8
+2026-11-12 16:12:22,378 evaluated empirical_five seed=9
+2026-11-12 16:12:22,393 evaluated empirical_five seed=10
+2026-11-12 16:12:22,510 evaluated empirical_five seed=11
+2026-11-12 16:18:20,933 parameters={'phase': 'all', 'root': PosixPath('/home/mew/mutation_context_mock/main'), 'output': PosixPath('results'), 'replicates': 12, 'workers': 4, 'memory_gb': 26, 'train_bases': 4000000, 'test_bases': 1000000, 'contig_bases': 50000, 'mean_rate': 0.005, 'target_outer_match': 0.8, 'scenarios': ['constant', 'three', 'five_iid', 'five_shift', 'seven_shift', 'empirical_five'], 'task_dir': None, 'method': '5mer'} cwd=/mnt/d/phase2simselection/code/experiments/mutation_context python=3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ] platform=Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35 git=6fa3d125b58a85525caf92d4ea8950a1aeefc182 script_sha256=c20909d6e6fcaf0321e86a9c31186c33ce7dd1669e87bd1a704a7b3ebdc79c12
+2026-11-12 16:18:21,041 cached samples constant seed=0
+2026-11-12 16:18:21,050 cached samples constant seed=1
+2026-11-12 16:18:21,051 cached samples constant seed=2
+2026-11-12 16:18:21,051 cached samples constant seed=3
+2026-11-12 16:18:21,075 cached samples constant seed=4
+2026-11-12 16:18:21,087 cached samples constant seed=5
+2026-11-12 16:18:21,088 cached samples constant seed=6
+2026-11-12 16:18:21,090 cached samples constant seed=7
+2026-11-12 16:18:21,111 cached samples constant seed=8
+2026-11-12 16:18:21,120 cached samples constant seed=9
+2026-11-12 16:18:21,122 cached samples constant seed=10
+2026-11-12 16:18:21,123 cached samples constant seed=11
+2026-11-12 16:18:21,142 cached samples three seed=0
+2026-11-12 16:18:21,153 cached samples three seed=1
+2026-11-12 16:18:21,153 cached samples three seed=2
+2026-11-12 16:18:21,157 cached samples three seed=3
+2026-11-12 16:18:21,174 cached samples three seed=4
+2026-11-12 16:18:21,182 cached samples three seed=5
+2026-11-12 16:18:21,184 cached samples three seed=6
+2026-11-12 16:18:21,187 cached samples three seed=7
+2026-11-12 16:18:21,207 cached samples three seed=8
+2026-11-12 16:18:21,216 cached samples three seed=9
+2026-11-12 16:18:21,217 cached samples three seed=10
+2026-11-12 16:18:21,220 cached samples three seed=11
+2026-11-12 16:18:21,239 cached samples five_iid seed=0
+2026-11-12 16:18:21,250 cached samples five_iid seed=1
+2026-11-12 16:18:21,254 cached samples five_iid seed=2
+2026-11-12 16:18:21,259 cached samples five_iid seed=3
+2026-11-12 16:18:21,278 cached samples five_iid seed=4
+2026-11-12 16:18:21,284 cached samples five_iid seed=5
+2026-11-12 16:18:21,296 cached samples five_iid seed=6
+2026-11-12 16:18:21,296 cached samples five_iid seed=7
+2026-11-12 16:18:21,312 cached samples five_iid seed=8
+2026-11-12 16:18:21,314 cached samples five_iid seed=9
+2026-11-12 16:18:21,336 cached samples five_iid seed=10
+2026-11-12 16:18:21,337 cached samples five_iid seed=11
+2026-11-12 16:18:21,345 cached samples five_shift seed=0
+2026-11-12 16:18:21,348 cached samples five_shift seed=1
+2026-11-12 16:18:21,369 cached samples five_shift seed=2
+2026-11-12 16:18:21,373 cached samples five_shift seed=3
+2026-11-12 16:18:21,379 cached samples five_shift seed=4
+2026-11-12 16:18:21,387 cached samples five_shift seed=5
+2026-11-12 16:18:21,408 cached samples five_shift seed=6
+2026-11-12 16:18:21,414 cached samples five_shift seed=7
+2026-11-12 16:18:21,417 cached samples five_shift seed=8
+2026-11-12 16:18:21,421 cached samples five_shift seed=9
+2026-11-12 16:18:21,445 cached samples five_shift seed=10
+2026-11-12 16:18:21,450 cached samples five_shift seed=11
+2026-11-12 16:18:21,454 cached samples seven_shift seed=0
+2026-11-12 16:18:21,461 cached samples seven_shift seed=1
+2026-11-12 16:18:21,480 cached samples seven_shift seed=2
+2026-11-12 16:18:21,483 cached samples seven_shift seed=3
+2026-11-12 16:18:21,490 cached samples seven_shift seed=4
+2026-11-12 16:18:21,494 cached samples seven_shift seed=5
+2026-11-12 16:18:21,513 cached samples seven_shift seed=6
+2026-11-12 16:18:21,526 cached samples seven_shift seed=7
+2026-11-12 16:18:21,528 cached samples seven_shift seed=8
+2026-11-12 16:18:21,531 cached samples seven_shift seed=9
+2026-11-12 16:18:21,547 cached samples seven_shift seed=10
+2026-11-12 16:18:21,563 cached samples seven_shift seed=11
+2026-11-12 16:18:21,609 cached samples empirical_five seed=0
+2026-11-12 16:18:21,615 cached samples empirical_five seed=1
+2026-11-12 16:18:21,632 cached samples empirical_five seed=2
+2026-11-12 16:18:21,637 cached samples empirical_five seed=3
+2026-11-12 16:18:21,688 cached samples empirical_five seed=4
+2026-11-12 16:18:21,689 cached samples empirical_five seed=5
+2026-11-12 16:18:21,716 cached samples empirical_five seed=6
+2026-11-12 16:18:21,718 cached samples empirical_five seed=7
+2026-11-12 16:18:21,770 cached samples empirical_five seed=8
+2026-11-12 16:18:21,771 cached samples empirical_five seed=9
+2026-11-12 16:18:21,798 cached samples empirical_five seed=10
+2026-11-12 16:18:21,801 cached samples empirical_five seed=11
+2026-11-12 16:18:21,875 cached fit constant seed=0
+2026-11-12 16:18:21,877 cached fit constant seed=1
+2026-11-12 16:18:21,880 cached fit constant seed=2
+2026-11-12 16:18:21,885 cached fit constant seed=3
+2026-11-12 16:18:21,908 cached fit constant seed=4
+2026-11-12 16:18:21,916 cached fit constant seed=5
+2026-11-12 16:18:21,922 cached fit constant seed=6
+2026-11-12 16:18:21,922 cached fit constant seed=7
+2026-11-12 16:18:21,946 cached fit constant seed=8
+2026-11-12 16:18:21,952 cached fit constant seed=9
+2026-11-12 16:18:21,955 cached fit constant seed=10
+2026-11-12 16:18:21,959 cached fit constant seed=11
+2026-11-12 16:18:21,986 cached fit three seed=0
+2026-11-12 16:18:21,988 cached fit three seed=1
+2026-11-12 16:18:21,992 cached fit three seed=2
+2026-11-12 16:18:21,993 cached fit three seed=3
+2026-11-12 16:18:22,019 cached fit three seed=4
+2026-11-12 16:18:22,020 cached fit three seed=5
+2026-11-12 16:18:22,033 cached fit three seed=6
+2026-11-12 16:18:22,033 cached fit three seed=7
+2026-11-12 16:18:22,054 cached fit three seed=8
+2026-11-12 16:18:22,054 cached fit three seed=9
+2026-11-12 16:18:22,065 cached fit three seed=10
+2026-11-12 16:18:22,077 cached fit three seed=11
+2026-11-12 16:18:22,092 cached fit five_iid seed=0
+2026-11-12 16:18:22,092 cached fit five_iid seed=1
+2026-11-12 16:18:22,101 cached fit five_iid seed=2
+2026-11-12 16:18:22,120 cached fit five_iid seed=3
+2026-11-12 16:18:22,126 cached fit five_iid seed=4
+2026-11-12 16:18:22,131 cached fit five_iid seed=5
+2026-11-12 16:18:22,138 cached fit five_iid seed=6
+2026-11-12 16:18:22,162 cached fit five_iid seed=7
+2026-11-12 16:18:22,167 cached fit five_iid seed=8
+2026-11-12 16:18:22,168 cached fit five_iid seed=9
+2026-11-12 16:18:22,178 cached fit five_iid seed=10
+2026-11-12 16:18:22,202 cached fit five_iid seed=11
+2026-11-12 16:18:22,204 cached fit five_shift seed=0
+2026-11-12 16:18:22,206 cached fit five_shift seed=1
+2026-11-12 16:18:22,220 cached fit five_shift seed=2
+2026-11-12 16:18:22,239 cached fit five_shift seed=3
+2026-11-12 16:18:22,243 cached fit five_shift seed=4
+2026-11-12 16:18:22,245 cached fit five_shift seed=5
+2026-11-12 16:18:22,260 cached fit five_shift seed=6
+2026-11-12 16:18:22,280 cached fit five_shift seed=7
+2026-11-12 16:18:22,281 cached fit five_shift seed=8
+2026-11-12 16:18:22,291 cached fit five_shift seed=9
+2026-11-12 16:18:22,297 cached fit five_shift seed=10
+2026-11-12 16:18:22,322 cached fit five_shift seed=11
+2026-11-12 16:18:22,322 cached fit seven_shift seed=0
+2026-11-12 16:18:22,334 cached fit seven_shift seed=1
+2026-11-12 16:18:22,346 cached fit seven_shift seed=2
+2026-11-12 16:18:22,356 cached fit seven_shift seed=3
+2026-11-12 16:18:22,371 cached fit seven_shift seed=4
+2026-11-12 16:18:22,380 cached fit seven_shift seed=5
+2026-11-12 16:18:22,390 cached fit seven_shift seed=6
+2026-11-12 16:18:22,397 cached fit seven_shift seed=7
+2026-11-12 16:18:22,411 cached fit seven_shift seed=8
+2026-11-12 16:18:22,413 cached fit seven_shift seed=9
+2026-11-12 16:18:22,439 cached fit seven_shift seed=10
+2026-11-12 16:18:22,439 cached fit seven_shift seed=11
+2026-11-12 16:18:22,450 cached fit empirical_five seed=0
+2026-11-12 16:18:22,460 cached fit empirical_five seed=1
+2026-11-12 16:18:22,474 cached fit empirical_five seed=2
+2026-11-12 16:18:22,479 cached fit empirical_five seed=3
+2026-11-12 16:18:22,492 cached fit empirical_five seed=4
+2026-11-12 16:18:22,497 cached fit empirical_five seed=5
+2026-11-12 16:18:22,510 cached fit empirical_five seed=6
+2026-11-12 16:18:22,531 cached fit empirical_five seed=7
+2026-11-12 16:18:22,544 cached fit empirical_five seed=8
+2026-11-12 16:18:22,545 cached fit empirical_five seed=9
+2026-11-12 16:18:22,552 cached fit empirical_five seed=10
+2026-11-12 16:18:22,578 cached fit empirical_five seed=11
+2026-11-12 16:18:22,667 cached evaluation constant seed=0
+2026-11-12 16:18:22,667 cached evaluation constant seed=1
+2026-11-12 16:18:22,667 cached evaluation constant seed=2
+2026-11-12 16:18:22,669 cached evaluation constant seed=3
+2026-11-12 16:18:22,709 cached evaluation constant seed=4
+2026-11-12 16:18:22,709 cached evaluation constant seed=5
+2026-11-12 16:18:22,709 cached evaluation constant seed=6
+2026-11-12 16:18:22,710 cached evaluation constant seed=7
+2026-11-12 16:18:22,750 cached evaluation constant seed=8
+2026-11-12 16:18:22,750 cached evaluation constant seed=9
+2026-11-12 16:18:22,750 cached evaluation constant seed=10
+2026-11-12 16:18:22,750 cached evaluation constant seed=11
+2026-11-12 16:18:22,783 cached evaluation three seed=0
+2026-11-12 16:18:22,786 cached evaluation three seed=1
+2026-11-12 16:18:22,787 cached evaluation three seed=2
+2026-11-12 16:18:22,791 cached evaluation three seed=3
+2026-11-12 16:18:22,823 cached evaluation three seed=4
+2026-11-12 16:18:22,827 cached evaluation three seed=5
+2026-11-12 16:18:22,828 cached evaluation three seed=6
+2026-11-12 16:18:22,830 cached evaluation three seed=7
+2026-11-12 16:18:22,861 cached evaluation three seed=8
+2026-11-12 16:18:22,864 cached evaluation three seed=9
+2026-11-12 16:18:22,864 cached evaluation three seed=10
+2026-11-12 16:18:22,867 cached evaluation three seed=11
+2026-11-12 16:18:22,897 cached evaluation five_iid seed=0
+2026-11-12 16:18:22,906 cached evaluation five_iid seed=1
+2026-11-12 16:18:22,910 cached evaluation five_iid seed=2
+2026-11-12 16:18:22,911 cached evaluation five_iid seed=3
+2026-11-12 16:18:22,932 cached evaluation five_iid seed=4
+2026-11-12 16:18:22,937 cached evaluation five_iid seed=5
+2026-11-12 16:18:22,942 cached evaluation five_iid seed=6
+2026-11-12 16:18:22,946 cached evaluation five_iid seed=7
+2026-11-12 16:18:22,963 cached evaluation five_iid seed=8
+2026-11-12 16:18:22,977 cached evaluation five_iid seed=9
+2026-11-12 16:18:22,978 cached evaluation five_iid seed=10
+2026-11-12 16:18:22,978 cached evaluation five_iid seed=11
+2026-11-12 16:18:23,000 cached evaluation five_shift seed=0
+2026-11-12 16:18:23,007 cached evaluation five_shift seed=1
+2026-11-12 16:18:23,012 cached evaluation five_shift seed=2
+2026-11-12 16:18:23,018 cached evaluation five_shift seed=3
+2026-11-12 16:18:23,037 cached evaluation five_shift seed=4
+2026-11-12 16:18:23,046 cached evaluation five_shift seed=5
+2026-11-12 16:18:23,049 cached evaluation five_shift seed=6
+2026-11-12 16:18:23,053 cached evaluation five_shift seed=7
+2026-11-12 16:18:23,070 cached evaluation five_shift seed=8
+2026-11-12 16:18:23,080 cached evaluation five_shift seed=9
+2026-11-12 16:18:23,081 cached evaluation five_shift seed=10
+2026-11-12 16:18:23,091 cached evaluation five_shift seed=11
+2026-11-12 16:18:23,109 cached evaluation seven_shift seed=0
+2026-11-12 16:18:23,111 cached evaluation seven_shift seed=1
+2026-11-12 16:18:23,115 cached evaluation seven_shift seed=2
+2026-11-12 16:18:23,129 cached evaluation seven_shift seed=3
+2026-11-12 16:18:23,144 cached evaluation seven_shift seed=4
+2026-11-12 16:18:23,149 cached evaluation seven_shift seed=5
+2026-11-12 16:18:23,150 cached evaluation seven_shift seed=6
+2026-11-12 16:18:23,164 cached evaluation seven_shift seed=7
+2026-11-12 16:18:23,181 cached evaluation seven_shift seed=8
+2026-11-12 16:18:23,186 cached evaluation seven_shift seed=9
+2026-11-12 16:18:23,188 cached evaluation seven_shift seed=10
+2026-11-12 16:18:23,199 cached evaluation seven_shift seed=11
+2026-11-12 16:18:23,219 cached evaluation empirical_five seed=0
+2026-11-12 16:18:23,220 cached evaluation empirical_five seed=1
+2026-11-12 16:18:23,226 cached evaluation empirical_five seed=2
+2026-11-12 16:18:23,231 cached evaluation empirical_five seed=3
+2026-11-12 16:18:23,253 cached evaluation empirical_five seed=4
+2026-11-12 16:18:23,255 cached evaluation empirical_five seed=5
+2026-11-12 16:18:23,262 cached evaluation empirical_five seed=6
+2026-11-12 16:18:23,268 cached evaluation empirical_five seed=7
+2026-11-12 16:18:23,288 cached evaluation empirical_five seed=8
+2026-11-12 16:18:23,296 cached evaluation empirical_five seed=9
+2026-11-12 16:18:23,296 cached evaluation empirical_five seed=10
+2026-11-12 16:18:23,302 cached evaluation empirical_five seed=11
+2026-11-12 16:18:31,018 parameters={'phase': 'report', 'root': PosixPath('/home/mew/mutation_context_mock/main'), 'output': PosixPath('results'), 'replicates': 12, 'workers': 4, 'memory_gb': 26, 'train_bases': 4000000, 'test_bases': 1000000, 'contig_bases': 50000, 'mean_rate': 0.005, 'target_outer_match': 0.8, 'scenarios': ['constant', 'three', 'five_iid', 'five_shift', 'seven_shift'], 'task_dir': None, 'method': '5mer'} cwd=/mnt/d/phase2simselection/code/experiments/mutation_context python=3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ] platform=Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35 git=6fa3d125b58a85525caf92d4ea8950a1aeefc182 script_sha256=c20909d6e6fcaf0321e86a9c31186c33ce7dd1669e87bd1a704a7b3ebdc79c12

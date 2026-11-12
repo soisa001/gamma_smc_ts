@@ -1,0 +1,3967 @@
+{
+  "dependency_lock_sha256": "ddeab2cb492929a9e438df431516401658006f9fbf60fb07196c02cac32fd613",
+  "latest_invocation": {
+    "arguments": {
+      "contig_bases": 50000,
+      "mean_rate": 0.005,
+      "memory_gb": 26,
+      "method": "5mer",
+      "output": "results",
+      "phase": "report",
+      "replicates": 12,
+      "root": "/home/mew/mutation_context_mock/main",
+      "scenarios": [
+        "constant",
+        "three",
+        "five_iid",
+        "five_shift",
+        "seven_shift"
+      ],
+      "target_outer_match": 0.8,
+      "task_dir": null,
+      "test_bases": 1000000,
+      "train_bases": 4000000,
+      "workers": 4
+    },
+    "config": {
+      "contig_bases": 50000,
+      "mean_rate": 0.005,
+      "target_outer_match": 0.8,
+      "test_bases": 1000000,
+      "train_bases": 4000000
+    },
+    "dependency_lock_sha256": "ddeab2cb492929a9e438df431516401658006f9fbf60fb07196c02cac32fd613",
+    "git": "6fa3d125b58a85525caf92d4ea8950a1aeefc182",
+    "packages": {
+      "edlib": "1.3.9.post1",
+      "matplotlib": "3.10.8",
+      "numpy": "2.3.5",
+      "scipy": "1.16.3"
+    },
+    "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+    "script_sha256": "c20909d6e6fcaf0321e86a9c31186c33ce7dd1669e87bd1a704a7b3ebdc79c12",
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "runs": [
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_000",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20074,
+          "callable_sites": 3999037,
+          "called_mutations": 19973,
+          "correct_mutations": 19973,
+          "masked_sites": 483,
+          "precision": 1.0,
+          "recall": 0.9949686161203547,
+          "true_mutations": 20074
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 100000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199209,
+        "validation_nll": {
+          "1mer": 29440.033273906665,
+          "3mer": 29440.03327393323,
+          "5mer": 29439.601224202223,
+          "7mer": 29439.601224259604,
+          "7mer_flat": 29440.033273955778
+        },
+        "validation_sites": 799828
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 0,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "2594a3e9a5eb065a5f503e0b30c5cd7a9e4c9fdb038d9883e79c80af48bfdac6",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "c05d159d0f539750150b3a31291742cf82248e4fe1a27768ff1f14fc97fa9c28",
+          "public/calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "2e16b9777838c1c2971b751fef60a6d767a2704251dd2daffe280778fd2fa72a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "91950f52f87bdc3882d1bbd757ead84bb1f4c6478ff7a18f37f5572a874f6013"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_001",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20277,
+          "callable_sites": 3998895,
+          "called_mutations": 20141,
+          "correct_mutations": 20141,
+          "masked_sites": 625,
+          "precision": 1.0,
+          "recall": 0.9932928934260492,
+          "true_mutations": 20277
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199125,
+        "validation_nll": {
+          "1mer": 29327.484323000826,
+          "3mer": 29327.484323517536,
+          "5mer": 29327.484323590113,
+          "7mer": 29327.48432364899,
+          "7mer_flat": 29327.48432305971
+        },
+        "validation_sites": 799770
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 1,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "15d3fd4852861aaf2ea587c9b2160a9afefe3ceb41577055b68e3d4b42f7f4c6",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "761f1a89e95d9dc7b14a90805c4b412daec46620a10610ba9bb4d1c4151f8f97",
+          "public/calibration_parent.fasta": "f9349291314fa8c84b095f8c1197d3e5188c2a535e6f506d5321a96aac3f6086",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "54060785e77af7645bc076683cbfe532bd3f539dcc15b1f4de18e51152634374",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "fa1922b7c0508df11e3702afc9b098e76876a46025a0dca45703c1a823aa33a9"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_002",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19930,
+          "callable_sites": 3998937,
+          "called_mutations": 19802,
+          "correct_mutations": 19802,
+          "masked_sites": 583,
+          "precision": 1.0,
+          "recall": 0.9935775213246363,
+          "true_mutations": 19930
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199180,
+        "validation_nll": {
+          "1mer": 28736.638555739115,
+          "3mer": 28736.638556200258,
+          "5mer": 28736.63855639488,
+          "7mer": 28736.638556462036,
+          "7mer_flat": 28736.63855580626
+        },
+        "validation_sites": 799757
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 2,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "3a91cb8fb83e59bf4d64633e3d41b52a5e15ca1773f61e09f453beac8e45f9c8",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "30abe57ac2cceea93f9dd7a2484e39e00aa44be8b765474277e6b2cf9b8053e7",
+          "public/calibration_parent.fasta": "ed54fa538d2a34efb3c8e1fe240ace2285ed3402e46c6f9522971bd01506b82a",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "18ab0887826840c2c5109c144107aa3cf0356f5b38b65bd13a4a5e9f83446b27",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "bf0b5b1ea017d4bc2de39f663c5ac64bcab3d649adb91cc5ee092de6035c9fdc"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_003",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19700,
+          "callable_sites": 3998969,
+          "called_mutations": 19579,
+          "correct_mutations": 19579,
+          "masked_sites": 551,
+          "precision": 1.0,
+          "recall": 0.9938578680203045,
+          "true_mutations": 19700
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199159,
+        "validation_nll": {
+          "1mer": 29468.13080522726,
+          "3mer": 29468.130805297835,
+          "5mer": 29468.130805274937,
+          "7mer": 29468.13080527263,
+          "7mer_flat": 29468.130805224966
+        },
+        "validation_sites": 799810
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 3,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "c7af33a3685a13b5374dde5bb71995538c05e08d3e58dc5cf44255dcd36e08da",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "49c2b5fdec5eef548345336d6ce3dfbb18ba0abf368dc93a1f5724307c3a8838",
+          "public/calibration_parent.fasta": "0626c10d5a80eff480efff51b2dbaa658ca43a102511d519a755f4266d35dcdb",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "5604c30725c84e5528caf4259a7c7b9e7d9bfbf17822528c65192281d355c142",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "83d9bf945f65ef82496a5efc4c2ff9d9f364594b0e3d1e69023229b8c15e2705"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_004",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19864,
+          "callable_sites": 3999022,
+          "called_mutations": 19757,
+          "correct_mutations": 19757,
+          "masked_sites": 498,
+          "precision": 1.0,
+          "recall": 0.9946133709222714,
+          "true_mutations": 19864
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 10000.0,
+          "7mer_flat": 10000.0
+        },
+        "training_sites": 3199214,
+        "validation_nll": {
+          "1mer": 28938.578616049163,
+          "3mer": 28938.578616361738,
+          "5mer": 28938.578616340368,
+          "7mer": 28938.096472756217,
+          "7mer_flat": 28938.096472297202
+        },
+        "validation_sites": 799808
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 4,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "e69bbbb251cecadd46db44945d3cb0a7df2cc1fac05d8d5a9f68b720e3b188d2",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "97c5e0f401a1062dbcabac4986517b79cfb60d10f011d6ebae314e7afbc59779",
+          "public/calibration_parent.fasta": "6dbc131efde924841e489c717aa10c00d646c5119c376f1a17d05ca4248a1a59",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "b36388fbddc5c1dd5577f75ae5b8a30df107a5221a9896372506aa1239fcea77",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "b7ba5caa9e3156610e9d8354bec5747b3cf8cdd886221de2941d2c69f84442fe"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_005",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19864,
+          "callable_sites": 3998833,
+          "called_mutations": 19714,
+          "correct_mutations": 19714,
+          "masked_sites": 687,
+          "precision": 1.0,
+          "recall": 0.9924486508256142,
+          "true_mutations": 19864
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 100000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 100000.0
+        },
+        "training_sites": 3199038,
+        "validation_nll": {
+          "1mer": 29029.75187553052,
+          "3mer": 29029.751875570553,
+          "5mer": 29029.274596595424,
+          "7mer": 29029.247494555126,
+          "7mer_flat": 29029.647068840997
+        },
+        "validation_sites": 799795
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 5,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "668f5f06e10d4d8254187113c5aa66fda421f0ee02a1d973913f24fd3db548c1",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "005898def8ed8a156b4f45b2f7f17313840636c3227506487fc2db6714bc6208",
+          "public/calibration_parent.fasta": "30de82c132dfe23dafbc237053ead71f8d260d916d3d7151e1db26374af309ef",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "21a66ac90beb5df444ace24e096a84e372fb132fa358ac164552f6033ccacb6a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "25b9af9428c034e3b2a3046c15cf216460824f98c9d6447d8d0f1041b5468f06"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_006",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19856,
+          "callable_sites": 3998963,
+          "called_mutations": 19733,
+          "correct_mutations": 19733,
+          "masked_sites": 557,
+          "precision": 1.0,
+          "recall": 0.9938053988718775,
+          "true_mutations": 19856
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 100000.0
+        },
+        "training_sites": 3199230,
+        "validation_nll": {
+          "1mer": 28832.514153450866,
+          "3mer": 28832.514153084783,
+          "5mer": 28832.514153022796,
+          "7mer": 28832.335927031912,
+          "7mer_flat": 28832.33592744315
+        },
+        "validation_sites": 799733
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 6,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "02575dce6bf8d915c07d7740b80c9d497e86fc8e1d81da9a2c1d8405c6a6c5d0",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "d14e87126d48b0f4a66115e3a8f626573001ac5a4003339dee9c9099312b3d67",
+          "public/calibration_parent.fasta": "da4e0d9e084fe07b09b92748b8b2d0cf75bf48d8e1e64df3d2b8424272001634",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "fc62588d50bf80f40f1515160a5364c0a6d1f4e447ad044df7f714f493f5d8f2",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "993337c6592cd16b5a462c829ce88cdbbe9b8ec5b9581d4b51484d8bb6950ee4"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_007",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20089,
+          "callable_sites": 3999013,
+          "called_mutations": 19979,
+          "correct_mutations": 19979,
+          "masked_sites": 507,
+          "precision": 1.0,
+          "recall": 0.994524366568769,
+          "true_mutations": 20089
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 100000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199172,
+        "validation_nll": {
+          "1mer": 28946.81110566559,
+          "3mer": 28946.81110549294,
+          "5mer": 28945.6398755532,
+          "7mer": 28945.639875561792,
+          "7mer_flat": 28946.811105665172
+        },
+        "validation_sites": 799841
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 7,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "fc3e06d9f19b8629f83fc6970a6a7dff995aeadde7a5c5c88125d8fe7dcab677",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "d89dd93f1ec07a6ca39c95cc639fce2e43877531f3538d88821d8bce9833d87e",
+          "public/calibration_parent.fasta": "08dc9beb3e23c919181e1d71f11bcb554f660e47feab3d6e1874e64ff2631c60",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "db1609af2bdee3872f67e2b6166171640f658f64f569675dd267e5230cd758f0",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "6cd31e2bc9917ede20072961aeb617e8cff7de150a60db0889a4b1614a0ef400"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_008",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19960,
+          "callable_sites": 3999040,
+          "called_mutations": 19856,
+          "correct_mutations": 19856,
+          "masked_sites": 480,
+          "precision": 1.0,
+          "recall": 0.9947895791583167,
+          "true_mutations": 19960
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 100000.0,
+          "7mer": 10000.0,
+          "7mer_flat": 10000.0
+        },
+        "training_sites": 3199208,
+        "validation_nll": {
+          "1mer": 28571.31364287538,
+          "3mer": 28571.31364280368,
+          "5mer": 28568.082330436737,
+          "7mer": 28564.772142356447,
+          "7mer_flat": 28567.128292717287
+        },
+        "validation_sites": 799832
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 8,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "c876096fac0c55c2cdddc557c67cf9dd91bfbcd3a54c1ae7d84d1a3f07b56a51",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "5383109b5dcd6035744d4175c0b194c8bffdc46741513cce2108255b72ee08d0",
+          "public/calibration_parent.fasta": "ac3606f2c76f1e5451717127a0c521fedcc8351c4531787d25ceffd4afb7412c",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "a1e8cd8f850ec41d64b13adc5fa1744970b85ce006ec1064222bdf6147e11b95",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "370bc3ae242ac61dbb2d4908676073160777cd8b5fc324bb8b8c4d0288f2e9c3"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_009",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19978,
+          "callable_sites": 3998948,
+          "called_mutations": 19858,
+          "correct_mutations": 19858,
+          "masked_sites": 572,
+          "precision": 1.0,
+          "recall": 0.9939933927320052,
+          "true_mutations": 19978
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199118,
+        "validation_nll": {
+          "1mer": 29295.775908098803,
+          "3mer": 29295.77590785257,
+          "5mer": 29295.775908029493,
+          "7mer": 29295.775908038166,
+          "7mer_flat": 29295.775908107476
+        },
+        "validation_sites": 799830
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 9,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "742bc36307c878543bd98df31a6d5b6cb6ae609051ca64fb388e0194efa32d8e",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "f9a7aa8e37e6142876b7f1e391870e5abc5761888aa7914e20b348ea45d9c6e2",
+          "public/calibration_parent.fasta": "6efa15caf39552b638d8ac507fdaef2304524640bc354caee31382834de0b42f",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "9e3f8d9335a3244ce2dc05776b64fa111ab1572d40b174b73223c1e60c0c10b9",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "8543cd80d8a8b18faf80213a70b132191d1740679d9b5c50cf0d363df8db608b"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_010",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20064,
+          "callable_sites": 3999083,
+          "called_mutations": 19973,
+          "correct_mutations": 19973,
+          "masked_sites": 437,
+          "precision": 1.0,
+          "recall": 0.9954645135566188,
+          "true_mutations": 20064
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199286,
+        "validation_nll": {
+          "1mer": 29026.663430958073,
+          "3mer": 29026.66343073677,
+          "5mer": 29026.66343073446,
+          "7mer": 29026.66343073437,
+          "7mer_flat": 29026.663430957982
+        },
+        "validation_sites": 799797
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 10,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "d2633dcdfc70620a7715c5a5e062d7cca8d0b544a9f38522176f415a030fe215",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "cc8888d665e55a341ad6e8985649dcf9b3c821de25ec0b6040758212334b7357",
+          "public/calibration_parent.fasta": "35a24de092dff541b9fabc42f5dc40b0c81097d4c437e8bd7852a829e85a04c3",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "1dd5ab8ccf5074007fdb6da7d9701718eebebbcacff5714169d4693e69962464",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "1b5b5d78d1d085a838150f01b205c94b327c42feca46ec2bc05c8cde4442b1f2"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/constant/seed_011",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19778,
+          "callable_sites": 3999057,
+          "called_mutations": 19680,
+          "correct_mutations": 19680,
+          "masked_sites": 463,
+          "precision": 1.0,
+          "recall": 0.9950449994943877,
+          "true_mutations": 19778
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000000000000.0,
+          "5mer": 100000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000000000000.0
+        },
+        "training_sites": 3199233,
+        "validation_nll": {
+          "1mer": 29308.814257895487,
+          "3mer": 29308.814257503862,
+          "5mer": 29307.84753943138,
+          "7mer": 29307.84753943684,
+          "7mer_flat": 29308.81425789234
+        },
+        "validation_sites": 799824
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "constant",
+          "schema": 1,
+          "seed": 11,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "f5a5837a05feadce1245af23967660405acc3267740b49b25e676f528386f782",
+          "private/new_offspring.fasta": "ca8bd8e6281360fc43e8018762d352b481c83778c57063312dc36b17ce1ef356",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "29989fb88babab03567c0ba1c797249d235d545ebc247af573522e620e639daf",
+          "public/calibration_parent.fasta": "e0028a73e1054b5471256a06aeb929e8ff19202d1cbbb8c395e2d9c24dc58a2e",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "ea713d9ee7325e0b84fb2f42ddb8cb2b35414e09690baff17c422f7140ff3545",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "376ce04dae1f7a38f8446653fa8ebab0dcd94e8733bd7d605d7636dcfbef3bd8"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_000",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20183,
+          "callable_sites": 3999266,
+          "called_mutations": 20128,
+          "correct_mutations": 20128,
+          "masked_sites": 254,
+          "precision": 1.0,
+          "recall": 0.9972749343506911,
+          "true_mutations": 20183
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199412,
+        "validation_nll": {
+          "1mer": 27303.086671749497,
+          "3mer": 25519.69064221374,
+          "5mer": 25467.404920078603,
+          "7mer": 25467.404920092897,
+          "7mer_flat": 26508.307062598586
+        },
+        "validation_sites": 799854
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 0,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "6e7f122e0f3f0a9d7d65f3b3625ee6654ba3ec80d5120ad102d74767336677a3",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "90d9de4d0d0f5ead9cec72069b4d2e052e23d472ba79290ec187e6c236846974",
+          "public/calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c2957e884c8bf2190e0cc1cbdfd266b58662e4075be5098c672c96f7961f83e7",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "1254132ef7b08f98397ba2121adbaac6b006b999824d08d819271e51c3dc1a52"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_001",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20260,
+          "callable_sites": 3999319,
+          "called_mutations": 20213,
+          "correct_mutations": 20213,
+          "masked_sites": 201,
+          "precision": 1.0,
+          "recall": 0.997680157946693,
+          "true_mutations": 20260
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199451,
+        "validation_nll": {
+          "1mer": 27307.98584265206,
+          "3mer": 25553.804223425264,
+          "5mer": 25518.55262037348,
+          "7mer": 25518.552620376737,
+          "7mer_flat": 26532.387334853538
+        },
+        "validation_sites": 799868
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 1,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "f9e93656bf9b5918f78c65d390bc05562223bff314cf52a0370035d469321342",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "f5b4f3d775e78f5993171087b957b179e5a44622197b4790cf6be3bdec1c2c87",
+          "public/calibration_parent.fasta": "f9349291314fa8c84b095f8c1197d3e5188c2a535e6f506d5321a96aac3f6086",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "959f41452fd76f9913b2a7181de72bfa9550046696e2da347a0d3eaab5557394",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "591a7c34506d8e84b3a4dd460f5b69789e00cb17ebb75a5e455aa74e9272a902"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_002",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20041,
+          "callable_sites": 3999261,
+          "called_mutations": 19983,
+          "correct_mutations": 19983,
+          "masked_sites": 259,
+          "precision": 1.0,
+          "recall": 0.9971059328376828,
+          "true_mutations": 20041
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 100.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199438,
+        "validation_nll": {
+          "1mer": 26601.674484582036,
+          "3mer": 24789.566656150422,
+          "5mer": 24744.95589995623,
+          "7mer": 24744.95589998948,
+          "7mer_flat": 25811.117411896543
+        },
+        "validation_sites": 799823
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 2,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "5bd0fe6232e857d9ada4a99dd7580c18dae02025782e6e72f5805fec3e5303b0",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "6b70efb237c73602a781ab6d4bbabd9b95e790b47de7da38bf348224e4dfc13f",
+          "public/calibration_parent.fasta": "ed54fa538d2a34efb3c8e1fe240ace2285ed3402e46c6f9522971bd01506b82a",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "6d3602d270036210fe01ec0137a0592fed11457053660375446d1664c7e9b065",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "beef5274d1dda78788d38db906ee601f4864994a47fe2394aac37a9c08564869"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_003",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19944,
+          "callable_sites": 3999225,
+          "called_mutations": 19879,
+          "correct_mutations": 19879,
+          "masked_sites": 295,
+          "precision": 1.0,
+          "recall": 0.9967408744484557,
+          "true_mutations": 19944
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199368,
+        "validation_nll": {
+          "1mer": 27590.492896177522,
+          "3mer": 25684.98681899959,
+          "5mer": 25635.608340544408,
+          "7mer": 25635.60834054948,
+          "7mer_flat": 26757.484069250444
+        },
+        "validation_sites": 799857
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 3,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "423798b5d07fa548da18d12c6ddd0a45f4bf5aa022f2fb2bcf59c025b4f7c974",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "b94db56bbbf79d427a264af98da1f6d6422c2a93d4ac13fad097a2df34a1d214",
+          "public/calibration_parent.fasta": "0626c10d5a80eff480efff51b2dbaa658ca43a102511d519a755f4266d35dcdb",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c918341fc87f5ef8f42a5cf8de675a9a9f84aef54745eb54af429d232fb0245a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "bedc77b76476d3ab16e8614f9d8a9da55b901b050c5b2c653f4b8977d9b3c1b4"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_004",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19885,
+          "callable_sites": 3999251,
+          "called_mutations": 19825,
+          "correct_mutations": 19825,
+          "masked_sites": 269,
+          "precision": 1.0,
+          "recall": 0.9969826502388736,
+          "true_mutations": 19885
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199403,
+        "validation_nll": {
+          "1mer": 26730.139849261435,
+          "3mer": 25032.31952187937,
+          "5mer": 24997.580073959296,
+          "7mer": 24997.47945421138,
+          "7mer_flat": 25986.89650394975
+        },
+        "validation_sites": 799848
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 4,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "19c7b02faf884c4b8097fb0a1b8f3f71d49c4cd5d3381dce34b506f848eb824c",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "3ffa8c74af52217b7cfe0a91c2e4bb0b95d889ec963267f0b8f472d2e39dd666",
+          "public/calibration_parent.fasta": "6dbc131efde924841e489c717aa10c00d646c5119c376f1a17d05ca4248a1a59",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "0df83a8decb89ddda57146380e6342af191667c2337cf73d2b17d42d4113dd27",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "edf16c8ec3d59fbad34f4b4ff9aea2c6bb1a6da078b48e50b4d5f9a70e50bcd9"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_005",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19908,
+          "callable_sites": 3999207,
+          "called_mutations": 19835,
+          "correct_mutations": 19835,
+          "masked_sites": 313,
+          "precision": 1.0,
+          "recall": 0.9963331324090817,
+          "true_mutations": 19908
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199366,
+        "validation_nll": {
+          "1mer": 27072.95277876578,
+          "3mer": 25264.49912380804,
+          "5mer": 25235.17548473439,
+          "7mer": 25235.175484732325,
+          "7mer_flat": 26291.775698785903
+        },
+        "validation_sites": 799841
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 5,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "052421f1679e1dc5592a40b01266f8b93d8279950212fc9991474ca0df8e9b30",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "93304dd4cbd96daaf5b491c99a8d87a875ca4cfb8f22f95ef7dcaa7ca233a0b8",
+          "public/calibration_parent.fasta": "30de82c132dfe23dafbc237053ead71f8d260d916d3d7151e1db26374af309ef",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "60f5dd83482c87201a4cd22575bb606f0b9364cace81042c064d0dca656b7e91",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "43593e2fa46657a977b28bfc1e339b9f697443065c099c4b86ea0e068bc4ce29"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_006",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19867,
+          "callable_sites": 3999343,
+          "called_mutations": 19827,
+          "correct_mutations": 19827,
+          "masked_sites": 177,
+          "precision": 1.0,
+          "recall": 0.9979866109629033,
+          "true_mutations": 19867
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199484,
+        "validation_nll": {
+          "1mer": 26453.67136682686,
+          "3mer": 24716.409067481552,
+          "5mer": 24692.09523562116,
+          "7mer": 24692.095235635075,
+          "7mer_flat": 25718.96605430144
+        },
+        "validation_sites": 799859
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 6,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "7cd711e1a359803121249f4ff44a599dc0f21cd068a3a3e5469ba08415a91ed0",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "e2c26c165013a340c2f869366351b67f33b6867b17f864b0b72c83d4e9c623a7",
+          "public/calibration_parent.fasta": "da4e0d9e084fe07b09b92748b8b2d0cf75bf48d8e1e64df3d2b8424272001634",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "1d488ee1fe4faf62a0708685432782118e292e361cf8fa4473ebb516366a9680",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "edf22bcaf516b0114588ba5315d697dcc0577c57304e56705921c61663e34ead"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_007",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19959,
+          "callable_sites": 3999273,
+          "called_mutations": 19905,
+          "correct_mutations": 19905,
+          "masked_sites": 247,
+          "precision": 1.0,
+          "recall": 0.9972944536299414,
+          "true_mutations": 19959
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199388,
+        "validation_nll": {
+          "1mer": 26682.072571906567,
+          "3mer": 24936.247658937617,
+          "5mer": 24893.023812379157,
+          "7mer": 24893.023812407657,
+          "7mer_flat": 25916.159867659735
+        },
+        "validation_sites": 799885
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 7,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "7d984160bd36b10f002e038f250e043f15a556caca76e34d9faaa5d911a50a0e",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "f4de0b5c7cbd98639cfd1abafb21c7012c6a277ddd7decac00dc7e42fcc6e91e",
+          "public/calibration_parent.fasta": "08dc9beb3e23c919181e1d71f11bcb554f660e47feab3d6e1874e64ff2631c60",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "5b52792203c191ede30555e6d72b72b95b78705d911da52e3ead198a78270196",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "bf53b70c1bbfd2a909f10149585fca743c7ebde5bdda561aced2135fad72c616"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_008",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20037,
+          "callable_sites": 3999218,
+          "called_mutations": 19970,
+          "correct_mutations": 19970,
+          "masked_sites": 302,
+          "precision": 1.0,
+          "recall": 0.9966561860557968,
+          "true_mutations": 20037
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199369,
+        "validation_nll": {
+          "1mer": 26597.19753553799,
+          "3mer": 24833.034598619684,
+          "5mer": 24804.390561174416,
+          "7mer": 24804.221822346175,
+          "7mer_flat": 25819.42262185989
+        },
+        "validation_sites": 799849
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 8,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "c96ef3da00dfac6f7042187a0ddd96365667c4d8b8172399666e0897122c186e",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "0ff4b47af3591ad25ac2d5b231dda7cdebf837019a1a35260ec25ebc0f745b8c",
+          "public/calibration_parent.fasta": "ac3606f2c76f1e5451717127a0c521fedcc8351c4531787d25ceffd4afb7412c",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "3d7c09a6b5d3271f3bacf3c64b6abbc827b6578d3b204b0725b70b73eee449fc",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "7f6cd816fa88f1108d7a54912a402ca5d7931eefbd246b5f3e4e0e27e031ebbd"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_009",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20100,
+          "callable_sites": 3999216,
+          "called_mutations": 20035,
+          "correct_mutations": 20035,
+          "masked_sites": 304,
+          "precision": 1.0,
+          "recall": 0.9967661691542289,
+          "true_mutations": 20100
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199358,
+        "validation_nll": {
+          "1mer": 27225.002120855155,
+          "3mer": 25487.962336151362,
+          "5mer": 25464.252740102194,
+          "7mer": 25464.247428594903,
+          "7mer_flat": 26448.89460986841
+        },
+        "validation_sites": 799858
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 9,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "78add8bdaa13d52b04d7de5ce8f2100c04ce0adb891319e6e4edb2c260869df5",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "d4fc8ebcc09d2261a8d58a23c538f52b1c9632e5879a92f90952e48d880bb996",
+          "public/calibration_parent.fasta": "6efa15caf39552b638d8ac507fdaef2304524640bc354caee31382834de0b42f",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "2b1cc2c0a3945d8d39bdaf904a73ad8622d71ee506ac61e5eb26dfcd71893607",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "28acd9c96c93952117c733708ce4b65a6cf8b94863058075e9146232463e2b6a"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_010",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19956,
+          "callable_sites": 3999290,
+          "called_mutations": 19905,
+          "correct_mutations": 19905,
+          "masked_sites": 230,
+          "precision": 1.0,
+          "recall": 0.9974443776307877,
+          "true_mutations": 19956
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199452,
+        "validation_nll": {
+          "1mer": 27011.55565044834,
+          "3mer": 25351.355616592446,
+          "5mer": 25315.166297549593,
+          "7mer": 25315.166297567266,
+          "7mer_flat": 26270.82892445626
+        },
+        "validation_sites": 799838
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 10,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "08dd37ba6bc49360d50fdea5da7ee9075349dceca3d9bf051d3eabfe031f7223",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "761652b5e989e918b35d88c033b07287df15c8a9c2d8c50c3b604694b35302ff",
+          "public/calibration_parent.fasta": "35a24de092dff541b9fabc42f5dc40b0c81097d4c437e8bd7852a829e85a04c3",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "9b310d8fce0b47dd84e9202a50181fc001a8bffdbc23c7ec1e90c781b9e6572e",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "fc60a9a3460a735c7f97f93c6df8a659d43791abb21a094826d6425362e7d990"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/empirical_five/seed_011",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19886,
+          "callable_sites": 3999297,
+          "called_mutations": 19838,
+          "correct_mutations": 19838,
+          "masked_sites": 223,
+          "precision": 1.0,
+          "recall": 0.9975862415769888,
+          "true_mutations": 19886
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199427,
+        "validation_nll": {
+          "1mer": 26907.242391038635,
+          "3mer": 25256.955906010564,
+          "5mer": 25226.82607014254,
+          "7mer": 25226.685360425057,
+          "7mer_flat": 26159.70638009532
+        },
+        "validation_sites": 799870
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "empirical_table_sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+          "mean_rate": 0.005,
+          "scenario": "empirical_five",
+          "schema": 1,
+          "seed": 11,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "6cb664e02e0972ce8cdd323fb0dbb6b20b5f9435ca4e67a2ba0b4abbb35edb61",
+          "private/new_offspring.fasta": "cec7dbe92ecfc1d297da657a32c3c33ed651b46cd8e1c69de26c540a914c504f",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "5f74b882246de1c96195123f3c5524c7855513093ceb49d5d1996166c8927d51",
+          "public/calibration_parent.fasta": "e0028a73e1054b5471256a06aeb929e8ff19202d1cbbb8c395e2d9c24dc58a2e",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c51cfd0e2e5efead5d0d581992984ccb11bea51f165bfbeb61e83add30d77c41",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "0b8a8679fc09c910ad33771343007e79cded37f3fdfa486de7db353614360837"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_000",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20138,
+          "callable_sites": 3999062,
+          "called_mutations": 20039,
+          "correct_mutations": 20039,
+          "masked_sites": 458,
+          "precision": 1.0,
+          "recall": 0.9950839209454763,
+          "true_mutations": 20138
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199286,
+        "validation_nll": {
+          "1mer": 28765.10672524661,
+          "3mer": 28240.05482987048,
+          "5mer": 28034.00829201853,
+          "7mer": 28033.910804338608,
+          "7mer_flat": 28545.76101263277
+        },
+        "validation_sites": 799776
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 0,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "1a0a43f14c35fa5d868c0a94605223365c966d4e769eb860c05099f38dc6af02",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "a41f811622c5f2bf9f52e1d35337366021db6f5e29068f2f1ae6912bfcf7a09e",
+          "public/calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "2e16b9777838c1c2971b751fef60a6d767a2704251dd2daffe280778fd2fa72a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "c59a360b885d59a08676d0058e978ff23398e7eb42cf18eeba4d372dfde99f15"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_001",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20273,
+          "callable_sites": 3999123,
+          "called_mutations": 20183,
+          "correct_mutations": 20183,
+          "masked_sites": 397,
+          "precision": 1.0,
+          "recall": 0.9955605978394909,
+          "true_mutations": 20273
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199256,
+        "validation_nll": {
+          "1mer": 29191.576031178116,
+          "3mer": 28684.87645381121,
+          "5mer": 28387.526438064117,
+          "7mer": 28387.526438067966,
+          "7mer_flat": 28885.071028729893
+        },
+        "validation_sites": 799867
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 1,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "97dc0e65c317f4184a8ed3fc0340e2a64f1e24c5ed6c9ce88f7fedc36264c0c6",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "171ef72594554b56cd3a41a57bfd40ebfb501d2da0e1c858cf3bd1a6969f760f",
+          "public/calibration_parent.fasta": "f9349291314fa8c84b095f8c1197d3e5188c2a535e6f506d5321a96aac3f6086",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "54060785e77af7645bc076683cbfe532bd3f539dcc15b1f4de18e51152634374",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "0f67dcd705da6f96028f5a12912356b805fc9073854b746574a956510180f5a1"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_002",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19995,
+          "callable_sites": 3999092,
+          "called_mutations": 19901,
+          "correct_mutations": 19901,
+          "masked_sites": 428,
+          "precision": 1.0,
+          "recall": 0.9952988247061766,
+          "true_mutations": 19995
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199290,
+        "validation_nll": {
+          "1mer": 28300.452457341118,
+          "3mer": 27764.01634407532,
+          "5mer": 27524.98620221334,
+          "7mer": 27524.98620222492,
+          "7mer_flat": 28027.748408005395
+        },
+        "validation_sites": 799802
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 2,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "c721bfd1057fbee821ace25dbbd2ac68a0f47a2091272fc7ec2195098f15dfc9",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "23c9a03f9524729e6ee029637a3af9311e8b56fb32e6c45959f6eaf3b4750dcc",
+          "public/calibration_parent.fasta": "ed54fa538d2a34efb3c8e1fe240ace2285ed3402e46c6f9522971bd01506b82a",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "18ab0887826840c2c5109c144107aa3cf0356f5b38b65bd13a4a5e9f83446b27",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "83d8fa8e6e51faea66ed8b0addb41cc3daa6fbdc67656f362e70abdf8162bb8b"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_003",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19854,
+          "callable_sites": 3999071,
+          "called_mutations": 19757,
+          "correct_mutations": 19757,
+          "masked_sites": 449,
+          "precision": 1.0,
+          "recall": 0.9951143346428931,
+          "true_mutations": 19854
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199265,
+        "validation_nll": {
+          "1mer": 29526.856091199003,
+          "3mer": 28880.87875339645,
+          "5mer": 28574.338489828784,
+          "7mer": 28574.338489846927,
+          "7mer_flat": 29179.102899172398
+        },
+        "validation_sites": 799806
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 3,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "e0aca26d5e7fbd08d67683e2637c7a985be8cc4e7ad6c9056f7a47e3f21d683e",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "f3a551c40f9fbaa7c2ef0783ba7573de3dafb9c4baade914479f24fcc9bce8d6",
+          "public/calibration_parent.fasta": "0626c10d5a80eff480efff51b2dbaa658ca43a102511d519a755f4266d35dcdb",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "5604c30725c84e5528caf4259a7c7b9e7d9bfbf17822528c65192281d355c142",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "5f0f50ee8ba721f2ef3840020d6bf2a90e74aa20a62a2e1dec23eb773d3cfc58"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_004",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19857,
+          "callable_sites": 3999060,
+          "called_mutations": 19757,
+          "correct_mutations": 19757,
+          "masked_sites": 460,
+          "precision": 1.0,
+          "recall": 0.994963992546709,
+          "true_mutations": 19857
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 100.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199260,
+        "validation_nll": {
+          "1mer": 28196.777807887695,
+          "3mer": 27693.858682741957,
+          "5mer": 27462.984858984346,
+          "7mer": 27462.98485899555,
+          "7mer_flat": 27920.082150116963
+        },
+        "validation_sites": 799800
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 4,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "41da4cbdde40e66f074298134f968dc6a75dd56c10c51cbe4deb638610fc8a59",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "33d6fdcf66ffc79ed5e9dabb4b2b6e5d9fdb287d143926afc89fc1ae4d977536",
+          "public/calibration_parent.fasta": "6dbc131efde924841e489c717aa10c00d646c5119c376f1a17d05ca4248a1a59",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "b36388fbddc5c1dd5577f75ae5b8a30df107a5221a9896372506aa1239fcea77",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "db2d899c5ba213643074e137a3e8271bac9bd093d76fa2859995e38ee99c7a54"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_005",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19991,
+          "callable_sites": 3998970,
+          "called_mutations": 19871,
+          "correct_mutations": 19871,
+          "masked_sites": 550,
+          "precision": 1.0,
+          "recall": 0.993997298784453,
+          "true_mutations": 19991
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199138,
+        "validation_nll": {
+          "1mer": 28932.17136088259,
+          "3mer": 28387.219711575297,
+          "5mer": 28132.3529669841,
+          "7mer": 28132.352966988685,
+          "7mer_flat": 28645.282036773675
+        },
+        "validation_sites": 799832
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 5,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "118c567ed676d3b06405877d72b3d1be8498eaedb8a57b778783f2234bacf437",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "87681b27a291e315c07ab737de4b6bf04cfa01fbe4ddc992461def797d8d3e7d",
+          "public/calibration_parent.fasta": "30de82c132dfe23dafbc237053ead71f8d260d916d3d7151e1db26374af309ef",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "21a66ac90beb5df444ace24e096a84e372fb132fa358ac164552f6033ccacb6a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "e97e81739fee79a1dceedc0ac4de71803e826e9d2007825eb5d718631b51bf9a"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_006",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19778,
+          "callable_sites": 3999047,
+          "called_mutations": 19673,
+          "correct_mutations": 19673,
+          "masked_sites": 473,
+          "precision": 1.0,
+          "recall": 0.9946910708868439,
+          "true_mutations": 19778
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 10000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199195,
+        "validation_nll": {
+          "1mer": 27877.6554224986,
+          "3mer": 27369.27760401403,
+          "5mer": 27156.872313324657,
+          "7mer": 27153.31329509506,
+          "7mer_flat": 27620.33678690977
+        },
+        "validation_sites": 799852
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 6,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "a15ce0846c416bf92eea00b57af040f78240225575c1297e1932b46f4848aae0",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "02c3a87a3cabaedcfadfd3d5cfa3eae523fc3c0110dac5517071c4d8db8fce4d",
+          "public/calibration_parent.fasta": "da4e0d9e084fe07b09b92748b8b2d0cf75bf48d8e1e64df3d2b8424272001634",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "fc62588d50bf80f40f1515160a5364c0a6d1f4e447ad044df7f714f493f5d8f2",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "a4a4965d3c870e3e5a37cd896797080715c6e79c7fb20b769fc449a351104292"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_007",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20047,
+          "callable_sites": 3998993,
+          "called_mutations": 19934,
+          "correct_mutations": 19934,
+          "masked_sites": 527,
+          "precision": 1.0,
+          "recall": 0.9943632463710281,
+          "true_mutations": 20047
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199168,
+        "validation_nll": {
+          "1mer": 28457.190046679818,
+          "3mer": 27920.809576944695,
+          "5mer": 27629.649799615298,
+          "7mer": 27629.64979962402,
+          "7mer_flat": 28167.573900360574
+        },
+        "validation_sites": 799825
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 7,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "283603ab2a5b2338572b1bca3e4b1ce8c1b4cbc7f6f8a70c4424535e08ccc382",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "840d5e334e9601e60d171bec0eadf27dc006d0b3244febadfe8b15ec476c777d",
+          "public/calibration_parent.fasta": "08dc9beb3e23c919181e1d71f11bcb554f660e47feab3d6e1874e64ff2631c60",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "db1609af2bdee3872f67e2b6166171640f658f64f569675dd267e5230cd758f0",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "2d2d4b6aba113d1468764d5225308650956bc2da259be575c977ef326b0be24e"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_008",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19888,
+          "callable_sites": 3999173,
+          "called_mutations": 19814,
+          "correct_mutations": 19814,
+          "masked_sites": 347,
+          "precision": 1.0,
+          "recall": 0.9962791633145616,
+          "true_mutations": 19888
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199351,
+        "validation_nll": {
+          "1mer": 27980.905703522836,
+          "3mer": 27433.369207053038,
+          "5mer": 27154.209303395506,
+          "7mer": 27153.90268202512,
+          "7mer_flat": 27664.668884177947
+        },
+        "validation_sites": 799822
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 8,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "804adca6cd9435a9dca5ec4298b401a2446c4b325b4311a98dc933e272a21acd",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "8cdf9cff77b9241adb61b9c0a7dc784600aae3ff20745a4965a3fa48da38252a",
+          "public/calibration_parent.fasta": "ac3606f2c76f1e5451717127a0c521fedcc8351c4531787d25ceffd4afb7412c",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "a1e8cd8f850ec41d64b13adc5fa1744970b85ce006ec1064222bdf6147e11b95",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "c8c59b02792faa4dec3f22cff96c1d593222206d3c27e79dbffe74da95ff6754"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_009",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20093,
+          "callable_sites": 3999059,
+          "called_mutations": 19995,
+          "correct_mutations": 19995,
+          "masked_sites": 461,
+          "precision": 1.0,
+          "recall": 0.9951226795401383,
+          "true_mutations": 20093
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 10000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199219,
+        "validation_nll": {
+          "1mer": 28996.064975560825,
+          "3mer": 28453.773563810108,
+          "5mer": 28248.346064611902,
+          "7mer": 28246.297861161747,
+          "7mer_flat": 28723.495977389743
+        },
+        "validation_sites": 799840
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 9,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "47031e9415b41cf96a839bf14a76f83161fb9c4189ba99e5b30cc382c214f0c9",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "c47dbd553cacaf0ec5f26db78ccb6afb6355534c1262e55e1f8c515513731c8a",
+          "public/calibration_parent.fasta": "6efa15caf39552b638d8ac507fdaef2304524640bc354caee31382834de0b42f",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "9e3f8d9335a3244ce2dc05776b64fa111ab1572d40b174b73223c1e60c0c10b9",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "cc58b5b11c9e176928f098b9d33579c8cffabbbff4df2e3fe782854f1a7431c8"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_010",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20094,
+          "callable_sites": 3999103,
+          "called_mutations": 20002,
+          "correct_mutations": 20002,
+          "masked_sites": 417,
+          "precision": 1.0,
+          "recall": 0.9954215188613517,
+          "true_mutations": 20094
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199310,
+        "validation_nll": {
+          "1mer": 28822.08328000022,
+          "3mer": 28376.335254624173,
+          "5mer": 28125.760251503903,
+          "7mer": 28125.760251568438,
+          "7mer_flat": 28585.73301290282
+        },
+        "validation_sites": 799793
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 10,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "cc1685f8d8245b1de3b806dd00b6cd1b79cc9650b54ef3378364b0d383ebb1b1",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "fafb939246284112168bfa5f0eff20608ac0e02d78e58c930c355f7781d039b9",
+          "public/calibration_parent.fasta": "35a24de092dff541b9fabc42f5dc40b0c81097d4c437e8bd7852a829e85a04c3",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "1dd5ab8ccf5074007fdb6da7d9701718eebebbcacff5714169d4693e69962464",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "2dc230381d432f4c14b9246642d0230252d8148a3235a0c826d089b0edf88884"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_iid/seed_011",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19741,
+          "callable_sites": 3999203,
+          "called_mutations": 19672,
+          "correct_mutations": 19672,
+          "masked_sites": 317,
+          "precision": 1.0,
+          "recall": 0.9965047363355453,
+          "true_mutations": 19741
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199346,
+        "validation_nll": {
+          "1mer": 28933.445088438028,
+          "3mer": 28415.36769970413,
+          "5mer": 28171.944949111243,
+          "7mer": 28171.944949162378,
+          "7mer_flat": 28680.449157831987
+        },
+        "validation_sites": 799857
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_iid",
+          "schema": 1,
+          "seed": 11,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "3fde0c2da893b12db3fa37968640e566bbc2cd6cfa2e49dc1ab164e34a497e02",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "b816c13af139a8e359b57c4decb6cdb40dc87683ee5f9359eda999c238452f5a",
+          "public/calibration_parent.fasta": "e0028a73e1054b5471256a06aeb929e8ff19202d1cbbb8c395e2d9c24dc58a2e",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "ea713d9ee7325e0b84fb2f42ddb8cb2b35414e09690baff17c422f7140ff3545",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "c6f313c6c6d412c513f2b3982a74edb601072b0a3c313e911e82f2f295023e11"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_000",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20138,
+          "callable_sites": 3999062,
+          "called_mutations": 20039,
+          "correct_mutations": 20039,
+          "masked_sites": 458,
+          "precision": 1.0,
+          "recall": 0.9950839209454763,
+          "true_mutations": 20138
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199286,
+        "validation_nll": {
+          "1mer": 28765.10672524661,
+          "3mer": 28240.05482987048,
+          "5mer": 28034.00829201853,
+          "7mer": 28033.910804338608,
+          "7mer_flat": 28545.76101263277
+        },
+        "validation_sites": 799776
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 0,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "f895335b4a9322ab2a4bc5145ef7ebdaaa5e76f2c4783e648cd4ad343e6242ae",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "a41f811622c5f2bf9f52e1d35337366021db6f5e29068f2f1ae6912bfcf7a09e",
+          "public/calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c2957e884c8bf2190e0cc1cbdfd266b58662e4075be5098c672c96f7961f83e7",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "7e0072d530da653cfb54919e9278f83f812d5ea85ef427719842702bdb843f5e"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_001",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20273,
+          "callable_sites": 3999123,
+          "called_mutations": 20183,
+          "correct_mutations": 20183,
+          "masked_sites": 397,
+          "precision": 1.0,
+          "recall": 0.9955605978394909,
+          "true_mutations": 20273
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199256,
+        "validation_nll": {
+          "1mer": 29191.576031178116,
+          "3mer": 28684.87645381121,
+          "5mer": 28387.526438064117,
+          "7mer": 28387.526438067966,
+          "7mer_flat": 28885.071028729893
+        },
+        "validation_sites": 799867
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 1,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "8f1783dae31f5482fb11971b67f3a0d9cd0d2e3ade5a0e2bfbb86f71550afa33",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "171ef72594554b56cd3a41a57bfd40ebfb501d2da0e1c858cf3bd1a6969f760f",
+          "public/calibration_parent.fasta": "f9349291314fa8c84b095f8c1197d3e5188c2a535e6f506d5321a96aac3f6086",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "959f41452fd76f9913b2a7181de72bfa9550046696e2da347a0d3eaab5557394",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "80e67fa8b57a245a92e0202b3102627f75cce97a1a9a8eae7eab8a0557913616"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_002",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19995,
+          "callable_sites": 3999092,
+          "called_mutations": 19901,
+          "correct_mutations": 19901,
+          "masked_sites": 428,
+          "precision": 1.0,
+          "recall": 0.9952988247061766,
+          "true_mutations": 19995
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199290,
+        "validation_nll": {
+          "1mer": 28300.452457341118,
+          "3mer": 27764.01634407532,
+          "5mer": 27524.98620221334,
+          "7mer": 27524.98620222492,
+          "7mer_flat": 28027.748408005395
+        },
+        "validation_sites": 799802
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 2,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "cbcd457941e40ab0341dea46fd2f3aec42bbaf1bcf3da6fcbf808ecbdc47df42",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "23c9a03f9524729e6ee029637a3af9311e8b56fb32e6c45959f6eaf3b4750dcc",
+          "public/calibration_parent.fasta": "ed54fa538d2a34efb3c8e1fe240ace2285ed3402e46c6f9522971bd01506b82a",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "6d3602d270036210fe01ec0137a0592fed11457053660375446d1664c7e9b065",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "c5193b349354cd14a6db15b839e9616fb689ca7022f1f43b6b7b15c863017651"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_003",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19854,
+          "callable_sites": 3999071,
+          "called_mutations": 19757,
+          "correct_mutations": 19757,
+          "masked_sites": 449,
+          "precision": 1.0,
+          "recall": 0.9951143346428931,
+          "true_mutations": 19854
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199265,
+        "validation_nll": {
+          "1mer": 29526.856091199003,
+          "3mer": 28880.87875339645,
+          "5mer": 28574.338489828784,
+          "7mer": 28574.338489846927,
+          "7mer_flat": 29179.102899172398
+        },
+        "validation_sites": 799806
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 3,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "3e83c7e4576f2ee8b56927d6296992d689a675a83e88539400c0482277627b2c",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "f3a551c40f9fbaa7c2ef0783ba7573de3dafb9c4baade914479f24fcc9bce8d6",
+          "public/calibration_parent.fasta": "0626c10d5a80eff480efff51b2dbaa658ca43a102511d519a755f4266d35dcdb",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c918341fc87f5ef8f42a5cf8de675a9a9f84aef54745eb54af429d232fb0245a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "d052d82a9bde7f6cadaf7071fcb23ac021183abcd12f06cd97f63dfae132d1d0"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_004",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19857,
+          "callable_sites": 3999060,
+          "called_mutations": 19757,
+          "correct_mutations": 19757,
+          "masked_sites": 460,
+          "precision": 1.0,
+          "recall": 0.994963992546709,
+          "true_mutations": 19857
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 100.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199260,
+        "validation_nll": {
+          "1mer": 28196.777807887695,
+          "3mer": 27693.858682741957,
+          "5mer": 27462.984858984346,
+          "7mer": 27462.98485899555,
+          "7mer_flat": 27920.082150116963
+        },
+        "validation_sites": 799800
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 4,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "108aff01f208b519e19cfec0033ab36511f06db986d4472f80de21727f34e1a1",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "33d6fdcf66ffc79ed5e9dabb4b2b6e5d9fdb287d143926afc89fc1ae4d977536",
+          "public/calibration_parent.fasta": "6dbc131efde924841e489c717aa10c00d646c5119c376f1a17d05ca4248a1a59",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "0df83a8decb89ddda57146380e6342af191667c2337cf73d2b17d42d4113dd27",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "32b203893c608472358e759bacc977596cd984f47ed9b8194dad08ff67b384de"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_005",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19991,
+          "callable_sites": 3998970,
+          "called_mutations": 19871,
+          "correct_mutations": 19871,
+          "masked_sites": 550,
+          "precision": 1.0,
+          "recall": 0.993997298784453,
+          "true_mutations": 19991
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199138,
+        "validation_nll": {
+          "1mer": 28932.17136088259,
+          "3mer": 28387.219711575297,
+          "5mer": 28132.3529669841,
+          "7mer": 28132.352966988685,
+          "7mer_flat": 28645.282036773675
+        },
+        "validation_sites": 799832
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 5,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "9ca07b6f920efd81ba2c7e5bfb6fc1984d0d186538abcea4dbac75296dffbf94",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "87681b27a291e315c07ab737de4b6bf04cfa01fbe4ddc992461def797d8d3e7d",
+          "public/calibration_parent.fasta": "30de82c132dfe23dafbc237053ead71f8d260d916d3d7151e1db26374af309ef",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "60f5dd83482c87201a4cd22575bb606f0b9364cace81042c064d0dca656b7e91",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "3bf2d8ac6b110803824b2317401e93d46e15bdb82193fa55a02d87c3c34314d7"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_006",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19778,
+          "callable_sites": 3999047,
+          "called_mutations": 19673,
+          "correct_mutations": 19673,
+          "masked_sites": 473,
+          "precision": 1.0,
+          "recall": 0.9946910708868439,
+          "true_mutations": 19778
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 10000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199195,
+        "validation_nll": {
+          "1mer": 27877.6554224986,
+          "3mer": 27369.27760401403,
+          "5mer": 27156.872313324657,
+          "7mer": 27153.31329509506,
+          "7mer_flat": 27620.33678690977
+        },
+        "validation_sites": 799852
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 6,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "a5443a964d6001d443c56fb793726725e5c3a631f6ff13e0e62d0b9a2d62e6f9",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "02c3a87a3cabaedcfadfd3d5cfa3eae523fc3c0110dac5517071c4d8db8fce4d",
+          "public/calibration_parent.fasta": "da4e0d9e084fe07b09b92748b8b2d0cf75bf48d8e1e64df3d2b8424272001634",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "1d488ee1fe4faf62a0708685432782118e292e361cf8fa4473ebb516366a9680",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "79dbaa175c74f04bdeb8d2382d28008460fdcbb20f14c0f62951ca6deaaa4c40"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_007",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20047,
+          "callable_sites": 3998993,
+          "called_mutations": 19934,
+          "correct_mutations": 19934,
+          "masked_sites": 527,
+          "precision": 1.0,
+          "recall": 0.9943632463710281,
+          "true_mutations": 20047
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199168,
+        "validation_nll": {
+          "1mer": 28457.190046679818,
+          "3mer": 27920.809576944695,
+          "5mer": 27629.649799615298,
+          "7mer": 27629.64979962402,
+          "7mer_flat": 28167.573900360574
+        },
+        "validation_sites": 799825
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 7,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "9e59d329cfe5a30d0d53d57217556034c82dcc81bdaa6819f41111c24a415135",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "840d5e334e9601e60d171bec0eadf27dc006d0b3244febadfe8b15ec476c777d",
+          "public/calibration_parent.fasta": "08dc9beb3e23c919181e1d71f11bcb554f660e47feab3d6e1874e64ff2631c60",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "5b52792203c191ede30555e6d72b72b95b78705d911da52e3ead198a78270196",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "bfe36d0a1fde33673a8557d5b54a6c53ea40cef7dbd51cdf154b78502cddbcba"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_008",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19888,
+          "callable_sites": 3999173,
+          "called_mutations": 19814,
+          "correct_mutations": 19814,
+          "masked_sites": 347,
+          "precision": 1.0,
+          "recall": 0.9962791633145616,
+          "true_mutations": 19888
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199351,
+        "validation_nll": {
+          "1mer": 27980.905703522836,
+          "3mer": 27433.369207053038,
+          "5mer": 27154.209303395506,
+          "7mer": 27153.90268202512,
+          "7mer_flat": 27664.668884177947
+        },
+        "validation_sites": 799822
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 8,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "abb565ae458443d7d3133f4e3dc9f09ed6d3af53bedabcd760eff2eb5538d959",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "8cdf9cff77b9241adb61b9c0a7dc784600aae3ff20745a4965a3fa48da38252a",
+          "public/calibration_parent.fasta": "ac3606f2c76f1e5451717127a0c521fedcc8351c4531787d25ceffd4afb7412c",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "3d7c09a6b5d3271f3bacf3c64b6abbc827b6578d3b204b0725b70b73eee449fc",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "f7c4a5d5dcf54ab7b5d68cb3b5e04760ad5c6ab3d2d243ee5dc05bc019539799"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_009",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20093,
+          "callable_sites": 3999059,
+          "called_mutations": 19995,
+          "correct_mutations": 19995,
+          "masked_sites": 461,
+          "precision": 1.0,
+          "recall": 0.9951226795401383,
+          "true_mutations": 20093
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 10000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199219,
+        "validation_nll": {
+          "1mer": 28996.064975560825,
+          "3mer": 28453.773563810108,
+          "5mer": 28248.346064611902,
+          "7mer": 28246.297861161747,
+          "7mer_flat": 28723.495977389743
+        },
+        "validation_sites": 799840
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 9,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "463db3f1958e4567aa45a30df00c6315a73883afdc15f03cabe65aef6c900c7c",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "c47dbd553cacaf0ec5f26db78ccb6afb6355534c1262e55e1f8c515513731c8a",
+          "public/calibration_parent.fasta": "6efa15caf39552b638d8ac507fdaef2304524640bc354caee31382834de0b42f",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "2b1cc2c0a3945d8d39bdaf904a73ad8622d71ee506ac61e5eb26dfcd71893607",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "570ae706856bb48117f223d22016721eab1de8b59b6645fcdd4696db75844784"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_010",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20094,
+          "callable_sites": 3999103,
+          "called_mutations": 20002,
+          "correct_mutations": 20002,
+          "masked_sites": 417,
+          "precision": 1.0,
+          "recall": 0.9954215188613517,
+          "true_mutations": 20094
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199310,
+        "validation_nll": {
+          "1mer": 28822.08328000022,
+          "3mer": 28376.335254624173,
+          "5mer": 28125.760251503903,
+          "7mer": 28125.760251568438,
+          "7mer_flat": 28585.73301290282
+        },
+        "validation_sites": 799793
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 10,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "9085ba8227d01a77261729e697f3137b43c13e30187e84dec1a3a23b0dfb4dfa",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "fafb939246284112168bfa5f0eff20608ac0e02d78e58c930c355f7781d039b9",
+          "public/calibration_parent.fasta": "35a24de092dff541b9fabc42f5dc40b0c81097d4c437e8bd7852a829e85a04c3",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "9b310d8fce0b47dd84e9202a50181fc001a8bffdbc23c7ec1e90c781b9e6572e",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "29315ae49b13f17944bf2c56e7cab7be637db0681dec21f03425a0939fb608ba"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/five_shift/seed_011",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19741,
+          "callable_sites": 3999203,
+          "called_mutations": 19672,
+          "correct_mutations": 19672,
+          "masked_sites": 317,
+          "precision": 1.0,
+          "recall": 0.9965047363355453,
+          "true_mutations": 19741
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199346,
+        "validation_nll": {
+          "1mer": 28933.445088438028,
+          "3mer": 28415.36769970413,
+          "5mer": 28171.944949111243,
+          "7mer": 28171.944949162378,
+          "7mer_flat": 28680.449157831987
+        },
+        "validation_sites": 799857
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "five_shift",
+          "schema": 1,
+          "seed": 11,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "d693c268da15dcabb83a2a0ddff7bb95d17c898695bf18e8f8a1bdca70f6c57f",
+          "private/new_offspring.fasta": "4242dada7f60130d645239b7ebdb673e6bf77cb7240bd675c34786f320a6caf5",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "b816c13af139a8e359b57c4decb6cdb40dc87683ee5f9359eda999c238452f5a",
+          "public/calibration_parent.fasta": "e0028a73e1054b5471256a06aeb929e8ff19202d1cbbb8c395e2d9c24dc58a2e",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c51cfd0e2e5efead5d0d581992984ccb11bea51f165bfbeb61e83add30d77c41",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "49564100ef76dd54e0a34297b6817e88455c64533720e51e9aeb6220043e45d8"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_000",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20045,
+          "callable_sites": 3999207,
+          "called_mutations": 19976,
+          "correct_mutations": 19976,
+          "masked_sites": 313,
+          "precision": 1.0,
+          "recall": 0.9965577450735844,
+          "true_mutations": 20045
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199380,
+        "validation_nll": {
+          "1mer": 28587.913850968558,
+          "3mer": 28166.96064130186,
+          "5mer": 28002.815924058865,
+          "7mer": 27848.736158814434,
+          "7mer_flat": 28103.19133448536
+        },
+        "validation_sites": 799827
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 0,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "20a3c65f4f440434b28f430046a53c82e6ffd1bdaffc07f34ff36476340707fe",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "879d2e36dd88e88b7df7cdedb81be7020b9669dd677e1efdf7eb989e57d51b2a",
+          "public/calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c2957e884c8bf2190e0cc1cbdfd266b58662e4075be5098c672c96f7961f83e7",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "e4d8e3c2f2f2afea531ffa268d559da02630a195490040289fce4c811c0834c0"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_001",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20216,
+          "callable_sites": 3999160,
+          "called_mutations": 20132,
+          "correct_mutations": 20132,
+          "masked_sites": 360,
+          "precision": 1.0,
+          "recall": 0.9958448753462604,
+          "true_mutations": 20216
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 1000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199292,
+        "validation_nll": {
+          "1mer": 29293.42833426998,
+          "3mer": 28894.856204362142,
+          "5mer": 28645.38307934181,
+          "7mer": 28502.293848566544,
+          "7mer_flat": 28761.056231280785
+        },
+        "validation_sites": 799868
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 1,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "962ce815e9ee1b20b8b8d88e8e3783ea3738d0f64f953c6dce2ba16e02038e23",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "ab2b3e95a95f8048b96367c4296be364d4ee46a47bcbcbbe8bf8c6251f44d871",
+          "public/calibration_parent.fasta": "f9349291314fa8c84b095f8c1197d3e5188c2a535e6f506d5321a96aac3f6086",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "959f41452fd76f9913b2a7181de72bfa9550046696e2da347a0d3eaab5557394",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "ad114bbeb61b4ed513a85d9878a4336f9aa35173943fc3bf4c46b11e0de79b16"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_002",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19996,
+          "callable_sites": 3999170,
+          "called_mutations": 19919,
+          "correct_mutations": 19919,
+          "masked_sites": 350,
+          "precision": 1.0,
+          "recall": 0.9961492298459692,
+          "true_mutations": 19996
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199340,
+        "validation_nll": {
+          "1mer": 28544.578154022216,
+          "3mer": 28106.43811521826,
+          "5mer": 27936.770530869697,
+          "7mer": 27770.94403484904,
+          "7mer_flat": 28052.766877170383
+        },
+        "validation_sites": 799830
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 2,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "ff7f1a63ce4091c8e9fe3c8a94022e5496928aa1f5c70d7a127790860c40a2c6",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "4d6817c19ce3bb80b41669b9a2d2113f57505d23d8f98b8e0a0b2677d5fdc80b",
+          "public/calibration_parent.fasta": "ed54fa538d2a34efb3c8e1fe240ace2285ed3402e46c6f9522971bd01506b82a",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "6d3602d270036210fe01ec0137a0592fed11457053660375446d1664c7e9b065",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "b6804d9fb2fe0b6c4cb6c831e63506a7e04ba25a2275a4e81325533460fdae0c"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_003",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19822,
+          "callable_sites": 3998995,
+          "called_mutations": 19709,
+          "correct_mutations": 19709,
+          "masked_sites": 525,
+          "precision": 1.0,
+          "recall": 0.9942992634446575,
+          "true_mutations": 19822
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199204,
+        "validation_nll": {
+          "1mer": 29727.681933532083,
+          "3mer": 29182.152892528724,
+          "5mer": 28969.625419958804,
+          "7mer": 28819.16844319582,
+          "7mer_flat": 29133.32747999033
+        },
+        "validation_sites": 799791
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 3,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "088b11c745e7d64d642a9898059022c4df0a8d00f84d250d04d9fcc1b79d0eeb",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "985304cab3690e6dd25d4d1f2859be5ff2af1117659bc1a8cd6dd4d458b20d6c",
+          "public/calibration_parent.fasta": "0626c10d5a80eff480efff51b2dbaa658ca43a102511d519a755f4266d35dcdb",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c918341fc87f5ef8f42a5cf8de675a9a9f84aef54745eb54af429d232fb0245a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "457605a5178989f40f41685c3b97a7274fac28ea97abd953ba24c1c119733376"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_004",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19925,
+          "callable_sites": 3999049,
+          "called_mutations": 19823,
+          "correct_mutations": 19823,
+          "masked_sites": 471,
+          "precision": 1.0,
+          "recall": 0.9948808030112923,
+          "true_mutations": 19925
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199241,
+        "validation_nll": {
+          "1mer": 28421.907165249162,
+          "3mer": 28024.11017501179,
+          "5mer": 27840.873859741045,
+          "7mer": 27642.17861809815,
+          "7mer_flat": 27899.11997786739
+        },
+        "validation_sites": 799808
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 4,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "149bdb482a10bef5201d3bd05e567cb489394f1dd00f3cfe73b0cb420e1e802e",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "8a07efbbe57013f2fc51b0bdf58e192c26d535d595d203bb21e89a703e3f561e",
+          "public/calibration_parent.fasta": "6dbc131efde924841e489c717aa10c00d646c5119c376f1a17d05ca4248a1a59",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "0df83a8decb89ddda57146380e6342af191667c2337cf73d2b17d42d4113dd27",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "2e2e9c61af2cb4ca6b5256ce86fd63753ad4e4a20f9783b31b2fa4522d19e6a5"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_005",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19860,
+          "callable_sites": 3998876,
+          "called_mutations": 19722,
+          "correct_mutations": 19722,
+          "masked_sites": 644,
+          "precision": 1.0,
+          "recall": 0.9930513595166163,
+          "true_mutations": 19860
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199108,
+        "validation_nll": {
+          "1mer": 28777.60949189979,
+          "3mer": 28330.256052826473,
+          "5mer": 28155.784446735164,
+          "7mer": 27981.000772850894,
+          "7mer_flat": 28263.30441668016
+        },
+        "validation_sites": 799768
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 5,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "a14d289c58b3599b6d375b909c5f7def830e79607fc722db85bd68d3e0671c1e",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "7eb58554a3585b6fb8204436835c4b64143bba8c00b781598e89fc3caa60e0a0",
+          "public/calibration_parent.fasta": "30de82c132dfe23dafbc237053ead71f8d260d916d3d7151e1db26374af309ef",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "60f5dd83482c87201a4cd22575bb606f0b9364cace81042c064d0dca656b7e91",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "dbbe437872c8d73c1c44a7654f693b46d5725247b04df36ab59804aff25fdcab"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_006",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19682,
+          "callable_sites": 3999020,
+          "called_mutations": 19574,
+          "correct_mutations": 19574,
+          "masked_sites": 500,
+          "precision": 1.0,
+          "recall": 0.9945127527690275,
+          "true_mutations": 19682
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199203,
+        "validation_nll": {
+          "1mer": 28061.967148459804,
+          "3mer": 27649.162617211816,
+          "5mer": 27482.816402427386,
+          "7mer": 27275.359533417264,
+          "7mer_flat": 27539.076172911366
+        },
+        "validation_sites": 799817
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 6,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "099598c26233bd5c30bf398b2426d589fd78340d063f5ee16763a6d4eec588f9",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "0194133c1d07a13ed6549fcffacf96114262f3699f750e20dc1daf794a98c28b",
+          "public/calibration_parent.fasta": "da4e0d9e084fe07b09b92748b8b2d0cf75bf48d8e1e64df3d2b8424272001634",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "1d488ee1fe4faf62a0708685432782118e292e361cf8fa4473ebb516366a9680",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "c95bbe4d26c96a435c511be320a692765c8c21d4e71d36895dfb170f5b59f9f0"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_007",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20027,
+          "callable_sites": 3998960,
+          "called_mutations": 19907,
+          "correct_mutations": 19907,
+          "masked_sites": 560,
+          "precision": 1.0,
+          "recall": 0.9940080890797424,
+          "true_mutations": 20027
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199154,
+        "validation_nll": {
+          "1mer": 28691.301082071277,
+          "3mer": 28275.815288470047,
+          "5mer": 28064.79175067652,
+          "7mer": 27937.442596370674,
+          "7mer_flat": 28187.958516627812
+        },
+        "validation_sites": 799806
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 7,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "feac3fded2ee9caf30eae4d95ccdafa9f4d64b1dbc40d60fe7777836c1583139",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "af95c0290838397768154daef37ed23186f6c37066b70b8ce41483e65fe3219a",
+          "public/calibration_parent.fasta": "08dc9beb3e23c919181e1d71f11bcb554f660e47feab3d6e1874e64ff2631c60",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "5b52792203c191ede30555e6d72b72b95b78705d911da52e3ead198a78270196",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "21d576a31458c42fe27313aa63c7d7f43cf20330e1b28ebfee3ede83c06aaf32"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_008",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19976,
+          "callable_sites": 3999110,
+          "called_mutations": 19885,
+          "correct_mutations": 19885,
+          "masked_sites": 410,
+          "precision": 1.0,
+          "recall": 0.9954445334401282,
+          "true_mutations": 19976
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199321,
+        "validation_nll": {
+          "1mer": 28162.59841118679,
+          "3mer": 27701.336172728134,
+          "5mer": 27519.276720925707,
+          "7mer": 27343.734246772394,
+          "7mer_flat": 27646.71909543175
+        },
+        "validation_sites": 799789
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 8,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "56313e9d594cc8b2407a2168c2258c32a27ddcee210f431d45573d07365fa0b5",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "5ef95886dc2227b09e0c6480d2fecc74bb5a50369eaaec90218e0fd21242e804",
+          "public/calibration_parent.fasta": "ac3606f2c76f1e5451717127a0c521fedcc8351c4531787d25ceffd4afb7412c",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "3d7c09a6b5d3271f3bacf3c64b6abbc827b6578d3b204b0725b70b73eee449fc",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "4a113450a0f9a3026413b5ce8094d21d4fb942db71adea9cf12a49b90bc7dc70"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_009",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20172,
+          "callable_sites": 3999046,
+          "called_mutations": 20072,
+          "correct_mutations": 20072,
+          "masked_sites": 474,
+          "precision": 1.0,
+          "recall": 0.9950426333531628,
+          "true_mutations": 20172
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199198,
+        "validation_nll": {
+          "1mer": 28958.32863141743,
+          "3mer": 28506.93296890257,
+          "5mer": 28339.790561880705,
+          "7mer": 28155.308235708595,
+          "7mer_flat": 28436.236911572974
+        },
+        "validation_sites": 799848
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 9,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "176b5a9ca23d0bd33c5cbd85449c2c97402f73e74d59d61aa091ec799d27d6b4",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "67ab1bd2ea73709c2fd5c44567c80a73269b645b53c48febcae85c05cfe3957a",
+          "public/calibration_parent.fasta": "6efa15caf39552b638d8ac507fdaef2304524640bc354caee31382834de0b42f",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "2b1cc2c0a3945d8d39bdaf904a73ad8622d71ee506ac61e5eb26dfcd71893607",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "961cc85b447be56b138a1367111dae8458b93b601ab8587b538d61d7ba91c40c"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_010",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20127,
+          "callable_sites": 3999010,
+          "called_mutations": 20016,
+          "correct_mutations": 20016,
+          "masked_sites": 510,
+          "precision": 1.0,
+          "recall": 0.9944850201222238,
+          "true_mutations": 20127
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199227,
+        "validation_nll": {
+          "1mer": 29038.27194885716,
+          "3mer": 28687.35937000177,
+          "5mer": 28501.79418089152,
+          "7mer": 28316.744758722685,
+          "7mer_flat": 28537.386311778144
+        },
+        "validation_sites": 799783
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 10,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "b7b8a45ef454c7698e5623edbca37f1bb7522ed76363d19cae011effd8022f8b",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "2ba2a0f40da21d3929888b1143aa6957ac5a921f4bf955f57f9b58015dc534cd",
+          "public/calibration_parent.fasta": "35a24de092dff541b9fabc42f5dc40b0c81097d4c437e8bd7852a829e85a04c3",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "9b310d8fce0b47dd84e9202a50181fc001a8bffdbc23c7ec1e90c781b9e6572e",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "8cef0881553a29542a39209b8296f5be53cf8d483c5d4107c97b0bd60dd6cceb"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/seven_shift/seed_011",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19806,
+          "callable_sites": 3999117,
+          "called_mutations": 19719,
+          "correct_mutations": 19719,
+          "masked_sites": 403,
+          "precision": 1.0,
+          "recall": 0.995607391699485,
+          "true_mutations": 19806
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 10000.0,
+          "7mer": 1000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199296,
+        "validation_nll": {
+          "1mer": 28945.686641565437,
+          "3mer": 28529.010618913642,
+          "5mer": 28342.354475977547,
+          "7mer": 28174.14805784557,
+          "7mer_flat": 28460.736044409743
+        },
+        "validation_sites": 799821
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "seven_shift",
+          "schema": 1,
+          "seed": 11,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "1f584eede3848e4683d08359edcc30fc74027f9e4ee980775b1db23f49f5019e",
+          "private/new_offspring.fasta": "ce04f299cb888492c712fdc011deaa41ff44b16eb81e6e1abea66645b8a2f309",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "286d0dedb678c41f4adaa8ac6f793b26894e35192987055e20aca7dc7e80b67b",
+          "public/calibration_parent.fasta": "e0028a73e1054b5471256a06aeb929e8ff19202d1cbbb8c395e2d9c24dc58a2e",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "c51cfd0e2e5efead5d0d581992984ccb11bea51f165bfbeb61e83add30d77c41",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "a6d7f1ee44b21ca7f8e2dd37c15f7523acdac0cf338a6a9c713b2c2e63035dc7"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_000",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20121,
+          "callable_sites": 3999080,
+          "called_mutations": 20025,
+          "correct_mutations": 20025,
+          "masked_sites": 440,
+          "precision": 1.0,
+          "recall": 0.9952288653645445,
+          "true_mutations": 20121
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 100000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199268,
+        "validation_nll": {
+          "1mer": 29017.991639014996,
+          "3mer": 28368.690288877915,
+          "5mer": 28368.562159951012,
+          "7mer": 28368.562159963418,
+          "7mer_flat": 28880.9633977415
+        },
+        "validation_sites": 799812
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 0,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "5e99003315c2329308e586a061dd1e4ee07e28bd32532875cef06a5dda87377b",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "29b26e4870f8233428b65df7d349a6c54222fbcd942021e868a97c85a52b4d33",
+          "public/calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "2e16b9777838c1c2971b751fef60a6d767a2704251dd2daffe280778fd2fa72a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "c4c0e781798a78db7d912a227e53b49f6c63387a206e72643233c784303bd461"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_001",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20179,
+          "callable_sites": 3999046,
+          "called_mutations": 20072,
+          "correct_mutations": 20072,
+          "masked_sites": 474,
+          "precision": 1.0,
+          "recall": 0.9946974577531097,
+          "true_mutations": 20179
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199187,
+        "validation_nll": {
+          "1mer": 28782.715413133104,
+          "3mer": 28151.948493625296,
+          "5mer": 28151.9484937503,
+          "7mer": 28151.9484937553,
+          "7mer_flat": 28645.645105995878
+        },
+        "validation_sites": 799859
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 1,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "eedad94db5cecf6faded75001de0e527a2ca1fbbf2ac937bf8babe7f9cbcaef6",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "9f81059586e7e1bb843b30677f3b7d35d4d142e6ccaea8b4dc4da7b0e558354d",
+          "public/calibration_parent.fasta": "f9349291314fa8c84b095f8c1197d3e5188c2a535e6f506d5321a96aac3f6086",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "54060785e77af7645bc076683cbfe532bd3f539dcc15b1f4de18e51152634374",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "ee6262cdd22c0ce4b9643460e331edc743faee99f48fdcc01db2859df758b980"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_002",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19967,
+          "callable_sites": 3999054,
+          "called_mutations": 19863,
+          "correct_mutations": 19863,
+          "masked_sites": 466,
+          "precision": 1.0,
+          "recall": 0.9947914058196023,
+          "true_mutations": 19967
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199267,
+        "validation_nll": {
+          "1mer": 28167.436785966143,
+          "3mer": 27518.246771003858,
+          "5mer": 27518.24677104268,
+          "7mer": 27518.246771066664,
+          "7mer_flat": 28048.79860576358
+        },
+        "validation_sites": 799787
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 2,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "7e16fe9c4f9d41a2872506401d91f2f990f909dcc15a8a22204fa2e607208884",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "d58f9715596bf3154b433ce25390d16a26eebfe22a60da464665646b5e9f856a",
+          "public/calibration_parent.fasta": "ed54fa538d2a34efb3c8e1fe240ace2285ed3402e46c6f9522971bd01506b82a",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "18ab0887826840c2c5109c144107aa3cf0356f5b38b65bd13a4a5e9f83446b27",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "590fe33ff37a3597639262cef6d0fdf1b3160c9b1b4a49f32dfe6e31bfa40b01"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_003",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19743,
+          "callable_sites": 3999146,
+          "called_mutations": 19658,
+          "correct_mutations": 19658,
+          "masked_sites": 374,
+          "precision": 1.0,
+          "recall": 0.9956946765942359,
+          "true_mutations": 19743
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 1000000000000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199304,
+        "validation_nll": {
+          "1mer": 28932.973952460095,
+          "3mer": 28191.118948622745,
+          "5mer": 28191.11894856429,
+          "7mer": 28190.792755486087,
+          "7mer_flat": 28743.626627137506
+        },
+        "validation_sites": 799842
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 3,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "bd55f9282920d77e47c9304507cf169d31a129f60019202fbb0ccfe2f43954f9",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "098309b5962fca1d8986d9062031589b34f80f691a08831eff68345361bf48b5",
+          "public/calibration_parent.fasta": "0626c10d5a80eff480efff51b2dbaa658ca43a102511d519a755f4266d35dcdb",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "5604c30725c84e5528caf4259a7c7b9e7d9bfbf17822528c65192281d355c142",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "bca0ee0ce144d2edde677fba0aa962fcd02ff5acec64c01b0188987c82ae0310"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_004",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19865,
+          "callable_sites": 3999076,
+          "called_mutations": 19767,
+          "correct_mutations": 19767,
+          "masked_sites": 444,
+          "precision": 1.0,
+          "recall": 0.9950667002265291,
+          "true_mutations": 19865
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199254,
+        "validation_nll": {
+          "1mer": 28155.603518805117,
+          "3mer": 27545.364602192407,
+          "5mer": 27545.364602186946,
+          "7mer": 27545.258000359627,
+          "7mer_flat": 28024.69649726737
+        },
+        "validation_sites": 799822
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 4,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "c0437a92d9cc039065e310db038fdac123cf434b5ba6bdfc67ddd9b3468ed044",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "7fb015a10e99d22f172f49e6112308c4a4c083451bb3e69b52176d38aa66658b",
+          "public/calibration_parent.fasta": "6dbc131efde924841e489c717aa10c00d646c5119c376f1a17d05ca4248a1a59",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "b36388fbddc5c1dd5577f75ae5b8a30df107a5221a9896372506aa1239fcea77",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "836bf23f654a912dce6b34988d479c8c2b735c28d0aaf3a2d6c5905c26a1de5f"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_005",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20007,
+          "callable_sites": 3998958,
+          "called_mutations": 19884,
+          "correct_mutations": 19884,
+          "masked_sites": 562,
+          "precision": 1.0,
+          "recall": 0.9938521517468886,
+          "true_mutations": 20007
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 100000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199143,
+        "validation_nll": {
+          "1mer": 28723.88333252013,
+          "3mer": 28064.70420873613,
+          "5mer": 28064.085490998066,
+          "7mer": 28064.08549100774,
+          "7mer_flat": 28587.544902918107
+        },
+        "validation_sites": 799815
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 5,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "4dcc9c9cb923198bae21401b4d6377035bba1e731b2d4a3b16c5e83546f176de",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "7e07a3eec97285af93246b5e817d89d8e2f8b00d559a44dda106f099752803ed",
+          "public/calibration_parent.fasta": "30de82c132dfe23dafbc237053ead71f8d260d916d3d7151e1db26374af309ef",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "21a66ac90beb5df444ace24e096a84e372fb132fa358ac164552f6033ccacb6a",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "8b15cf6c52d2c2ac5fe2682edfe38e975063ee42407e945b2e49de314c1f9fc3"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_006",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19761,
+          "callable_sites": 3999140,
+          "called_mutations": 19679,
+          "correct_mutations": 19679,
+          "masked_sites": 380,
+          "precision": 1.0,
+          "recall": 0.9958504124285208,
+          "true_mutations": 19761
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199303,
+        "validation_nll": {
+          "1mer": 27986.71479466219,
+          "3mer": 27368.597643549223,
+          "5mer": 27368.597643610225,
+          "7mer": 27368.57955059602,
+          "7mer_flat": 27860.199019441174
+        },
+        "validation_sites": 799837
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 6,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "7723da11e4e242abe69767e6a4bb49500c60f69f391bb6d578809527233aec22",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "d9135190c964818efdf56f2f4d37841f355acccdb77e92e6c71870598d717eb7",
+          "public/calibration_parent.fasta": "da4e0d9e084fe07b09b92748b8b2d0cf75bf48d8e1e64df3d2b8424272001634",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "fc62588d50bf80f40f1515160a5364c0a6d1f4e447ad044df7f714f493f5d8f2",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "b50739b0c417bef258e0145e3afb089e16a52a81822f2c44aaffe203459bdb71"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_007",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19982,
+          "callable_sites": 3999156,
+          "called_mutations": 19902,
+          "correct_mutations": 19902,
+          "masked_sites": 364,
+          "precision": 1.0,
+          "recall": 0.9959963967570814,
+          "true_mutations": 19982
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 100000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199279,
+        "validation_nll": {
+          "1mer": 27907.596948755916,
+          "3mer": 27251.81825593199,
+          "5mer": 27251.61512973812,
+          "7mer": 27251.615129767717,
+          "7mer_flat": 27781.68172786944
+        },
+        "validation_sites": 799877
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 7,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "3f1b036f3ffe78e5e7dd3966fbbf5a0fe413282bd2981d613add5f50e10ffa03",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "86bd09de25729f73379248eb0167672a94cbcf3982a0df2e55f4d2078b2bb524",
+          "public/calibration_parent.fasta": "08dc9beb3e23c919181e1d71f11bcb554f660e47feab3d6e1874e64ff2631c60",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "db1609af2bdee3872f67e2b6166171640f658f64f569675dd267e5230cd758f0",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "1d923d0ec6091d97c7b1ed4118413075ca7e84c94c19da5fb09349f77cceca66"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_008",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19911,
+          "callable_sites": 3999100,
+          "called_mutations": 19822,
+          "correct_mutations": 19822,
+          "masked_sites": 420,
+          "precision": 1.0,
+          "recall": 0.9955301089849832,
+          "true_mutations": 19911
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10.0,
+          "5mer": 100000.0,
+          "7mer": 100000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199251,
+        "validation_nll": {
+          "1mer": 28077.699673474966,
+          "3mer": 27406.425591269464,
+          "5mer": 27405.366555494755,
+          "7mer": 27405.076144431885,
+          "7mer_flat": 27905.545441692506
+        },
+        "validation_sites": 799849
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 8,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "2dcb0e20f0fa37429ca31dfb481c31883957d7eec977930edc01759e52ad9d03",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "0af3e7b34067e139cc6b560b738385b48b546b7da1c85140874d5ca1db11b4ed",
+          "public/calibration_parent.fasta": "ac3606f2c76f1e5451717127a0c521fedcc8351c4531787d25ceffd4afb7412c",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "a1e8cd8f850ec41d64b13adc5fa1744970b85ce006ec1064222bdf6147e11b95",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "282999ddf93e1954cc19d8544f25d643c6e3b26bc684721ca2f80ba9141ae695"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_009",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 20006,
+          "callable_sites": 3999036,
+          "called_mutations": 19904,
+          "correct_mutations": 19904,
+          "masked_sites": 484,
+          "precision": 1.0,
+          "recall": 0.9949015295411376,
+          "true_mutations": 20006
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 1000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199221,
+        "validation_nll": {
+          "1mer": 29061.858970608268,
+          "3mer": 28397.812167164215,
+          "5mer": 28397.812167288517,
+          "7mer": 28397.812167303062,
+          "7mer_flat": 28918.2467504589
+        },
+        "validation_sites": 799815
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 9,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "4d30577902d19d268763bd307afcc5d74cfe53a82b73d6620797f53994230a27",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "d7f7df166be7e44fd86c471d44774e08e432fdb5516faea7a676a7f305980d7e",
+          "public/calibration_parent.fasta": "6efa15caf39552b638d8ac507fdaef2304524640bc354caee31382834de0b42f",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "9e3f8d9335a3244ce2dc05776b64fa111ab1572d40b174b73223c1e60c0c10b9",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "ae5f0c007e9500431f89b2e4b91a35b13e075472e803e1de0aef517c1c713a75"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_010",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19955,
+          "callable_sites": 3999228,
+          "called_mutations": 19893,
+          "correct_mutations": 19893,
+          "masked_sites": 292,
+          "precision": 1.0,
+          "recall": 0.9968930092708594,
+          "true_mutations": 19955
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199424,
+        "validation_nll": {
+          "1mer": 28121.290319682754,
+          "3mer": 27557.158701057073,
+          "5mer": 27557.158701073422,
+          "7mer": 27557.158701092587,
+          "7mer_flat": 28006.105256101764
+        },
+        "validation_sites": 799804
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 10,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "48b17447e04315f0a2594be5a3fe1eedf2e04845669057e04b67ed0fa3a7da27",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "c1d1435b4de1c1163e5055905ff79ea7d75c896e646b3b3a58af1ad4f40b77f2",
+          "public/calibration_parent.fasta": "35a24de092dff541b9fabc42f5dc40b0c81097d4c437e8bd7852a829e85a04c3",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "1dd5ab8ccf5074007fdb6da7d9701718eebebbcacff5714169d4693e69962464",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "d71474d44f1b086edc9ba67432f4d870d1fdd1cefa51199348d5f10436678b9a"
+    },
+    {
+      "directory": "/home/mew/mutation_context_mock/main/three/seed_011",
+      "fit_audit": {
+        "alignment": {
+          "alignment_edit_distance": 19756,
+          "callable_sites": 3999165,
+          "called_mutations": 19676,
+          "correct_mutations": 19676,
+          "masked_sites": 355,
+          "precision": 1.0,
+          "recall": 0.9959505972869002,
+          "true_mutations": 19756
+        },
+        "shrinkage": {
+          "1mer": 2.0,
+          "3mer": 10000.0,
+          "5mer": 1000000000000.0,
+          "7mer": 1000000000000.0,
+          "7mer_flat": 1000.0
+        },
+        "training_sites": 3199302,
+        "validation_nll": {
+          "1mer": 28768.764046729913,
+          "3mer": 28158.762087331696,
+          "5mer": 28158.76208736194,
+          "7mer": 28158.762087364277,
+          "7mer_flat": 28646.89949029369
+        },
+        "validation_sites": 799863
+      },
+      "sample_manifest": {
+        "config": {
+          "contig_bases": 50000,
+          "mean_rate": 0.005,
+          "scenario": "three",
+          "schema": 1,
+          "seed": 11,
+          "target_outer_match": 0.8,
+          "test_bases": 1000000,
+          "train_bases": 4000000
+        },
+        "files": {
+          "private/kernel.npy": "a8a4ca03491e2eae11330d80f0c1f90e94dcaa2c932e44d1180ed03899c610bd",
+          "private/new_offspring.fasta": "29cc9e81fb71dbafc8399ea50514215e8d32f8f4bdf96dd491c556eada9a7d3d",
+          "public/TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+          "public/calibration_offspring.fasta": "19976880e0f883bd5ab056aa207d4ae2c4c8b77cb1322dc88def938252a1d1e2",
+          "public/calibration_parent.fasta": "e0028a73e1054b5471256a06aeb929e8ff19202d1cbbb8c395e2d9c24dc58a2e",
+          "public/metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+          "public/new_parent.fasta": "ea713d9ee7325e0b84fb2f42ddb8cb2b35414e09690baff17c422f7140ff3545",
+          "public/queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+        }
+      },
+      "scores_sha256": "2d37419b5ba0a15c4802b0704f9a35f065e76ac805cef86585744953fa11e688"
+    }
+  ],
+  "source_files": {
+    "benchmark.py": "37f239e0a56d0a136236f12a88d14a5321f9f592f56859b86be4954fef706f5d",
+    "grade.py": "c1c16a3729e1863eca51556165b87e5f64f9232b5b3b61aa21fed2b1d15c86e8",
+    "release.py": "fcb06aa9562bd8141683cb9accf5a9f7f3f4ff406c8fcaa342ffef0167e72ab3",
+    "solve.py": "9492344469753e199f51f3ceb392102560803c46657f9f4c8b04fc0c999ff930",
+    "write_report.py": "436c2393e3bcfd5a6fe9bafdd4670e3495e37cef0c53f91cab9544a80e578b3e"
+  }
+}

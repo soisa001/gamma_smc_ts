@@ -1,0 +1,7 @@
+* text eol=lf
+resources/ERV_7bp_rates.txt -text
+results/** -text
+releases/** -text
+*.png binary
+*.pdf binary
+*.zip binary

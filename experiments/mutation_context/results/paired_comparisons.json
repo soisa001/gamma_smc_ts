@@ -1,0 +1,362 @@
+[
+  {
+    "ci_high": 0.0001432246678177612,
+    "ci_low": 3.5252143821833295e-05,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": 8.885066681525772e-05,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "constant",
+    "second_better_replicates": 3
+  },
+  {
+    "ci_high": 0.00012618121387590055,
+    "ci_low": 1.0156098368980608e-05,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": 6.236277292080243e-05,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "constant",
+    "second_better_replicates": 2
+  },
+  {
+    "ci_high": 0.0005912425744365132,
+    "ci_low": 2.471624489725338e-06,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 0.00024334153542725345,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "constant",
+    "second_better_replicates": 3
+  },
+  {
+    "ci_high": 5.83852413104509e-05,
+    "ci_low": -1.7804643457639916e-06,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 2.5100265829858248e-05,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "constant",
+    "second_better_replicates": 5
+  },
+  {
+    "ci_high": 0.00044121327677391236,
+    "ci_low": -0.00010365914100526208,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.00013280740125085633,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "constant",
+    "second_better_replicates": 8
+  },
+  {
+    "ci_high": 8.188410298235378e-06,
+    "ci_low": -0.0001220211601531999,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": -5.1911008180915985e-05,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "constant",
+    "second_better_replicates": 8
+  },
+  {
+    "ci_high": 0.00011670488224484211,
+    "ci_low": 1.6307859048335286e-05,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": 6.614930170450329e-05,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "three",
+    "second_better_replicates": 3
+  },
+  {
+    "ci_high": 9.594960106772895e-05,
+    "ci_low": -5.227687350198989e-06,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": 4.0925369232882224e-05,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "three",
+    "second_better_replicates": 5
+  },
+  {
+    "ci_high": 1.4462596271362678e-05,
+    "ci_low": 1.2302674096114872e-06,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 6.883426263414819e-06,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "three",
+    "second_better_replicates": 4
+  },
+  {
+    "ci_high": 1.880559292983461e-05,
+    "ci_low": -1.0172360761120704e-05,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 4.728510069588558e-06,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "three",
+    "second_better_replicates": 6
+  },
+  {
+    "ci_high": 0.12380972934817575,
+    "ci_low": 0.12278197686102019,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.12332348229132273,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "three",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": 0.054406560972921916,
+    "ci_low": 0.05169097534236736,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.053246845668387555,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "three",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": -0.06273450172517502,
+    "ci_low": -0.06492073225472746,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.06390887572258008,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "five_iid",
+    "second_better_replicates": 12
+  },
+  {
+    "ci_high": 0.006991979912455402,
+    "ci_low": 0.0003205186882269777,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": 0.003645469832917969,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "five_iid",
+    "second_better_replicates": 4
+  },
+  {
+    "ci_high": 3.631296401541076e-07,
+    "ci_low": -0.000258599061535967,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": -0.00011204197453424578,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "five_iid",
+    "second_better_replicates": 3
+  },
+  {
+    "ci_high": 0.00035787422745145735,
+    "ci_low": 7.93446006894539e-06,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 0.0001566412349824168,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "five_iid",
+    "second_better_replicates": 2
+  },
+  {
+    "ci_high": 0.11968892454647247,
+    "ci_low": 0.1178020865975187,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.11870199957500056,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "five_iid",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": 0.0431526123512394,
+    "ci_low": 0.03476416302103404,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.0388671760133569,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "five_iid",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": -0.11674583057071289,
+    "ci_low": -0.12806712572904352,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.12295988265675152,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "five_shift",
+    "second_better_replicates": 12
+  },
+  {
+    "ci_high": -0.0032886218518471864,
+    "ci_low": -0.00855751760599269,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.006190657456268095,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "five_shift",
+    "second_better_replicates": 11
+  },
+  {
+    "ci_high": -2.8714898300261573e-06,
+    "ci_low": -0.0008454417464420959,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": -0.0003647820620380707,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "five_shift",
+    "second_better_replicates": 7
+  },
+  {
+    "ci_high": 0.00041291941140815546,
+    "ci_low": -5.679422604765634e-06,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 0.0001707223950443796,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "five_shift",
+    "second_better_replicates": 5
+  },
+  {
+    "ci_high": 0.13296875089558255,
+    "ci_low": 0.1224863349037681,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.12778437341993357,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "five_shift",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": 0.044762747471970045,
+    "ci_low": 0.03494271068733459,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.03980369639089688,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "five_shift",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": -0.0921389715215026,
+    "ci_low": -0.10072260887185362,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.09612535269854794,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "seven_shift",
+    "second_better_replicates": 12
+  },
+  {
+    "ci_high": -0.0037129524618705815,
+    "ci_low": -0.009341309072725743,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.007066147517017414,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "seven_shift",
+    "second_better_replicates": 11
+  },
+  {
+    "ci_high": -0.030523421736072073,
+    "ci_low": -0.037300980589228386,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": -0.03409810938604322,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "seven_shift",
+    "second_better_replicates": 12
+  },
+  {
+    "ci_high": -0.0032412532870801252,
+    "ci_low": -0.009071343860167525,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": -0.006237971242594916,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "seven_shift",
+    "second_better_replicates": 11
+  },
+  {
+    "ci_high": 0.04638269278889324,
+    "ci_low": 0.037700937036735716,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.04180412882910354,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "seven_shift",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": 0.016501944096529334,
+    "ci_low": 0.0067199728051948,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.011613621453483611,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "seven_shift",
+    "second_better_replicates": 1
+  },
+  {
+    "ci_high": -0.008162914991433961,
+    "ci_low": -0.009118702323492118,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.00862211902951559,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "empirical_five",
+    "second_better_replicates": 12
+  },
+  {
+    "ci_high": -0.001905563051675131,
+    "ci_low": -0.003971696143403922,
+    "contrast": "5mer minus 3mer",
+    "mean_difference": -0.0028967001123463934,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "empirical_five",
+    "second_better_replicates": 12
+  },
+  {
+    "ci_high": 1.7188092451616613e-05,
+    "ci_low": -8.467602406080453e-08,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 6.429100249636642e-06,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "empirical_five",
+    "second_better_replicates": 1
+  },
+  {
+    "ci_high": 2.2959065734782145e-05,
+    "ci_low": -1.2132186259316649e-05,
+    "contrast": "7mer minus 5mer",
+    "mean_difference": 4.008553411039006e-06,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "empirical_five",
+    "second_better_replicates": 4
+  },
+  {
+    "ci_high": 0.23909317256353546,
+    "ci_low": 0.23016999500121849,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.2345153881153067,
+    "metric": "oracle_kl_per_mutation",
+    "replicates": 12,
+    "scenario": "empirical_five",
+    "second_better_replicates": 0
+  },
+  {
+    "ci_high": 0.05776020104635945,
+    "ci_low": 0.05044360804631085,
+    "contrast": "7mer_flat minus 5mer",
+    "mean_difference": 0.05410524416876349,
+    "metric": "observed_conditional_nll",
+    "replicates": 12,
+    "scenario": "empirical_five",
+    "second_better_replicates": 0
+  }
+]

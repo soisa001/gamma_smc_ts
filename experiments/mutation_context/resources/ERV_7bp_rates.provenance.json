@@ -1,0 +1,31 @@
+{
+  "source_url": "https://raw.githubusercontent.com/carjed/mr-eel/master/ERV_7bp_rates.txt",
+  "source_repository": "https://github.com/carjed/mr-eel",
+  "source_file_commit": "95c53b33abc4fa1146cba5ef2c9a512b58827905",
+  "immutable_url": "https://raw.githubusercontent.com/carjed/mr-eel/95c53b33abc4fa1146cba5ef2c9a512b58827905/ERV_7bp_rates.txt",
+  "retrieved_date": "2026-11-12",
+  "sha256": "a88c99ed1b3a5806201f3e9b97913aed5dcd6f90af093bf8d61b44d10c6f3ff2",
+  "bytes": 675933,
+  "rows": 8192,
+  "citation": "Carlson et al. (2018), Nature Communications 9:3753, doi:10.1038/s41467-018-05936-5",
+  "official_link_chain": [
+    "https://mutation.sph.umich.edu/",
+    "https://github.com/carjed/mr-eel",
+    "ERV_7bp_rates.txt"
+  ],
+  "interpretation": "Relative singleton-based mutation-rate estimates, not absolute per-generation rates",
+  "orientation": "Sequence is motif(reverse_complement); AT_CG=A>C/T>G; AT_GC=A>G/T>C; AT_TA=A>T/T>A; GC_AT=G>A/C>T; GC_CG=G>C/C>G; GC_TA=G>T/C>A. Nonapplicable channels are zero.",
+  "license_note": "Publicly downloadable author resource. The browser website links an MIT license for its site, but a dedicated data-table license was not verified. Cite the original paper and source; do not infer that the site license automatically governs this table.",
+  "validation": {
+    "reverse_complements_valid": true,
+    "all_16384_directed_7mers_covered": true,
+    "representative_centers": {
+      "A": 4096,
+      "C": 4096
+    },
+    "active_channels_finite_and_positive": true,
+    "inactive_channels_zero": true,
+    "active_min": 0.000221827861579414,
+    "active_max": 0.146102462183946
+  }
+}
