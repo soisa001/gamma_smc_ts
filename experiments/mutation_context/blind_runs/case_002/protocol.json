@@ -1,0 +1,21 @@
+{
+  "evaluation_date": "2026-11-12",
+  "agent_task": "/root/case_002_solver",
+  "conversation_inheritance": "none",
+  "task_directory": "D:/agent_evaluations/case_002",
+  "input_archive_sha256": "9a5a6f0adc0b2c7e9029c8b7bcae9b8885eacca32487f61970d3a808c4e91e32",
+  "inputs": ["TASK.md", "metadata.json", "calibration_parent.fasta", "calibration_offspring.fasta", "new_parent.fasta", "queries.tsv"],
+  "allowed_information": "Public task files and standard runtime/package facilities only; no scientific web sources, external repositories, prior conversation, generator, reference solver, or evaluator truth.",
+  "isolation": "Fresh agent conversation and instruction-restricted file access. The collaboration runtime shares the host filesystem; this is not OS-enforced sandbox isolation.",
+  "interventions": "No scientific or model hints, follow-up advice, or hidden-score feedback before final submission.",
+  "random_seed": 0,
+  "workers_default": 4,
+  "memory_budget_gb": 26,
+  "assessment_defined_before_submission": {
+    "valid_output": "All requested sites in order with finite nonnegative four-allele probabilities summing to one.",
+    "dependency_discovery": "Agent independently identifies the asymmetric span -3 through +2 or an equivalent interaction requiring -3 and +2, supported by calibration validation or model comparisons.",
+    "mechanism_discovery": "Separately record whether the agent identifies outer-base equality, the -2/-1 equality modifier, and the failure of reverse-complement symmetry.",
+    "scoring": "Use the existing independent grader on the unrevealed seven-base representation of the true six-base process. Do not use hidden scores to revise the agent submission.",
+    "scope": "One agent run on one dataset; descriptive evidence, not an estimated agent success rate. No arbitrary score threshold for declaring dependency discovery."
+  }
+}

@@ -191,3 +191,47 @@ Figures are saved as PNG and PDF with editable vector text, using the Agg backen
 They are not displayed inline. Tests cover alignment and gap masking, exact kernel
 dependencies, the sequence-composition control, probability scoring, cache
 corruption, and public-only solving followed by independent grading.
+
+## Blind agent trials
+
+Two fresh agents independently recovered the centered five-base rule and an
+asymmetric six-base rule. Their discovery logs, source code, public input hashes,
+and hidden scores are under `blind_runs`. See the
+[blind evaluation report](../../docs/mutation_context_blind_agent_results.md).
+These are one agent trial per process, with conversation isolation and instructed
+file-access restrictions rather than an OS-enforced sandbox.
+
+Generate the asymmetric task (three leading bases, central base, two trailing):
+
+```bash
+uv run --locked asymmetric_task.py work/asymmetric/seed_000
+uv run --locked release.py work/asymmetric/seed_000 --output work/task_002.zip
+uv run --locked directional_baselines.py work/asymmetric/seed_000 --output work/directional_reference.json
+uv run --locked pytest -q tests/test_asymmetric_task.py
+```
+
+The directed kernel depends on offsets −3 through +2 and is independent of +3.
+Its six public filenames and task wording match the first release. The generator,
+this documentation, and all `blind_runs` files must stay outside a blind solver's
+environment.
+
+Replay the first agent's submitted estimator on the public files:
+
+```bash
+replay="$PWD/work/agent_replay_001"
+uv run --locked python -m zipfile -e releases/task_001.zip "$replay"
+cp -a blind_runs/case_001/agent_submission/. "$replay/"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.txt" python "$replay/finalize.py"
+uv run --locked benchmark.py prepare --root work/replay_grading --replicates 1 --scenarios five_shift
+uv run --locked grade.py work/replay_grading/five_shift/seed_000 \
+  "$replay/predictions.tsv" --output "$replay/grade.json"
+```
+
+The replay uses the agent's pinned dependencies, independently of the authoring
+environment. It fits the saved model family afresh and regenerates probabilities
+and bootstrap summaries. It does not reproduce the stochastic discovery process.
+For case 002, extract `task_002.zip`, copy its corresponding `agent_submission`
+files, and run `produce.py` with that case's pinned requirements; its saved count
+arrays came solely from public calibration inputs. `capture_blind_run.py` checks
+public input identity, freezes a finished submission, and invokes the private grader.

@@ -1,0 +1,47 @@
+[
+  {
+    "method": "1mer",
+    "oracle_kl_per_mutation": 0.24920504441911948,
+    "observed_nll_per_site": 0.04755304425601452,
+    "observed_conditional_nll": 0.8705589291295525,
+    "burden_relative_error": -0.2779914206928563,
+    "predicted_mutations": 5011.574805218621,
+    "expected_mutations": 6941.156862745101
+  },
+  {
+    "method": "3mer",
+    "oracle_kl_per_mutation": 0.1530131558228841,
+    "observed_nll_per_site": 0.0469602922209856,
+    "observed_conditional_nll": 0.8522377504121504,
+    "burden_relative_error": -0.27729369467079845,
+    "predicted_mutations": 5016.417830984943,
+    "expected_mutations": 6941.156862745101
+  },
+  {
+    "method": "5mer",
+    "oracle_kl_per_mutation": 0.04996687816359182,
+    "observed_nll_per_site": 0.04626460053031656,
+    "observed_conditional_nll": 0.842986454367288,
+    "burden_relative_error": -0.15946061234375875,
+    "predicted_mutations": 5834.315739037684,
+    "expected_mutations": 6941.156862745101
+  },
+  {
+    "method": "7mer",
+    "oracle_kl_per_mutation": 0.04962311102198698,
+    "observed_nll_per_site": 0.04626193180782309,
+    "observed_conditional_nll": 0.8429183012817154,
+    "burden_relative_error": -0.15868597741802049,
+    "predicted_mutations": 5839.692601568594,
+    "expected_mutations": 6941.156862745101
+  },
+  {
+    "method": "7mer_flat",
+    "oracle_kl_per_mutation": 0.16337890798987445,
+    "observed_nll_per_site": 0.046976740168837586,
+    "observed_conditional_nll": 0.8758736044762842,
+    "burden_relative_error": -0.18697010879272769,
+    "predicted_mutations": 5643.368008970261,
+    "expected_mutations": 6941.156862745101
+  }
+]

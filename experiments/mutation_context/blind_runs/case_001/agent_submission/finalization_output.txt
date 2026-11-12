@@ -1,0 +1,94 @@
+{
+  "expected_total_changed_alleles": 6897.167985934181,
+  "expected_changed_alleles": 6897.167985934181,
+  "query_count": 999880,
+  "expected_unchanged_alleles": 992982.8320140658,
+  "model": "five-parameter reverse-complement symmetric CpG and +/-2 equality motif model",
+  "model_selection": "parsimonious model within one paired-contig standard error of best cross-validated log loss",
+  "calibration_sites_used": 3999520,
+  "calibration_changes_used": 20138,
+  "seed": 0,
+  "threads": 4,
+  "bootstrap_replicates": 500,
+  "parameter_uncertainty_bootstrap_se": 54.53112019390566,
+  "parameter_uncertainty_bootstrap_95_percent_interval": [
+    6795.696444530861,
+    7004.181563972876
+  ],
+  "conditional_independent_site_count_sd": 82.6872609825442,
+  "query_group_exposures": [
+    99482,
+    398545,
+    375498,
+    126355
+  ],
+  "xor_outcome_probabilities": [
+    [
+      0.996790192513551,
+      0.0007874487220856013,
+      0.0016349100422777018,
+      0.0007874487220856013
+    ],
+    [
+      0.9900111242815791,
+      0.00325508987223609,
+      0.0059463371240992425,
+      0.0007874487220856013
+    ],
+    [
+      0.996790192513551,
+      0.0007874487220856013,
+      0.0016349100422777018,
+      0.0007874487220856013
+    ],
+    [
+      0.9889869245156693,
+      0.0007874487220856013,
+      0.009438178040159563,
+      0.0007874487220856013
+    ]
+  ],
+  "max_roundtrip_row_sum_error": 4.5208281562736374e-13,
+  "expected_changes_from_serialized_predictions": 6897.167985511395,
+  "predictions_sha256": "0b1bd43607a0ebf259a618b7ffb554c6c1b4d4b411a41b0caa5719597d7a0dd6",
+  "residual_diagnostics": {
+    "context3": {
+      "pearson_stat": 112.66525191182429,
+      "df": 91,
+      "dispersion": 1.2380796913387284,
+      "p_approx": 0.061508407570229955
+    },
+    "context5": {
+      "pearson_stat": 1734.4068918400078,
+      "df": 1531,
+      "dispersion": 1.1328588450947144,
+      "p_approx": 0.0002026714621346844
+    },
+    "context7": {
+      "pearson_stat": 24470.391764219676,
+      "df": 24571,
+      "dispersion": 0.9959054073590686,
+      "p_approx": 0.674169928610705
+    },
+    "contig": {
+      "pearson_stat": 233.8835318294593,
+      "df": 235,
+      "dispersion": 0.9952490716147203,
+      "p_approx": 0.5083018374076138
+    },
+    "position_decile": {
+      "pearson_stat": 22.28902381774351,
+      "df": 25,
+      "dispersion": 0.8915609527097403,
+      "p_approx": 0.6190045968600106
+    }
+  },
+  "software": {
+    "python": "3.13.15 (main, Aug 14 2026, 15:34:59) [Clang 22.1.3 ]",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.1",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35"
+  }
+}

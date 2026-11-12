@@ -1,0 +1,13 @@
+{
+  "case": "case_001",
+  "replay_kind": "Frozen agent code rerun against public archive; not a new agent discovery trial",
+  "python": "3.13.15",
+  "dependency_source": "case_001/agent_submission/requirements.txt",
+  "entrypoint": "case_001/agent_submission/finalize.py",
+  "prediction_sha256_original": "0b1bd43607a0ebf259a618b7ffb554c6c1b4d4b411a41b0caa5719597d7a0dd6",
+  "prediction_sha256_replay": "0b1bd43607a0ebf259a618b7ffb554c6c1b4d4b411a41b0caa5719597d7a0dd6",
+  "byte_identical": true,
+  "both_submission_snapshot_hashes_verified": true,
+  "both_grader_prediction_hashes_match_frozen_submissions": true,
+  "new_focused_tests": "tests/test_asymmetric_task.py: 3 passed"
+}

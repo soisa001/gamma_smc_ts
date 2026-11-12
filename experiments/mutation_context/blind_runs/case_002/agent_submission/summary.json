@@ -1,0 +1,132 @@
+{
+  "expected_number_of_changed_alleles": 6974.537599374985,
+  "number_of_queried_sites": 999880,
+  "expected_changed_fraction": 0.006975374644332305,
+  "model": "nine-rate pooled substitution model with CpG, oriented (-3,+2) equality, and oriented (-2,-1) equality",
+  "calibration_sites_used": 3999520,
+  "calibration_changes": 20189,
+  "seed": 0,
+  "threads": 4,
+  "memory_limit_gib": 26,
+  "parameters": [
+    {
+      "parameter": "at_other_cold",
+      "events": 1186,
+      "calibration_exposure": 1497706,
+      "query_exposure": 373443,
+      "rate": 0.0007922110265893129,
+      "approximate_rate_sd": 2.29897777104192e-05,
+      "expected_query_changes": 295.8456624025928,
+      "expected_count_parameter_variance_contribution": 73.70860478053734
+    },
+    {
+      "parameter": "at_other_hot",
+      "events": 790,
+      "calibration_exposure": 499779,
+      "query_exposure": 125307,
+      "rate": 0.0015816959462163353,
+      "approximate_rate_sd": 5.621185238531815e-05,
+      "expected_query_changes": 198.19757393253033,
+      "expected_count_parameter_variance_contribution": 49.614253279838245
+    },
+    {
+      "parameter": "at_transition_cold",
+      "events": 2376,
+      "calibration_exposure": 1496429,
+      "query_exposure": 99347,
+      "rate": 0.001588113042374184,
+      "approximate_rate_sd": 3.255121694103004e-05,
+      "expected_query_changes": 157.77426642074806,
+      "expected_count_parameter_variance_contribution": 10.45788768540444
+    },
+    {
+      "parameter": "at_transition_hot",
+      "events": 3067,
+      "calibration_exposure": 501056,
+      "query_exposure": 399403,
+      "rate": 0.0061220579694525774,
+      "approximate_rate_sd": 0.0001101973737775533,
+      "expected_query_changes": 2445.1683191732677,
+      "expected_count_parameter_variance_contribution": 1937.1584009708897
+    },
+    {
+      "parameter": "at_transversion_cold",
+      "events": 1138,
+      "calibration_exposure": 1496429,
+      "query_exposure": 99347,
+      "rate": 0.0007608107295362964,
+      "approximate_rate_sd": 2.2539521671541318e-05,
+      "expected_query_changes": 75.58426354724244,
+      "expected_count_parameter_variance_contribution": 5.014168277542978
+    },
+    {
+      "parameter": "at_transversion_hot",
+      "events": 1609,
+      "calibration_exposure": 501056,
+      "query_exposure": 399403,
+      "rate": 0.0032122093893509123,
+      "approximate_rate_sd": 7.993910438173274e-05,
+      "expected_query_changes": 1282.9660667349224,
+      "expected_count_parameter_variance_contribution": 1019.3919546713852
+    },
+    {
+      "parameter": "cg_transversions",
+      "events": 3004,
+      "calibration_exposure": 4004070,
+      "query_exposure": 1002260,
+      "rate": 0.0007503613197668073,
+      "approximate_rate_sd": 1.3684258833178406e-05,
+      "expected_query_changes": 752.0571363494803,
+      "expected_count_parameter_variance_contribution": 188.1063066651389
+    },
+    {
+      "parameter": "cg_transition_cold",
+      "events": 2324,
+      "calibration_exposure": 1499757,
+      "query_exposure": 374152,
+      "rate": 0.0015499167198974768,
+      "approximate_rate_sd": 3.212229912906071e-05,
+      "expected_query_changes": 579.9044405830807,
+      "expected_count_parameter_variance_contribution": 144.44728592582732
+    },
+    {
+      "parameter": "cg_transition_hot",
+      "events": 4695,
+      "calibration_exposure": 502278,
+      "query_exposure": 126978,
+      "rate": 0.009348390038205858,
+      "approximate_rate_sd": 0.00013578629671658434,
+      "expected_query_changes": 1187.0398702713035,
+      "expected_count_parameter_variance_contribution": 297.2821633226405
+    }
+  ],
+  "uncertainty": {
+    "approximate_parameter_sd_of_expected_count": 61.034261079980354,
+    "conditional_independent_site_sd_of_realized_count": 83.14063850912926,
+    "approximate_combined_predictive_sd": 103.13848359019494,
+    "note": "Approximate: ignores cross-parameter covariance, adaptive model-selection uncertainty, and any residual dependence across sites."
+  },
+  "verification": {
+    "rows_revalidated": 999880,
+    "max_absolute_row_sum_error": 4.440892098500626e-16,
+    "minimum_probability": 0.0007503613197668073,
+    "maximum_probability": 0.9969493606405689,
+    "reread_expected_changes": 6974.537599374983,
+    "six_input_hashes_unchanged": true,
+    "predictions_sha256": "0a881044b5739fee15f5346f68d7feaadef0a19cbc3ed00d3df1b7696b2f892a"
+  },
+  "provenance": {
+    "created_utc": "2026-11-12T22:38:13.814503+00:00",
+    "task_directory": "/mnt/d/agent_evaluations/case_002",
+    "python": "3.13.15",
+    "numpy": "2.5.4",
+    "input_sha256": {
+      "TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+      "metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+      "queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66",
+      "calibration_parent.fasta": "f2b1aeb3f9f6b41d8ab35a4bd4c2b7f8289f53d94c45b74eeea860b3e341aa18",
+      "calibration_offspring.fasta": "7bf08ff829db968c80342eb679b374d87da3227a410d6a1183390e15e64de9e7",
+      "new_parent.fasta": "3b2ddb80411abc7f9a2861e0cbedb1ca30c9380720300163230ee1b6314ecc27"
+    }
+  }
+}

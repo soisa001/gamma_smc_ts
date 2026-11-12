@@ -1,0 +1,14 @@
+fold 0 best equalities [(2868.3490472469884, (0, 5)), (45.308977663978034, (1, 2)), (11.472419487530336, (0, 1))]
+fold 1 best equalities [(2926.365221126764, (0, 5)), (31.95609071159266, (1, 2)), (10.123193564851963, (1, 5))]
+fold 2 best equalities [(2935.77502940282, (0, 5)), (24.99195003936738, (1, 2)), (10.91958301755444, (0, 1))]
+fold 3 best equalities [(2872.5387214789716, (0, 5)), (39.58289701423511, (1, 2)), (8.156780790618278, (1, 5))]
+fold 4 best equalities [(2904.6364590483618, (0, 5)), (40.54424286270121, (1, 2)), (8.295336842883538, (0, 1))]
+pooled_identity {'nll': 140739.0658136583, 'expected_changes': 20201.826165240636, 'excess_nll': 0.0, 'excess_nll_se': 0.0}
+pooled_reduced {'nll': 140740.41462223892, 'expected_changes': 20193.760080609747, 'excess_nll': 1.3488085806372965, 'excess_nll_se': 5.499004607588193}
+pooled_rule {'nll': 140741.2830672402, 'expected_changes': 20196.22996425449, 'excess_nll': 2.2172535819331642, 'excess_nll_se': 4.956246646670911}
+pooled_all_eq {'nll': 140746.28499992884, 'expected_changes': 20199.92841132434, 'excess_nll': 7.2191862705708445, 'excess_nll_se': 6.356540699212843}
+oriented_rule {'nll': 140749.34533531056, 'expected_changes': 20203.735678297777, 'excess_nll': 10.279521652272933, 'excess_nll_se': 5.992884526922923}
+oriented_identity {'nll': 140751.7445780227, 'expected_changes': 20214.891428722323, 'excess_nll': 12.67876436444385, 'excess_nll_se': 4.925902148525397}
+oriented_all_eq {'nll': 140757.07116449843, 'expected_changes': 20211.266404048263, 'excess_nll': 18.005350840154733, 'excess_nll_se': 7.790417098007016}
+pooled_pair {'nll': 140760.1349391242, 'expected_changes': 20222.227831114877, 'excess_nll': 21.069125465900242, 'excess_nll_se': 7.373971303062477}
+oriented_pair {'nll': 140785.6822419293, 'expected_changes': 20255.702553043415, 'excess_nll': 46.61642827102855, 'excess_nll_se': 10.636184061521597}

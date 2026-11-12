@@ -1,0 +1,16 @@
+{
+  "burden_relative_error": -0.00633739852067583,
+  "expected_mutations": 6941.156862745136,
+  "observed_conditional_nll": 0.8361474953588135,
+  "observed_conditional_nll_total": 5762.728538012942,
+  "observed_mutations": 6892,
+  "observed_nll": 45962.175004456854,
+  "observed_nll_per_site": 0.04596769112739214,
+  "oracle_conditional_kl": 0.000549974700274916,
+  "oracle_conditional_kl_total": 3.817460665149433,
+  "oracle_kl": 5.076622767404124,
+  "oracle_kl_per_mutation": 0.0007313799223659075,
+  "predicted_mutations": 6897.167985511396,
+  "prediction_sha256": "0b1bd43607a0ebf259a618b7ffb554c6c1b4d4b411a41b0caa5719597d7a0dd6",
+  "sites": 999880
+}

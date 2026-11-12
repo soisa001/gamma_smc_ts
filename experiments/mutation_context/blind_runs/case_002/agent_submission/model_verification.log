@@ -1,0 +1,2 @@
+PASS: all 16,384 context probability vectors match independently implemented string-based rules.
+PASS: all six original input hashes and the prediction hash match recorded provenance.

@@ -1,0 +1,12 @@
+{
+  "inputs": {
+    "TASK.md": "e76518b0236232e87227a60c95affd9d60668e697a2219d8cc7c9e8e427500ce",
+    "metadata.json": "d0da86982b01f4c005a05132b12c0476ec3db9cdfd234c77fd4004b4ca116155",
+    "calibration_parent.fasta": "92c43b5b309d306e3943adcaa5fd72a626c0ec2f8f3876e1a308f9a5888a6c34",
+    "calibration_offspring.fasta": "a41f811622c5f2bf9f52e1d35337366021db6f5e29068f2f1ae6912bfcf7a09e",
+    "new_parent.fasta": "c2957e884c8bf2190e0cc1cbdfd266b58662e4075be5098c672c96f7961f83e7",
+    "queries.tsv": "a2860d805e429322eb3ebb4770a3a04a111f0c76a0cadc63aae70591963d1d66"
+  },
+  "seed": 0,
+  "threads": 4
+}

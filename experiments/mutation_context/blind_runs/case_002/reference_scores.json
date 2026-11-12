@@ -1,0 +1,147 @@
+{
+  "alignment_audit": {
+    "alignment_edit_distance": 20189,
+    "callable_sites": 3999084,
+    "called_mutations": 20093,
+    "correct_mutations": 20093,
+    "masked_sites": 436,
+    "true_mutations": 20189
+  },
+  "samples_manifest_sha256": "14f8f9f59c6c1c90e60fae1f78a18b3315a7519a8cab5d762c6107f4ed164627",
+  "scores": [
+    {
+      "burden_relative_error": -0.27324246324200263,
+      "expected_mutations": 6914.795384615383,
+      "gc_odds_log_error": -0.645799954116007,
+      "label": "1-mer (-0..+0)",
+      "observed_binary_nll_per_site": 0.04150040619043384,
+      "observed_conditional_nll": 0.9145336423661681,
+      "observed_mutations": 6897,
+      "observed_nll_per_site": 0.04780870171729652,
+      "oracle_binary_kl_per_mutation": 0.1915980135859629,
+      "oracle_brier_excess": 2.823307082601805e-05,
+      "oracle_conditional_kl": 0.05476029338258045,
+      "oracle_kl_per_mutation": 0.24635830696854336,
+      "predicted_mutations": 5025.379660908645,
+      "shrinkage": 2.0,
+      "sites": 999880,
+      "validation_nll": 28531.487073797423,
+      "window": [
+        0,
+        0
+      ]
+    },
+    {
+      "burden_relative_error": -0.2720282997289952,
+      "expected_mutations": 6914.795384615383,
+      "gc_odds_log_error": -0.6502879304396353,
+      "label": "3-mer (-1..+1)",
+      "observed_binary_nll_per_site": 0.04106615687801461,
+      "observed_conditional_nll": 0.886278616750124,
+      "observed_mutations": 6897,
+      "observed_nll_per_site": 0.04717955410540751,
+      "oracle_binary_kl_per_mutation": 0.12342718165030768,
+      "oracle_brier_excess": 1.7139394863653632e-05,
+      "oracle_conditional_kl": 0.029729661466300253,
+      "oracle_kl_per_mutation": 0.15315684311660793,
+      "predicted_mutations": 5033.775353164557,
+      "shrinkage": 1000.0,
+      "sites": 999880,
+      "validation_nll": 28036.193644047984,
+      "window": [
+        1,
+        1
+      ]
+    },
+    {
+      "burden_relative_error": -0.27202935613184587,
+      "expected_mutations": 6914.795384615383,
+      "gc_odds_log_error": -0.6502911913508322,
+      "label": "5-mer (-2..+2)",
+      "observed_binary_nll_per_site": 0.04106594932663338,
+      "observed_conditional_nll": 0.8861688210138682,
+      "observed_mutations": 6897,
+      "observed_nll_per_site": 0.04717858920195107,
+      "oracle_binary_kl_per_mutation": 0.12340454719228362,
+      "oracle_brier_excess": 1.713467641124391e-05,
+      "oracle_conditional_kl": 0.029544893935109912,
+      "oracle_kl_per_mutation": 0.15294944112739353,
+      "predicted_mutations": 5033.768048355001,
+      "shrinkage": 100000.0,
+      "sites": 999880,
+      "validation_nll": 28035.36604214632,
+      "window": [
+        2,
+        2
+      ]
+    },
+    {
+      "burden_relative_error": -0.24732702766226378,
+      "expected_mutations": 6914.795384615383,
+      "gc_odds_log_error": -0.5706896048414062,
+      "label": "6-mer (-3..+2)",
+      "observed_binary_nll_per_site": 0.04089954184758863,
+      "observed_conditional_nll": 0.8829461014874516,
+      "observed_mutations": 6897,
+      "observed_nll_per_site": 0.04698995195876092,
+      "oracle_binary_kl_per_mutation": 0.0986789791051075,
+      "oracle_brier_excess": 1.4339837911895536e-05,
+      "oracle_conditional_kl": 0.025324702952124967,
+      "oracle_kl_per_mutation": 0.12400368205723247,
+      "predicted_mutations": 5204.57959524572,
+      "shrinkage": 10000.0,
+      "sites": 999880,
+      "validation_nll": 27990.05536145973,
+      "window": [
+        3,
+        2
+      ]
+    },
+    {
+      "burden_relative_error": -0.27202174935335843,
+      "expected_mutations": 6914.795384615383,
+      "gc_odds_log_error": -0.6504403731248424,
+      "label": "6-mer (-2..+3)",
+      "observed_binary_nll_per_site": 0.04106642726623469,
+      "observed_conditional_nll": 0.8861086248110837,
+      "observed_mutations": 6897,
+      "observed_nll_per_site": 0.04717865191851501,
+      "oracle_binary_kl_per_mutation": 0.12343729033991885,
+      "oracle_brier_excess": 1.71380947819832e-05,
+      "oracle_conditional_kl": 0.02954393473737103,
+      "oracle_kl_per_mutation": 0.15298122507728987,
+      "predicted_mutations": 5033.820647671778,
+      "shrinkage": 100000.0,
+      "sites": 999880,
+      "validation_nll": 28035.07664313579,
+      "window": [
+        2,
+        3
+      ]
+    },
+    {
+      "burden_relative_error": -0.2416274739258536,
+      "expected_mutations": 6914.795384615383,
+      "gc_odds_log_error": -0.5535851092212576,
+      "label": "7-mer (-3..+3)",
+      "observed_binary_nll_per_site": 0.04087113627657306,
+      "observed_conditional_nll": 0.8831592918958567,
+      "observed_mutations": 6897,
+      "observed_nll_per_site": 0.04696301693845821,
+      "oracle_binary_kl_per_mutation": 0.09416260777017528,
+      "oracle_brier_excess": 1.3803925978028287e-05,
+      "oracle_conditional_kl": 0.025473377133378085,
+      "oracle_kl_per_mutation": 0.11963598490355337,
+      "predicted_mutations": 5243.990843116617,
+      "shrinkage": 10000.0,
+      "sites": 999880,
+      "validation_nll": 27984.20532695504,
+      "window": [
+        3,
+        3
+      ]
+    }
+  ],
+  "source_sha256": "de242168b009701313cedb08923809f9849da84a2ac403dc0b98e8f1a6526cec",
+  "strand_pooling": false
+}
