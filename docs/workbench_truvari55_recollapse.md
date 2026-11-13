@@ -54,7 +54,7 @@ and set `--sizemax -1` to include SVs above 50 kb.
 | Sequence-resolved INS | Size AND sequence similarity >=90% | Size AND sequence similarity >=70% |
 | Symbolic INS | Pass through without collapse | Pass through without collapse |
 | Ambiguous/unsupported alleles | Pass through without collapse | Pass through without collapse |
-| Symbolic DUP/INV | Existing size/position criteria, size >=90% | Existing size/position criteria, size >=70% |
+| Symbolic DUP/INV | Pass through without collapse | Pass through without collapse |
 
 Symbolic calls stay partitioned by full ALT type. Types and representations never
 collapse together. BND is excluded. Pass-through preserves each partition record's
@@ -98,7 +98,7 @@ Symbolic positions remain as reported. This means separate biallelic records at
 the same position, not a requirement for multiple ALT entries in a single record;
 actual multiallelic input rows still fail validation. Singleton groups remain.
 All previous similarity, reciprocal-overlap, genotype, type, and size rules remain
-in force; symbolic INS still pass through without merging.
+in force; symbolic INS, DUP, and INV pass through without merging.
 
 After the baseline cell finishes, replace its analysis invocation with:
 
@@ -125,3 +125,53 @@ merge after trimming, raw same-position alleles that trim to different positions
 cannot merge, right anchors remain valid, symbolic INS pass through, thresholds
 and genotype constraints still apply, every native cluster has a single position,
 and baseline files and cached outputs are preserved.
+
+## Lenient DEL/INS same-position run
+
+Use the lenient BCF with the same 70%/90% rules above. Only eligible DEL and
+sequence-resolved INS are merged. Symbolic INS/DUP/INV and unresolved alleles
+are retained as individual records with their alleles and genotypes preserved;
+the standard audit/count annotations are still applied. DUP/INV results use
+`symbolic_passthrough` directories, so old merged DUP/INV results cannot be reused
+as pass-through results. Existing validated partitions and unchanged DEL/INS jobs
+remain reusable.
+
+```bash
+%%bash
+set -euo pipefail
+export PATH="$HOME/.local/bin:$PATH"
+
+BASE=/home/jupyter/ashg_revised
+REPO="$BASE/gamma_smc_ts_svplots"
+BCF="$BASE/v3_callset_comparison/inputs/v3_ultralong_lenient.bcf"
+OUT="$BASE/v3_lenient_recollapse_same_start_90_70"
+TOOLS="$BASE/tools/truvari55_uv"
+mkdir -p "$OUT"
+exec > >(tee -a "$OUT/run.log") 2>&1
+date -u '+started_utc=%Y-%m-%dT%H:%M:%SZ'
+test -s "$BCF"
+command -v uv
+command -v bcftools
+
+if [[ ! -d "$REPO/.git" ]]; then
+    git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git "$REPO"
+else
+    test "$(git -C "$REPO" branch --show-current)" = AOU_run_opt
+    git -C "$REPO" pull --ff-only origin AOU_run_opt
+fi
+git -C "$REPO" rev-parse HEAD
+
+uv --no-config run --script "$REPO/scripts/build_truvari55.py" \
+    --out "$TOOLS" --workers 4
+
+"$TOOLS/venv/bin/python" "$REPO/scripts/compare_stringent_recollapse.py" \
+    --bcf "$BCF" --out "$OUT" --same-start --workers 4 --refdist 500
+
+date -u '+finished_utc=%Y-%m-%dT%H:%M:%SZ'
+```
+
+Despite the historical script name, input is entirely determined by `--bcf`.
+This cell performs no staging or uploads and emits no plots. Do not point its
+preparation cache at stringent inputs. Tests include identical symbolic DUP and
+INV pairs with disjoint carriers, ensuring both records survive both thresholds
+even though they would otherwise meet all similarity criteria.

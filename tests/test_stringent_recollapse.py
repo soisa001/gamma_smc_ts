@@ -53,6 +53,10 @@ def make_fixture(path, same_start_cases=False):
         add(300000, "DEL", 60300, "N", "<DEL>", "s2")
         # A DUP cannot merge with DEL at the same position/size.
         add(300000, "DUP", 60000, "N", "<DUP>", "s3")
+        # Even identical symbolic DUP/INV with disjoint carriers stay separate.
+        add(300000, "DUP", 60000, "N", "<DUP>", "s4")
+        add(350000, "INV", 60000, "N", "<INV>", "s1")
+        add(350000, "INV", 60000, "N", "<INV>", "s2")
         # Equal-length DELs with ~80% overlap: merge at 70%, not 90%.
         add(600000, "DEL", 60000, "N", "<DEL>", "s1")
         add(612000, "DEL", 60000, "N", "<DEL>", "s2")
@@ -101,14 +105,18 @@ def test_actual_collapse_and_cache(tmp_path):
         assert rows[threshold, "INS", "symbolic_passthrough"]["action"] == "passthrough"
         assert float(rows[threshold, "DEL", "symbolic_size_overlap"]["pctovl"]) == threshold
         assert float(rows[threshold, "DEL", "symbolic_size_overlap"]["pctseq"]) == 0
-        folder = out / f"pct{int(threshold*100)}/INS.symbolic_passthrough"
-        assert json.loads((folder / "complete.json").read_text())["command"] is None
-        with pysam.VariantFile(out / "partitions/INS.symbolic_size_position.vcf.gz") as before:
-            with pysam.VariantFile(folder / "retained.vcf.gz") as after:
-                assert [str(r) for r in before] == [str(r) for r in after]
+        for kind in ("INS", "DUP", "INV"):
+            folder = out / f"pct{int(threshold*100)}/{kind}.symbolic_passthrough"
+            receipt = json.loads((folder / "complete.json").read_text())
+            assert receipt["command"] is None
+            assert receipt["summary"]["retained_records"] == 2
+            assert receipt["summary"]["collapsed_records"] == 0
+            with pysam.VariantFile(out / f"partitions/{kind}.symbolic_size_position.vcf.gz") as before:
+                with pysam.VariantFile(folder / "retained.vcf.gz") as after:
+                    assert [str(r) for r in before] == [str(r) for r in after]
     assert rows[0.9, "DEL", "symbolic_size_overlap"]["collapsed_records"] == "1"
     assert rows[0.7, "DEL", "symbolic_size_overlap"]["collapsed_records"] == "2"
-    assert rows[0.7, "DUP", "symbolic_size_position"]["collapsed_records"] == "0"
+    assert rows[0.7, "DUP", "symbolic_passthrough"]["collapsed_records"] == "0"
     assert rows[0.7, "INS", "unresolved_passthrough"]["retained_records"] == "1"
     final = out / "pct70/INS.sequence_resolved/retained.vcf.gz"
     with pysam.VariantFile(final) as vcf:
@@ -179,10 +187,12 @@ def test_same_start_native_adapter_and_reuse(tmp_path):
             receipt = json.loads((folder / "complete.json").read_text())
             assert receipt["recipe"]["same_start"] is True
             assert "collapse_same_start.py" in receipt["command"][1]
-        folder = out / f"pct{threshold}/INS.symbolic_passthrough"
-        receipt = json.loads((folder / "complete.json").read_text())
-        assert receipt["summary"]["retained_records"] == 2
-        assert receipt["command"] is None
+        for kind in ("INS", "DUP", "INV"):
+            folder = out / f"pct{threshold}/{kind}.symbolic_passthrough"
+            receipt = json.loads((folder / "complete.json").read_text())
+            assert receipt["summary"]["retained_records"] == 2
+            assert receipt["summary"]["collapsed_records"] == 0
+            assert receipt["command"] is None
     stamps = {p: p.stat().st_mtime_ns for p in out.rglob("*.vcf.gz")}
     repeat = subprocess.run(same, check=True, capture_output=True, text=True)
     assert "Reusing validated same-start partitions" in repeat.stdout

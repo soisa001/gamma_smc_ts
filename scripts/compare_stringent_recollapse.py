@@ -2,10 +2,10 @@
 # requires-python = ">=3.12,<3.13"
 # dependencies = ["truvari==5.5.0", "pywfa==0.5.1"]
 # ///
-"""Independent 90% and 70% Truvari re-collapse experiments on stringent SVs.
+"""Independent 90% and 70% Truvari re-collapse experiments on >10 kb SVs.
 
 Separate each type and representation. DEL uses size plus reciprocal overlap;
-only sequence-resolved INS can collapse. No uploads.
+only sequence-resolved INS can collapse. DUP/INV pass through. No uploads.
 """
 
 import argparse
@@ -347,14 +347,15 @@ def collapse_job(task):
     root, slug, m, samples, threshold, refdist, same_start = task
     kind = m["svtype"].split(":")[0]
     mode = m["mode"]
-    passthrough = mode == "unresolved_passthrough" or (kind == "INS" and mode != "sequence_resolved")
+    passthrough = (mode == "unresolved_passthrough" or kind not in ("DEL", "INS")
+                   or (kind == "INS" and mode != "sequence_resolved"))
     pctseq = threshold if kind == "INS" and not passthrough else 0.0
     pctovl = threshold if kind == "DEL" and not passthrough else 0.0
-    if kind == "INS" and mode == "symbolic_size_position":
+    if passthrough and mode == "symbolic_size_position":
         mode = "symbolic_passthrough"
     elif kind == "DEL" and not passthrough:
         mode = "symbolic_size_overlap" if mode == "symbolic_size_position" else "literal_size_overlap"
-    # Keep previous size-only DEL/symbolic-INS results as a baseline. Input
+    # Keep previous size-only results as a baseline. Input
     # partitions are identical and remain reusable without reading all GTs again.
     output_slug = slug.removesuffix(m["mode"]) + mode
     job = root / f"pct{int(threshold*100)}" / output_slug
@@ -456,10 +457,10 @@ def main():
                     position_policy="same CHROM/POS after minimal trimming; no left alignment" if args.same_start else "native proximity matching",
                     deletion="Size AND reciprocal overlap at each threshold; pctseq=0; representations stay separate",
                     insertion="Only literal unambiguous pure INS collapse: size AND sequence at each threshold; symbolic/ambiguous INS pass through",
-                    other_symbolic="DUP/INV retain separate size/position matching; pctseq=0, pctovl=0",
+                    other_symbolic="DUP/INV pass through without collapse; no sequence reconstruction",
                     genotype="gt all, keep common; AC/AN/AF/NS and RC_N_CARRIERS recalculated; missing alleles not imputed",
                     provenance="RC IDs map to original input; old collapse INFO cleared, source discovery counts retained as RC_SOURCE_DISCOVERY",
-                    scope="Each threshold starts from identical partitions; no cross-type or cross-representation merges; symbolic INS and unresolved calls pass through",
+                    scope="Each threshold starts from identical partitions; only eligible DEL/INS merge; symbolic INS, DUP/INV and unresolved calls pass through",
                     note="Already-collapsed representatives cannot reconstruct every original call or cluster")
     write_json(args.out / "run_manifest.json", manifest)
     if args.same_start:
