@@ -1,0 +1,12 @@
+{
+  "source": "agent_submission/fitted_model.npz; counts learned solely from public calibration",
+  "calibration_sites": 4000000,
+  "calibration_mutations": 19987,
+  "six_base_contexts": 4096,
+  "substitution_channels": 12288,
+  "mean_sites_per_context": 976.5625,
+  "mean_mutations_per_context": 4.879638671875,
+  "mean_events_per_channel": 1.6265462239583333,
+  "zero_observation_channels": 5561,
+  "fraction_zero_observation_channels": 0.4525553385416667
+}

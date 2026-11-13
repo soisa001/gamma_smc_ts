@@ -1,6 +1,7 @@
 """Evaluator-only grading of a probability TSV against withheld offspring and truth."""
 import argparse
 import csv
+import json
 from itertools import zip_longest
 from pathlib import Path
 
@@ -15,7 +16,8 @@ def grade(task, predictions, output):
     parents = b.read_fasta(task / "public" / "new_parent.fasta")
     children = b.read_fasta(task / "private" / "new_offspring.fasta")
     kernel = np.load(task / "private" / "kernel.npy")
-    ids = {name: b.contexts(seq) for name, seq in parents.items()}
+    circular = json.loads((task/"public"/"metadata.json").read_text()).get("topology") == "circular"
+    ids = {name: b.contexts(np.pad(seq, (3, 3), mode="wrap") if circular else seq) for name, seq in parents.items()}
     totals = {"sites": 0, "observed_mutations": 0, "expected_mutations": 0., "predicted_mutations": 0.,
               "observed_nll": 0., "observed_conditional_nll_total": 0., "oracle_kl": 0., "oracle_conditional_kl_total": 0.}
     # Bound memory independently of query count.
@@ -61,7 +63,7 @@ def grade(task, predictions, output):
             if query is None or row is None or row["contig"] != query["contig"] or row["position"] != query["position"]:
                 raise ValueError("Predictions must match every query exactly, in order")
             name, pos = query["contig"], int(query["position"])-1
-            batch.append((parents[name][pos], children[name][pos], ids[name][pos-3],
+            batch.append((parents[name][pos], children[name][pos], ids[name][pos if circular else pos-3],
                           [float(row[f"p_{base}"]) for base in "ACGT"]))
             if len(batch) == 50000:
                 flush()

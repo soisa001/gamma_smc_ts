@@ -1,0 +1,28 @@
+{
+  "config": {
+    "contig_bases": 50000,
+    "generator": "arbitrary_directed_six_v1",
+    "log_sd": 1.25,
+    "mean_rate": 0.005,
+    "offsets": [
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2
+    ],
+    "query_policy": "all positions, independently shuffled",
+    "seed": 0,
+    "strand_symmetry": false,
+    "streams": "SeedSequence(seed,spawn_key): kernel=(0,), contig=(1,group,index), query=(2,)",
+    "test_bases": 1000000,
+    "topology": "circular",
+    "train_bases": 4000000
+  },
+  "max_mutation_probability": 0.07196933139510542,
+  "memory_budget_gb": 26,
+  "numpy_version": "2.3.5",
+  "source_sha256": "3de7d0e1fa6500abe5f989c0eea9ea3587176d8ca0d7937bd7ea21d0e7b124ce",
+  "workers": 4
+}

@@ -1,5 +1,6 @@
 """Author-side directional window comparators; no strand symmetry is assumed."""
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -26,7 +27,26 @@ def run(task, output):
     task = Path(task)
     if not b.manifest_valid(task, "samples.manifest.json"):
         raise ValueError("Corrupt task inputs")
-    train, validation, audit = b.collect(task / "public")
+    circular = json.loads((task/"public"/"metadata.json").read_text()).get("topology") == "circular"
+    if circular:
+        # The public task guarantees homologous SNV-only sequences. Use the
+        # corresponding ungapped alignment at every site, including wraparound.
+        parents = b.read_fasta(task/"public"/"calibration_parent.fasta")
+        children = b.read_fasta(task/"public"/"calibration_offspring.fasta")
+        train, validation = np.zeros((4**7, 4)), np.zeros((4**7, 4))
+        changed = 0
+        for i, (name, seq) in enumerate(parents.items()):
+            if len(seq) != len(children[name]):
+                raise ValueError("Unequal lengths violate SNV-only correspondence")
+            ids = b.contexts(np.pad(seq, (3, 3), mode="wrap"))
+            counts = np.bincount(ids*4+children[name], minlength=4**7*4).reshape(-1, 4)
+            (validation if i % 5 == 0 else train)[:] += counts
+            changed += int((seq != children[name]).sum())
+        audit = {"method": "ungapped SNV-only alignment with circular contexts",
+                 "callable_sites": int(train.sum()+validation.sum()), "called_mutations": changed,
+                 "masked_sites": 0}
+    else:
+        train, validation, audit = b.collect(task / "public")
     fitted, partial, cv_losses, smoothing = {}, {}, {}, {}
     for window in WINDOWS:
         tr, full, val = [aggregate(counts, window) for counts in (train, train+validation, validation)]
@@ -54,7 +74,9 @@ def run(task, output):
     children = b.read_fasta(task / "private" / "new_offspring.fasta")
     counts = np.zeros((4**7, 4))
     for name, seq in parents.items():
-        counts += np.bincount(b.contexts(seq)*4+children[name][3:-3], minlength=4**7*4).reshape(-1, 4)
+        ids = b.contexts(np.pad(seq, (3, 3), mode="wrap") if circular else seq)
+        outcomes = children[name] if circular else children[name][3:-3]
+        counts += np.bincount(ids*4+outcomes, minlength=4**7*4).reshape(-1, 4)
     truth = np.load(task / "private" / "kernel.npy")
     rows = []
     for window in WINDOWS:
@@ -62,7 +84,8 @@ def run(task, output):
         rows.append({"window": list(window), "label": f"{sum(window)+1}-mer (-{window[0]}..+{window[1]})",
                      "validation_nll": cv_losses[window], "shrinkage": smoothing[window],
                      **b.score_counts(counts.sum(axis=1), counts, truth, pred)})
-    result = {"alignment_audit": audit, "strand_pooling": False, "scores": rows,
+    result = {"alignment_audit": audit, "strand_pooling": False, "target_topology": "circular" if circular else "linear",
+              "calibration_margin": 0 if circular else 3, "scores": rows,
               "samples_manifest_sha256": b.sha256(task / "samples.manifest.json"),
               "source_sha256": b.sha256(__file__)}
     b.write_json(output, result)

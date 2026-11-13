@@ -235,3 +235,39 @@ For case 002, extract `task_002.zip`, copy its corresponding `agent_submission`
 files, and run `produce.py` with that case's pinned requirements; its saved count
 arrays came solely from public calibration inputs. `capture_blind_run.py` checks
 public input identity, freezes a finished submission, and invokes the private grader.
+
+## Arbitrary six-base trial
+
+The harder `task_003` has independently drawn rates for 12,288 substitution
+channels across 4,096 forward-oriented six-base contexts, with no simple equality
+or CpG rules. Circular scaffolds and shuffled queries covering every position
+remove the excluded-boundary clue. The fresh blind agent discovered the correct
+−3..+2 window and fitted a regularized context table. See the
+[full trial report](../../docs/mutation_context_arbitrary_blind_results.md).
+
+Generate and evaluate author-side comparators in separate phases:
+
+```bash
+uv run --locked arbitrary_task.py work/arbitrary/seed_000 --workers 4
+uv run --locked release.py work/arbitrary/seed_000 --output work/task_003.zip
+uv run --locked directional_baselines.py work/arbitrary/seed_000 --output work/arbitrary_reference.json
+uv run --locked pytest -q tests/test_arbitrary_task.py
+```
+
+Replay the frozen blind estimator using its pinned dependencies:
+
+```bash
+replay="$PWD/work/agent_replay_003"
+uv run --locked python -m zipfile -e releases/task_003.zip "$replay"
+cp -a blind_runs/case_003/agent_submission/. "$replay/"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.txt" python "$replay/finalize.py"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.txt" python "$replay/verify.py"
+uv run --locked grade.py work/arbitrary/seed_000 "$replay/predictions.tsv" \
+  --output "$replay/grade.json"
+```
+
+Run the generation phase before grading. Replay refits the already-discovered
+model; it is not a fresh agent discovery trial. The authoring repository, generator,
+and frozen solutions must remain outside any new blind solver's environment.

@@ -1,0 +1,36 @@
+{
+  "expected_changed_alleles": 5000.441186784352,
+  "expected_total_number_of_changed_alleles": 5000.441186784352,
+  "query_rows": 1000000,
+  "unique_queried_sites": 1000000,
+  "mean_change_probability": 0.005000441186784352,
+  "calibration_sites": 4000000,
+  "calibration_changes": 19987,
+  "model": "circular sixmer offsets -3..+2; empirical-Bayes logit-normal rate and symmetric Dirichlet destination",
+  "rate_parameters": {
+    "mu": -5.63985137240729,
+    "sd": 0.8290602417594491,
+    "prior_mean": 0.004961722975390888,
+    "success": true
+  },
+  "destination_parameters": {
+    "alpha": 0.6191702523073329
+  },
+  "seed": 0,
+  "threads": 4,
+  "audit_logloss": 0.03438183012824907,
+  "audit_baseline_logloss": 0.03688423684196586,
+  "output_sha256": "e40d92df593618303edfa14e2e40ba5b7f1e8cd1134a09a1bb23bda54fbfdd7f",
+  "maximum_probability_sum_error_after_serialization": 5.209166431541234e-13,
+  "expected_changes_from_serialized_file": 5000.441186801279,
+  "query_order_verified": true,
+  "input_hashes_unchanged": true,
+  "identical_train_target_sequences": 0,
+  "python": "3.13.15",
+  "packages": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pandas": "3.1.1",
+    "scikit-learn": "1.9.1"
+  }
+}

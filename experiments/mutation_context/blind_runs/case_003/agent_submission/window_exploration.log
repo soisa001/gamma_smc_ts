@@ -1,0 +1,274 @@
+sixmer event quantiles [ 0.  0.  1.  2.  4.  7.  9. 18. 43.]
+sixmer hist [793, 906, 727, 516, 343, 244, 144, 120, 71, 57, 39, 27, 22, 12, 19, 5, 4, 4, 8, 4, 1, 4, 6, 4, 4, 1, 2, 0, 1, 2, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1]
+hot sixmers [{'code': 3473, 'count': 569, 'changes': 43, 'alt': [1, 0, 2, 40]}, {'code': 4066, 'count': 591, 'changes': 40, 'alt': [0, 4, 0, 36]}, {'code': 1163, 'count': 618, 'changes': 37, 'alt': [0, 35, 2, 0]}, {'code': 3567, 'count': 558, 'changes': 32, 'alt': [0, 0, 0, 32]}, {'code': 2485, 'count': 563, 'changes': 31, 'alt': [30, 1, 0, 0]}, {'code': 1023, 'count': 560, 'changes': 30, 'alt': [28, 2, 0, 0]}, {'code': 2841, 'count': 556, 'changes': 29, 'alt': [22, 0, 0, 7]}, {'code': 3789, 'count': 596, 'changes': 29, 'alt': [0, 0, 29, 0]}, {'code': 865, 'count': 592, 'changes': 28, 'alt': [0, 26, 0, 2]}, {'code': 1158, 'count': 538, 'changes': 26, 'alt': [0, 0, 0, 26]}, {'code': 674, 'count': 604, 'changes': 26, 'alt': [1, 11, 0, 14]}, {'code': 3535, 'count': 594, 'changes': 25, 'alt': [0, 24, 1, 0]}, {'code': 3928, 'count': 548, 'changes': 24, 'alt': [24, 0, 0, 0]}, {'code': 1235, 'count': 569, 'changes': 24, 'alt': [0, 0, 0, 24]}, {'code': 1331, 'count': 579, 'changes': 24, 'alt': [23, 1, 0, 0]}, {'code': 2978, 'count': 610, 'changes': 24, 'alt': [6, 13, 0, 5]}, {'code': 879, 'count': 570, 'changes': 23, 'alt': [11, 12, 0, 0]}, {'code': 3819, 'count': 607, 'changes': 23, 'alt': [0, 22, 0, 1]}, {'code': 3955, 'count': 570, 'changes': 23, 'alt': [0, 0, 23, 0]}, {'code': 599, 'count': 578, 'changes': 23, 'alt': [20, 0, 1, 2]}, {'code': 1266, 'count': 636, 'changes': 22, 'alt': [22, 0, 0, 0]}, {'code': 3504, 'count': 606, 'changes': 22, 'alt': [2, 0, 20, 0]}, {'code': 662, 'count': 570, 'changes': 22, 'alt': [2, 0, 0, 20]}, {'code': 1334, 'count': 583, 'changes': 22, 'alt': [22, 0, 0, 0]}, {'code': 448, 'count': 557, 'changes': 22, 'alt': [0, 0, 3, 19]}]
+[
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 300,
+    "beta": 3,
+    "dev_binary_loss": 0.030897715804631434,
+    "dev_full_loss": 0.03520382707399928
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 100,
+    "beta": 3,
+    "dev_binary_loss": 0.03107467146503166,
+    "dev_full_loss": 0.035380782734399506
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 1000,
+    "beta": 3,
+    "dev_binary_loss": 0.031114295074631565,
+    "dev_full_loss": 0.035420406343999414
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 300,
+    "beta": 10,
+    "dev_binary_loss": 0.030897715804631434,
+    "dev_full_loss": 0.035523028405872625
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 100,
+    "beta": 10,
+    "dev_binary_loss": 0.03107467146503166,
+    "dev_full_loss": 0.03569998406627285
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 1000,
+    "beta": 10,
+    "dev_binary_loss": 0.031114295074631565,
+    "dev_full_loss": 0.03573960767587275
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 30,
+    "beta": 3,
+    "dev_binary_loss": 0.0314777680186252,
+    "dev_full_loss": 0.03578387928799305
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 300,
+    "beta": 0.3,
+    "dev_binary_loss": 0.030897715804631434,
+    "dev_full_loss": 0.03579002417234229
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 3000,
+    "beta": 3,
+    "dev_binary_loss": 0.03156008667376613,
+    "dev_full_loss": 0.035866197943133976
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 300,
+    "beta": 30,
+    "dev_binary_loss": 0.030897715804631434,
+    "dev_full_loss": 0.03593971389126789
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 100,
+    "beta": 0.3,
+    "dev_binary_loss": 0.03107467146503166,
+    "dev_full_loss": 0.03596697983274252
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 1000,
+    "beta": 0.3,
+    "dev_binary_loss": 0.031114295074631565,
+    "dev_full_loss": 0.036006603442342425
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 30,
+    "beta": 10,
+    "dev_binary_loss": 0.0314777680186252,
+    "dev_full_loss": 0.03610308061986639
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 100,
+    "beta": 30,
+    "dev_binary_loss": 0.03107467146503166,
+    "dev_full_loss": 0.03611666955166812
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 1000,
+    "beta": 30,
+    "dev_binary_loss": 0.031114295074631565,
+    "dev_full_loss": 0.03615629316126802
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 3000,
+    "beta": 10,
+    "dev_binary_loss": 0.03156008667376613,
+    "dev_full_loss": 0.036185399275007316
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 10,
+    "beta": 3,
+    "dev_binary_loss": 0.03190260882029429,
+    "dev_full_loss": 0.03620872008966214
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 10000,
+    "beta": 3,
+    "dev_binary_loss": 0.03194926009432768,
+    "dev_full_loss": 0.03625537136369553
+  },
+  {
+    "left": -3,
+    "right": 3,
+    "alpha": 300,
+    "beta": 3,
+    "dev_binary_loss": 0.03140124381877655,
+    "dev_full_loss": 0.036280970511101227
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 300,
+    "beta": 100,
+    "dev_binary_loss": 0.030897715804631434,
+    "dev_full_loss": 0.036283525803772795
+  },
+  {
+    "left": -4,
+    "right": 2,
+    "alpha": 300,
+    "beta": 3,
+    "dev_binary_loss": 0.03141947135661028,
+    "dev_full_loss": 0.036292666485037046
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 30,
+    "beta": 0.3,
+    "dev_binary_loss": 0.0314777680186252,
+    "dev_full_loss": 0.03637007638633606
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 30000,
+    "beta": 3,
+    "dev_binary_loss": 0.032122715963705535,
+    "dev_full_loss": 0.03642882723307338
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 3000,
+    "beta": 0.3,
+    "dev_binary_loss": 0.03156008667376613,
+    "dev_full_loss": 0.03645239504147699
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 100,
+    "beta": 100,
+    "dev_binary_loss": 0.03107467146503166,
+    "dev_full_loss": 0.03646048146417302
+  },
+  {
+    "left": -3,
+    "right": 3,
+    "alpha": 100,
+    "beta": 3,
+    "dev_binary_loss": 0.03159762952975003,
+    "dev_full_loss": 0.03647735622207471
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 1000,
+    "beta": 100,
+    "dev_binary_loss": 0.031114295074631565,
+    "dev_full_loss": 0.03650010507377292
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 100000,
+    "beta": 3,
+    "dev_binary_loss": 0.032195002023540156,
+    "dev_full_loss": 0.036501113292908005
+  },
+  {
+    "left": -3,
+    "right": 2,
+    "alpha": 300,
+    "beta": 1000,
+    "dev_binary_loss": 0.030897715804631434,
+    "dev_full_loss": 0.03651306624281763
+  },
+  {
+    "left": -4,
+    "right": 2,
+    "alpha": 100,
+    "beta": 3,
+    "dev_binary_loss": 0.031643112577161035,
+    "dev_full_loss": 0.0365163077055878
+  }
+]
+BEST WINDOWS
+{'left': -6, 'right': 0, 'alpha': 3000, 'beta': 30, 'dev_binary_loss': np.float64(0.03222244832957185), 'dev_full_loss': np.float64(0.03786041378370157)}
+{'left': -5, 'right': 0, 'alpha': 3000, 'beta': 30, 'dev_binary_loss': np.float64(0.0321983982983811), 'dev_full_loss': np.float64(0.03781062193937813)}
+{'left': -5, 'right': 1, 'alpha': 1000, 'beta': 3, 'dev_binary_loss': np.float64(0.032120431586967896), 'dev_full_loss': np.float64(0.03763916881595486)}
+{'left': -4, 'right': 0, 'alpha': 3000, 'beta': 30, 'dev_binary_loss': np.float64(0.032148576919331685), 'dev_full_loss': np.float64(0.03768203908034339)}
+{'left': -4, 'right': 1, 'alpha': 1000, 'beta': 3, 'dev_binary_loss': np.float64(0.03196653630508179), 'dev_full_loss': np.float64(0.037275655645362435)}
+{'left': -4, 'right': 2, 'alpha': 300, 'beta': 3, 'dev_binary_loss': np.float64(0.03141947135661028), 'dev_full_loss': np.float64(0.036292666485037046)}
+{'left': -3, 'right': 0, 'alpha': 3000, 'beta': 30, 'dev_binary_loss': np.float64(0.03208630729271042), 'dev_full_loss': np.float64(0.03751401612179596)}
+{'left': -3, 'right': 1, 'alpha': 1000, 'beta': 10, 'dev_binary_loss': np.float64(0.031782830047448786), 'dev_full_loss': np.float64(0.03681542665704728)}
+{'left': -3, 'right': 2, 'alpha': 300, 'beta': 3, 'dev_binary_loss': np.float64(0.030897715804631434), 'dev_full_loss': np.float64(0.03520382707399928)}
+{'left': -3, 'right': 3, 'alpha': 300, 'beta': 3, 'dev_binary_loss': np.float64(0.03140124381877655), 'dev_full_loss': np.float64(0.036280970511101227)}
+{'left': -2, 'right': 0, 'alpha': 3000, 'beta': 100, 'dev_binary_loss': np.float64(0.0321769754926387), 'dev_full_loss': np.float64(0.037769650008396105)}
+{'left': -2, 'right': 1, 'alpha': 3000, 'beta': 30, 'dev_binary_loss': np.float64(0.032082048862902064), 'dev_full_loss': np.float64(0.03755047011005237)}
+{'left': -2, 'right': 2, 'alpha': 1000, 'beta': 10, 'dev_binary_loss': np.float64(0.03169269451506368), 'dev_full_loss': np.float64(0.036782849205598774)}
+{'left': -2, 'right': 3, 'alpha': 1000, 'beta': 10, 'dev_binary_loss': np.float64(0.031898895407750885), 'dev_full_loss': np.float64(0.037211625876326045)}
+{'left': -2, 'right': 4, 'alpha': 1000, 'beta': 3, 'dev_binary_loss': np.float64(0.0320995504429645), 'dev_full_loss': np.float64(0.037601890646504335)}
+{'left': -1, 'right': 0, 'alpha': 100000, 'beta': 100, 'dev_binary_loss': np.float64(0.032221859171363325), 'dev_full_loss': np.float64(0.03785128157072562)}
+{'left': -1, 'right': 1, 'alpha': 10000, 'beta': 100, 'dev_binary_loss': np.float64(0.03220006343003511), 'dev_full_loss': np.float64(0.03778008115886213)}
+{'left': -1, 'right': 2, 'alpha': 3000, 'beta': 30, 'dev_binary_loss': np.float64(0.03209113649821109), 'dev_full_loss': np.float64(0.03750380887451824)}
+{'left': -1, 'right': 3, 'alpha': 3000, 'beta': 10, 'dev_binary_loss': np.float64(0.032148562188557814), 'dev_full_loss': np.float64(0.037626703926891256)}
+{'left': -1, 'right': 4, 'alpha': 3000, 'beta': 10, 'dev_binary_loss': np.float64(0.032193544809135645), 'dev_full_loss': np.float64(0.03778529088697818)}
+{'left': -1, 'right': 5, 'alpha': 10000, 'beta': 10, 'dev_binary_loss': np.float64(0.03222606370196631), 'dev_full_loss': np.float64(0.037847539595386136)}
+{'left': 0, 'right': 0, 'alpha': 100000, 'beta': 100, 'dev_binary_loss': np.float64(0.03222765979753959), 'dev_full_loss': np.float64(0.0378710040138887)}
+{'left': 0, 'right': 1, 'alpha': 10000, 'beta': 100, 'dev_binary_loss': np.float64(0.03221880077799971), 'dev_full_loss': np.float64(0.037853830173935496)}
+{'left': 0, 'right': 2, 'alpha': 3000, 'beta': 100, 'dev_binary_loss': np.float64(0.032175731885090667), 'dev_full_loss': np.float64(0.03777279092603778)}
+{'left': 0, 'right': 3, 'alpha': 10000, 'beta': 100, 'dev_binary_loss': np.float64(0.03220397332780776), 'dev_full_loss': np.float64(0.03782089726310994)}
+{'left': 0, 'right': 4, 'alpha': 10000, 'beta': 100, 'dev_binary_loss': np.float64(0.03221648745147731), 'dev_full_loss': np.float64(0.03785914960783267)}
+{'left': 0, 'right': 5, 'alpha': 10000, 'beta': 100, 'dev_binary_loss': np.float64(0.032224867964465984), 'dev_full_loss': np.float64(0.03787026309696863)}
+{'left': 0, 'right': 6, 'alpha': 100000, 'beta': 30, 'dev_binary_loss': np.float64(0.032228350796354346), 'dev_full_loss': np.float64(0.03787376657404225)}

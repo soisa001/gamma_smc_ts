@@ -1,0 +1,34 @@
+{
+  "evaluation_date": "2026-11-13",
+  "agent_task": "/root/case_003_solver",
+  "conversation_inheritance": "none",
+  "task_directory": "D:/agent_evaluations/case_003",
+  "input_archive_sha256": "8d76a44f4e9e310041d89f51cb78cd9126a57c43579f2acde88ac22a967c5241",
+  "inputs": ["TASK.md", "metadata.json", "calibration_parent.fasta", "calibration_offspring.fasta", "new_parent.fasta", "queries.tsv"],
+  "allowed_information": "Only public task files and standard runtime/package facilities; no prior chats, other cases, scientific sources, repository, generator, evaluator, or reference solutions.",
+  "isolation": "Fresh agent conversation and instructed access restriction on a shared filesystem, not an OS sandbox.",
+  "interventions": "No follow-up scientific hints, window suggestions, or hidden-score feedback before final submission.",
+  "fixed_design": {
+    "seed": 0,
+    "train_bases": 4000000,
+    "test_bases": 1000000,
+    "mean_rate": 0.005,
+    "raw_rate_distribution": "Independent lognormal draws with log SD 1.25 and log mean -1.25^2/2, then common normalization",
+    "substitution_channels": 12288,
+    "contexts": 4096,
+    "true_offsets": [-3, -2, -1, 0, 1, 2],
+    "topology": "circular",
+    "queries": "All target positions, shuffled by a separate seeded stream; no excluded boundary positions",
+    "genome_composition": "Independent uniform DNA in both calibration and target; no motif-enrichment construction"
+  },
+  "assessment_defined_before_submission": {
+    "valid_output": "Every query in order with finite nonnegative four-base probabilities summing to one.",
+    "full_discovery": "Agent independently identifies and supports the asymmetric span -3 through +2, or an equivalent representation that explicitly locates those offsets and excludes unnecessary +3.",
+    "partial_discovery": "Detecting that a larger centered context improves prediction without identifying the asymmetry is reported as partial, not full, discovery.",
+    "scoring": "Freeze the submission, then apply the independent hidden grader and compare to author-side window tables. No score-driven retries or generator retuning.",
+    "scope": "One fresh agent on one fixed seed; no claim about agent success rates."
+  },
+  "workers_default": 4,
+  "memory_budget_gb": 26,
+  "numeric_seed_given_to_agent": 0
+}

@@ -1,0 +1,13 @@
+{
+  "replay_kind": "Frozen estimator refit on public inputs, not a fresh discovery run",
+  "python": "3.13.15",
+  "dependency_source": "agent_submission/requirements.txt",
+  "entrypoints": ["agent_submission/finalize.py", "agent_submission/verify.py"],
+  "original_prediction_sha256": "e40d92df593618303edfa14e2e40ba5b7f1e8cd1134a09a1bb23bda54fbfdd7f",
+  "replayed_prediction_sha256": "e40d92df593618303edfa14e2e40ba5b7f1e8cd1134a09a1bb23bda54fbfdd7f",
+  "byte_identical": true,
+  "frozen_source_and_report_hashes_verified": true,
+  "grader_prediction_hash_matches_frozen_submission": true,
+  "initial_focused_tests_passed": 12,
+  "affected_generator_and_baseline_tests_rerun_passed": 5
+}

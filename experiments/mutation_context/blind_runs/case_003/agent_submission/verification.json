@@ -1,0 +1,13 @@
+{
+  "scalar_circular_context_checks": 19898,
+  "split_counts": [
+    48,
+    16,
+    16
+  ],
+  "prediction_rows": 1000000,
+  "unique_query_sites": 1000000,
+  "all_probabilities_valid": true,
+  "query_order_and_identity_verified": true,
+  "sha256_verified": true
+}

@@ -1,0 +1,259 @@
+RADIUS 0 top [('T', 998520, 5157, np.float64(0.0052)), ('G', 998961, 5103, np.float64(0.0051)), ('C', 1000901, 4898, np.float64(0.0049)), ('A', 1001618, 4829, np.float64(0.0048))]
+RADIUS 1 top [('TAT', 62386, 405, np.float64(0.0065)), ('GGA', 62350, 396, np.float64(0.0064)), ('ACG', 62889, 398, np.float64(0.0063)), ('GTA', 62978, 388, np.float64(0.0062)), ('TTT', 62379, 380, np.float64(0.0061)), ('CTA', 62532, 375, np.float64(0.006)), ('TGT', 62357, 372, np.float64(0.006)), ('TGG', 62509, 369, np.float64(0.0059)), ('ATA', 62610, 362, np.float64(0.0058)), ('GCA', 62515, 359, np.float64(0.0057)), ('TCA', 62478, 356, np.float64(0.0057)), ('CGG', 62392, 353, np.float64(0.0057)), ('TAG', 62535, 343, np.float64(0.0055)), ('AGC', 62704, 342, np.float64(0.0055)), ('AGA', 62869, 336, np.float64(0.0053)), ('TAA', 62676, 335, np.float64(0.0053)), ('TGA', 62650, 333, np.float64(0.0053)), ('GTG', 62220, 330, np.float64(0.0053)), ('TGC', 62084, 329, np.float64(0.0053)), ('CTG', 62398, 327, np.float64(0.0052))]
+RADIUS 2 top [('CGCAC', 3895, 90, np.float64(0.0231)), ('CGTAA', 3927, 80, np.float64(0.0204)), ('CGTCC', 3881, 76, np.float64(0.0196)), ('TTGAG', 3836, 70, np.float64(0.0182)), ('CATCG', 3919, 70, np.float64(0.0179)), ('CTAAA', 3975, 69, np.float64(0.0174)), ('TAGCA', 4006, 69, np.float64(0.0172)), ('CTGTT', 3727, 65, np.float64(0.0174)), ('AGAGT', 4030, 64, np.float64(0.0159)), ('TACGC', 3930, 62, np.float64(0.0158)), ('CATAT', 4076, 63, np.float64(0.0155)), ('CCTAG', 3861, 60, np.float64(0.0155)), ('GTCGA', 3903, 57, np.float64(0.0146)), ('TACGA', 3930, 57, np.float64(0.0145)), ('TTTTT', 3933, 57, np.float64(0.0145)), ('TCGAC', 3852, 56, np.float64(0.0145)), ('GTATC', 3896, 56, np.float64(0.0144)), ('TCCGA', 3929, 56, np.float64(0.0143)), ('CTATT', 3784, 54, np.float64(0.0143)), ('GAACC', 3903, 55, np.float64(0.0141))]
+RADIUS 3 top [('TCGCACC', 227, 22, np.float64(0.0969)), ('TCGCACT', 240, 20, np.float64(0.0833)), ('TTTGAGG', 226, 19, np.float64(0.0841)), ('TCGCACA', 244, 18, np.float64(0.0738)), ('TCGCACG', 220, 17, np.float64(0.0773)), ('GCGTCCC', 247, 17, np.float64(0.0688)), ('TTTGAGC', 249, 17, np.float64(0.0683)), ('GCGTCCG', 235, 16, np.float64(0.0681)), ('CAGAGTA', 222, 15, np.float64(0.0676)), ('TGTATCC', 223, 15, np.float64(0.0673)), ('ATCGACG', 242, 15, np.float64(0.062)), ('CAGACGT', 250, 15, np.float64(0.06)), ('GCGTCCA', 225, 14, np.float64(0.0622)), ('CCATATA', 231, 14, np.float64(0.0606)), ('ATCGACT', 234, 14, np.float64(0.0598)), ('TTTGAGT', 237, 14, np.float64(0.0591)), ('TCTGTTA', 243, 14, np.float64(0.0576)), ('ATTTTTG', 260, 14, np.float64(0.0538)), ('AGGGAGC', 265, 14, np.float64(0.0528)), ('CAGAGTT', 281, 14, np.float64(0.0498))]
+RADIUS 4 top [('GCTCACCTA', 19, 5, np.float64(0.2632)), ('TCAGAGTCC', 20, 5, np.float64(0.25)), ('AATCGACTC', 24, 5, np.float64(0.2083)), ('TTTCCGAGT', 13, 4, np.float64(0.3077)), ('AGGTGAGTG', 13, 4, np.float64(0.3077)), ('TCACTGGCT', 14, 4, np.float64(0.2857)), ('TTTTGAGGC', 14, 4, np.float64(0.2857)), ('CTCGCACAA', 14, 4, np.float64(0.2857)), ('GTGTTGTAA', 15, 4, np.float64(0.2667)), ('CGTACGCCG', 15, 4, np.float64(0.2667)), ('GTCCATACC', 16, 4, np.float64(0.25)), ('CAAACCGGA', 16, 4, np.float64(0.25)), ('ATCGCACCC', 17, 4, np.float64(0.2353)), ('ATGGGCAAA', 17, 4, np.float64(0.2353)), ('GTCTATTGC', 17, 4, np.float64(0.2353)), ('CCCATATAC', 17, 4, np.float64(0.2353)), ('GGCGTCCAA', 18, 4, np.float64(0.2222)), ('CAGGGAGAG', 18, 4, np.float64(0.2222)), ('TTGTATCTC', 18, 4, np.float64(0.2222)), ('CGCGTCCCG', 18, 4, np.float64(0.2222))]
+[
+  {
+    "radius": 0,
+    "alpha": 1,
+    "dev_logloss": 0.03222784993340197,
+    "predicted_changes": 3961.6161207703476,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 0,
+    "alpha": 10,
+    "dev_logloss": 0.03222784990884365,
+    "predicted_changes": 3961.6161198871846,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 0,
+    "alpha": 100,
+    "dev_logloss": 0.032227849663354124,
+    "predicted_changes": 3961.616111059717,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 0,
+    "alpha": 1000,
+    "dev_logloss": 0.032227847217796604,
+    "predicted_changes": 3961.616023200172,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 0,
+    "alpha": 10000,
+    "dev_logloss": 0.03222782367209155,
+    "predicted_changes": 3961.615185003453,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 0,
+    "alpha": 100000,
+    "dev_logloss": 0.03222765979753959,
+    "predicted_changes": 3961.6099414366545,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 0,
+    "alpha": 1000000,
+    "dev_logloss": 0.032227661412886216,
+    "predicted_changes": 3961.622055895379,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 1,
+    "dev_logloss": 0.03220356987511413,
+    "predicted_changes": 3962.590065440145,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 10,
+    "dev_logloss": 0.03220356318681993,
+    "predicted_changes": 3962.589933226085,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 100,
+    "dev_logloss": 0.032203496818812426,
+    "predicted_changes": 3962.588612197129,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 1000,
+    "dev_logloss": 0.0322028824020415,
+    "predicted_changes": 3962.575516248805,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 10000,
+    "dev_logloss": 0.03220006343003511,
+    "predicted_changes": 3962.457457126259,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 100000,
+    "dev_logloss": 0.032211183694210006,
+    "predicted_changes": 3961.9918664392644,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 1,
+    "alpha": 1000000,
+    "dev_logloss": 0.03222561512087318,
+    "predicted_changes": 3961.7128988340974,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 1,
+    "dev_logloss": 0.031778505928857975,
+    "predicted_changes": 3963.1430533196963,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 10,
+    "dev_logloss": 0.03177541721665818,
+    "predicted_changes": 3963.131275017752,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 100,
+    "dev_logloss": 0.03174982247045743,
+    "predicted_changes": 3963.0206927584168,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 1000,
+    "dev_logloss": 0.03169269451506368,
+    "predicted_changes": 3962.366109423635,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 10000,
+    "dev_logloss": 0.03197530512382648,
+    "predicted_changes": 3961.7020080573143,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 100000,
+    "dev_logloss": 0.03219168119147495,
+    "predicted_changes": 3961.6648949088913,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 2,
+    "alpha": 1000000,
+    "dev_logloss": 0.03222450901210021,
+    "predicted_changes": 3961.6664099937498,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 1,
+    "dev_logloss": 0.03852378982416197,
+    "predicted_changes": 3959.858199284652,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 10,
+    "dev_logloss": 0.03437606997095923,
+    "predicted_changes": 3959.7339601896806,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 100,
+    "dev_logloss": 0.03159762952975003,
+    "predicted_changes": 3959.587040479354,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 1000,
+    "dev_logloss": 0.031713496567576216,
+    "predicted_changes": 3960.975396000857,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 10000,
+    "dev_logloss": 0.03214798985973334,
+    "predicted_changes": 3961.581927996999,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 100000,
+    "dev_logloss": 0.03221981403998786,
+    "predicted_changes": 3961.6580044694765,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 3,
+    "alpha": 1000000,
+    "dev_logloss": 0.032227486058147764,
+    "predicted_changes": 3961.665798525314,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 1,
+    "dev_logloss": 0.04163033974598282,
+    "predicted_changes": 3915.470497550893,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 10,
+    "dev_logloss": 0.034110354335989294,
+    "predicted_changes": 3940.4571800196363,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 100,
+    "dev_logloss": 0.03215216298747841,
+    "predicted_changes": 3958.474384750682,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 1000,
+    "dev_logloss": 0.03218493416656641,
+    "predicted_changes": 3961.3329596935873,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 10000,
+    "dev_logloss": 0.03222311231309886,
+    "predicted_changes": 3961.633151324232,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 100000,
+    "dev_logloss": 0.03222781075242453,
+    "predicted_changes": 3961.66331368797,
+    "observed_changes": 4113
+  },
+  {
+    "radius": 4,
+    "alpha": 1000000,
+    "dev_logloss": 0.032228290983675176,
+    "predicted_changes": 3961.6663313543554,
+    "observed_changes": 4113
+  }
+]
+phase 2 p 0.07582936852406302 rates range 0.004934 0.0050595
+phase 3 p 0.33330068847089184 rates range 0.00495515089698206 0.00507064858702826
+phase 4 p 0.11580987011324556 rates range 0.004853 0.005078
+phase 5 p 0.04089718564544756 rates range 0.00487 0.0051725
+phase 10 p 0.02470892325589842 rates range 0.00476 0.0052325
+phase 100 p 0.24065825403056418 rates range 0.0042 0.005975
+scaffold chi2 0.685357132480024
