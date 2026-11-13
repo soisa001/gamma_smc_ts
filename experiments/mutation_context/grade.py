@@ -17,7 +17,16 @@ def grade(task, predictions, output):
     children = b.read_fasta(task / "private" / "new_offspring.fasta")
     kernel = np.load(task / "private" / "kernel.npy")
     circular = json.loads((task/"public"/"metadata.json").read_text()).get("topology") == "circular"
-    ids = {name: b.contexts(np.pad(seq, (3, 3), mode="wrap") if circular else seq) for name, seq in parents.items()}
+    encoding_file = task / "private" / "kernel_encoding.json"
+    encoding = json.loads(encoding_file.read_text()) if encoding_file.exists() else {"left": 3, "right": 3}
+    left, right = encoding["left"], encoding["right"]
+    if kernel.shape != (4**(left+right+1), 4):
+        raise ValueError("Kernel shape does not match private context encoding")
+    ids = {}
+    for name, seq in parents.items():
+        padded = np.pad(seq, (left, right), mode="wrap") if circular else seq
+        words = np.lib.stride_tricks.sliding_window_view(padded, left+right+1)
+        ids[name] = b.encode(words)
     totals = {"sites": 0, "observed_mutations": 0, "expected_mutations": 0., "predicted_mutations": 0.,
               "observed_nll": 0., "observed_conditional_nll_total": 0., "oracle_kl": 0., "oracle_conditional_kl_total": 0.}
     # Bound memory independently of query count.
@@ -63,7 +72,7 @@ def grade(task, predictions, output):
             if query is None or row is None or row["contig"] != query["contig"] or row["position"] != query["position"]:
                 raise ValueError("Predictions must match every query exactly, in order")
             name, pos = query["contig"], int(query["position"])-1
-            batch.append((parents[name][pos], children[name][pos], ids[name][pos if circular else pos-3],
+            batch.append((parents[name][pos], children[name][pos], ids[name][pos if circular else pos-left],
                           [float(row[f"p_{base}"]) for base in "ACGT"]))
             if len(batch) == 50000:
                 flush()

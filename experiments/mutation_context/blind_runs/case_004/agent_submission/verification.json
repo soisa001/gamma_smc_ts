@@ -1,0 +1,10 @@
+{
+  "circular_context_checks": 4000,
+  "probability_rows_checked": 1000000,
+  "query_order_preserved": true,
+  "query_coverage": "Every base of all 20 new-parent scaffolds, exactly once",
+  "input_hashes_unchanged": true,
+  "probability_min": 0.00103223953503,
+  "probability_max": 0.99651841197,
+  "max_row_sum_error": 5.500044863993026e-13
+}

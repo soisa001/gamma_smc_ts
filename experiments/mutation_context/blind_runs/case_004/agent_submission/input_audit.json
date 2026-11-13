@@ -1,0 +1,652 @@
+{
+  "scaffolds": 80,
+  "lengths": [
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000,
+    50000
+  ],
+  "n": 4000000,
+  "changes": 19901,
+  "rate": 0.00497525,
+  "counts": [
+    [
+      996554,
+      1666,
+      1694,
+      1704
+    ],
+    [
+      1767,
+      995865,
+      1683,
+      1586
+    ],
+    [
+      1708,
+      1591,
+      993965,
+      1697
+    ],
+    [
+      1615,
+      1570,
+      1620,
+      993715
+    ]
+  ],
+  "matrix": [
+    [
+      0.9949441803162483,
+      0.001663308766415939,
+      0.0016912635355994003,
+      0.0017012473817363506
+    ],
+    [
+      0.0017654093661610888,
+      0.9949685333514503,
+      0.0016814849820311899,
+      0.001584572300357378
+    ],
+    [
+      0.0017097764577395913,
+      0.001592654768304268,
+      0.9949988037571036,
+      0.0016987650168525097
+    ],
+    [
+      0.0016173937427392542,
+      0.0015723270440251573,
+      0.0016224011537074872,
+      0.9951878780595281
+    ]
+  ],
+  "per_scaffold": [
+    {
+      "name": "scaffold_0000",
+      "n": 50000,
+      "mutations": 253,
+      "GC": 0.50272
+    },
+    {
+      "name": "scaffold_0001",
+      "n": 50000,
+      "mutations": 248,
+      "GC": 0.50064
+    },
+    {
+      "name": "scaffold_0002",
+      "n": 50000,
+      "mutations": 248,
+      "GC": 0.49968
+    },
+    {
+      "name": "scaffold_0003",
+      "n": 50000,
+      "mutations": 229,
+      "GC": 0.50064
+    },
+    {
+      "name": "scaffold_0004",
+      "n": 50000,
+      "mutations": 246,
+      "GC": 0.49882
+    },
+    {
+      "name": "scaffold_0005",
+      "n": 50000,
+      "mutations": 257,
+      "GC": 0.50328
+    },
+    {
+      "name": "scaffold_0006",
+      "n": 50000,
+      "mutations": 228,
+      "GC": 0.4971
+    },
+    {
+      "name": "scaffold_0007",
+      "n": 50000,
+      "mutations": 233,
+      "GC": 0.50342
+    },
+    {
+      "name": "scaffold_0008",
+      "n": 50000,
+      "mutations": 233,
+      "GC": 0.4993
+    },
+    {
+      "name": "scaffold_0009",
+      "n": 50000,
+      "mutations": 240,
+      "GC": 0.50238
+    },
+    {
+      "name": "scaffold_0010",
+      "n": 50000,
+      "mutations": 246,
+      "GC": 0.50332
+    },
+    {
+      "name": "scaffold_0011",
+      "n": 50000,
+      "mutations": 206,
+      "GC": 0.4994
+    },
+    {
+      "name": "scaffold_0012",
+      "n": 50000,
+      "mutations": 269,
+      "GC": 0.5007
+    },
+    {
+      "name": "scaffold_0013",
+      "n": 50000,
+      "mutations": 255,
+      "GC": 0.50238
+    },
+    {
+      "name": "scaffold_0014",
+      "n": 50000,
+      "mutations": 239,
+      "GC": 0.49814
+    },
+    {
+      "name": "scaffold_0015",
+      "n": 50000,
+      "mutations": 255,
+      "GC": 0.49716
+    },
+    {
+      "name": "scaffold_0016",
+      "n": 50000,
+      "mutations": 256,
+      "GC": 0.49478
+    },
+    {
+      "name": "scaffold_0017",
+      "n": 50000,
+      "mutations": 242,
+      "GC": 0.50394
+    },
+    {
+      "name": "scaffold_0018",
+      "n": 50000,
+      "mutations": 246,
+      "GC": 0.50246
+    },
+    {
+      "name": "scaffold_0019",
+      "n": 50000,
+      "mutations": 268,
+      "GC": 0.50238
+    },
+    {
+      "name": "scaffold_0020",
+      "n": 50000,
+      "mutations": 253,
+      "GC": 0.49944
+    },
+    {
+      "name": "scaffold_0021",
+      "n": 50000,
+      "mutations": 247,
+      "GC": 0.49732
+    },
+    {
+      "name": "scaffold_0022",
+      "n": 50000,
+      "mutations": 255,
+      "GC": 0.49844
+    },
+    {
+      "name": "scaffold_0023",
+      "n": 50000,
+      "mutations": 274,
+      "GC": 0.49836
+    },
+    {
+      "name": "scaffold_0024",
+      "n": 50000,
+      "mutations": 260,
+      "GC": 0.49906
+    },
+    {
+      "name": "scaffold_0025",
+      "n": 50000,
+      "mutations": 248,
+      "GC": 0.49824
+    },
+    {
+      "name": "scaffold_0026",
+      "n": 50000,
+      "mutations": 227,
+      "GC": 0.50068
+    },
+    {
+      "name": "scaffold_0027",
+      "n": 50000,
+      "mutations": 256,
+      "GC": 0.5008
+    },
+    {
+      "name": "scaffold_0028",
+      "n": 50000,
+      "mutations": 268,
+      "GC": 0.49992
+    },
+    {
+      "name": "scaffold_0029",
+      "n": 50000,
+      "mutations": 217,
+      "GC": 0.5033
+    },
+    {
+      "name": "scaffold_0030",
+      "n": 50000,
+      "mutations": 245,
+      "GC": 0.49674
+    },
+    {
+      "name": "scaffold_0031",
+      "n": 50000,
+      "mutations": 247,
+      "GC": 0.5039
+    },
+    {
+      "name": "scaffold_0032",
+      "n": 50000,
+      "mutations": 244,
+      "GC": 0.49882
+    },
+    {
+      "name": "scaffold_0033",
+      "n": 50000,
+      "mutations": 252,
+      "GC": 0.5001
+    },
+    {
+      "name": "scaffold_0034",
+      "n": 50000,
+      "mutations": 241,
+      "GC": 0.50174
+    },
+    {
+      "name": "scaffold_0035",
+      "n": 50000,
+      "mutations": 251,
+      "GC": 0.49654
+    },
+    {
+      "name": "scaffold_0036",
+      "n": 50000,
+      "mutations": 262,
+      "GC": 0.49514
+    },
+    {
+      "name": "scaffold_0037",
+      "n": 50000,
+      "mutations": 238,
+      "GC": 0.50172
+    },
+    {
+      "name": "scaffold_0038",
+      "n": 50000,
+      "mutations": 262,
+      "GC": 0.5014
+    },
+    {
+      "name": "scaffold_0039",
+      "n": 50000,
+      "mutations": 248,
+      "GC": 0.5008
+    },
+    {
+      "name": "scaffold_0040",
+      "n": 50000,
+      "mutations": 265,
+      "GC": 0.49618
+    },
+    {
+      "name": "scaffold_0041",
+      "n": 50000,
+      "mutations": 270,
+      "GC": 0.50048
+    },
+    {
+      "name": "scaffold_0042",
+      "n": 50000,
+      "mutations": 280,
+      "GC": 0.50306
+    },
+    {
+      "name": "scaffold_0043",
+      "n": 50000,
+      "mutations": 221,
+      "GC": 0.50156
+    },
+    {
+      "name": "scaffold_0044",
+      "n": 50000,
+      "mutations": 258,
+      "GC": 0.50114
+    },
+    {
+      "name": "scaffold_0045",
+      "n": 50000,
+      "mutations": 254,
+      "GC": 0.499
+    },
+    {
+      "name": "scaffold_0046",
+      "n": 50000,
+      "mutations": 226,
+      "GC": 0.50162
+    },
+    {
+      "name": "scaffold_0047",
+      "n": 50000,
+      "mutations": 265,
+      "GC": 0.49844
+    },
+    {
+      "name": "scaffold_0048",
+      "n": 50000,
+      "mutations": 229,
+      "GC": 0.50242
+    },
+    {
+      "name": "scaffold_0049",
+      "n": 50000,
+      "mutations": 248,
+      "GC": 0.49722
+    },
+    {
+      "name": "scaffold_0050",
+      "n": 50000,
+      "mutations": 220,
+      "GC": 0.4976
+    },
+    {
+      "name": "scaffold_0051",
+      "n": 50000,
+      "mutations": 265,
+      "GC": 0.4968
+    },
+    {
+      "name": "scaffold_0052",
+      "n": 50000,
+      "mutations": 261,
+      "GC": 0.49968
+    },
+    {
+      "name": "scaffold_0053",
+      "n": 50000,
+      "mutations": 218,
+      "GC": 0.5016
+    },
+    {
+      "name": "scaffold_0054",
+      "n": 50000,
+      "mutations": 249,
+      "GC": 0.50046
+    },
+    {
+      "name": "scaffold_0055",
+      "n": 50000,
+      "mutations": 259,
+      "GC": 0.50018
+    },
+    {
+      "name": "scaffold_0056",
+      "n": 50000,
+      "mutations": 258,
+      "GC": 0.4999
+    },
+    {
+      "name": "scaffold_0057",
+      "n": 50000,
+      "mutations": 232,
+      "GC": 0.49792
+    },
+    {
+      "name": "scaffold_0058",
+      "n": 50000,
+      "mutations": 246,
+      "GC": 0.49942
+    },
+    {
+      "name": "scaffold_0059",
+      "n": 50000,
+      "mutations": 254,
+      "GC": 0.49882
+    },
+    {
+      "name": "scaffold_0060",
+      "n": 50000,
+      "mutations": 257,
+      "GC": 0.50226
+    },
+    {
+      "name": "scaffold_0061",
+      "n": 50000,
+      "mutations": 232,
+      "GC": 0.49766
+    },
+    {
+      "name": "scaffold_0062",
+      "n": 50000,
+      "mutations": 253,
+      "GC": 0.49872
+    },
+    {
+      "name": "scaffold_0063",
+      "n": 50000,
+      "mutations": 242,
+      "GC": 0.49816
+    },
+    {
+      "name": "scaffold_0064",
+      "n": 50000,
+      "mutations": 263,
+      "GC": 0.49862
+    },
+    {
+      "name": "scaffold_0065",
+      "n": 50000,
+      "mutations": 240,
+      "GC": 0.49596
+    },
+    {
+      "name": "scaffold_0066",
+      "n": 50000,
+      "mutations": 277,
+      "GC": 0.49912
+    },
+    {
+      "name": "scaffold_0067",
+      "n": 50000,
+      "mutations": 227,
+      "GC": 0.5006
+    },
+    {
+      "name": "scaffold_0068",
+      "n": 50000,
+      "mutations": 252,
+      "GC": 0.4993
+    },
+    {
+      "name": "scaffold_0069",
+      "n": 50000,
+      "mutations": 273,
+      "GC": 0.49952
+    },
+    {
+      "name": "scaffold_0070",
+      "n": 50000,
+      "mutations": 260,
+      "GC": 0.50204
+    },
+    {
+      "name": "scaffold_0071",
+      "n": 50000,
+      "mutations": 244,
+      "GC": 0.50236
+    },
+    {
+      "name": "scaffold_0072",
+      "n": 50000,
+      "mutations": 257,
+      "GC": 0.4995
+    },
+    {
+      "name": "scaffold_0073",
+      "n": 50000,
+      "mutations": 237,
+      "GC": 0.50172
+    },
+    {
+      "name": "scaffold_0074",
+      "n": 50000,
+      "mutations": 235,
+      "GC": 0.5027
+    },
+    {
+      "name": "scaffold_0075",
+      "n": 50000,
+      "mutations": 258,
+      "GC": 0.50148
+    },
+    {
+      "name": "scaffold_0076",
+      "n": 50000,
+      "mutations": 251,
+      "GC": 0.50268
+    },
+    {
+      "name": "scaffold_0077",
+      "n": 50000,
+      "mutations": 261,
+      "GC": 0.4992
+    },
+    {
+      "name": "scaffold_0078",
+      "n": 50000,
+      "mutations": 250,
+      "GC": 0.50004
+    },
+    {
+      "name": "scaffold_0079",
+      "n": 50000,
+      "mutations": 262,
+      "GC": 0.497
+    }
+  ],
+  "new_lengths": {
+    "scaffold_0000": 50000,
+    "scaffold_0001": 50000,
+    "scaffold_0002": 50000,
+    "scaffold_0003": 50000,
+    "scaffold_0004": 50000,
+    "scaffold_0005": 50000,
+    "scaffold_0006": 50000,
+    "scaffold_0007": 50000,
+    "scaffold_0008": 50000,
+    "scaffold_0009": 50000,
+    "scaffold_0010": 50000,
+    "scaffold_0011": 50000,
+    "scaffold_0012": 50000,
+    "scaffold_0013": 50000,
+    "scaffold_0014": 50000,
+    "scaffold_0015": 50000,
+    "scaffold_0016": 50000,
+    "scaffold_0017": 50000,
+    "scaffold_0018": 50000,
+    "scaffold_0019": 50000
+  },
+  "sha256": {
+    "calibration_offspring.fasta": "9c652e83d8cc240e084c4c889f5d8d877ab6e89b4ca218d051ec2f7ec7379c7f",
+    "calibration_parent.fasta": "47ba6d4036eeae46f8c61f28533b384d6c0a224c046aa1bc90c0d3b017d4ed27",
+    "metadata.json": "4234a39b2e84b229ee6844dd36767489c2d5fa780a5fcd55920bf6331679eb59",
+    "new_parent.fasta": "4b199a9fc0f96ca5bfcf190582a1c49a332b8892a40b5e2210b30904bb84665b",
+    "queries.tsv": "5d9e575e3091842cb78a0a39dec4ed3c2f3e21e461c35395d24c1a3473a098aa",
+    "TASK.md": "01e9a24ad8c515f7008a198c88baa920a3dbe5365172eb07b2dc428407f4b11c"
+  }
+}

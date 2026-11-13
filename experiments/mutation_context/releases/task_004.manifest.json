@@ -1,0 +1,12 @@
+{
+  "archive": "task_004.zip",
+  "archive_sha256": "64eb0f9f03da8da71f0e00866dd6645e5f9d739a93c354a038eac974bc4434da",
+  "files": {
+    "TASK.md": "01e9a24ad8c515f7008a198c88baa920a3dbe5365172eb07b2dc428407f4b11c",
+    "calibration_offspring.fasta": "9c652e83d8cc240e084c4c889f5d8d877ab6e89b4ca218d051ec2f7ec7379c7f",
+    "calibration_parent.fasta": "47ba6d4036eeae46f8c61f28533b384d6c0a224c046aa1bc90c0d3b017d4ed27",
+    "metadata.json": "4234a39b2e84b229ee6844dd36767489c2d5fa780a5fcd55920bf6331679eb59",
+    "new_parent.fasta": "4b199a9fc0f96ca5bfcf190582a1c49a332b8892a40b5e2210b30904bb84665b",
+    "queries.tsv": "5d9e575e3091842cb78a0a39dec4ed3c2f3e21e461c35395d24c1a3473a098aa"
+  }
+}

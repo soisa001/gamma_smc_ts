@@ -1,0 +1,31 @@
+{
+  "expected_number_of_changed_alleles": 4974.728737409099,
+  "expected_total_changed_alleles": 4974.728737409099,
+  "number_of_queried_sites": 1000000,
+  "unique_queried_sites": 1000000,
+  "mean_predicted_change_probability": 0.004974728737409099,
+  "model": "circular_8mer_logistic_normal_rate_symmetric_dirichlet_destination",
+  "context_offsets": [
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    3
+  ],
+  "calibration_sites": 4000000,
+  "calibration_changes": 19901,
+  "fitted_logit_rate_mean": -5.69395284739004,
+  "fitted_logit_rate_sd": 0.8946945036380947,
+  "fitted_destination_dirichlet_total_concentration": 1.048019815816202,
+  "conditional_posterior_sd_expected_change_count": 18.35417526571909,
+  "conditional_posterior_predictive_sd_change_count": 72.50338545351525,
+  "uncertainty_caveat": "Conditional on the selected model and fitted hyperparameters; excludes hyperparameter and model uncertainty.",
+  "max_probability_row_sum_error": 5.500044863993026e-13,
+  "input_hashes_verified": true,
+  "seed": 0,
+  "threads": 4,
+  "runtime_seconds": 9.84355354309082
+}

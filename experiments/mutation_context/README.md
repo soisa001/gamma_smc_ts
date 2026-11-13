@@ -271,3 +271,49 @@ uv run --locked grade.py work/arbitrary/seed_000 "$replay/predictions.tsv" \
 Run the generation phase before grading. Replay refits the already-discovered
 model; it is not a fresh agent discovery trial. The authoring repository, generator,
 and frozen solutions must remain outside any new blind solver's environment.
+
+## Arbitrary eight-base trial
+
+`task_004` extends the independent lookup table to 65,536 contexts at offsets
+−4..+3 and 196,608 substitution channels, retaining four million calibration
+bases, one million target bases, seed 0, and the same circular parental sequences
+and shuffled query coordinates as `task_003`. All query positions are included.
+The public wording is unchanged. The private kernel encoding must never be
+distributed to a blind solver. See the
+[eight-base trial report](../../docs/mutation_context_eight_blind_results.md).
+
+Run the authoring phases separately (Linux/WSL):
+
+```bash
+uv sync --locked
+uv run --locked eight_task.py work/eight/seed_000 --workers 4
+uv run --locked release.py work/eight/seed_000 --output work/task_004.zip
+uv run --locked eight_baselines.py work/eight/seed_000 --output work/eight_reference.json
+uv run --locked --with pytest pytest -q tests/test_eight_task.py
+```
+
+Generation reuses an existing dataset only when its parameter configuration and
+all sample hashes match. Release files have fixed ZIP metadata and are checked
+for corruption. Reference smoothing uses calibration data only; hidden scoring
+begins after model selection. A hierarchical nine-base estimator can pool into
+the eight-base model, so larger windows are not forced to be worse.
+
+The fresh blind solver found the exact −4..+3 span. Replay its frozen estimator
+without repeating agent discovery:
+
+```bash
+replay="$PWD/work/agent_replay_004"
+uv run --locked python -m zipfile -e releases/task_004.zip "$replay"
+cp -a blind_runs/case_004/agent_submission/. "$replay/"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.txt" python "$replay/solve.py"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.txt" python "$replay/verify.py"
+uv run --locked grade.py work/eight/seed_000 "$replay/predictions.tsv" \
+  --output "$replay/grade.json"
+uv run --locked python blind_runs/case_004/check_replay.py "$replay"
+```
+
+Run generation before grading. The private kernel, author documentation, and
+archived solutions are for evaluation/replay and must remain outside any future
+blind solver's environment.

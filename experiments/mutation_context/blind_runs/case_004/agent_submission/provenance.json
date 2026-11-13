@@ -1,0 +1,34 @@
+{
+  "python": "3.13.15 (main, Aug 14 2026, 15:34:59) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "packages": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pandas": "3.1.1",
+    "scikit-learn": "1.9.1"
+  },
+  "input_sha256": {
+    "calibration_offspring.fasta": "9c652e83d8cc240e084c4c889f5d8d877ab6e89b4ca218d051ec2f7ec7379c7f",
+    "calibration_parent.fasta": "47ba6d4036eeae46f8c61f28533b384d6c0a224c046aa1bc90c0d3b017d4ed27",
+    "metadata.json": "4234a39b2e84b229ee6844dd36767489c2d5fa780a5fcd55920bf6331679eb59",
+    "new_parent.fasta": "4b199a9fc0f96ca5bfcf190582a1c49a332b8892a40b5e2210b30904bb84665b",
+    "queries.tsv": "5d9e575e3091842cb78a0a39dec4ed3c2f3e21e461c35395d24c1a3473a098aa",
+    "TASK.md": "01e9a24ad8c515f7008a198c88baa920a3dbe5365172eb07b2dc428407f4b11c"
+  },
+  "output_sha256": {
+    "predictions.tsv": "a69acbae4504c51c47111368c63c79e5bf05ead53cf7215e89173e600eacb9f1"
+  },
+  "source_sha256": {
+    "check_structure.py": "fe1e8bedcabbaa009459ff101577af0d78168280bd705a2ae527501dea05b11c",
+    "context_models.py": "67ee09ff5bdd36dc8462eb3d52436a8fa28a56fd3e8e414c20ce103521981591",
+    "destination_models.py": "f4df1595e46cf96d9ab8aaf48a16dce7cb5dc6aa49c9af7443206920bd5804d9",
+    "diagnose.py": "fb74b3716306f6aaa9222ca43b8076ad1cdd98d0bc86217c921ceba6ea73db23",
+    "explore.py": "b7349b57843e74c0c980765c5cb6f993e4c09c144ef021932356152673f31288",
+    "refine_model.py": "a6315353d692b8ae6a9a7140c393898fc503a54de9e4291a54d486e1af75b6d7",
+    "solve.py": "250b60e9edd36fe6b97a0778421e2659349eb8bffd23fd087b623c8ea413aaa8",
+    "verify.py": "6b5502397a882233af11468f70f367756633c942297f67d1d4b5ad9d9b7875ff",
+    "window_scan.py": "387c8a296882757c33253addb82fcf0f298d3623a4ba8d03371f5b0a56afd00c"
+  },
+  "seed": 0,
+  "threads": 4
+}

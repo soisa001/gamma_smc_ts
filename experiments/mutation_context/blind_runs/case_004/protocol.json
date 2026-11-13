@@ -1,0 +1,51 @@
+{
+  "evaluation_date": "2026-11-13",
+  "agent_task": "/root/case_004_solver",
+  "conversation_inheritance": "none",
+  "task_directory": "D:/agent_evaluations/case_004",
+  "input_archive_sha256": "64eb0f9f03da8da71f0e00866dd6645e5f9d739a93c354a038eac974bc4434da",
+  "inputs": [
+    "TASK.md",
+    "metadata.json",
+    "calibration_parent.fasta",
+    "calibration_offspring.fasta",
+    "new_parent.fasta",
+    "queries.tsv"
+  ],
+  "allowed_information": "Only public task files and standard runtime/package facilities; no prior chats, other cases, scientific sources, repository, generator, evaluator, or reference solutions.",
+  "isolation": "Fresh agent conversation and instructed access restriction on a shared filesystem, not an OS sandbox.",
+  "interventions": "No follow-up scientific hints, window suggestions, or hidden-score feedback before final submission.",
+  "fixed_design": {
+    "seed": 0,
+    "train_bases": 4000000,
+    "test_bases": 1000000,
+    "mean_rate": 0.005,
+    "raw_rate_distribution": "Independent lognormal draws with log SD 1.25 and log mean -1.25^2/2, then common normalization",
+    "substitution_channels": 196608,
+    "contexts": 65536,
+    "true_offsets": [
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3
+    ],
+    "topology": "circular",
+    "queries": "All target positions, shuffled by a separate seeded stream; no excluded boundary positions",
+    "genome_composition": "Independent uniform DNA in both calibration and target; no motif-enrichment construction"
+  },
+  "assessment_defined_before_submission": {
+    "valid_output": "Every query in order with finite nonnegative four-base probabilities summing to one.",
+    "full_discovery": "Agent independently identifies and supports the asymmetric span -4 through +3, or an equivalent representation locating those offsets and excluding unnecessary flanks.",
+    "partial_discovery": "Detecting that a larger centered context improves prediction without identifying the asymmetry is reported as partial, not full, discovery.",
+    "scoring": "Freeze the submission, then apply the independent hidden grader and compare to author-side window tables. No score-driven retries or generator retuning.",
+    "scope": "One fresh agent on one fixed seed; no claim about agent success rates."
+  },
+  "workers_default": 4,
+  "memory_budget_gb": 26,
+  "numeric_seed_given_to_agent": 0,
+  "comparison": "Same parental genomes, uniforms for offspring sampling, query order, public prose, sample sizes and raw-weight distribution as case_003; longer independent lookup table. No retries or sample-size changes after blind results."
+}

@@ -1,0 +1,11 @@
+{
+  "replay_directory": "/home/mew/mutation_context_mock/blind_replay_004",
+  "prediction_sha256": "a69acbae4504c51c47111368c63c79e5bf05ead53cf7215e89173e600eacb9f1",
+  "byte_identical_predictions": true,
+  "frozen_source_and_report_hashes_verified": true,
+  "public_input_hashes_verified": true,
+  "python": "3.13.15",
+  "requirements": "agent_submission/requirements.txt",
+  "entrypoint": "solve.py, followed by verify.py",
+  "scope": "Reproduces the frozen estimator; not a repeat of agent discovery"
+}

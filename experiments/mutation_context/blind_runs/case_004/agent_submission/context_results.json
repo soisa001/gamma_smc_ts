@@ -1,0 +1,1249 @@
+{
+  "discovery_rate": 0.004951,
+  "validation_models": [
+    {
+      "radius": 0,
+      "prior_strength": 50,
+      "validation_nll": 0.03161960229360808,
+      "validation_gain_vs_uniform": 2.893005282330705
+    },
+    {
+      "radius": 0,
+      "prior_strength": 200,
+      "validation_nll": 0.03161960296791723,
+      "validation_gain_vs_uniform": 2.8923309731799236
+    },
+    {
+      "radius": 0,
+      "prior_strength": 1000,
+      "validation_nll": 0.03161960655936497,
+      "validation_gain_vs_uniform": 2.888739525442361
+    },
+    {
+      "radius": 0,
+      "prior_strength": 5000,
+      "validation_nll": 0.03161962439435478,
+      "validation_gain_vs_uniform": 2.870904535637237
+    },
+    {
+      "radius": 0,
+      "prior_strength": 20000,
+      "validation_nll": 0.03161968950343346,
+      "validation_gain_vs_uniform": 2.8057954569521826
+    },
+    {
+      "radius": 0,
+      "prior_strength": 100000,
+      "validation_nll": 0.03161999473042217,
+      "validation_gain_vs_uniform": 2.5005684682400897
+    },
+    {
+      "radius": 0,
+      "prior_strength": 1000000.0,
+      "validation_nll": 0.031621387620196686,
+      "validation_gain_vs_uniform": 1.1076786937264842
+    },
+    {
+      "radius": 0,
+      "prior_strength": 1000000000000.0,
+      "validation_nll": 0.031622495297121425,
+      "validation_gain_vs_uniform": 1.768989022821188e-06
+    },
+    {
+      "radius": 1,
+      "prior_strength": 50,
+      "validation_nll": 0.03162486645275179,
+      "validation_gain_vs_uniform": -2.3711538613752055
+    },
+    {
+      "radius": 1,
+      "prior_strength": 200,
+      "validation_nll": 0.03162478441457346,
+      "validation_gain_vs_uniform": -2.289115683044656
+    },
+    {
+      "radius": 1,
+      "prior_strength": 1000,
+      "validation_nll": 0.03162437079761522,
+      "validation_gain_vs_uniform": -1.8754987248103134
+    },
+    {
+      "radius": 1,
+      "prior_strength": 5000,
+      "validation_nll": 0.0316227898908289,
+      "validation_gain_vs_uniform": -0.2945919384837907
+    },
+    {
+      "radius": 1,
+      "prior_strength": 20000,
+      "validation_nll": 0.03162042213876718,
+      "validation_gain_vs_uniform": 2.0731601232364483
+    },
+    {
+      "radius": 1,
+      "prior_strength": 100000,
+      "validation_nll": 0.03162038033211141,
+      "validation_gain_vs_uniform": 2.1149667790014064
+    },
+    {
+      "radius": 1,
+      "prior_strength": 1000000.0,
+      "validation_nll": 0.03162213332313563,
+      "validation_gain_vs_uniform": 0.36197575478217914
+    },
+    {
+      "radius": 1,
+      "prior_strength": 1000000000000.0,
+      "validation_nll": 0.03162249529850315,
+      "validation_gain_vs_uniform": 3.8725920603610575e-07
+    },
+    {
+      "radius": 2,
+      "prior_strength": 50,
+      "validation_nll": 0.0317917617135148,
+      "validation_gain_vs_uniform": -169.2664146243842
+    },
+    {
+      "radius": 2,
+      "prior_strength": 200,
+      "validation_nll": 0.031756133741596505,
+      "validation_gain_vs_uniform": -133.63844270609115
+    },
+    {
+      "radius": 2,
+      "prior_strength": 1000,
+      "validation_nll": 0.031665587682449425,
+      "validation_gain_vs_uniform": -43.092383559014706
+    },
+    {
+      "radius": 2,
+      "prior_strength": 5000,
+      "validation_nll": 0.03161002069478358,
+      "validation_gain_vs_uniform": 12.474604106831976
+    },
+    {
+      "radius": 2,
+      "prior_strength": 20000,
+      "validation_nll": 0.0316138109512735,
+      "validation_gain_vs_uniform": 8.684347616916057
+    },
+    {
+      "radius": 2,
+      "prior_strength": 100000,
+      "validation_nll": 0.03162025058791545,
+      "validation_gain_vs_uniform": 2.244710974966438
+    },
+    {
+      "radius": 2,
+      "prior_strength": 1000000.0,
+      "validation_nll": 0.03162225741935833,
+      "validation_gain_vs_uniform": 0.23787953208375257
+    },
+    {
+      "radius": 2,
+      "prior_strength": 1000000000000.0,
+      "validation_nll": 0.031622495298650986,
+      "validation_gain_vs_uniform": 2.394226612523198e-07
+    },
+    {
+      "radius": 3,
+      "prior_strength": 50,
+      "validation_nll": 0.03296231679775177,
+      "validation_gain_vs_uniform": -1339.8214988613618
+    },
+    {
+      "radius": 3,
+      "prior_strength": 200,
+      "validation_nll": 0.03171627108224026,
+      "validation_gain_vs_uniform": -93.77578334984719
+    },
+    {
+      "radius": 3,
+      "prior_strength": 1000,
+      "validation_nll": 0.031522733828916336,
+      "validation_gain_vs_uniform": 99.7614699740734
+    },
+    {
+      "radius": 3,
+      "prior_strength": 5000,
+      "validation_nll": 0.03158911389704464,
+      "validation_gain_vs_uniform": 33.3814018457706
+    },
+    {
+      "radius": 3,
+      "prior_strength": 20000,
+      "validation_nll": 0.031613263394942984,
+      "validation_gain_vs_uniform": 9.231903947427782
+    },
+    {
+      "radius": 3,
+      "prior_strength": 100000,
+      "validation_nll": 0.031620597408096335,
+      "validation_gain_vs_uniform": 1.8978907940763747
+    },
+    {
+      "radius": 3,
+      "prior_strength": 1000000.0,
+      "validation_nll": 0.03162230432330519,
+      "validation_gain_vs_uniform": 0.19097558521752944
+    },
+    {
+      "radius": 3,
+      "prior_strength": 1000000000000.0,
+      "validation_nll": 0.0316224952986993,
+      "validation_gain_vs_uniform": 1.9110666471533477e-07
+    },
+    {
+      "radius": 4,
+      "prior_strength": 50,
+      "validation_nll": 0.031669602874300325,
+      "validation_gain_vs_uniform": -47.10757540991108
+    },
+    {
+      "radius": 4,
+      "prior_strength": 200,
+      "validation_nll": 0.03151821593904151,
+      "validation_gain_vs_uniform": 104.27935984890064
+    },
+    {
+      "radius": 4,
+      "prior_strength": 1000,
+      "validation_nll": 0.031581909035232114,
+      "validation_gain_vs_uniform": 40.58626365829696
+    },
+    {
+      "radius": 4,
+      "prior_strength": 5000,
+      "validation_nll": 0.031613016553104785,
+      "validation_gain_vs_uniform": 9.478745785629144
+    },
+    {
+      "radius": 4,
+      "prior_strength": 20000,
+      "validation_nll": 0.03162005111299399,
+      "validation_gain_vs_uniform": 2.4441858964164567
+    },
+    {
+      "radius": 4,
+      "prior_strength": 100000,
+      "validation_nll": 0.03162200234745039,
+      "validation_gain_vs_uniform": 0.49295144001735025
+    },
+    {
+      "radius": 4,
+      "prior_strength": 1000000.0,
+      "validation_nll": 0.031622445910316134,
+      "validation_gain_vs_uniform": 0.049388574276235886
+    },
+    {
+      "radius": 4,
+      "prior_strength": 1000000000000.0,
+      "validation_nll": 0.031622495298841015,
+      "validation_gain_vs_uniform": 4.939647624269128e-08
+    }
+  ],
+  "top_contexts": {
+    "0": [
+      {
+        "context": "C",
+        "n": 500204,
+        "mutations": 2531,
+        "validation_n": 250084,
+        "validation_mutations": 1302,
+        "p_raw": 0.1385139815280112
+      },
+      {
+        "context": "A",
+        "n": 500450,
+        "mutations": 2491,
+        "validation_n": 250574,
+        "validation_mutations": 1309,
+        "p_raw": 0.39730643878674965
+      },
+      {
+        "context": "G",
+        "n": 499503,
+        "mutations": 2461,
+        "validation_n": 249576,
+        "validation_mutations": 1263,
+        "p_raw": 0.5985750004231783
+      },
+      {
+        "context": "T",
+        "n": 499843,
+        "mutations": 2419,
+        "validation_n": 249766,
+        "validation_mutations": 1153,
+        "p_raw": 0.8715946341792802
+      }
+    ],
+    "1": [
+      {
+        "context": "ACA",
+        "n": 31572,
+        "mutations": 186,
+        "validation_n": 15610,
+        "validation_mutations": 82,
+        "p_raw": 0.011132957130967534
+      },
+      {
+        "context": "GGT",
+        "n": 31162,
+        "mutations": 174,
+        "validation_n": 15637,
+        "validation_mutations": 75,
+        "p_raw": 0.06257006636364734
+      },
+      {
+        "context": "TGG",
+        "n": 31351,
+        "mutations": 174,
+        "validation_n": 15619,
+        "validation_mutations": 73,
+        "p_raw": 0.07261026192655021
+      },
+      {
+        "context": "TAG",
+        "n": 31308,
+        "mutations": 173,
+        "validation_n": 15571,
+        "validation_mutations": 77,
+        "p_raw": 0.08128449714643507
+      },
+      {
+        "context": "AGC",
+        "n": 31253,
+        "mutations": 172,
+        "validation_n": 15750,
+        "validation_mutations": 88,
+        "p_raw": 0.08995238221240874
+      },
+      {
+        "context": "GCA",
+        "n": 31105,
+        "mutations": 170,
+        "validation_n": 15716,
+        "validation_mutations": 84,
+        "p_raw": 0.10654500202545938
+      },
+      {
+        "context": "TCC",
+        "n": 31490,
+        "mutations": 172,
+        "validation_n": 15372,
+        "validation_mutations": 79,
+        "p_raw": 0.10656299809613405
+      },
+      {
+        "context": "GAA",
+        "n": 31212,
+        "mutations": 170,
+        "validation_n": 15594,
+        "validation_mutations": 77,
+        "p_raw": 0.11475030386774011
+      },
+      {
+        "context": "TTT",
+        "n": 31076,
+        "mutations": 169,
+        "validation_n": 15678,
+        "validation_mutations": 85,
+        "p_raw": 0.11928033742136045
+      },
+      {
+        "context": "TAC",
+        "n": 31167,
+        "mutations": 169,
+        "validation_n": 15707,
+        "validation_mutations": 77,
+        "p_raw": 0.12680333460669557
+      },
+      {
+        "context": "ATT",
+        "n": 31092,
+        "mutations": 167,
+        "validation_n": 15474,
+        "validation_mutations": 75,
+        "p_raw": 0.15505412093485177
+      },
+      {
+        "context": "CGA",
+        "n": 31261,
+        "mutations": 167,
+        "validation_n": 15708,
+        "validation_mutations": 80,
+        "p_raw": 0.17192658340066683
+      },
+      {
+        "context": "TAA",
+        "n": 31158,
+        "mutations": 166,
+        "validation_n": 15779,
+        "validation_mutations": 72,
+        "p_raw": 0.1815453020169427
+      },
+      {
+        "context": "ACT",
+        "n": 31218,
+        "mutations": 166,
+        "validation_n": 15670,
+        "validation_mutations": 74,
+        "p_raw": 0.18801536402892066
+      },
+      {
+        "context": "TCT",
+        "n": 31250,
+        "mutations": 165,
+        "validation_n": 15796,
+        "validation_mutations": 79,
+        "p_raw": 0.21376266051625237
+      },
+      {
+        "context": "CCT",
+        "n": 31296,
+        "mutations": 165,
+        "validation_n": 15502,
+        "validation_mutations": 85,
+        "p_raw": 0.2192026967654561
+      },
+      {
+        "context": "CAA",
+        "n": 31382,
+        "mutations": 165,
+        "validation_n": 15600,
+        "validation_mutations": 77,
+        "p_raw": 0.22956890837667226
+      },
+      {
+        "context": "TGC",
+        "n": 31006,
+        "mutations": 162,
+        "validation_n": 15595,
+        "validation_mutations": 64,
+        "p_raw": 0.25648871169287774
+      },
+      {
+        "context": "CGG",
+        "n": 31019,
+        "mutations": 162,
+        "validation_n": 15662,
+        "validation_mutations": 84,
+        "p_raw": 0.2581838056133219
+      },
+      {
+        "context": "AAC",
+        "n": 31267,
+        "mutations": 163,
+        "validation_n": 15644,
+        "validation_mutations": 117,
+        "p_raw": 0.2648837152083778
+      },
+      {
+        "context": "GGC",
+        "n": 31268,
+        "mutations": 161,
+        "validation_n": 15482,
+        "validation_mutations": 92,
+        "p_raw": 0.31950148504938103
+      },
+      {
+        "context": "ACC",
+        "n": 30852,
+        "mutations": 158,
+        "validation_n": 15866,
+        "validation_mutations": 94,
+        "p_raw": 0.3457609464832648
+      },
+      {
+        "context": "CCC",
+        "n": 31441,
+        "mutations": 160,
+        "validation_n": 15490,
+        "validation_mutations": 77,
+        "p_raw": 0.3744246441790605
+      },
+      {
+        "context": "CTG",
+        "n": 31198,
+        "mutations": 158,
+        "validation_n": 15834,
+        "validation_mutations": 69,
+        "p_raw": 0.3983613589665137
+      },
+      {
+        "context": "GTC",
+        "n": 31348,
+        "mutations": 158,
+        "validation_n": 15513,
+        "validation_mutations": 67,
+        "p_raw": 0.42169258743116694
+      },
+      {
+        "context": "GTG",
+        "n": 31182,
+        "mutations": 157,
+        "validation_n": 15501,
+        "validation_mutations": 58,
+        "p_raw": 0.427090748986732
+      },
+      {
+        "context": "CAT",
+        "n": 31498,
+        "mutations": 158,
+        "validation_n": 15669,
+        "validation_mutations": 79,
+        "p_raw": 0.44522620975005545
+      },
+      {
+        "context": "GGA",
+        "n": 31134,
+        "mutations": 156,
+        "validation_n": 15705,
+        "validation_mutations": 79,
+        "p_raw": 0.4512078170343897
+      },
+      {
+        "context": "GAT",
+        "n": 31514,
+        "mutations": 157,
+        "validation_n": 15604,
+        "validation_mutations": 84,
+        "p_raw": 0.4795495327561508
+      },
+      {
+        "context": "TCA",
+        "n": 31332,
+        "mutations": 156,
+        "validation_n": 15630,
+        "validation_mutations": 79,
+        "p_raw": 0.48265959086124344
+      }
+    ],
+    "2": [
+      {
+        "context": "AGGTT",
+        "n": 1936,
+        "mutations": 22,
+        "validation_n": 1019,
+        "validation_mutations": 7,
+        "p_raw": 0.0003898412426453998
+      },
+      {
+        "context": "GACAC",
+        "n": 2011,
+        "mutations": 21,
+        "validation_n": 991,
+        "validation_mutations": 5,
+        "p_raw": 0.0014647170877839589
+      },
+      {
+        "context": "GCTTG",
+        "n": 2005,
+        "mutations": 20,
+        "validation_n": 955,
+        "validation_mutations": 11,
+        "p_raw": 0.0031118715443811977
+      },
+      {
+        "context": "CGGTC",
+        "n": 1928,
+        "mutations": 18,
+        "validation_n": 981,
+        "validation_mutations": 3,
+        "p_raw": 0.009168401328301838
+      },
+      {
+        "context": "CGTTG",
+        "n": 1932,
+        "mutations": 18,
+        "validation_n": 1011,
+        "validation_mutations": 6,
+        "p_raw": 0.009348236182110685
+      },
+      {
+        "context": "CGGAC",
+        "n": 1937,
+        "mutations": 18,
+        "validation_n": 1023,
+        "validation_mutations": 6,
+        "p_raw": 0.009576983462761385
+      },
+      {
+        "context": "CTGCC",
+        "n": 1943,
+        "mutations": 18,
+        "validation_n": 966,
+        "validation_mutations": 3,
+        "p_raw": 0.009857357083925579
+      },
+      {
+        "context": "GTCAC",
+        "n": 1953,
+        "mutations": 18,
+        "validation_n": 977,
+        "validation_mutations": 4,
+        "p_raw": 0.010339159978746688
+      },
+      {
+        "context": "CTCTG",
+        "n": 1969,
+        "mutations": 18,
+        "validation_n": 1070,
+        "validation_mutations": 5,
+        "p_raw": 0.011148843803793126
+      },
+      {
+        "context": "AAGCG",
+        "n": 1975,
+        "mutations": 18,
+        "validation_n": 975,
+        "validation_mutations": 6,
+        "p_raw": 0.011465126602701823
+      },
+      {
+        "context": "GCGAG",
+        "n": 1998,
+        "mutations": 18,
+        "validation_n": 963,
+        "validation_mutations": 6,
+        "p_raw": 0.012743911123411548
+      },
+      {
+        "context": "ATAGG",
+        "n": 1896,
+        "mutations": 17,
+        "validation_n": 934,
+        "validation_mutations": 3,
+        "p_raw": 0.015779223623402346
+      },
+      {
+        "context": "TTAGA",
+        "n": 1899,
+        "mutations": 17,
+        "validation_n": 953,
+        "validation_mutations": 3,
+        "p_raw": 0.015994628597007073
+      },
+      {
+        "context": "GGAGC",
+        "n": 1905,
+        "mutations": 17,
+        "validation_n": 1008,
+        "validation_mutations": 8,
+        "p_raw": 0.016432270517262804
+      },
+      {
+        "context": "GACCT",
+        "n": 1918,
+        "mutations": 17,
+        "validation_n": 941,
+        "validation_mutations": 6,
+        "p_raw": 0.017412252069831022
+      },
+      {
+        "context": "ACCTA",
+        "n": 1936,
+        "mutations": 17,
+        "validation_n": 964,
+        "validation_mutations": 8,
+        "p_raw": 0.01884282065535192
+      },
+      {
+        "context": "ACTAT",
+        "n": 1953,
+        "mutations": 17,
+        "validation_n": 920,
+        "validation_mutations": 4,
+        "p_raw": 0.02027513188495126
+      },
+      {
+        "context": "TCGAG",
+        "n": 1972,
+        "mutations": 17,
+        "validation_n": 1010,
+        "validation_mutations": 3,
+        "p_raw": 0.021972748144378718
+      },
+      {
+        "context": "CTCCA",
+        "n": 1976,
+        "mutations": 17,
+        "validation_n": 931,
+        "validation_mutations": 5,
+        "p_raw": 0.02234350071515683
+      },
+      {
+        "context": "CTATA",
+        "n": 1985,
+        "mutations": 17,
+        "validation_n": 984,
+        "validation_mutations": 9,
+        "p_raw": 0.02319502808331348
+      },
+      {
+        "context": "TTTGA",
+        "n": 1989,
+        "mutations": 17,
+        "validation_n": 955,
+        "validation_mutations": 7,
+        "p_raw": 0.02358126956507854
+      },
+      {
+        "context": "CTTAC",
+        "n": 2022,
+        "mutations": 17,
+        "validation_n": 942,
+        "validation_mutations": 7,
+        "p_raw": 0.026955649723685002
+      },
+      {
+        "context": "AGATT",
+        "n": 1918,
+        "mutations": 16,
+        "validation_n": 895,
+        "validation_mutations": 6,
+        "p_raw": 0.033006951914644055
+      },
+      {
+        "context": "GGGCA",
+        "n": 1921,
+        "mutations": 16,
+        "validation_n": 951,
+        "validation_mutations": 2,
+        "p_raw": 0.03339948570099985
+      },
+      {
+        "context": "GCCAT",
+        "n": 1937,
+        "mutations": 16,
+        "validation_n": 987,
+        "validation_mutations": 2,
+        "p_raw": 0.03555079985397707
+      },
+      {
+        "context": "GTCTT",
+        "n": 1939,
+        "mutations": 16,
+        "validation_n": 955,
+        "validation_mutations": 10,
+        "p_raw": 0.03582662707450451
+      },
+      {
+        "context": "ATAAA",
+        "n": 1939,
+        "mutations": 16,
+        "validation_n": 972,
+        "validation_mutations": 5,
+        "p_raw": 0.03582662707450451
+      },
+      {
+        "context": "CTGGG",
+        "n": 1948,
+        "mutations": 16,
+        "validation_n": 1019,
+        "validation_mutations": 9,
+        "p_raw": 0.03708709770001416
+      },
+      {
+        "context": "TTAGG",
+        "n": 1950,
+        "mutations": 16,
+        "validation_n": 984,
+        "validation_mutations": 6,
+        "p_raw": 0.03737150469515723
+      },
+      {
+        "context": "GGGAT",
+        "n": 1954,
+        "mutations": 16,
+        "validation_n": 937,
+        "validation_mutations": 5,
+        "p_raw": 0.03794504347734926
+      }
+    ],
+    "3": [
+      {
+        "context": "TGACCGC",
+        "n": 138,
+        "mutations": 9,
+        "validation_n": 67,
+        "validation_mutations": 2,
+        "p_raw": 3.856931563505032e-08
+      },
+      {
+        "context": "TCTATAT",
+        "n": 119,
+        "mutations": 8,
+        "validation_n": 65,
+        "validation_mutations": 3,
+        "p_raw": 1.7379562916084262e-07
+      },
+      {
+        "context": "AACCATG",
+        "n": 123,
+        "mutations": 7,
+        "validation_n": 70,
+        "validation_mutations": 2,
+        "p_raw": 3.136486321533995e-06
+      },
+      {
+        "context": "GCTCTGG",
+        "n": 131,
+        "mutations": 7,
+        "validation_n": 61,
+        "validation_mutations": 0,
+        "p_raw": 4.761480587807849e-06
+      },
+      {
+        "context": "ACCAACC",
+        "n": 137,
+        "mutations": 7,
+        "validation_n": 53,
+        "validation_mutations": 0,
+        "p_raw": 6.3948318309484395e-06
+      },
+      {
+        "context": "GGGTCTT",
+        "n": 107,
+        "mutations": 6,
+        "validation_n": 63,
+        "validation_mutations": 1,
+        "p_raw": 1.735742659103989e-05
+      },
+      {
+        "context": "ACCTCAG",
+        "n": 109,
+        "mutations": 6,
+        "validation_n": 57,
+        "validation_mutations": 1,
+        "p_raw": 1.928586056145791e-05
+      },
+      {
+        "context": "ATGCAAG",
+        "n": 110,
+        "mutations": 6,
+        "validation_n": 52,
+        "validation_mutations": 0,
+        "p_raw": 2.0312765248973115e-05
+      },
+      {
+        "context": "AATAACG",
+        "n": 114,
+        "mutations": 6,
+        "validation_n": 63,
+        "validation_mutations": 2,
+        "p_raw": 2.486996398695939e-05
+      },
+      {
+        "context": "GACCAAA",
+        "n": 116,
+        "mutations": 6,
+        "validation_n": 60,
+        "validation_mutations": 0,
+        "p_raw": 2.7438169141506e-05
+      },
+      {
+        "context": "GAGGTTA",
+        "n": 130,
+        "mutations": 6,
+        "validation_n": 58,
+        "validation_mutations": 4,
+        "p_raw": 5.1990705798304264e-05
+      },
+      {
+        "context": "AGGTACG",
+        "n": 130,
+        "mutations": 6,
+        "validation_n": 69,
+        "validation_mutations": 2,
+        "p_raw": 5.1990705798304264e-05
+      },
+      {
+        "context": "AACCCCA",
+        "n": 133,
+        "mutations": 6,
+        "validation_n": 54,
+        "validation_mutations": 1,
+        "p_raw": 5.9028562144820166e-05
+      },
+      {
+        "context": "AACTAAA",
+        "n": 102,
+        "mutations": 5,
+        "validation_n": 73,
+        "validation_mutations": 2,
+        "p_raw": 0.00016630966667492822
+      },
+      {
+        "context": "AGTAGTA",
+        "n": 107,
+        "mutations": 5,
+        "validation_n": 66,
+        "validation_mutations": 2,
+        "p_raw": 0.000207977479327343
+      },
+      {
+        "context": "TGCCTCC",
+        "n": 108,
+        "mutations": 5,
+        "validation_n": 56,
+        "validation_mutations": 1,
+        "p_raw": 0.00021718506635914878
+      },
+      {
+        "context": "TTGATCC",
+        "n": 150,
+        "mutations": 6,
+        "validation_n": 61,
+        "validation_mutations": 1,
+        "p_raw": 0.00011460392202595346
+      },
+      {
+        "context": "AAGGCGT",
+        "n": 110,
+        "mutations": 5,
+        "validation_n": 62,
+        "validation_mutations": 1,
+        "p_raw": 0.00023652738868204488
+      },
+      {
+        "context": "AAGGGAG",
+        "n": 115,
+        "mutations": 5,
+        "validation_n": 58,
+        "validation_mutations": 1,
+        "p_raw": 0.0002906112255379562
+      },
+      {
+        "context": "GCCGTTG",
+        "n": 115,
+        "mutations": 5,
+        "validation_n": 54,
+        "validation_mutations": 0,
+        "p_raw": 0.0002906112255379562
+      },
+      {
+        "context": "CAGCGTT",
+        "n": 120,
+        "mutations": 5,
+        "validation_n": 67,
+        "validation_mutations": 1,
+        "p_raw": 0.00035358312608256256
+      },
+      {
+        "context": "ATTACGT",
+        "n": 122,
+        "mutations": 5,
+        "validation_n": 49,
+        "validation_mutations": 1,
+        "p_raw": 0.0003814638636602275
+      },
+      {
+        "context": "AAATACA",
+        "n": 122,
+        "mutations": 5,
+        "validation_n": 64,
+        "validation_mutations": 3,
+        "p_raw": 0.0003814638636602275
+      },
+      {
+        "context": "TTATTAA",
+        "n": 124,
+        "mutations": 5,
+        "validation_n": 56,
+        "validation_mutations": 0,
+        "p_raw": 0.00041097243166548424
+      },
+      {
+        "context": "ATTTGCA",
+        "n": 126,
+        "mutations": 5,
+        "validation_n": 79,
+        "validation_mutations": 0,
+        "p_raw": 0.0004421697511696842
+      },
+      {
+        "context": "AGTCGGC",
+        "n": 126,
+        "mutations": 5,
+        "validation_n": 48,
+        "validation_mutations": 1,
+        "p_raw": 0.0004421697511696842
+      },
+      {
+        "context": "GCGTTGG",
+        "n": 129,
+        "mutations": 5,
+        "validation_n": 70,
+        "validation_mutations": 0,
+        "p_raw": 0.0004922674972203598
+      },
+      {
+        "context": "GGGAGAT",
+        "n": 130,
+        "mutations": 5,
+        "validation_n": 61,
+        "validation_mutations": 1,
+        "p_raw": 0.0005098785688772414
+      },
+      {
+        "context": "CCTCACT",
+        "n": 131,
+        "mutations": 5,
+        "validation_n": 62,
+        "validation_mutations": 0,
+        "p_raw": 0.0005279587617450525
+      },
+      {
+        "context": "GTATCAG",
+        "n": 132,
+        "mutations": 5,
+        "validation_n": 70,
+        "validation_mutations": 1,
+        "p_raw": 0.0005465160751002729
+      }
+    ],
+    "4": [
+      {
+        "context": "AGAAACCCA",
+        "n": 3,
+        "mutations": 2,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 7.329448120529799e-05
+      },
+      {
+        "context": "ATCTATATG",
+        "n": 7,
+        "mutations": 3,
+        "validation_n": 3,
+        "validation_mutations": 1,
+        "p_raw": 4.184915138813366e-06
+      },
+      {
+        "context": "CGCGAATAC",
+        "n": 7,
+        "mutations": 3,
+        "validation_n": 4,
+        "validation_mutations": 2,
+        "p_raw": 4.184915138813366e-06
+      },
+      {
+        "context": "TATTACGTG",
+        "n": 7,
+        "mutations": 3,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 4.184915138813366e-06
+      },
+      {
+        "context": "AACCTCAGG",
+        "n": 8,
+        "mutations": 3,
+        "validation_n": 7,
+        "validation_mutations": 0,
+        "p_raw": 6.671025546429025e-06
+      },
+      {
+        "context": "CTGCCTCCC",
+        "n": 8,
+        "mutations": 3,
+        "validation_n": 7,
+        "validation_mutations": 0,
+        "p_raw": 6.671025546429025e-06
+      },
+      {
+        "context": "CGTTTTGAG",
+        "n": 1,
+        "mutations": 1,
+        "validation_n": 7,
+        "validation_mutations": 0,
+        "p_raw": 0.004951
+      },
+      {
+        "context": "CGTTACCAG",
+        "n": 1,
+        "mutations": 1,
+        "validation_n": 2,
+        "validation_mutations": 0,
+        "p_raw": 0.004951
+      },
+      {
+        "context": "AACGGAAAT",
+        "n": 1,
+        "mutations": 1,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 0.004951
+      },
+      {
+        "context": "CATTAGAAG",
+        "n": 4,
+        "mutations": 2,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 0.00014610532139460033
+      },
+      {
+        "context": "TTTTGCGAT",
+        "n": 4,
+        "mutations": 2,
+        "validation_n": 4,
+        "validation_mutations": 0,
+        "p_raw": 0.00014610532139460033
+      },
+      {
+        "context": "AACCTCAGC",
+        "n": 4,
+        "mutations": 2,
+        "validation_n": 2,
+        "validation_mutations": 0,
+        "p_raw": 0.00014610532139460033
+      },
+      {
+        "context": "CCGTCTCAT",
+        "n": 4,
+        "mutations": 2,
+        "validation_n": 4,
+        "validation_mutations": 0,
+        "p_raw": 0.00014610532139460033
+      },
+      {
+        "context": "CCTCATGGT",
+        "n": 4,
+        "mutations": 2,
+        "validation_n": 4,
+        "validation_mutations": 0,
+        "p_raw": 0.00014610532139460033
+      },
+      {
+        "context": "GTGACCGCC",
+        "n": 9,
+        "mutations": 3,
+        "validation_n": 5,
+        "validation_mutations": 1,
+        "p_raw": 9.969427779745765e-06
+      },
+      {
+        "context": "CATGCAAGA",
+        "n": 10,
+        "mutations": 3,
+        "validation_n": 7,
+        "validation_mutations": 0,
+        "p_raw": 1.4189234436136664e-05
+      },
+      {
+        "context": "GACCAACCT",
+        "n": 19,
+        "mutations": 4,
+        "validation_n": 0,
+        "validation_mutations": 0,
+        "p_raw": 2.1944823479361704e-06
+      },
+      {
+        "context": "AGTGCTGCG",
+        "n": 11,
+        "mutations": 3,
+        "validation_n": 3,
+        "validation_mutations": 0,
+        "p_raw": 1.9437877428180548e-05
+      },
+      {
+        "context": "CTAGCCCTG",
+        "n": 11,
+        "mutations": 3,
+        "validation_n": 1,
+        "validation_mutations": 0,
+        "p_raw": 1.9437877428180548e-05
+      },
+      {
+        "context": "TAACTAAAA",
+        "n": 11,
+        "mutations": 3,
+        "validation_n": 6,
+        "validation_mutations": 1,
+        "p_raw": 1.9437877428180548e-05
+      },
+      {
+        "context": "AGGGAGATC",
+        "n": 11,
+        "mutations": 3,
+        "validation_n": 4,
+        "validation_mutations": 0,
+        "p_raw": 1.9437877428180548e-05
+      },
+      {
+        "context": "CAGGCCTTG",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 4,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "ATCTATATC",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "TACCAAGAC",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "ACGTATACT",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 3,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "ACTATCTAA",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 5,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "CAGTTCTCG",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 7,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "AAGCGTCCG",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 6,
+        "validation_mutations": 1,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "GGAGGTTAG",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 8,
+        "validation_mutations": 2,
+        "p_raw": 0.00024270579302063382
+      },
+      {
+        "context": "AACCGGCTA",
+        "n": 5,
+        "mutations": 2,
+        "validation_n": 2,
+        "validation_mutations": 0,
+        "p_raw": 0.00024270579302063382
+      }
+    ]
+  }
+}

@@ -1,0 +1,89 @@
+FINAL TEST {
+  "selected_gain_nats_vs_uniform": {
+    "total": 889.5889577170822,
+    "scaffold_bootstrap_95_percentile_interval": [
+      792.9359272378944,
+      991.6194782369287
+    ],
+    "resamples": 5000,
+    "seed": 0
+  },
+  "mutation_auc": 0.5847075555478412
+}
+TEST MODELS {
+  "uniform": {
+    "n": 1000000,
+    "changes": 4972,
+    "expected_changes": 4976.33333333336,
+    "nll": 36793.07666730024,
+    "binary_nll": 31330.77636804238,
+    "brier_sum": 9911.038979703371,
+    "mean_nll": 0.036793076667300244,
+    "mean_binary_nll": 0.03133077636804238,
+    "mean_brier": 0.009911038979703371
+  },
+  "source_matrix": {
+    "n": 1000000,
+    "changes": 4972,
+    "expected_changes": 4978.6110988538085,
+    "nll": 36794.850044168976,
+    "binary_nll": 31333.20345857305,
+    "brier_sum": 9911.069043738738,
+    "mean_nll": 0.03679485004416898,
+    "mean_binary_nll": 0.03133320345857305,
+    "mean_brier": 0.009911069043738738
+  },
+  "context_rate_uniform_destination": {
+    "n": 1000000,
+    "changes": 4972,
+    "expected_changes": 4973.800981635455,
+    "nll": 36326.45426544243,
+    "binary_nll": 30864.15396618458,
+    "brier_sum": 9898.753392485785,
+    "mean_nll": 0.036326454265442426,
+    "mean_binary_nll": 0.030864153966184582,
+    "mean_brier": 0.009898753392485785
+  },
+  "selected": {
+    "n": 1000000,
+    "changes": 4972,
+    "expected_changes": 4973.800981635455,
+    "nll": 35903.48770958316,
+    "binary_nll": 30864.15396618458,
+    "brier_sum": 9893.090802525294,
+    "mean_nll": 0.03590348770958316,
+    "mean_binary_nll": 0.030864153966184582,
+    "mean_brier": 0.009893090802525295
+  }
+}
+SUMMARY {
+  "expected_number_of_changed_alleles": 4974.728737409099,
+  "expected_total_changed_alleles": 4974.728737409099,
+  "number_of_queried_sites": 1000000,
+  "unique_queried_sites": 1000000,
+  "mean_predicted_change_probability": 0.004974728737409099,
+  "model": "circular_8mer_logistic_normal_rate_symmetric_dirichlet_destination",
+  "context_offsets": [
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    3
+  ],
+  "calibration_sites": 4000000,
+  "calibration_changes": 19901,
+  "fitted_logit_rate_mean": -5.69395284739004,
+  "fitted_logit_rate_sd": 0.8946945036380947,
+  "fitted_destination_dirichlet_total_concentration": 1.048019815816202,
+  "conditional_posterior_sd_expected_change_count": 18.35417526571909,
+  "conditional_posterior_predictive_sd_change_count": 72.50338545351525,
+  "uncertainty_caveat": "Conditional on the selected model and fitted hyperparameters; excludes hyperparameter and model uncertainty.",
+  "max_probability_row_sum_error": 5.500044863993026e-13,
+  "input_hashes_verified": true,
+  "seed": 0,
+  "threads": 4,
+  "runtime_seconds": 9.84355354309082
+}

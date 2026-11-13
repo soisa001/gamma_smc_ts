@@ -1,0 +1,13 @@
+{
+  "identical_public_inputs": [
+    "TASK.md",
+    "calibration_parent.fasta",
+    "metadata.json",
+    "new_parent.fasta",
+    "queries.tsv"
+  ],
+  "changed_public_inputs": [
+    "calibration_offspring.fasta"
+  ],
+  "tests": "14 focused tests passed; see tests.txt"
+}

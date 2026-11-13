@@ -382,8 +382,10 @@ def fit_one(job):
     return f"fitted {scenario} seed={seed} precision={audit['precision']:.6f} recall={audit['recall']:.6f} shrink={chosen}"
 
 
-def score_counts(opportunities, outcomes, truth, prediction):
-    anc = digits(7)[:, 3]
+def score_counts(opportunities, outcomes, truth, prediction, ancestral=None):
+    anc = digits(7)[:, 3] if ancestral is None else np.asarray(ancestral)
+    if truth.shape != (len(anc), 4) or prediction.shape != truth.shape or outcomes.shape != truth.shape:
+        raise ValueError("Scoring arrays must agree with the ancestral-base encoding")
     off = np.ones_like(truth, dtype=bool)
     off[np.arange(len(anc)), anc] = False
     true_alt, pred_alt = np.where(off, truth, 0), np.where(off, prediction, 0)
