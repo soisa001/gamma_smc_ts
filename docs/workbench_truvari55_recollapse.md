@@ -175,3 +175,56 @@ This cell performs no staging or uploads and emits no plots. Do not point its
 preparation cache at stringent inputs. Tests include identical symbolic DUP and
 INV pairs with disjoint carriers, ensuring both records survive both thresholds
 even though they would otherwise meet all similarity criteria.
+
+## Audit why same-position pairs did not merge
+
+`audit_same_position_pairs.py` reads the completed run's actual prepared alleles,
+sample manifest, parameters, and checksums. It does not rerun collapse or alter
+any input/results. Only DEL and sequence-resolved INS partitions are audited.
+Pairs never cross type/representation partitions or chromosome/POS boundaries.
+
+```bash
+%%bash
+set -euo pipefail
+export PATH="$HOME/.local/bin:$PATH"
+BASE=/home/jupyter/ashg_revised
+REPO="$BASE/gamma_smc_ts_svplots"
+RUN="$BASE/v3_lenient_recollapse_same_start_90_70"
+TOOLS="$BASE/tools/truvari55_uv"
+OUT="$RUN/pair_audit"
+mkdir -p "$OUT"
+exec > >(tee -a "$OUT/run.log") 2>&1
+date -u '+started_utc=%Y-%m-%dT%H:%M:%SZ'
+if [[ ! -d "$REPO/.git" ]]; then
+    git clone --branch AOU_run_opt git@github.com:soisa001/gamma_smc_ts.git "$REPO"
+else
+    test "$(git -C "$REPO" branch --show-current)" = AOU_run_opt
+    git -C "$REPO" pull --ff-only origin AOU_run_opt
+fi
+git -C "$REPO" rev-parse HEAD
+test -s "$RUN/partitions/manifest.json"
+test -x "$TOOLS/venv/bin/python"
+"$TOOLS/venv/bin/python" "$REPO/scripts/audit_same_position_pairs.py" \
+    --run "$RUN" --out "$OUT" --workers 4
+date -u '+finished_utc=%Y-%m-%dT%H:%M:%SZ'
+```
+
+`summary.tsv` reports repeated positions, pair counts, and mutually exclusive
+outcomes: `similarity_only`, `shared_carriers_only`, `both`, `eligible_pair`,
+`native_filter`, or `other_matching_rule`. Independent `fails_size`,
+`fails_sequence`, and `fails_overlap` columns can overlap and must not be summed
+as disjoint categories. A native `gt=all` mask detects any ALT allele 1 in both
+records, including heterozygotes, homozygotes, and partially missing GTs.
+
+The audit uses native Truvari metrics with early exit disabled, so all similarities
+are measured even when one criterion already fails. Carrier sets are decoded once
+per record at repeated positions. Four threads evaluate independent loci; samples
+and allele sequences are not printed. The local `pairs.tsv.gz` contains locus/ID,
+size/similarity, carrier-count, and failure details; `provenance.json` records
+all native parameters, excluded partitions, input hashes, and tool version.
+Completed audits are reused only after their inputs and outputs pass validation.
+
+Pairwise eligibility is not a predicted number of merges: representative selection
+and cluster-level carrier conflicts also matter. If eligible pairs appear despite
+zero observed merges, the aggregate output flags native grouping/cluster behavior
+for investigation instead of attributing the zero result to similarity or carriers.

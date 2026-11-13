@@ -1,6 +1,7 @@
 """Integration checks with real Truvari; Linux dependencies from the script."""
 
 import csv
+import gzip
 import importlib.util
 import json
 from pathlib import Path
@@ -84,6 +85,10 @@ def make_fixture(path, same_start_cases=False):
             # Even >99.99% overlap cannot merge DELs at different starts.
             add(1700000, "DEL", 60000, "N", "<DEL>", "s1")
             add(1700001, "DEL", 60000, "N", "<DEL>", "s2")
+            # Audit must distinguish a joint similarity+carrier block at 90%
+            # from a carrier-only block at 70%.
+            add(1800000, "INS", 60000, "A", "A" + "C"*60000, "s1")
+            add(1800000, "INS", 60000, "A", "A" + "C"*36000 + "G"*24000, "s1")
 
 
 def test_actual_collapse_and_cache(tmp_path):
@@ -162,6 +167,27 @@ def test_same_start_native_adapter_and_reuse(tmp_path):
     same = [*command, "--out", str(out), "--same-start", "--reuse-prepared", str(baseline)]
     subprocess.run(same, check=True)
     assert all(p.stat().st_mtime_ns == stamp for p, stamp in stamps.items())
+    audit = SCRIPT.with_name("audit_same_position_pairs.py")
+    audit_command = [sys.executable, str(audit), "--run", str(out), "--workers", "4"]
+    result = subprocess.run(audit_command, check=True, text=True, capture_output=True)
+    assert "Eligible pairs exist" in result.stdout
+    with (out / "pair_audit/summary.tsv").open() as handle:
+        rows = {(r["threshold"], r["svtype"]): r for r in csv.DictReader(handle, delimiter="\t")}
+    ins90, ins70 = rows["0.9", "INS"], rows["0.7", "INS"]
+    assert [int(ins90[k]) for k in ("eligible_pair", "similarity_only", "shared_carriers_only", "both")] == [2, 1, 1, 1]
+    assert [int(ins70[k]) for k in ("eligible_pair", "similarity_only", "shared_carriers_only", "both")] == [3, 0, 2, 0]
+    assert int(ins90["fails_sequence"]) == 2
+    assert int(rows["0.9", "DEL"]["fails_size"]) == 1
+    assert int(rows["0.9", "DEL"]["fails_overlap"]) == 1
+    assert int(rows["0.7", "DEL"]["eligible_pair"]) == 2
+    assert {key[1] for key in rows} == {"DEL", "INS"}
+    with gzip.open(out / "pair_audit/pairs.tsv.gz", "rt") as handle:
+        pairs = list(csv.DictReader(handle, delimiter="\t"))
+    assert len(pairs) == 14  # 7 distinct pairs, each evaluated at both thresholds.
+    assert all(r["pos"] not in ("1100000", "1100001", "1700000", "1700001") for r in pairs)
+    assert all(p.stat().st_mtime_ns == stamp for p, stamp in stamps.items())
+    second = subprocess.run(audit_command, check=True, text=True, capture_output=True)
+    assert "Reusing verified pair audit" in second.stdout
     with (out / "comparison_vs_baseline.tsv").open() as handle:
         comparison = {(r["threshold"], r["svtype"]): r for r in csv.DictReader(handle, delimiter="\t")}
     assert comparison["0.7", "DEL"]["additional_retained"] == "2"
@@ -198,3 +224,27 @@ def test_same_start_native_adapter_and_reuse(tmp_path):
     assert "Reusing validated same-start partitions" in repeat.stdout
     assert "Reused pct70/INS.sequence_resolved" in repeat.stdout
     assert all(p.stat().st_mtime_ns == stamp for p, stamp in stamps.items())
+
+
+def test_pair_audit_with_no_repeated_positions(tmp_path):
+    source = tmp_path / "full.bcf"
+    make_fixture(source)
+    singleton = tmp_path / "singletons.bcf"
+    with pysam.VariantFile(source) as vcf:
+        with pysam.VariantFile(singleton, "wb", header=vcf.header) as writer:
+            seen = set()
+            for record in vcf:
+                if record.info["SVTYPE"] in ("DEL", "INS") and record.info["SVTYPE"] not in seen:
+                    seen.add(record.info["SVTYPE"])
+                    writer.write(record)
+    out = tmp_path / "out"
+    subprocess.run([sys.executable, str(SCRIPT), "--bcf", str(singleton), "--out", str(out),
+                    "--same-start", "--workers", "4"], check=True, capture_output=True)
+    subprocess.run([sys.executable, str(SCRIPT.with_name("audit_same_position_pairs.py")),
+                    "--run", str(out)], check=True, capture_output=True)
+    with (out / "pair_audit/summary.tsv").open() as handle:
+        assert all(r["same_position_pairs"] == "0" for r in csv.DictReader(handle, delimiter="\t"))
+    with gzip.open(out / "pair_audit/pairs.tsv.gz", "rt") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        assert "status" in reader.fieldnames
+        assert list(reader) == []
