@@ -1,0 +1,21 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "01_one_selected_af.png": "5ddb3ec88bcc4e7f02c6dadba8f5f66bf983a8df0113a9609379fefbfb24bdea",
+  "02_all_selected_af.png": "43004bd802b538d0679d10d982ce25c4ee93bac1e0fa3276dfb1d51af5c02add",
+  "all_statistics_detail.pdf": "6e12fbafc87d83129213e7e64cbcacce8820e48c04b1e0a56f29d31b9e88522f",
+  "manifest.json": "aaa24990381e658037dd7ce9137481b79daa548b81efcc50164c662e61dbe8ba",
+  "posterior_mass_detail.pdf": "7a4bafdb9ef0cc4f3dc327c56a410a72b9e2281a8bdbcaa5be9af14564dfc0cf",
+  "posterior_mass_neutral_p001.png": "5f318096efc591637b7ffe2eebd6eb1753aa1ba615dcbe3c9df770054847e017",
+  "posterior_mass_neutral_p005.png": "58015dc621ae5529e52b57aa00ab7abc12691c0faf6dc2c5a5e2b14932d933cc",
+  "posterior_mass_selected_p001.png": "3a2cce6d18c4ff628ffafbb97d877f6a0923bed18543a7e790c97c1b9912c638",
+  "posterior_mass_selected_p005.png": "c490bd874fdec6e27ff698728b0c1e07a59bcfa7cfda81dab79eb77fbf737259",
+  "posterior_median_neutral_p001.png": "23b6e73482beb0a165c5fbf152e926b0910bf401c6a539e9955b63d4e2337a2c",
+  "posterior_median_neutral_p005.png": "56445e2ed5d0326376ba1a7a1579c289a02176e99c74369bff8594edf64fcd7b",
+  "posterior_median_selected_p001.png": "6220f95ec7228c819fe4fa08e928da119c29338787a55a30fabd87a3a5169a5f",
+  "posterior_median_selected_p005.png": "dd25b770d4bb52bcf8e6678784ac3d86c460f528b920d399d2951b994c161ab6",
+  "true_tmrca_neutral_p001.png": "1372ad19eca3ac1bb0c5b78bd53141bbdcd94cc6448780ee71264f72c32e7563",
+  "true_tmrca_neutral_p005.png": "8d0d2fafe2d17c6e9ec362178c32902b1d71546892633383a076fd56cacff632",
+  "true_tmrca_selected_p001.png": "56d83435164bf8f713d5a2fe0a7be5301d2b6ef9b865de04029dae2099b2024e",
+  "true_tmrca_selected_p005.png": "666732912ae76a3b1e53cf3541bbe586a5c9d9fbae79951822e8c794ceb73888",
+  "visual_validation.json": "4cdc87f104bd8a424afdc21dccbe09bac7b828d6e15d59602f510af446cba302"
+}

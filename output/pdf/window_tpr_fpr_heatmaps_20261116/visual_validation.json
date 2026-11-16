@@ -1,0 +1,18 @@
+{
+  "pdf_sha256": {
+    "all_statistics_heatmaps.pdf": "1f78329d02c3cf716b8b39b1019435eafacc98a92610e02680b8b0cce196a741",
+    "posterior_mass_heatmaps.pdf": "86b6341f5eefc0b5f6e42f56e0fc3aa1fdbf1e561858635c04fc57fd95a5c6cc"
+  },
+  "visual_review": "All distinct final PDF pages rendered with Poppler at 100 dpi and visually inspected. Labels, color keys, legends, missing cohorts, sample counts and footnotes readable; example markers do not overlap labels.",
+  "distinct_pages_reviewed": 6,
+  "subset_pages_verified_pixel_identical": 2,
+  "render_size": [
+    1100,
+    850
+  ],
+  "output_size_inches": [
+    11,
+    8.5
+  ],
+  "inline_display_requested": false
+}
