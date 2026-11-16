@@ -20,6 +20,12 @@ def audit(raw, sample=0, workers=4):
     spec = json.loads((raw/'manifest.json').read_text())
     signature = BASE.digest(raw/'manifest.json')
     strata = {s['key']:s for s in spec['strata']}
+    next_slots = {k:list(s.get('slot_attempt_starts', [])) for k,s in strata.items()}
+    next_proposals = {k:s.get('proposal_start', 0) for k,s in strata.items()}
+    if spec.get('previous_run'):
+        prior = spec['previous_run']; source = Path(prior['path'])
+        for filename, field in [('manifest.json','manifest_sha256'),('finished.json','finished_sha256'),('dispatch.jsonl','dispatch_sha256')]:
+            assert BASE.digest(source/filename) == prior[field]
     counts = {k:dict(submitted=0, checked=0, completed=0, lost=0, fixed=0, accepted=0, prefix=0, prefix_lost=0, prefix_fixed=0, prefix_accepted=[]) for k in strata}
     ids = set(); onsets = {}; founder_accepts = set(); gap = set(); file_checks=[]
     events=[json.loads(line) for line in (raw/'dispatch.jsonl').read_text().splitlines()]
@@ -36,11 +42,14 @@ def audit(raw, sample=0, workers=4):
             assert task['cohort']=='selected' and task['regime']==s['regime']
             if s['origin']=='de_novo':
                 slot, attempt=task['slot'],task['attempt']
-                assert attempt>=s['slot_attempt_starts'][slot]
+                assert slot not in s.get('successful_slots', [])
+                assert attempt==next_slots[key][slot]
+                next_slots[key][slot]+=1
                 assert event['founder']==s['founders'][slot]['path']
                 assert task['unit']==f"de_novo/{s['old_key']}/slot_{slot:03d}/attempt_{attempt:05d}"
             else:
-                assert task['replicate']>=s['proposal_start']
+                assert task['replicate']==next_proposals[key]
+                next_proposals[key]+=1
                 assert task['unit']==f"introgression/s{s['selection']:g}/selected_{task['replicate']:05d}"
             if r is None: gap.add(key); continue
             assert r['config_sha256']==signature

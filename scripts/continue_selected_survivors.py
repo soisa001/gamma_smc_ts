@@ -38,7 +38,76 @@ def job(raw, cfg, task, deadline, founder):
         arrays.ancestor.onset = original
 
 
-def contract(raw, workers, memory_gb):
+def chained_contract(raw, previous, workers, memory_gb):
+    """Start a new bounded phase after a completely checkpointed continuation."""
+    previous = previous.resolve()
+    assert raw != previous, 'A new phase needs a distinct output directory'
+    old = json.loads((previous/'manifest.json').read_text())
+    finished = json.loads((previous/'finished.json').read_text())
+    assert finished['manifest_sha256'] == BASE.digest(previous/'manifest.json')
+    assert finished['pending'] == 0, 'Resolve unfinished prior proposals before chaining'
+    for name, expected in old['sources'].items():
+        archive = previous/'executed_sources'/(Path(name).stem+'_'+expected[:12]+'.py')
+        assert BASE.digest(archive) == expected
+        if name != Path(__file__).name:
+            assert BASE.digest(ROOT/'scripts'/name) == expected, name
+    prior_strata = {s['key']:s for s in old['strata']}
+    statuses = {s['key']:s for s in finished['strata']}
+    counts = {k:0 for k in prior_strata}; ids = set()
+    starts = {k:list(s.get('slot_attempt_starts', [])) for k,s in prior_strata.items()}
+    proposals = {k:s.get('proposal_start', 0) for k,s in prior_strata.items()}
+    with (previous/'dispatch.jsonl').open() as journal:
+        for line in journal:
+            event = json.loads(line); k = event['key']; task = event['task']
+            assert event['ordinal'] == counts[k] and task['id'] not in ids
+            ids.add(task['id']); counts[k] += 1
+            if prior_strata[k]['origin'] == 'de_novo':
+                slot = task['slot']
+                assert task['attempt'] == starts[k][slot]
+                starts[k][slot] += 1
+            else:
+                assert task['replicate'] == proposals[k]
+                proposals[k] += 1
+    strata = []
+    for k, prior in prior_strata.items():
+        status = statuses[k]
+        assert counts[k] == status['new_submitted'] == status['new_completed'] == status['completed_prefix']
+        if status['accepted'] >= old['target']: continue
+        receipt = previous/(k+'_cohort.json')
+        cohort = json.loads(receipt.read_text())
+        assert cohort['manifest_sha256'] == finished['manifest_sha256']
+        assert len(cohort['accepted']) == status['accepted']
+        cfg = prior['config']
+        for field, path in [('slim_sha256', cfg['slim']), ('decoder_sha256', cfg['decoder']),
+                            ('phlash_sha256', ROOT/'no_introgression_EAS_sim/resources/EAS.npz')]:
+            assert BASE.digest(path) == cfg[field]
+        for r in cohort['accepted']:
+            assert 0 < r['final_frequency'] < 1
+            arrays.ancestor.verify(Path(r['source_directory']), r)
+        s = dict(prior, previous=str(previous), previous_manifest_sha256=finished['manifest_sha256'],
+            previous_cohort_sha256=BASE.digest(receipt), reused=cohort['accepted'],
+            previous_proposals=prior['previous_proposals']+status['new_completed'],
+            previous_lost=prior['previous_lost']+status['prefix_lost'],
+            previous_fixed=prior['previous_fixed']+status['prefix_fixed'])
+        if s['origin'] == 'de_novo':
+            s['slot_attempt_starts'] = starts[k]
+            s['successful_slots'] = sorted({int(r['unit'].split('/slot_')[1].split('/')[0]) for r in s['reused']})
+            for founder in s['founders']:
+                assert BASE.digest(Path(founder['path'])/'onset.trees') == founder['onset_sha256']
+        else: s['proposal_start'] = proposals[k]
+        strata.append(s)
+    assert strata, 'All prior cohorts already reached their target'
+    value = dict(old, schema='selected-survivor-continuation/v2', strata=strata, workers=workers,
+        memory_budget_gb=memory_gb,
+        deadline_rule='Configured wall-clock budget in schedule.json; stop dispatch 180 seconds before deadline, terminate remaining worker groups at deadline.',
+        previous_run=dict(path=str(previous), manifest_sha256=finished['manifest_sha256'],
+            finished_sha256=BASE.digest(previous/'finished.json'), dispatch_sha256=BASE.digest(previous/'dispatch.jsonl')),
+        sources={Path(p).name:BASE.digest(p) for p in (__file__, arrays.__file__, arrays.ancestor.__file__, BASE.__file__, cached.__file__)})
+    return write_contract(raw, value, previous)
+
+
+def contract(raw, workers, memory_gb, previous=None):
+    if previous is not None: return chained_contract(raw, previous, workers, memory_gb)
     sources = {'de_novo': ROOT.parent/'sim/denovo_comparison_cached_20261111',
                'introgression': ROOT.parent/'sim/strong_selection_20261110'}
     strata = []
@@ -88,13 +157,16 @@ def contract(raw, workers, memory_gb):
         workers=workers, memory_budget_gb=memory_gb, threads_per_worker=1,
         conditioning='Original focal allele: 0 < whole-population AF < 1 today; fixed and lost alleles excluded.',
         selection_rule='Existing survivors followed by successes in the completed dispatch prefix within each stratum. At most one de novo survivor per independent founder.',
-        deadline_rule='Five-hour wall clock including inference; stop dispatch 180 seconds before deadline, terminate remaining worker process groups at deadline.',
+        deadline_rule='Configured wall-clock budget in schedule.json; stop dispatch 180 seconds before deadline, terminate remaining worker process groups at deadline.',
         sources={Path(p).name: BASE.digest(p) for p in (__file__, arrays.__file__, arrays.ancestor.__file__, BASE.__file__, cached.__file__)},
         note='Only incomplete cohorts in the current 10k, 50k, and 50-30k series; completed selected cohorts and neutral references are frozen.')
+    return write_contract(raw, value, sources['de_novo'])
+
+
+def write_contract(raw, value, source):
     path = raw/'manifest.json'
     if path.exists(): assert json.loads(path.read_text()) == value, 'Manifest mismatch'
     else: BASE.save(path, value)
-    source = sources['de_novo']
     for name in ('pairs.tsv', 'positions.txt'):
         target = raw/name
         if target.exists(): assert BASE.digest(target) == BASE.digest(source/name)
@@ -109,6 +181,7 @@ def contract(raw, workers, memory_gb):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--raw', type=Path, default=ROOT.parent/'sim/selected_survivor_extension_20261112')
+    p.add_argument('--previous-run', type=Path, help='Completed continuation phase whose unused seed ranges and retained cohorts are inherited.')
     p.add_argument('--workers', type=int, default=4)
     p.add_argument('--seconds', type=int, default=18000)
     p.add_argument('--memory-gb', type=float, default=26)
@@ -117,12 +190,12 @@ def main():
     args = p.parse_args()
     assert 1 <= args.workers <= 20 and 0 < args.seconds <= 18000 and 0 < args.memory_gb <= 200
     raw = args.raw.resolve(); raw.mkdir(parents=True, exist_ok=True)
-    spec = contract(raw, args.workers, args.memory_gb)
+    spec = contract(raw, args.workers, args.memory_gb, args.previous_run)
     signature = BASE.digest(raw/'manifest.json')
     states = {}
     for s in spec['strata']:
         states[s['key']] = dict(spec=s, next_ordinal=0, prefix=0, waiting={}, kept=list(s['reused']),
-            lost=0, fixed=0, active=0, completed=0, all_survivors=0, busy_slots=set(), successful_slots=set(),
+            lost=0, fixed=0, active=0, completed=0, all_survivors=0, busy_slots=set(), successful_slots=set(s.get('successful_slots', [])),
             attempts=list(s.get('slot_attempt_starts', [])), slot_cursor=0,
             proposal=s.get('proposal_start', 0))
     if args.prepare_only:
