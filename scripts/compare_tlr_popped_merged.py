@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["google-crc32c==1.8.0"]
+# dependencies = ["google-crc32c==1.8.0", "pysam==0.23.3", "matplotlib==3.10.8"]
 # ///
 """Read-only TLR comparison of original popped panel and completed full merge.
 
@@ -22,6 +22,12 @@ import run_chr1_sv_merge as pilot
 
 WINDOWS = {'plot_window':('chr4',38660000,38960000),
            'TLR_interval':('chr4',38780001,38890001)}
+
+
+def allele_class(row):
+    desc, _ = rep.describe(row['ref'], row['alt'])
+    return ('complex_replacement' if desc['complex'] else
+            'ambiguous_sequence' if desc['ambiguous'] else 'simple')
 
 
 def key(row):
@@ -76,12 +82,15 @@ def check_mapping(before, after, mappings):
     for number,row in enumerate(before):
         found = lookup.get(key(row))
         match = found.popleft() if found else None
+        if not row['simple'] and match is not None:
+            raise ValueError('A complex or ambiguous allele unexpectedly entered the simple-only merge map')
         if row['simple'] and row.get('biallelic',True) and match is None:
             raise ValueError('A simple source SV is missing from the completed old-to-new map')
         dest = target(match) if match else row
         token = ('mapped',match['representative_working_id']) if match else ('unchanged',number)
         expected[token] = dest
-        details.append(dict(old_id=row['id'],old_pos=row['pos'],type=row['kind'],old_length=row['net_bp'],
+        details.append(dict(old_id=row['id'],old_pos=row['pos'],type=row['kind'],
+            allele_class=allele_class(row),old_length=row['net_bp'],
             new_id=dest['id'],new_pos=dest['pos'],new_length=abs(len(dest['alt'])-len(dest['ref'])),
             status=match['status'] if match else 'unchanged_passthrough',
             cluster_members=match['members'] if match else 1))
@@ -129,6 +138,18 @@ def summarize(before, after):
                     bp.append(dict(scope=scope,type=kind,metric=metric,before=v0,after=v1,
                                    reduction=v0-v1,percent_reduction=100*(v0-v1)/v0 if v0 else 0))
     return counts,bp
+
+
+def summarize_classes(before, after):
+    """Keep replacements out of simple INS/DEL denominators."""
+    rows = []
+    for category in ('simple', 'complex_replacement', 'ambiguous_sequence'):
+        counts, _ = summarize(*[[r for r in items if allele_class(r)==category]
+                                for items in (before, after)])
+        for row in counts:
+            rows.append(dict(scope=row['scope'], allele_class=category, type=row['type'],
+                             **{k:row[k] for k in ('before','after','removed','percent_removed')}))
+    return rows
 
 
 def plot_crosswalk(folder, before, mappings, after):
@@ -179,6 +200,10 @@ def main():
     parser.add_argument('--plot-dir',type=Path,default=Path.home()/'ashg_revised/23_shortlist_followup/custom_loci/TLR_popped/internal_only')
     parser.add_argument('--out',type=Path)
     parser.add_argument('--bcftools',default='bcftools')
+    parser.add_argument('--plot-haplotypes',action='store_true',
+                        help='Read actual GTs and save a stacked TLR-only haplotype comparison')
+    parser.add_argument('--max-haplotypes',type=int,default=8)
+    parser.add_argument('--threads',type=int,default=4)
     opts = parser.parse_args()
     base = opts.batch_root.resolve()/'chr4'; final = base/'final'
     prepared = json.loads((base/'prepare/done.json').read_text())
@@ -209,6 +234,9 @@ def main():
     import fcntl
     with open(out/'.compare.lock','a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        (out/'summary.json').unlink(missing_ok=True)
+        if opts.plot_haplotypes:
+            (out/'haplotype_plot_summary.json').unlink(missing_ok=True)
         with ThreadPoolExecutor(max_workers=2) as pool:
             results = list(pool.map(lambda item:read_sites(args,*item),[(source,'popped'),(merged,'merged')]))
         before,after = results
@@ -222,8 +250,15 @@ def main():
                     mappings.append(item)
         details = check_mapping(before,after,mappings)
         counts,bp = summarize(before,after)
+        class_counts = summarize_classes(before,after)
         plot_rows,plot_summary = plot_crosswalk(opts.plot_dir,before,mappings,after)
-        for name,rows in [('counts.tsv',counts),('base_pairs.tsv',bp),('allele_changes.tsv',details),('plotted_allele_changes.tsv',plot_rows)]:
+        hap_summary = dict(status='not_requested')
+        if opts.plot_haplotypes:
+            from plot_tlr_before_after import build
+            hap_summary = build(source, merged, before, after, mappings, opts.plot_dir, out,
+                                WINDOWS['TLR_interval'], opts.max_haplotypes, opts.threads)
+        for name,rows in [('counts.tsv',counts),('counts_by_class.tsv',class_counts),
+                          ('base_pairs.tsv',bp),('allele_changes.tsv',details),('plotted_allele_changes.tsv',plot_rows)]:
             if rows:
                 pilot.tsv(out/name,rows,list(rows[0]))
             else:
@@ -231,12 +266,15 @@ def main():
         if [pilot.common.identity(Path(r['path'])) for r in snapshots]!=snapshots:
             raise ValueError('Input changed during comparison')
         pilot.common.json_write(out/'summary.json',dict(source=str(source),merged=str(merged),policy=policy,
-            windows_1based_inclusive=WINDOWS,counts=counts,plot=plot_summary,
+            windows_1based_inclusive=WINDOWS,counts=counts,counts_by_class=class_counts,
+            plot=plot_summary,haplotypes=hap_summary,
             selection='Literal INS/DEL with abs(len(ALT)-len(REF))>=50; REF-span overlap, including anchor',
             validation='Source stat provenance, mapping SHA256, indexed regional read and exact lineage-to-VCF reconciliation',
             snapshots=snapshots,bcftools=bcftools_version,script_sha256=pilot.common.digest(__file__),seed=pilot.SEED))
-        print((out/'counts.tsv').read_text(),end='')
+        print((out/'counts_by_class.tsv').read_text(),end='')
         print(json.dumps(plot_summary,indent=2))
+        if opts.plot_haplotypes:
+            print(json.dumps(hap_summary['aggregate'],indent=2))
         print(f'All individual allele details remain on the VM: {out}')
 
 

@@ -1,7 +1,8 @@
 # Compare the popped TLR locus against the completed full p70 merge
 
 This report reads the existing original popped BCF and completed chr4 final VCF.
-It does not stage data, run Truvari, modify either input, or regenerate figures.
+It does not stage data, run Truvari, or modify either input. The optional
+haplotype plot reads the actual before/after genotypes and saves figures locally.
 Only aggregate counts are printed. Individual allele and plot crosswalks remain
 on the VM. A separate code checkout/output lock keeps it independent of jobs.
 
@@ -32,13 +33,21 @@ if [[ ! -d "$REPO/.git" ]]; then
 fi
 git -C "$REPO" pull --ff-only origin AOU_run_opt
 export POPPED_FULL_ROOT="$HOME/popped_full_same_original_pos_p70"
-bash "$REPO/scripts/run_tlr_popped_comparison_workbench.sh"
+bash "$REPO/scripts/run_tlr_popped_comparison_workbench.sh" \
+    --plot-haplotypes --max-haplotypes 8 --threads 4
 ```
 
 Files under `$POPPED_FULL_ROOT/tlr_before_after/`:
 
 - `counts.tsv`: before/after, removed count, percentage, simple allele counts
   and distinct exact allele counts, separately for INS/DEL/TOTAL and each window.
+- `counts_by_class.tsv`: separate simple INS/DEL, complex replacements and
+  ambiguous-sequence alleles, with their own before/after denominators. These
+  are the counts printed in the notebook. Complex means both REF and ALT retain
+  sequence after removing their common prefix and suffix; it takes precedence
+  over the ambiguous category if both apply. The report verifies that no complex
+  or ambiguous allele entered the simple-only merge mapping. The original merge
+  already excluded them; this change separates their reporting.
 - `base_pairs.tsv`: total net allele bp and unique deleted reference bp for
   simple deletions. The deletion union excludes shared flanks/anchor, counts
   overlapping deleted bases once and is clipped to the selected window. The
@@ -48,8 +57,57 @@ Files under `$POPPED_FULL_ROOT/tlr_before_after/`:
 - `plotted_allele_changes.tsv`: matches the figure's `SV1`, etc. and marker colors
   to original and final allele identities, with cluster size and status.
 - `summary.json`: input provenance, exact window definitions, policy and aggregate
-  plot crosswalk results. This crosswalk describes identities; it does not infer
-  post-merge phased GT carrier assignments or regenerate genotype-based markers.
+  crosswalk and optional haplotype-plot results.
+
+With `--plot-haplotypes`, these additional files are saved in the same folder:
+
+- `tlr_haplotypes_before_after.png` and `.pdf`: unmerged on top, merged on bottom,
+  same haplotypes and order, restricted to **chr4:38,780,001–38,890,001**. The PDF
+  uses editable text and vector marks. No notebook display is invoked.
+- `selected_haplotypes.tsv`: figure labels, actual sample IDs, phase slots and
+  documented introgression status. Sample labels such as S01 refer to the same
+  individual in both panels; h1/h2 are its two VCF GT slots.
+- `haplotype_genotypes.tsv.gz`: actual GT, PS, allele identity, class and plotted
+  state for each selected haplotype and before/after allele.
+- `haplotype_placement_audit.tsv`: compares the union of source cluster ALT
+  placements with actual merged ALT placement, per cluster and haplotype.
+- `haplotype_plot_summary.json`: selection parameters, phase assumptions, input
+  fingerprint/SHA256, aggregate placement changes, software versions and output
+  checksums. It is written only after successful plotting.
+
+The candidate pool is the samples in the existing plot's
+`popped_selected_lanes.tsv.gz`, not the entire cohort. Called tracts in that table
+supply the shading. Selection first favors introgressed haplotypes carrying
+merged-cluster members, then other merged-cluster carriers, then context lanes;
+within these groups it favors distinct original alleles. Ties are deterministic.
+If a sample's ALT placement changes, its partner phase slot is included within
+the requested lane limit so a phase-slot move is visible. If no merged cluster
+is carried by these saved samples, the aggregate output reports zero clusters
+shown; the workflow does not invent examples or resample the whole cohort.
+
+Cluster labels such as `C1:54` mean cluster C1, 54 bp; the representative keeps
+the same cluster label after merging. Simple INS/DEL and complex replacements
+use different marker shapes. Only merged-cluster alleles receive text labels;
+other regional SVs remain visible as markers. Both panels show the actual VCF
+genotypes, **not** source carriers copied onto the representative. Unphased
+heterozygotes, missing phase slots and non-diploid calls get an unknown marker;
+homozygotes have phase-independent placement. Known ALT in a partial phased GT
+is retained on its known slot. A blank tract background does not establish
+absence of introgression because the saved lane table is a selected subset.
+
+The introgression decoder and original VCF are assumed to use the same hap1/hap2
+orientation, as in the original popped plot. This does not rephase the merged
+VCF or prove consistency across phase sets. Differences in ALT presence or
+phase-slot placement are shown and counted, not silently repaired.
+PS values are saved to support follow-up checks.
+
+Set `TLR_PLOT_DIR` if the existing private popped plot tables are elsewhere.
+The haplotype option requires the selected-lanes table; the older identity-only
+comparison can still run without it. Rerunning this small regional report
+rebuilds its outputs, repairing corrupt figures, without restaging data or
+rerunning any merge. Scope remains literal alleles with absolute net length
+at least 50 bp; equal-length replacements and replacements with smaller net
+length are outside this report even if their changed spans are long.
 
 Source paths come from the completed batch manifest. Before reporting, the tool
 checks source/index stat provenance, the lineage file SHA256, successful indexed
