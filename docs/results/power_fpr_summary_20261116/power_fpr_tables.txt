@@ -1,0 +1,97 @@
+SELECTION DETECTION AND FPR SUMMARY
+
+Current EAS three-window series, including the November 12 continuation; older pilot grids are excluded.
+Selected and reference cohorts require 0 < original focal allele population AF < 1 at present.
+Detection: >=1 strict pointwise p<alpha at the 500-kb focal site, over 1-50 kya cutoffs or 1-2,...,49-50 kya intervals.
+These are conditional any-time detection rates, not scan-wide calibrated power or selection-window localization accuracy.
+Rank p=(1 + number of reference values >= selected/test value)/101. 1,000 fixed pairwise comparisons per simulation.
+FPR: 100 independent introgression neutrals against the frozen 100-reference bank; no independent de novo FPR cohort.
+Regional FPR searches 100 positions (0-990 kb, 10-kb stride) and all times in each 1-Mb neutral simulation.
+No new independent FPR experiment, multiple-testing adjustment, interval-overlap TPR, or F1 calculation is supplied here.
+NA means no retained survivors; small n=2 and n=5 cohorts cannot support stable power estimates.
+0/100 observed false positives has a 95% Wilson upper bound of about 3.7%, conditional on this reference bank.
+
+TRUE TMRCA
+Each entry is detections / retained simulations.
+Model | Selection window | s | Cumulative p<.05 | Interval p<.05 | Cumulative p<.01 | Interval p<.01
+de_novo | 10 kya-present | 0.005 | 41/100 | 86/100 | 21/100 | 26/100
+introgression | 10 kya-present | 0.005 | 49/100 | 89/100 | 25/100 | 40/100
+de_novo | 10 kya-present | 0.01 | 39/100 | 89/100 | 15/100 | 29/100
+introgression | 10 kya-present | 0.01 | 81/100 | 97/100 | 62/100 | 71/100
+de_novo | 10 kya-present | 0.05 | 99/100 | 100/100 | 99/100 | 99/100
+introgression | 10 kya-present | 0.05 | 100/100 | 100/100 | 100/100 | 100/100
+introgression | 10 kya-present | 0.1 | 5/5 | 5/5 | 5/5 | 5/5
+de_novo | 50 kya-present | 0.005 | 95/100 | 99/100 | 90/100 | 96/100
+introgression | 50 kya-present | 0.005 | 92/100 | 100/100 | 81/100 | 88/100
+de_novo | 50 kya-present | 0.01 | 100/100 | 100/100 | 100/100 | 100/100
+introgression | 50 kya-present | 0.01 | 99/100 | 100/100 | 99/100 | 99/100
+de_novo | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+de_novo | 50-30 kya | 0.005 | 34/100 | 96/100 | 9/100 | 32/100
+introgression | 50-30 kya | 0.005 | 43/100 | 94/100 | 17/100 | 34/100
+de_novo | 50-30 kya | 0.01 | 65/100 | 93/100 | 47/100 | 66/100
+introgression | 50-30 kya | 0.01 | 52/100 | 96/100 | 25/100 | 49/100
+de_novo | 50-30 kya | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50-30 kya | 0.05 | 2/2 | 2/2 | 1/2 | 2/2
+introgression | 50-30 kya | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+
+POSTERIOR MEDIAN
+Each entry is detections / retained simulations.
+Model | Selection window | s | Cumulative p<.05 | Interval p<.05 | Cumulative p<.01 | Interval p<.01
+de_novo | 10 kya-present | 0.005 | 24/100 | 63/100 | 8/100 | 19/100
+introgression | 10 kya-present | 0.005 | 29/100 | 67/100 | 5/100 | 21/100
+de_novo | 10 kya-present | 0.01 | 32/100 | 68/100 | 10/100 | 30/100
+introgression | 10 kya-present | 0.01 | 56/100 | 79/100 | 21/100 | 35/100
+de_novo | 10 kya-present | 0.05 | 99/100 | 99/100 | 99/100 | 99/100
+introgression | 10 kya-present | 0.05 | 100/100 | 100/100 | 100/100 | 100/100
+introgression | 10 kya-present | 0.1 | 5/5 | 5/5 | 5/5 | 5/5
+de_novo | 50 kya-present | 0.005 | 85/100 | 98/100 | 68/100 | 85/100
+introgression | 50 kya-present | 0.005 | 78/100 | 92/100 | 35/100 | 65/100
+de_novo | 50 kya-present | 0.01 | 99/100 | 100/100 | 99/100 | 99/100
+introgression | 50 kya-present | 0.01 | 98/100 | 100/100 | 79/100 | 94/100
+de_novo | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+de_novo | 50-30 kya | 0.005 | 17/100 | 55/100 | 9/100 | 24/100
+introgression | 50-30 kya | 0.005 | 24/100 | 60/100 | 3/100 | 15/100
+de_novo | 50-30 kya | 0.01 | 45/100 | 79/100 | 25/100 | 47/100
+introgression | 50-30 kya | 0.01 | 31/100 | 68/100 | 9/100 | 31/100
+de_novo | 50-30 kya | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50-30 kya | 0.05 | 1/2 | 2/2 | 1/2 | 1/2
+introgression | 50-30 kya | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+
+POSTERIOR-WEIGHTED MASS
+Each entry is detections / retained simulations.
+Model | Selection window | s | Cumulative p<.05 | Interval p<.05 | Cumulative p<.01 | Interval p<.01
+de_novo | 10 kya-present | 0.005 | 10/100 | 12/100 | 5/100 | 6/100
+introgression | 10 kya-present | 0.005 | 6/100 | 7/100 | 0/100 | 1/100
+de_novo | 10 kya-present | 0.01 | 16/100 | 21/100 | 4/100 | 5/100
+introgression | 10 kya-present | 0.01 | 22/100 | 23/100 | 5/100 | 4/100
+de_novo | 10 kya-present | 0.05 | 98/100 | 98/100 | 98/100 | 98/100
+introgression | 10 kya-present | 0.05 | 100/100 | 100/100 | 98/100 | 99/100
+introgression | 10 kya-present | 0.1 | 5/5 | 5/5 | 5/5 | 5/5
+de_novo | 50 kya-present | 0.005 | 73/100 | 78/100 | 67/100 | 67/100
+introgression | 50 kya-present | 0.005 | 60/100 | 64/100 | 31/100 | 34/100
+de_novo | 50 kya-present | 0.01 | 99/100 | 100/100 | 98/100 | 98/100
+introgression | 50 kya-present | 0.01 | 96/100 | 96/100 | 79/100 | 84/100
+de_novo | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+de_novo | 50-30 kya | 0.005 | 8/100 | 9/100 | 7/100 | 6/100
+introgression | 50-30 kya | 0.005 | 4/100 | 4/100 | 0/100 | 2/100
+de_novo | 50-30 kya | 0.01 | 30/100 | 31/100 | 24/100 | 24/100
+introgression | 50-30 kya | 0.01 | 17/100 | 18/100 | 6/100 | 6/100
+de_novo | 50-30 kya | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50-30 kya | 0.05 | 1/2 | 1/2 | 1/2 | 1/2
+introgression | 50-30 kya | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+
+INDEPENDENT INTROGRESSION NULL FPR
+Each count is out of 100 test neutrals (also the percentage).
+Method | Statistic | Focal any-time p<.05 | Focal any-time p<.01 | Region any-position/time p<.05 | Region any-position/time p<.01
+True TMRCA | cumulative | 24/100 | 7/100 | 100/100 | 88/100
+True TMRCA | interval | 86/100 | 22/100 | 100/100 | 100/100
+Posterior median | cumulative | 16/100 | 0/100 | 94/100 | 58/100
+Posterior median | interval | 60/100 | 14/100 | 100/100 | 100/100
+Posterior-weighted mass | cumulative | 3/100 | 0/100 | 84/100 | 35/100
+Posterior-weighted mass | interval | 7/100 | 0/100 | 91/100 | 63/100
