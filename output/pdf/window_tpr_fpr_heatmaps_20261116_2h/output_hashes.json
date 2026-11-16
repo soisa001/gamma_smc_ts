@@ -1,0 +1,13 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "all_statistics_heatmaps.pdf": "bb17f2e3e3d3352761918c4dcfcd18b7c0a992a2554759b77d86000bbd77e3df",
+  "manifest.json": "8ad99dd130e29494db5ed0e8be716505c4dbe5998e4950c10d740c59009e7c01",
+  "posterior_mass_heatmaps.pdf": "a88502b2288c8cdcdff4e94e462a0ac1d79b52853a62c52fb74ec531e3f39fbc",
+  "posterior_mass_p001.png": "289335dea2326d8b1babd2e729635e6e427c8826b40e90ba4234050196103fb4",
+  "posterior_mass_p005.png": "0ec86aa71bb82521797507a57cf53bf52c534e7042f9e6a21621103cef555891",
+  "posterior_median_p001.png": "de282e07696011f584247d55a86260987ab06bad0564291beae54372a4fc8760",
+  "posterior_median_p005.png": "acb3b6f246e8ca75bd241d31ed2a414d93e90c45f6f48c82190380cd68584e39",
+  "true_tmrca_p001.png": "335ae9ecfd7209797dd390084304bf228c2b93d0076b3f2d1f19645730d9cedd",
+  "true_tmrca_p005.png": "dd25c90e95d0939e9231e9ebc0e5487c19202a301b354750e578aac710df980f",
+  "visual_validation.json": "297ef87690db5d76a25c102197baedaab316e89019f2269877dd66449c09156c"
+}

@@ -1,0 +1,10 @@
+{
+  "validated": true,
+  "new_proposals": 85192,
+  "new_survivors": 6,
+  "simulation_elapsed_seconds": 7031.522362947464,
+  "all_proposals_audited": true,
+  "unchanged_completed_cohorts": 14,
+  "unchanged_independent_neutral_fpr_rows": 36,
+  "checks": "No pending proposals, all trajectories audited, unchanged completed cohort results and neutral FPR."
+}

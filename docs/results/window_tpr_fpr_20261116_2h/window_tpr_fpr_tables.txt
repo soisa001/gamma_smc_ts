@@ -1,0 +1,99 @@
+WINDOW-MATCHED TPR AND FPR
+
+TPR: fraction of selected simulations with >=1 call overlapping the true selection window.
+FPR: fraction of independent neutral simulations with >=1 call in that SAME window against the fixed null bank.
+Both endpoints use only the focal site (500 kb), strict pointwise p<alpha, and existing survivor-conditioned EAS simulations.
+Cumulative tests count called cutoff coordinates inside the closed window; a significant cutoff t is not treated as calling all ages below t.
+Interval tests require positive-duration overlap of the 1-kya bin with the window; boundary contact alone is excluded.
+Existing grid: cumulative cutoffs 1,...,50 kya; interval bins 1-2,...,49-50 kya. There is no 0-1 kya interval bin.
+FPR is available only for introgression (100 held-out neutrals vs 100 reference neutrals); de novo FPR remains unavailable.
+The same neutral cohort is evaluated in each window, so FPR does not depend on s. No new simulations or threshold changes.
+Calls outside the window do not contribute to either endpoint. Empty selected cohorts are NA, not zero TPR.
+Cumulative cutoff overlap is an operational detection definition; cumulative significance does not identify a coalescence interval.
+
+TRUE TMRCA
+TPR counts: model | window | s | cumulative p<.05 | interval p<.05 | cumulative p<.01 | interval p<.01
+de_novo | 10 kya-present | 0.005 | 11/100 | 19/100 | 3/100 | 5/100
+introgression | 10 kya-present | 0.005 | 16/100 | 25/100 | 8/100 | 4/100
+de_novo | 10 kya-present | 0.01 | 12/100 | 19/100 | 3/100 | 8/100
+introgression | 10 kya-present | 0.01 | 30/100 | 49/100 | 15/100 | 16/100
+de_novo | 10 kya-present | 0.05 | 99/100 | 100/100 | 99/100 | 99/100
+introgression | 10 kya-present | 0.05 | 90/100 | 97/100 | 79/100 | 88/100
+introgression | 10 kya-present | 0.1 | 10/10 | 10/10 | 10/10 | 10/10
+de_novo | 50 kya-present | 0.005 | 95/100 | 99/100 | 90/100 | 96/100
+introgression | 50 kya-present | 0.005 | 92/100 | 100/100 | 81/100 | 88/100
+de_novo | 50 kya-present | 0.01 | 100/100 | 100/100 | 100/100 | 100/100
+introgression | 50 kya-present | 0.01 | 99/100 | 100/100 | 99/100 | 99/100
+de_novo | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+de_novo | 50-30 kya | 0.005 | 18/100 | 75/100 | 6/100 | 19/100
+introgression | 50-30 kya | 0.005 | 15/100 | 77/100 | 2/100 | 21/100
+de_novo | 50-30 kya | 0.01 | 53/100 | 87/100 | 40/100 | 51/100
+introgression | 50-30 kya | 0.01 | 39/100 | 87/100 | 20/100 | 42/100
+de_novo | 50-30 kya | 0.05 | 1/1 | 1/1 | 1/1 | 1/1
+introgression | 50-30 kya | 0.05 | 2/2 | 2/2 | 1/2 | 2/2
+introgression | 50-30 kya | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+
+Introgression FPR counts: window | cumulative p<.05 | interval p<.05 | cumulative p<.01 | interval p<.01
+10 kya-present | 15/100 | 22/100 | 6/100 | 1/100
+50 kya-present | 24/100 | 86/100 | 7/100 | 22/100
+50-30 kya | 4/100 | 62/100 | 0/100 | 12/100
+
+POSTERIOR MEDIAN
+TPR counts: model | window | s | cumulative p<.05 | interval p<.05 | cumulative p<.01 | interval p<.01
+de_novo | 10 kya-present | 0.005 | 15/100 | 28/100 | 2/100 | 3/100
+introgression | 10 kya-present | 0.005 | 26/100 | 32/100 | 4/100 | 2/100
+de_novo | 10 kya-present | 0.01 | 21/100 | 34/100 | 5/100 | 8/100
+introgression | 10 kya-present | 0.01 | 56/100 | 60/100 | 17/100 | 19/100
+de_novo | 10 kya-present | 0.05 | 99/100 | 99/100 | 99/100 | 99/100
+introgression | 10 kya-present | 0.05 | 100/100 | 100/100 | 99/100 | 99/100
+introgression | 10 kya-present | 0.1 | 10/10 | 10/10 | 10/10 | 10/10
+de_novo | 50 kya-present | 0.005 | 85/100 | 98/100 | 68/100 | 85/100
+introgression | 50 kya-present | 0.005 | 78/100 | 92/100 | 35/100 | 65/100
+de_novo | 50 kya-present | 0.01 | 99/100 | 100/100 | 99/100 | 99/100
+introgression | 50 kya-present | 0.01 | 98/100 | 100/100 | 79/100 | 94/100
+de_novo | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+de_novo | 50-30 kya | 0.005 | 9/100 | 32/100 | 7/100 | 12/100
+introgression | 50-30 kya | 0.005 | 6/100 | 39/100 | 0/100 | 15/100
+de_novo | 50-30 kya | 0.01 | 33/100 | 56/100 | 22/100 | 19/100
+introgression | 50-30 kya | 0.01 | 20/100 | 50/100 | 4/100 | 26/100
+de_novo | 50-30 kya | 0.05 | 1/1 | 0/1 | 1/1 | 0/1
+introgression | 50-30 kya | 0.05 | 1/2 | 2/2 | 1/2 | 1/2
+introgression | 50-30 kya | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+
+Introgression FPR counts: window | cumulative p<.05 | interval p<.05 | cumulative p<.01 | interval p<.01
+10 kya-present | 13/100 | 14/100 | 0/100 | 0/100
+50 kya-present | 16/100 | 60/100 | 0/100 | 14/100
+50-30 kya | 5/100 | 46/100 | 0/100 | 13/100
+
+POSTERIOR-WEIGHTED MASS
+TPR counts: model | window | s | cumulative p<.05 | interval p<.05 | cumulative p<.01 | interval p<.01
+de_novo | 10 kya-present | 0.005 | 7/100 | 8/100 | 4/100 | 6/100
+introgression | 10 kya-present | 0.005 | 6/100 | 5/100 | 0/100 | 0/100
+de_novo | 10 kya-present | 0.01 | 10/100 | 14/100 | 4/100 | 3/100
+introgression | 10 kya-present | 0.01 | 22/100 | 22/100 | 5/100 | 4/100
+de_novo | 10 kya-present | 0.05 | 98/100 | 98/100 | 98/100 | 98/100
+introgression | 10 kya-present | 0.05 | 100/100 | 100/100 | 98/100 | 98/100
+introgression | 10 kya-present | 0.1 | 10/10 | 10/10 | 10/10 | 10/10
+de_novo | 50 kya-present | 0.005 | 73/100 | 78/100 | 67/100 | 67/100
+introgression | 50 kya-present | 0.005 | 60/100 | 64/100 | 31/100 | 34/100
+de_novo | 50 kya-present | 0.01 | 99/100 | 100/100 | 98/100 | 98/100
+introgression | 50 kya-present | 0.01 | 96/100 | 96/100 | 79/100 | 84/100
+de_novo | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.05 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+introgression | 50 kya-present | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+de_novo | 50-30 kya | 0.005 | 7/100 | 6/100 | 7/100 | 5/100
+introgression | 50-30 kya | 0.005 | 3/100 | 3/100 | 0/100 | 2/100
+de_novo | 50-30 kya | 0.01 | 28/100 | 21/100 | 24/100 | 14/100
+introgression | 50-30 kya | 0.01 | 14/100 | 13/100 | 5/100 | 5/100
+de_novo | 50-30 kya | 0.05 | 1/1 | 1/1 | 1/1 | 1/1
+introgression | 50-30 kya | 0.05 | 1/2 | 1/2 | 1/2 | 1/2
+introgression | 50-30 kya | 0.1 | NA (n=0) | NA (n=0) | NA (n=0) | NA (n=0)
+
+Introgression FPR counts: window | cumulative p<.05 | interval p<.05 | cumulative p<.01 | interval p<.01
+10 kya-present | 2/100 | 2/100 | 0/100 | 0/100
+50 kya-present | 3/100 | 7/100 | 0/100 | 0/100
+50-30 kya | 2/100 | 6/100 | 0/100 | 0/100

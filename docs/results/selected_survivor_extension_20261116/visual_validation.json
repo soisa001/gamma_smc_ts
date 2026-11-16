@@ -1,0 +1,18 @@
+{
+  "pdf_sha256": {
+    "allele_frequency.pdf": "6e8edf965aaf61b2c45cbabd9abc5718cd83c298f9f38d2003493594ac97743a",
+    "coalescence_and_calls_p005.pdf": "be726a638c3f348813bf9ccab9a662af32d5a80f5e82ac2f4b5882d3323f3bc8",
+    "coalescence_and_calls_p001.pdf": "38f5ecdee922566beb558ff1397dc212ef943f556c7266c548e645f1540c5af8"
+  },
+  "distinct_pages_reviewed": 21,
+  "visual_review": "Aggregate PDF pages rendered with Poppler and visually inspected; readable labels, unobstructed legends, consistent sample sizes and missing-cohort labels.",
+  "render_size": [
+    1100,
+    850
+  ],
+  "output_size_inches": [
+    11,
+    8.5
+  ],
+  "inline_display_requested": false
+}

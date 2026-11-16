@@ -1,0 +1,103 @@
+{
+  "validated": true,
+  "final": true,
+  "sample_per_stratum": 0,
+  "workers": 20,
+  "manifest_sha256": "53792e62b963a1aef501098ffbf311e5ff5cad138d0c4cf77de05270e7b52c2e",
+  "audit_source_sha256": "62fe6535680520a81c79c6eebd3732503ddb00661aab871531aa1581046c4419",
+  "strata": {
+    "de_novo__50k_s0.05": {
+      "submitted": 26236,
+      "checked": 26236,
+      "completed": 26236,
+      "lost": 24932,
+      "fixed": 1304,
+      "accepted": 0,
+      "prefix": 26236,
+      "prefix_lost": 24932,
+      "prefix_fixed": 1304,
+      "prefix_accepted": []
+    },
+    "de_novo__50_30k_s0.05": {
+      "submitted": 25592,
+      "checked": 25592,
+      "completed": 25592,
+      "lost": 24312,
+      "fixed": 1279,
+      "accepted": 1,
+      "prefix": 25592,
+      "prefix_lost": 24312,
+      "prefix_fixed": 1279,
+      "prefix_accepted": [
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261116/de_novo/50_30k_s0.05/slot_093/attempt_00451"
+      ]
+    },
+    "introgression__10k_s0.1": {
+      "submitted": 4729,
+      "checked": 4729,
+      "completed": 4729,
+      "lost": 4294,
+      "fixed": 430,
+      "accepted": 5,
+      "prefix": 4729,
+      "prefix_lost": 4294,
+      "prefix_fixed": 430,
+      "prefix_accepted": [
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261116/10k/introgression/s0.1/selected_14387",
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261116/10k/introgression/s0.1/selected_14654",
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261116/10k/introgression/s0.1/selected_17070",
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261116/10k/introgression/s0.1/selected_18046",
+        "/mnt/d/phase2simselection/sim/selected_survivor_extension_20261116/10k/introgression/s0.1/selected_18232"
+      ]
+    },
+    "introgression__50k_s0.05": {
+      "submitted": 6379,
+      "checked": 6379,
+      "completed": 6379,
+      "lost": 160,
+      "fixed": 6219,
+      "accepted": 0,
+      "prefix": 6379,
+      "prefix_lost": 160,
+      "prefix_fixed": 6219,
+      "prefix_accepted": []
+    },
+    "introgression__50k_s0.1": {
+      "submitted": 7921,
+      "checked": 7921,
+      "completed": 7921,
+      "lost": 8,
+      "fixed": 7913,
+      "accepted": 0,
+      "prefix": 7921,
+      "prefix_lost": 8,
+      "prefix_fixed": 7913,
+      "prefix_accepted": []
+    },
+    "introgression__50_30k_s0.05": {
+      "submitted": 6395,
+      "checked": 6395,
+      "completed": 6395,
+      "lost": 177,
+      "fixed": 6218,
+      "accepted": 0,
+      "prefix": 6395,
+      "prefix_lost": 177,
+      "prefix_fixed": 6218,
+      "prefix_accepted": []
+    },
+    "introgression__50_30k_s0.1": {
+      "submitted": 7940,
+      "checked": 7940,
+      "completed": 7940,
+      "lost": 10,
+      "fixed": 7930,
+      "accepted": 0,
+      "prefix": 7940,
+      "prefix_lost": 10,
+      "prefix_fixed": 7930,
+      "prefix_accepted": []
+    }
+  },
+  "checks": "Unique proposal identities; unused continuation seeds; unchanged configurations; source-founder hashes; trajectory copy counts; strict population segregation; all retained output hashes; completed-prefix accounting."
+}

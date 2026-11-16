@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--source', type=Path, default=ROOT/'docs/results/window_tpr_fpr_20261116')
     parser.add_argument('--out', type=Path, default=ROOT/'output/pdf/window_tpr_fpr_heatmaps_20261116')
     args = parser.parse_args()
+    args.source = args.source.resolve()
+    args.out = args.out.resolve()
     signature = sha(args.source/'summary.json')
     inventory = json.loads((args.source/'output_hashes.json').read_text())
     assert signature == inventory['summary.json']
