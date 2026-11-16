@@ -23,6 +23,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, default=RESULTS / 'power_fpr_summary_20261116')
+    parser.add_argument('--extension', default='selected_survivor_extension_20261112', help='Continuation report directory within docs/results.')
     args = parser.parse_args()
     provenance = {}
 
@@ -36,7 +37,7 @@ def main():
         return json.loads(path.read_text())
 
     base = 'denovo_comparison_20261111'
-    extension = 'selected_survivor_extension_20261112'
+    extension = args.extension
     cohort_rows = {}
     for row in read(base, 'summary.json')['results']:
         key = (row['origin'], row['regime'], row['selection'], row['method'], row['statistic'], row['alpha'])
@@ -63,7 +64,8 @@ def main():
             assert r['neutral_n'] == 100
             assert (count is None and r['any_time_fraction'] is None) if n == 0 else (
                 0 <= count <= n and abs(r['any_time_fraction'] - count / n) < 1e-12)
-    assert sorted(ns) == [0] * 5 + [2, 5] + [100] * 14
+    assert all(0 <= n <= 100 for n in ns)
+    assert all(c['n'] >= c['reused_n'] for c in ext_meta.values())
     fpr = read('segregating_neutral_fpr_100_20261110', 'summary.json')
     assert fpr['n_test'] == fpr['n_reference'] == 100
     focal = {(r['method'], r['statistic'], r['threshold']): r for r in fpr['results']}
@@ -75,7 +77,7 @@ def main():
         assert regional[key]['false_positive_count'] >= r['any_time_false_positive_count']
 
     notes = [
-        'Current EAS three-window series, including the November 12 continuation; older pilot grids are excluded.',
+        f'Current EAS three-window series, including continuation {extension}; older pilot grids are excluded.',
         'Selected and reference cohorts require 0 < original focal allele population AF < 1 at present.',
         'Detection: >=1 strict pointwise p<alpha at the 500-kb focal site, over 1-50 kya cutoffs or 1-2,...,49-50 kya intervals.',
         'These are conditional any-time detection rates, not scan-wide calibrated power or selection-window localization accuracy.',
@@ -83,7 +85,7 @@ def main():
         'FPR: 100 independent introgression neutrals against the frozen 100-reference bank; no independent de novo FPR cohort.',
         'Regional FPR searches 100 positions (0-990 kb, 10-kb stride) and all times in each 1-Mb neutral simulation.',
         'No new independent FPR experiment, multiple-testing adjustment, interval-overlap TPR, or F1 calculation is supplied here.',
-        'NA means no retained survivors; small n=2 and n=5 cohorts cannot support stable power estimates.',
+        'NA means no retained survivors; very small survivor cohorts cannot support stable power estimates.',
         '0/100 observed false positives has a 95% Wilson upper bound of about 3.7%, conditional on this reference bank.'
     ]
     lines = ['SELECTION DETECTION AND FPR SUMMARY', '', *notes, '']
@@ -111,7 +113,8 @@ def main():
     compact_rows = [{k: v for k, v in r.items() if k != 'fraction_by_time'} for r in rows]
     payload = dict(notes=notes, power=compact_rows, fpr=fpr, source_sha256=provenance,
                    script_sha256=digest(Path(__file__)), validation=dict(cohorts=21, power_rows=252,
-                   full_cohorts=14, small_cohorts=2, empty_cohorts=5, summary_hashes_and_counts_verified=True))
+                   full_cohorts=sum(n==100 for n in ns), small_cohorts=sum(0<n<100 for n in ns),
+                   empty_cohorts=sum(n==0 for n in ns), summary_hashes_and_counts_verified=True))
     (args.out / 'summary.json').write_text(json.dumps(payload, indent=2) + '\n')
     (args.out / 'output_hashes.json').write_text(json.dumps({p.name: digest(p) for p in sorted(args.out.iterdir())
         if p.is_file() and p.name != 'output_hashes.json'}, indent=2) + '\n')

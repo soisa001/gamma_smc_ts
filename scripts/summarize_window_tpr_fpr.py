@@ -59,6 +59,8 @@ def boundary_checks():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, default=RESULTS / 'window_tpr_fpr_20261116')
+    parser.add_argument('--extension', default='selected_survivor_extension_20261112', help='Continuation report directory within docs/results.')
+    parser.add_argument('--previous-summary', default='power_fpr_summary_20261116', help='Matching any-time summary directory within docs/results.')
     parser.add_argument('--workers', type=int, default=4)
     args = parser.parse_args()
     assert 1 <= args.workers <= 20
@@ -74,9 +76,9 @@ def main():
         if path.suffix == '.json': return json.loads(path.read_text())
         with np.load(path, allow_pickle=False) as f: return {k: f[k].copy() for k in f.files}
 
-    base, extension, neutral_folder = 'denovo_comparison_20261111', 'selected_survivor_extension_20261112', 'segregating_neutral_fpr_100_20261110'
+    base, extension, neutral_folder = 'denovo_comparison_20261111', args.extension, 'segregating_neutral_fpr_100_20261110'
     meta = load(base, 'manifest.json'); ext = load(extension, 'manifest.json')
-    old = load('power_fpr_summary_20261116', 'summary.json')
+    old = load(args.previous_summary, 'summary.json')
     previous = {(r['origin'], r['regime'], r['selection'], r['method'], r['statistic'], r['alpha']): r for r in old['power']}
     cases = {}
     for c in meta['cases']:
