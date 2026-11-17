@@ -87,7 +87,8 @@ class AuditTests(unittest.TestCase):
             rows=[('4_92311',652,'1|0:100','0|0:100'),('4_92312',574,'0|0:100','1|0:100'),
                   ('c520',520,'0|0:100','0|1:100')]
             raw.write_text(header+''.join('\t'.join(['chr4','38754377',name,'A','A'+'T'*length,
-                '.','PASS','.','GT:PS',a,b])+'\n' for name,length,a,b in rows))
+                '.','PASS','.','GT:PS',a,b])+'\n' for name,length,a,b in rows)
+                +'chr4\t38754380\tsnv\tA\tG\t.\tPASS\t.\tGT:PS\t1|0:100\t0|1:100\n')
             subprocess.run([bcftools,'view','-Ob','-o',str(source),str(raw)],check=True,capture_output=True)
             subprocess.run([bcftools,'index',str(source)],check=True,capture_output=True)
             batch=root/'batch'
@@ -128,6 +129,26 @@ class AuditTests(unittest.TestCase):
             self.assertEqual(checked['gt_phase_ps_mismatches'],0)
             self.assertEqual(checked['focused_h1'],'restored')
             self.assertFalse((isolated/'intrasample.gt_union.vcf.gz').exists())
+            repaired_root=root/'repaired'
+            command=[sys.executable,str(root_code/'scripts/repair_popped_cluster_gts.py'),
+                     '--batch-root',str(batch),'--out',str(repaired_root),'--chromosomes','chr4','--jobs','1']
+            run=subprocess.run(command,capture_output=True,text=True)
+            self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+            target=repaired_root/'chr4/chr4.popped.samepos.p70.gt_union.vcf.gz'
+            with pysam.VariantFile(str(target)) as vcf, pysam.VariantFile(str(isolated/'existing_clusters.gt_union.vcf.gz')) as trial:
+                fixed={r.id:r for r in vcf.fetch('chr4')}
+                for r in trial:
+                    for sample in r.samples:
+                        self.assertEqual(snapshot(fixed[r.id].samples[sample]),snapshot(r.samples[sample]))
+                    if r.id=='4_92311':
+                        self.assertEqual(fixed[r.id].info['AC'],r.info['AC'])
+                with pysam.VariantFile(str(final)) as old:
+                    for r in old:
+                        if r.id!='4_92311':
+                            self.assertEqual(str(fixed[r.id]),str(r))
+            modified=target.stat().st_mtime_ns
+            subprocess.run(command,check=True,capture_output=True)
+            self.assertEqual(target.stat().st_mtime_ns,modified)
 
 
 if __name__=='__main__':
