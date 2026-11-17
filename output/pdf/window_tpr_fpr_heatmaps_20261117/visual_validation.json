@@ -1,0 +1,17 @@
+{
+  "pdf_sha256": {
+    "all_statistics_heatmaps.pdf": "dffb152015b32931348a7161b587d49bd9871978740620b54ca40b5185ffa086",
+    "posterior_mass_heatmaps.pdf": "22a259ddf7bb202990ff191ba862a16adc9b066c327b15de994416d631411e52"
+  },
+  "distinct_pages_reviewed": 6,
+  "visual_review": "Aggregate PDF pages rendered with Poppler and visually inspected; readable labels, unobstructed legends, consistent sample sizes and missing-cohort labels.",
+  "render_size": [
+    1100,
+    850
+  ],
+  "output_size_inches": [
+    11,
+    8.5
+  ],
+  "inline_display_requested": false
+}
