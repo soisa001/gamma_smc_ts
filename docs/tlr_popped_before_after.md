@@ -34,7 +34,7 @@ fi
 git -C "$REPO" pull --ff-only origin AOU_run_opt
 export POPPED_FULL_ROOT="$HOME/popped_full_same_original_pos_p70"
 bash "$REPO/scripts/run_tlr_popped_comparison_workbench.sh" \
-    --plot-haplotypes --max-haplotypes 8 --threads 4
+    --plot-haplotypes --haplotype-window plot_window --max-haplotypes 8 --threads 4
 ```
 
 Files under `$POPPED_FULL_ROOT/tlr_before_after/`:
@@ -62,7 +62,8 @@ Files under `$POPPED_FULL_ROOT/tlr_before_after/`:
 With `--plot-haplotypes`, these additional files are saved in the same folder:
 
 - `tlr_haplotypes_before_after.png` and `.pdf`: unmerged on top, merged on bottom,
-  same haplotypes and order, restricted to **chr4:38,780,001–38,890,001**. The PDF
+  same haplotypes and order, covering **chr4:38,660,000–38,960,000** by default,
+  including the merged insertion at **38,754,377**. The PDF
   uses editable text and vector marks. No notebook display is invoked.
 - `selected_haplotypes.tsv`: figure labels, actual sample IDs, phase slots and
   documented introgression status. Sample labels such as S01 refer to the same
@@ -84,6 +85,15 @@ If a sample's ALT placement changes, its partner phase slot is included within
 the requested lane limit so a phase-slot move is visible. If no merged cluster
 is carried by these saved samples, the aggregate output reports zero clusters
 shown; the workflow does not invent examples or resample the whole cohort.
+
+Use `--haplotype-window TLR_interval` to reproduce the earlier narrow extent
+(chr4:38,780,001–38,890,001). The wider default selects lanes using merged
+clusters throughout the wider region, so it can prioritize insertion carriers;
+the selection can differ from the previous narrow figure, but both panels
+always use the same selected haplotypes. To preserve the narrow outputs, set
+`TLR_COMPARE_ROOT="$POPPED_FULL_ROOT/tlr_before_after_with_insertion"` before
+running the wider comparison. Genotypes are reread from both original and
+merged files, and existing merge outputs are never changed.
 
 Cluster labels such as `C1:54` mean cluster C1, 54 bp; the representative keeps
 the same cluster label after merging. Simple INS/DEL and complex replacements

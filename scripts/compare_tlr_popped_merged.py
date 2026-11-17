@@ -201,8 +201,10 @@ def main():
     parser.add_argument('--out',type=Path)
     parser.add_argument('--bcftools',default='bcftools')
     parser.add_argument('--plot-haplotypes',action='store_true',
-                        help='Read actual GTs and save a stacked TLR-only haplotype comparison')
+                        help='Read actual GTs and save a stacked regional haplotype comparison')
     parser.add_argument('--max-haplotypes',type=int,default=8)
+    parser.add_argument('--haplotype-window',choices=list(WINDOWS),default='plot_window',
+                        help='Plot extent; plot_window includes the merged insertion at 38,754,377')
     parser.add_argument('--threads',type=int,default=4)
     opts = parser.parse_args()
     base = opts.batch_root.resolve()/'chr4'; final = base/'final'
@@ -256,7 +258,7 @@ def main():
         if opts.plot_haplotypes:
             from plot_tlr_before_after import build
             hap_summary = build(source, merged, before, after, mappings, opts.plot_dir, out,
-                                WINDOWS['TLR_interval'], opts.max_haplotypes, opts.threads)
+                                WINDOWS[opts.haplotype_window], opts.max_haplotypes, opts.threads)
         for name,rows in [('counts.tsv',counts),('counts_by_class.tsv',class_counts),
                           ('base_pairs.tsv',bp),('allele_changes.tsv',details),('plotted_allele_changes.tsv',plot_rows)]:
             if rows:

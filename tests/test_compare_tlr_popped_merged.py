@@ -99,7 +99,8 @@ class IntegrationTests(unittest.TestCase):
                              'a\t1\tchr4\t38780000\t38850000\n'
                              'b\t2\tchr4\t38800000\t38890001\n')
             cmd = [sys.executable,str(ROOT/'scripts/compare_tlr_popped_merged.py'),'--batch-root',str(batch),
-                   '--plot-dir',str(plot),'--bcftools',bcftools,'--plot-haplotypes','--max-haplotypes','4']
+                   '--plot-dir',str(plot),'--bcftools',bcftools,'--plot-haplotypes','--max-haplotypes','4',
+                   '--haplotype-window','TLR_interval']
             done = subprocess.run(cmd,capture_output=True,text=True)
             self.assertEqual(done.returncode,0,done.stdout+done.stderr)
             output = batch/'tlr_before_after'
@@ -155,6 +156,19 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(rerun.returncode,0,rerun.stderr)
             self.assertEqual(report.pilot.common.digest(final),final_hash)
             self.assertTrue(png.read_bytes().startswith(b'\x89PNG'))
+            # Default wider extent includes the upstream merged insertion.
+            wide = subprocess.run(cmd[:-2],capture_output=True,text=True)
+            self.assertEqual(wide.returncode,0,wide.stdout+wide.stderr)
+            states = haplotypes.table(output/'haplotype_genotypes.tsv.gz')
+            insertion_states = [r for r in states if r['stage']=='Unmerged' and r['type']=='INS' and r['state']=='alt' and r['cluster']]
+            self.assertEqual({r['id'] for r in insertion_states},{'ins60','ins65'})
+            source_lanes = {r['label'] for r in states if r['stage']=='Unmerged'}
+            final_lanes = {r['label'] for r in states if r['stage']!='Unmerged'}
+            self.assertEqual(source_lanes,final_lanes)
+            summary = json.loads((output/'haplotype_plot_summary.json').read_text())
+            self.assertEqual(summary['window_1based_inclusive'],list(report.WINDOWS['plot_window']))
+            self.assertEqual(summary['aggregate']['merged_clusters_shown'],2)
+            self.assertEqual(report.pilot.common.digest(final),final_hash)
             if os.environ.get('TLR_SYNTHETIC_QA_DIR'):
                 import shutil
                 dest = Path(os.environ['TLR_SYNTHETIC_QA_DIR']); dest.mkdir(parents=True,exist_ok=True)
