@@ -206,6 +206,10 @@ def main():
     parser.add_argument('--haplotype-window',choices=list(WINDOWS),default='plot_window',
                         help='Plot extent; plot_window includes the merged insertion at 38,754,377')
     parser.add_argument('--threads',type=int,default=4)
+    parser.add_argument('--carrier-pool',choices=['saved','cohort'],default='saved',
+                        help='Screen cohort-wide source GTs to find carriers of different merged-cluster members')
+    parser.add_argument('--focus-merge-pos',type=int,
+                        help='Prioritize source members at this original POS and save an additional zoomed plot')
     opts = parser.parse_args()
     base = opts.batch_root.resolve()/'chr4'; final = base/'final'
     prepared = json.loads((base/'prepare/done.json').read_text())
@@ -258,7 +262,8 @@ def main():
         if opts.plot_haplotypes:
             from plot_tlr_before_after import build
             hap_summary = build(source, merged, before, after, mappings, opts.plot_dir, out,
-                                WINDOWS[opts.haplotype_window], opts.max_haplotypes, opts.threads)
+                                WINDOWS[opts.haplotype_window], opts.max_haplotypes, opts.threads,
+                                opts.carrier_pool, opts.focus_merge_pos)
         for name,rows in [('counts.tsv',counts),('counts_by_class.tsv',class_counts),
                           ('base_pairs.tsv',bp),('allele_changes.tsv',details),('plotted_allele_changes.tsv',plot_rows)]:
             if rows:

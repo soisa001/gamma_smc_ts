@@ -169,10 +169,34 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(summary['window_1based_inclusive'],list(report.WINDOWS['plot_window']))
             self.assertEqual(summary['aggregate']['merged_clusters_shown'],2)
             self.assertEqual(report.pilot.common.digest(final),final_hash)
+            # Remove the second allele's carrier from the saved sample pool.
+            # Cohort mode must recover that carrier instead of showing only the
+            # original representative's haplotypes again.
+            with gzip.open(plot/'popped_selected_lanes.tsv.gz','wt') as handle:
+                handle.write('sample_id\thap\tchrom\tstart\tend\n'
+                             'a\t1\tchr4\t38740000\t38850000\n')
+            cohort = subprocess.run(cmd[:-2]+['--carrier-pool','cohort','--focus-merge-pos','38754377'],
+                                    capture_output=True,text=True)
+            self.assertEqual(cohort.returncode,0,cohort.stdout+cohort.stderr)
+            states = haplotypes.table(output/'haplotype_genotypes.tsv.gz')
+            self.assertEqual({r['id'] for r in states if r['stage']=='Unmerged' and r['state']=='alt' and r['id'].startswith('ins')},
+                             {'ins60','ins65'})
+            selected = haplotypes.table(output/'selected_haplotypes.tsv')
+            new_carriers = [r for r in selected if r['sample_id']=='b']
+            self.assertTrue(new_carriers)
+            self.assertTrue(all(r['candidate_origin']=='cohort_carrier_search' for r in new_carriers))
+            self.assertTrue(all(r['ancestry_status']=='not_assessed_from_complete_calls' for r in new_carriers))
+            summary = json.loads((output/'haplotype_plot_summary.json').read_text())
+            self.assertEqual(summary['aggregate']['target_source_alleles_shown'],2)
+            self.assertEqual(summary['aggregate']['target_alleles_without_known_carriers'],0)
+            self.assertTrue((output/'tlr_focus_merge_before_after.png').read_bytes().startswith(b'\x89PNG'))
+            self.assertNotIn(b'/Subtype /Image',(output/'tlr_focus_merge_before_after.pdf').read_bytes())
+            self.assertEqual(report.pilot.common.digest(final),final_hash)
             if os.environ.get('TLR_SYNTHETIC_QA_DIR'):
                 import shutil
                 dest = Path(os.environ['TLR_SYNTHETIC_QA_DIR']); dest.mkdir(parents=True,exist_ok=True)
-                for path in (png,pdf,output/'haplotype_plot_summary.json'):
+                for path in (png,pdf,output/'haplotype_plot_summary.json',
+                             output/'tlr_focus_merge_before_after.png',output/'tlr_focus_merge_before_after.pdf'):
                     shutil.copyfile(path,dest/path.name)
 
 

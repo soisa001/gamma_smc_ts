@@ -116,7 +116,7 @@ def clusters_for(before, after, mappings):
     return clusters
 
 
-def select_haps(candidates, tracts, calls, clusters, limit):
+def select_haps(candidates, tracts, calls, clusters, limit, coverage_first=False):
     features = {h:{k for c in clusters for k in c['old'] if calls[k][h]['state']=='alt'}
                 for h in candidates}
     total = {h:sum(r[h]['state']=='alt' for r in calls.values()) for h in candidates}
@@ -125,11 +125,46 @@ def select_haps(candidates, tracts, calls, clusters, limit):
     useful = [h for h in candidates if total[h] or tracts.get(h)]
     selected, covered = [], set()
     while useful and len(selected)<limit:
-        h = min(useful, key=lambda h:(-bool(tracts.get(h) and features[h]),
+        h = min(useful, key=lambda h:((-len(features[h]-covered),) if coverage_first else ()) + (-bool(tracts.get(h) and features[h]),
                 -bool(features[h]),-bool(tracts.get(h)),
                 -len(features[h]-covered),-len(features[h]),-total[h],h))
         selected.append(h); covered |= features[h]; useful.remove(h)
     return selected, features
+
+
+def discover_carriers(source, clusters, window, tracts, threads, per_allele=2):
+    """Screen cohort GTs one record at a time; retain only a few carriers/member.
+
+    New samples have unassessed introgression status unless present in the saved
+    tract table. Never copy source genotypes onto the merged representative.
+    """
+    wanted = {k for c in clusters for k in c['old']}
+    found, best, rows = set(), {}, []
+    with pysam.VariantFile(str(source),threads=threads) as vcf:
+        cohort_samples = len(vcf.header.samples)
+        for rec in vcf.fetch(window[0],window[1]-1,window[2]):
+            for allele,alt in enumerate(rec.alts or (),1):
+                key = (rec.chrom,rec.pos,rec.id or '.',rec.ref,alt)
+                if key not in wanted:
+                    continue
+                if key in found:
+                    raise ValueError('Duplicate source identity during cohort carrier discovery')
+                found.add(key)
+                chosen, carrier_haps, carrier_samples = [],0,0
+                for sample,value in rec.samples.items():
+                    gt = tuple(value.get('GT') or ())
+                    haps = [(sample,hap) for hap in (1,2) if gt_state(gt,value.phased,allele,hap)=='alt']
+                    carrier_haps += len(haps); carrier_samples += bool(haps)
+                    chosen = sorted(set(chosen+haps),key=lambda h:(-bool(tracts.get(h)),h))[:per_allele]
+                best[key] = chosen
+                rows.append(dict(chrom=key[0],pos=key[1],id=key[2],length_bp=abs(len(alt)-len(rec.ref)),
+                    carrier_haplotypes=carrier_haps,carrier_samples=carrier_samples,
+                    candidate_haplotypes_retained=len(chosen)))
+    if found!=wanted:
+        raise ValueError('Cohort scan did not recover all source members')
+    samples = {h[0] for carriers in best.values() for h in carriers}
+    candidates = [(sample,hap) for sample in sorted(samples) for hap in (1,2)]
+    return candidates,rows,cohort_samples
 
 
 def source_union(cluster, calls, hap):
@@ -165,7 +200,7 @@ def write_table(path, rows, fields):
         writer.writeheader(); writer.writerows(rows)
 
 
-def render(out, window, selected, tracts, stages, clusters, changed=0):
+def render(out, window, selected, tracts, stages, clusters, changed=0, stem='tlr_haplotypes_before_after'):
     plt.rcParams.update({'font.size':18,'axes.titlesize':23,'axes.labelsize':20,
                          'pdf.fonttype':42,'ps.fonttype':42})
     colors = {'INS':'#D55E00','DEL':'#0072B2','complex_replacement':'#8E4585',
@@ -247,14 +282,15 @@ def render(out, window, selected, tracts, stages, clusters, changed=0):
              f'{changed} cluster × haplotype ALT placements changed; see the placement audit.',
              fontsize=14,ha='left')
     for suffix in ('png','pdf'):
-        path = out/f'tlr_haplotypes_before_after.{suffix}'
+        path = out/f'{stem}.{suffix}'
         temp = path.with_name(path.stem+'.partial.'+suffix)
         fig.savefig(temp,dpi=200,facecolor='white')
         os.replace(temp,path)
     plt.close(fig)
 
 
-def build(source, merged, before, after, mappings, folder, out, window, limit=8, threads=4):
+def build(source, merged, before, after, mappings, folder, out, window, limit=8, threads=4,
+          carrier_pool='saved', focus_merge_pos=None):
     started = datetime.now(timezone.utc).isoformat()
     if not 2<=limit<=20 or threads<1:
         raise ValueError('Use 2–20 haplotypes and a positive thread count')
@@ -262,6 +298,18 @@ def build(source, merged, before, after, mappings, folder, out, window, limit=8,
     lane_identity = report.pilot.common.identity(lane_path)
     lane_sha = report.pilot.common.digest(lane_path)
     b,a = [[r for r in rows if report.inside(r,window)] for rows in (before,after)]
+    clusters = clusters_for(b,a,mappings)
+    selection_clusters = [c for c in clusters if any(k[1]==focus_merge_pos for k in c['old'])] if focus_merge_pos is not None else clusters
+    if focus_merge_pos is not None and not selection_clusters:
+        raise ValueError('No merged cluster at the requested original position inside the plot window')
+    saved_candidates = set(candidates)
+    discovery, cohort_samples = [],None
+    if carrier_pool=='cohort':
+        if not selection_clusters:
+            raise ValueError('No merged clusters in the requested window to illustrate')
+        discovered,discovery,cohort_samples = discover_carriers(source,selection_clusters,window,tracts,threads)
+        candidates = sorted(saved_candidates | set(discovered))
+        write_table(out/'carrier_discovery.tsv',discovery,list(discovery[0]))
     samples = sorted({h[0] for h in candidates})
     logging.info('Haplotype plot: window=%s samples=%d limit=%d threads=%d lanes=%s',
                  window,len(samples),limit,threads,lane_path)
@@ -269,16 +317,19 @@ def build(source, merged, before, after, mappings, folder, out, window, limit=8,
         futures = [pool.submit(read_calls,path,rows,samples,window,max(1,threads//2))
                    for path,rows in ((source,b),(merged,a))]
         bcalls,acalls = [f.result() for f in futures]
-    clusters = clusters_for(b,a,mappings)
     cluster_labels = {key:c['label'] for c in clusters for key in [*c['old'],c['new']]}
-    ranked,features = select_haps(candidates,tracts,bcalls,clusters,len(candidates))
+    ranked,features = select_haps(candidates,tracts,bcalls,selection_clusters,len(candidates),
+                                coverage_first=carrier_pool=='cohort' or focus_merge_pos is not None)
     selected = include_phase_partners(ranked,bcalls,acalls,clusters,limit)
     if not selected:
         raise ValueError('No informative TLR haplotypes among saved plot samples')
     sample_ids = {sample:i+1 for i,sample in enumerate(dict.fromkeys(h[0] for h in selected))}
     ids = {h:f'S{sample_ids[h[0]]:02d}.h{h[1]}' for h in selected}
     selection_rows = [dict(label=ids[h],sample_id=h[0],hap=h[1],
-        introgression_documented=bool(tracts.get(h)),merged_source_alleles=len(features[h])) for h in selected]
+        introgression_documented=bool(tracts.get(h)),
+        ancestry_status='documented_tract_in_saved_table' if tracts.get(h) else 'not_assessed_from_complete_calls',
+        candidate_origin='saved_plot_sample' if h in saved_candidates else 'cohort_carrier_search',
+        merged_source_alleles=len(features[h])) for h in selected]
     write_table(out/'selected_haplotypes.tsv',selection_rows,list(selection_rows[0]))
     states,phase = [],[]
     stages = [('Unmerged',b,bcalls),('Merged · 70% same original position',a,acalls)]
@@ -304,17 +355,35 @@ def build(source, merged, before, after, mappings, folder, out, window, limit=8,
                 list(phase[0]) if phase else ['cluster','label','comparison'])
     changed = sum(r['comparison']=='changed' for r in phase)
     render(out,window,selected,tracts,stages,clusters,changed)
+    focus_paths = []
+    if focus_merge_pos is not None:
+        positions = [k[1] for c in selection_clusters for k in [*c['old'],c['new']]]
+        focus_window = (window[0],max(window[1],min(positions)-2000),min(window[2],max(positions)+2000))
+        focus_stages = [(name,[r for r in rows if report.inside(r,focus_window)],calls) for name,rows,calls in stages]
+        focus_labels = {c['label'] for c in selection_clusters}
+        focus_changed = sum(r['comparison']=='changed' and r['cluster'] in focus_labels for r in phase)
+        render(out,focus_window,selected,tracts,focus_stages,selection_clusters,focus_changed,
+               stem='tlr_focus_merge_before_after')
+        focus_paths = ['tlr_focus_merge_before_after.png','tlr_focus_merge_before_after.pdf']
     if report.pilot.common.identity(lane_path)!=lane_identity:
         raise ValueError('Introgression lane table changed during plotting')
     paths = ['selected_haplotypes.tsv','haplotype_genotypes.tsv.gz','haplotype_placement_audit.tsv',
              'tlr_haplotypes_before_after.png','tlr_haplotypes_before_after.pdf']
+    paths += focus_paths
+    if carrier_pool=='cohort':
+        paths.append('carrier_discovery.tsv')
     result = dict(status='completed',started_utc=started,finished_utc=datetime.now(timezone.utc).isoformat(),
         window_1based_inclusive=window,lanes=lane_identity,lanes_sha256=lane_sha,
-        selection='Saved popped-plot samples; introgressed merged-allele carriers, other merged-allele carriers, then context lanes; favor distinct source alleles, deterministic ties. Include partner phase slot when ALT placement changes.',
+        selection='Cohort/focus mode covers distinct source members before preferring saved introgressed lanes; otherwise saved samples prioritized by documented tracts. Deterministic ties. Include partner phase slot when ALT placement changes.',
+        carrier_pool=carrier_pool,focus_merge_pos=focus_merge_pos,cohort_samples_screened=cohort_samples,
         max_haplotypes=limit,threads=threads,seed=report.pilot.SEED,
         phase_assumption='VCF GT hap1/hap2 matches original decoder orientation. No rephasing or proof of cross-block phase consistency. PS is saved per call.',
         unknown='Unphased heterozygotes, missing phase slots and non-diploid GTs are unassigned; homozygotes are phase-independent.',
         aggregate=dict(selected_haplotypes=len(selected),
+            cohort_discovered_haplotypes_selected=sum(h not in saved_candidates for h in selected),
+            target_source_alleles=len({k for c in selection_clusters for k in c['old']}),
+            target_source_alleles_shown=len({k for c in selection_clusters for k in c['old'] if any(bcalls[k][h]['state']=='alt' for h in selected)}),
+            target_alleles_without_known_carriers=sum(r['carrier_haplotypes']==0 for r in discovery) if discovery else None,
             selected_with_documented_introgression=sum(bool(tracts.get(h)) for h in selected),
             merged_clusters_in_TLR=len(clusters),
             merged_clusters_shown=sum(any(bcalls[k][h]['state']=='alt' for k in c['old'] for h in selected) for c in clusters),

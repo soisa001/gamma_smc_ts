@@ -111,6 +111,47 @@ VCF or prove consistency across phase sets. Differences in ALT presence or
 phase-slot placement are shown and counted, not silently repaired.
 PS values are saved to support follow-up checks.
 
+## Show different source members of the insertion merge
+
+When the saved plot samples carry only the representative, choose
+`--carrier-pool cohort --focus-merge-pos 38754377`. This screens source GTs across
+all panel samples for members of the merge at that original position. It keeps
+at most two candidate haplotypes per source allele and their partner slots,
+then reads regional original/merged GTs only for the small resulting sample
+pool. Selection prioritizes coverage of distinct target source alleles before
+documented introgression. It does not select based on successful genotype
+transfer or conceal losses/phase changes. Both panels use the same haplotypes.
+
+```bash
+%%bash
+set -euo pipefail
+umask 077
+REPO="$HOME/tlr_comparison_code/gamma_smc_ts"
+mkdir -p "$(dirname "$REPO")"
+if [[ ! -d "$REPO/.git" ]]; then
+    git clone --single-branch --branch AOU_run_opt \
+        git@github.com:soisa001/gamma_smc_ts.git "$REPO"
+fi
+git -C "$REPO" pull --ff-only origin AOU_run_opt
+export POPPED_FULL_ROOT="$HOME/popped_full_same_original_pos_p70"
+export TLR_COMPARE_ROOT="$POPPED_FULL_ROOT/tlr_merge_carrier_examples"
+bash "$REPO/scripts/run_tlr_popped_comparison_workbench.sh" \
+    --plot-haplotypes --haplotype-window plot_window \
+    --carrier-pool cohort --focus-merge-pos 38754377 \
+    --max-haplotypes 8 --threads 4
+```
+
+Alongside the full regional figure, `tlr_focus_merge_before_after.png` and `.pdf`
+zoom to the target merge with 2-kb flanks. `carrier_discovery.tsv` records the
+number of known ALT carriers for each original member. Aggregate summary fields
+`target_source_alleles` and `target_source_alleles_shown` show whether every
+member is illustrated; members without any known phased/phase-independent ALT
+carriers are reported, never fabricated. `selected_haplotypes.tsv` identifies
+cohort-discovered samples and marks ancestry as unassessed when no saved tract
+is available. An unshaded newly selected haplotype is **not** thereby confirmed
+unintrogressed. Existing called tracts are reused where available; this option
+does not regenerate introgression calls. All carrier identities stay on the VM.
+
 Set `TLR_PLOT_DIR` if the existing private popped plot tables are elsewhere.
 The haplotype option requires the selected-lanes table; the older identity-only
 comparison can still run without it. Rerunning this small regional report
