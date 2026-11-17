@@ -84,8 +84,8 @@ class AuditTests(unittest.TestCase):
                 '##FORMAT=<ID=GT,Number=1,Type=String,Description="GT">\n'
                 '##FORMAT=<ID=PS,Number=1,Type=Integer,Description="PS">\n'
                 '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\ta\tb\n')
-            rows=[('a652',652,'1|0:100','0|0:100'),('b574',574,'0|0:100','1|0:100'),
-                  ('c607',607,'0|0:100','0|1:100')]
+            rows=[('4_92311',652,'1|0:100','0|0:100'),('4_92312',574,'0|0:100','1|0:100'),
+                  ('c520',520,'0|0:100','0|1:100')]
             raw.write_text(header+''.join('\t'.join(['chr4','38754377',name,'A','A'+'T'*length,
                 '.','PASS','.','GT:PS',a,b])+'\n' for name,length,a,b in rows))
             subprocess.run([bcftools,'view','-Ob','-o',str(source),str(raw)],check=True,capture_output=True)
@@ -118,6 +118,16 @@ class AuditTests(unittest.TestCase):
                 self.assertEqual(records[0].info['AC'],(3,))
                 self.assertEqual(records[0].info['AN'],4)
             self.assertEqual(common.digest(final),before_hash)
+            plot_dir=batch/'tlr_merge_carrier_examples'
+            plot_dir.mkdir()
+            (plot_dir/'selected_haplotypes.tsv').write_text('label\tsample_id\thap\nS02.h1\tb\t1\n')
+            isolated=root/'existing_only'
+            run=subprocess.run(command+['--existing-only','--out',str(isolated)],capture_output=True,text=True)
+            self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+            checked=json.loads((isolated/'summary.json').read_text())['existing_cluster_verification']
+            self.assertEqual(checked['gt_phase_ps_mismatches'],0)
+            self.assertEqual(checked['focused_h1'],'restored')
+            self.assertFalse((isolated/'intrasample.gt_union.vcf.gz').exists())
 
 
 if __name__=='__main__':

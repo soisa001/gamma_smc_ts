@@ -128,6 +128,34 @@ def write_trial(path, header, groups, metadata, originals):
                 format_policy='GT/PS only; original per-allele quality/depth/likelihood fields are not pooled')
 
 
+def verify_existing_trial(path, groups, metadata, originals, final_records, aliases):
+    _, samples, repaired = fetch_keys(path, {new_key(metadata[r]) for r in groups})
+    mismatches = comparisons = changed = 0
+    focus = 'unverified: focused plot alias or target cluster unavailable'
+    for representative, members in groups.items():
+        key = new_key(metadata[representative])
+        fixed_record = repaired[key]
+        if set(fixed_record.info['PM_MEMBERS']) != set(members):
+            raise ValueError('Trial VCF membership differs from saved mapping')
+        donor = next((originals[i] for i in members if originals[i].id == '4_92312'), None)
+        for sample in samples:
+            calls = [snapshot(originals[i].samples[sample]) for i in members]
+            expected = union_calls(calls) if len(members) > 1 else calls[0]
+            actual = snapshot(fixed_record.samples[sample])
+            old = snapshot(final_records[key].samples[sample])
+            comparisons += 1
+            mismatches += any(actual[k] != expected[k] for k in ('gt', 'phased', 'ps'))
+            changed += (actual['gt'], actual['phased']) != (old['gt'], old['phased'])
+            if key[2] == '4_92311' and donor is not None and 'S02.h1' in aliases.get(sample, ()):
+                source = snapshot(donor.samples[sample])
+                if source['phased'] and source['gt'][0] == 1 and old['gt'] == (0, 0):
+                    focus = 'restored' if actual['phased'] and actual['gt'][0] == 1 else 'failed'
+                else:
+                    focus = 'unverified: source or prior GT differs from reported case'
+    return dict(sample_cluster_comparisons=comparisons, gt_phase_ps_mismatches=mismatches,
+                changed_gt_or_phase=changed, focused_h1=focus)
+
+
 def off_groups(originals, metadata, out):
     args = native.parse_args(['-i',str(out/'unused.gz'),'-p','.7','-P','.7','-r','500','-O','0',
                               '-s','50','-S','-1','--gt','off','--keep','common'])
@@ -151,6 +179,7 @@ def main(argv=None):
     parser.add_argument('--kind',choices=['INS','DEL'],default='INS')
     parser.add_argument('--out',type=Path)
     parser.add_argument('--plot-audit-dir',type=Path)
+    parser.add_argument('--existing-only', action='store_true', help='Use only saved cluster membership')
     opts=parser.parse_args(argv)
     if importlib.metadata.version('truvari')!='5.5.0':
         raise ValueError('Requires Truvari 5.5.0 for native replay')
@@ -254,13 +283,18 @@ def main(argv=None):
         legacy_groups=[(r,[r,*[i for i in members if i!=r]]) for r,members in groups.items()]
         th=trial_header(header)
         same=write_trial(out/'existing_clusters.gt_union.vcf.gz',th,legacy_groups,metadata,originals)
-        intra_groups=off_groups(originals,metadata,out)
-        intra=write_trial(out/'intrasample.gt_union.vcf.gz',th,intra_groups,metadata,originals)
+        checked=verify_existing_trial(out/'existing_clusters.gt_union.vcf.gz',groups,metadata,originals,final_records,aliases)
+        if checked['gt_phase_ps_mismatches']:
+            raise ValueError(f"Repaired GT/phase/PS mismatches: {checked['gt_phase_ps_mismatches']}")
+        intra=None
+        if not opts.existing_only:
+            intra_groups=off_groups(originals,metadata,out)
+            intra=write_trial(out/'intrasample.gt_union.vcf.gz',th,intra_groups,metadata,originals)
         if identities!=[pilot.common.identity(p) for p in tracked]:
             raise ValueError('Inputs changed during audit')
         summary=dict(position=opts.pos,type=opts.kind,samples=len(samples),original_alleles=len(metadata),
             existing_clusters=len(groups),existing_run_audit=dict(totals),plot_audit=dict(plot_counts),
-            existing_cluster_union_trial=same,intrasample_union_trial=intra,
+            existing_cluster_union_trial=same,intrasample_union_trial=intra,existing_cluster_verification=checked,
             input_snapshots=identities,seed=pilot.SEED,
             phase_assumption='Same original-position phased GT slots share panel orientation; conflicting explicit PS values yield missing trial GT and a flag',
             native_version=importlib.metadata.version('truvari'),
@@ -268,7 +302,7 @@ def main(argv=None):
             script_sha256=pilot.common.digest(__file__),originals_modified=False)
         pilot.common.json_write(out/'summary.json',summary)
         print(json.dumps({k:summary[k] for k in ('position','type','samples','original_alleles','existing_clusters',
-            'existing_run_audit','plot_audit','existing_cluster_union_trial','intrasample_union_trial')},indent=2))
+            'existing_run_audit','plot_audit','existing_cluster_union_trial','existing_cluster_verification','intrasample_union_trial')},indent=2))
         print(f'Private genotype audit and separate locus trials: {out}')
 
 
