@@ -149,6 +149,21 @@ class AuditTests(unittest.TestCase):
             modified=target.stat().st_mtime_ns
             subprocess.run(command,check=True,capture_output=True)
             self.assertEqual(target.stat().st_mtime_ns,modified)
+            from summarize_popped_gt_union import summarize, write_table, scan
+            reports=root/'summaries'
+            reports.mkdir()
+            row=summarize(('chr4',batch,repaired_root,reports))
+            self.assertEqual((row['INS_before'],row['INS_after'],row['GT_changed']),(3,2,1))
+            write_table(reports,[row])
+            self.assertIn('33.33',(reports/'chr1_21_summary.tsv').read_text())
+            complex_fixture=root/'replacements.vcf'
+            complex_fixture.write_text(header+''.join(
+                f'chr4\t{i}\tx{i}\t{ref}\t{alt}\t.\tPASS\t.\tGT:PS\t0|0:1\t1|0:1\n'
+                for i,(ref,alt) in enumerate([('A','T'*60),('C'*80,'G'*75),
+                                               ('A','A'+'C'*60),('A','A'+'N'*60)],1)))
+            bgz=pysam.tabix_index(str(complex_fixture),preset='vcf')
+            counts=scan(Path(bgz),'chr4',4)
+            self.assertEqual((counts['INS'],counts['complex_net50'],counts['complex_span50_net_lt50']),(1,1,1))
 
 
 if __name__=='__main__':
