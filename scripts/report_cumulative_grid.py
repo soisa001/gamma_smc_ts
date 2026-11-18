@@ -100,16 +100,16 @@ def prepare():
         archived_index_sha256=sha(ARCHIVE/'completed_units.tsv'),sources=sources,cache_sha256=sha(OUT/'mass.npz')))
 
 
-def report():
-    assert sha(OUT/'mass.npz')==read(OUT/'inputs.json')['cache_sha256']
-    data=np.load(OUT/'mass.npz')
+def report(out=OUT, strengths=STRENGTHS):
+    assert sha(out/'mass.npz')==read(out/'inputs.json')['cache_sha256']
+    data=np.load(out/'mass.npz')
     rows=[]; detail={}
     for origin in ORIGINS:
         for regime,(low,high) in WINDOWS.items():
             age='10k' if regime=='10k' else '50k'
             ref_key='introgression_neutral' if origin=='introgression' else f'de_novo_{age}_neutral'
             test_key='introgression_test' if origin=='introgression' else f'de_novo_{age}_test'
-            for s in (*STRENGTHS,0.):
+            for s in (*strengths,0.):
                 if regime=='50k' and s==.01: continue
                 query=f"{origin}_{regime}_s{str(s).replace('.','p')}" if s else test_key
                 ref, obs=data[ref_key], data[query]
@@ -122,8 +122,8 @@ def report():
                     flags=(p[:,low-1:high]<alpha).any(axis=1)
                     rows.append(dict(origin=origin,window=regime,s=s,endpoint='TPR' if s else 'FPR',alpha=alpha,
                                      detections=int(flags.sum()),n=len(flags),rate=float(flags.mean())))
-    np.savez_compressed(OUT/'pointwise_p.npz',**detail)
-    with (OUT/'rates.tsv').open('w', newline='') as f:
+    np.savez_compressed(out/'pointwise_p.npz',**detail)
+    with (out/'rates.tsv').open('w', newline='') as f:
         writer = csv.DictWriter(f, delimiter='\t', lineterminator='\n', fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
@@ -140,19 +140,19 @@ def report():
         for ax,origin in zip(axes,ORIGINS):
             ax.set_title('De novo' if origin=='de_novo' else '1% introgression')
             for y,regime in enumerate(WINDOWS):
-                for x,s in enumerate((*STRENGTHS,0.)):
+                for x,s in enumerate((*strengths,0.)):
                     row=next((r for r in rows if (r['origin'],r['window'],r['s'],r['alpha'])==(origin,regime,s,alpha)),None)
                     cmap=plt.get_cmap('Blues' if s else 'Oranges')
                     color=cmap(row['rate']) if row else '#eeeeee'
                     ax.add_patch(Rectangle((x,y),1,1,facecolor=color,edgecolor='white',linewidth=3))
                     ax.text(x+.5,y+.5,f"{row['detections']}%" if row else 'Excluded',ha='center',va='center',
                             color='white' if row and row['rate']>.6 else 'black')
-            ax.set(xlim=(0,4),ylim=(3,0),xticks=np.arange(4)+.5,xticklabels=['s = .001','s = .005','s = .01','Neutral FPR'],
+            ax.set(xlim=(0,len(strengths)+1),ylim=(3,0),xticks=np.arange(len(strengths)+1)+.5,xticklabels=[f's = {s:g}'.replace('0.', '.') for s in strengths] + ['Neutral FPR'],
                    yticks=np.arange(3)+.5,yticklabels=LABELS)
             ax.tick_params(length=0)
             for spine in ax.spines.values(): spine.set_visible(False)
         fig.supxlabel('Each cell uses 100 segregating replicates at the focal site.',fontsize=13)
-        for ext in ('png','pdf'): fig.savefig(OUT/f'cumulative_{alpha:g}.{ext}',dpi=160)
+        for ext in ('png','pdf'): fig.savefig(out/f'cumulative_{alpha:g}.{ext}',dpi=160)
         plt.close(fig)
     print(json.dumps(rows),flush=True)
 
