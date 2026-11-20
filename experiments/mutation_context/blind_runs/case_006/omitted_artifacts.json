@@ -1,0 +1,16 @@
+[
+  {
+    "filename": "counts11.npy",
+    "bytes": 201326720,
+    "sha256": "65a9bae86b7202aed9aba6d936b301a55a961223254468cb2878f2c02e50ddd6",
+    "regenerator": "extended.py",
+    "reason": "Regenerable count cache larger than snapshot size limit; original remains in neutral task directory."
+  },
+  {
+    "filename": "shift9_counts.npy",
+    "bytes": 163577984,
+    "sha256": "5f400bb3289b70ea7a278376d4aaf426080a1b7c4d8a2f3348ce5059d0c0c33c",
+    "regenerator": "shift_scan.py",
+    "reason": "Regenerable count cache larger than snapshot size limit; original remains in neutral task directory."
+  }
+]

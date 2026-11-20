@@ -317,3 +317,79 @@ uv run --locked python blind_runs/case_004/check_replay.py "$replay"
 Run generation before grading. The private kernel, author documentation, and
 archived solutions are for evaluation/replay and must remain outside any future
 blind solver's environment.
+
+## Ten-base task and calibration-size comparison
+
+The arbitrary ten-base kernel uses offsets −5..+4, 1,048,576 contexts and
+3,145,728 substitution channels. `task_005` supplies 4M calibration bases;
+`task_006` supplies 64M under the same kernel and contains the exact smaller
+calibration prefix. Target genomes, query order, public wording and metadata
+are identical. Both query all positions of circular scaffolds. The
+[trial report](../../docs/mutation_context_ten_blind_results.md) distinguishes
+blind-agent discovery from author-side fixed-estimator comparisons.
+
+Generate the two datasets, audit their relationship, then run the learning curve:
+
+```bash
+uv sync --locked
+uv run --locked ten_task.py work/ten/seed_000 --workers 4
+uv run --locked ten_task.py work/ten_64m/seed_000 --workers 4 --train-bases 64000000
+uv run --locked audit_ten_inputs.py work/ten/seed_000 work/ten_64m/seed_000 \
+  --output work/ten_nested_audit.json
+uv run --locked ten_learning_curve.py work/ten_64m/seed_000 \
+  --output work/ten_curve --workers 4
+uv run --locked --with pytest pytest -q tests/test_ten_task.py
+```
+
+The curve fits nested 4M, 16M and 64M prefixes. Smoothing uses calibration
+validation only; private scoring begins after all window fits are frozen.
+The default is four workers and a 26 GB memory budget, with at most three
+independent size fits active. Generation and curve outputs are reused only when
+the configurations and recorded sample/output hashes agree. The kernel is sent
+to each simulation worker once, avoiding a copy per scaffold.
+
+For a fresh blind attempt, extract only `releases/task_005.zip` or
+`releases/task_006.zip` into a neutral directory and use the generic prompt in
+`blind_runs/agent_prompt_template.txt`. Keep the authoring repository, source
+generators, private files, reports and archived solutions outside that agent's
+allowed environment.
+
+Replay the frozen 4M submission after generating its evaluator dataset above:
+
+```bash
+replay="$PWD/work/agent_replay_005"
+uv run --locked python -m zipfile -e releases/task_005.zip "$replay"
+cp -a blind_runs/case_005/agent_submission/. "$replay/"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.txt" python "$replay/finalize.py"
+uv run --locked grade.py work/ten/seed_000 "$replay/predictions.tsv" \
+  --output "$replay/grade.json"
+uv run --locked check_blind_replay.py blind_runs/case_005 "$replay" \
+  --entrypoint finalize.py --python-version 3.13.15
+```
+
+This reproduces the submitted constant-rate estimator and its prediction hash;
+it does not repeat the blind discovery process. The unchanged exploration and
+validation reports used by `finalize.py` are included in the frozen snapshot.
+
+Replay the independently discovered 64M estimator:
+
+```bash
+replay="$PWD/work/agent_replay_006"
+uv run --locked python -m zipfile -e releases/task_006.zip "$replay"
+cp -a blind_runs/case_006/agent_submission/. "$replay/"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.lock.txt" python "$replay/extended.py"
+uv run --no-project --python 3.13.15 \
+  --with-requirements "$replay/requirements.lock.txt" python "$replay/finalize.py"
+uv run --locked grade.py work/ten_64m/seed_000 "$replay/predictions.tsv" \
+  --output "$replay/grade.json"
+uv run --locked check_blind_replay.py blind_runs/case_006 "$replay" \
+  --entrypoint 'extended.py, then finalize.py' --python-version 3.13.15 \
+  --requirements requirements.lock.txt
+```
+
+`extended.py` rebuilds the omitted 201 MB `counts11.npy` cache from the public
+calibration genomes and the frozen scaffold split before the final estimator is
+refitted. Large intermediate caches and full prediction TSVs are not committed;
+their compact models, source, reports, and provenance are retained.

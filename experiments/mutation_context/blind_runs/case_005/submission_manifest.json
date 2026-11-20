@@ -1,0 +1,34 @@
+{
+  "agent_directory": "/mnt/d/agent_evaluations/case_005",
+  "freeze_policy": "No hidden feedback or revisions before grading",
+  "input_manifest_sha256": "a099c1a2a1b72e6ad360ec986985b9e97cd39a442599937bd2caa5d9fb83b231",
+  "inputs": {
+    "TASK.md": "01e9a24ad8c515f7008a198c88baa920a3dbe5365172eb07b2dc428407f4b11c",
+    "calibration_offspring.fasta": "456b03a01fb44bb9e8172a3de659f8b0b4635bda1da33f54fa7d44b83b3af571",
+    "calibration_parent.fasta": "47ba6d4036eeae46f8c61f28533b384d6c0a224c046aa1bc90c0d3b017d4ed27",
+    "metadata.json": "4234a39b2e84b229ee6844dd36767489c2d5fa780a5fcd55920bf6331679eb59",
+    "new_parent.fasta": "4b199a9fc0f96ca5bfcf190582a1c49a332b8892a40b5e2210b30904bb84665b",
+    "queries.tsv": "5d9e575e3091842cb78a0a39dec4ed3c2f3e21e461c35395d24c1a3473a098aa"
+  },
+  "prediction_bytes": 105777912,
+  "prediction_sha256": "4bfe3ca7ed8f550d7ab8bd059df33aff3f9586ff2b75d3531f59f5687bd6e7e7",
+  "source_and_report_files": {
+    "REPORT.md": "cee2ca4ed32275fd5a47ed49453d2927c21f138f451a717508e482fb9ee7878c",
+    "decision_log.md": "4f94e8104fba9cf7f5ab87e2f7d2592661ce365eb7bd3e857490a9c080f94c6a",
+    "diagnostics.json": "858fdf4273a5c2ceffb28cece22a32bad3afb2e979b41b21166c5ef25141d6d7",
+    "exploration.json": "c8484be1ce40f47a1121de39bfcc4551b910b3421ef01fa2ca058019e7578836",
+    "exploration_stdout.txt": "8f8d7e03a9b4416cc4303cf1758231f75d446879ec1aee098b33c9b7675a8d0b",
+    "explore.py": "9ea5e12608bfab844b1b63d27c0a9036bcb9b5e4a2e50fd3a379a4c452c21ae5",
+    "finalization_stdout.txt": "ee0834f6aa4ca0c77ad63d71cb37c3f511c75e79d6b39f6143aee42a8e532754",
+    "finalize.py": "e170da910c4aee666e6da697a9b15b8ea81d7878c6c218edee8ae1a94ce82062",
+    "model_comparison.json": "a5e27bcf39960aadb81472bd3f67c5cbbf349409a3e4676a9c5bf33e59618d37",
+    "requirements.txt": "a9f77a72d6d9407e6984fe92f7bb0ef09cd5cd16211cc315272e028642a01d44",
+    "summary.json": "a66a8eb6ff56c07e9e3e92cd06f651d37b9644ee724631930aa3ff9a88f811bc",
+    "validate.py": "b21ff3e8e66bb457680475b9d2268543eac62c82a4b20c47d2502e9a521fd10b",
+    "validate_spectra.py": "2537a5d0fbbbed87088b350f95f643b7c86296506a43d7eb4fa4c1314f584978",
+    "validation.json": "4ecb119a8c0ad27bf25c59764eeae0dd4dbe17039301fe787db607533e32e15a",
+    "validation_spectra.json": "5ef5f6afe5665b44fb25c6591fd7d39a6d0026c9663b80fc1798ffd05de03e03",
+    "validation_spectra_stdout.txt": "a938d794e069af69dd95a3b60e3955716eaff10f869705c8bc616331f1f07180",
+    "validation_stdout.txt": "c7bd7fbd968cba471baf5744910111edf18c718ace98abc497d6e61b0c8c095e"
+  }
+}

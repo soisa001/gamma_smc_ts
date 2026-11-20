@@ -1,0 +1,33 @@
+{
+  "full_window_discovery": true,
+  "selected_model": "Oriented ten-base empirical Bayes allele probabilities",
+  "true_offsets": [
+    -5,
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "selected_offsets": [
+    -5,
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "hidden_grading_after_final_submission": true,
+  "scientific_followup_hints": 0,
+  "post_score_revisions": 0,
+  "grade_sha256": "8f9c7199a9803828db4599d7fe0c842f7faa4b2107a59264f041190300dd2a2a",
+  "scope": "One blind run at this sample size; no population success-rate claim."
+}

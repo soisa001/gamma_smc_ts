@@ -1,0 +1,11 @@
+{
+  "byte_identical_predictions": true,
+  "entrypoint": "extended.py, then finalize.py",
+  "frozen_artifact_hashes_verified": true,
+  "prediction_sha256": "16c22c1404b3b458329ede4e38b2d43692c4dc2b4019ed9ce04f0f1964191f4e",
+  "public_input_hashes_verified": true,
+  "python": "3.13.15",
+  "replay_directory": "/home/mew/mutation_context_mock/blind_replay_006",
+  "requirements": "agent_submission/requirements.lock.txt",
+  "scope": "Reproduces the submitted estimator; not a new agent discovery trial"
+}

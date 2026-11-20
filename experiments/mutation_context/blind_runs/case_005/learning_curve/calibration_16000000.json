@@ -1,0 +1,224 @@
+{
+  "calibration_mutations": 79846,
+  "calibration_sites": 16000000,
+  "elapsed_seconds": 12.678464677000022,
+  "fraction_unseen_contexts": 0.0,
+  "fraction_zero_event_channels": 0.9759600957234701,
+  "mean_mutations_per_context": 0.07614707946777344,
+  "mean_sites_per_context": 15.2587890625,
+  "scores": [
+    {
+      "burden_relative_error": -0.0011200519315264224,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.01516110211998438,
+      "label": "1-mer (-0..+0)",
+      "observed_binary_nll_per_site": 0.03135790861518932,
+      "observed_conditional_nll": 1.0984828605921904,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.03682505781235665,
+      "oracle_binary_kl_per_mutation": 0.3779696763278873,
+      "oracle_brier_excess": 6.41693336562489e-05,
+      "oracle_conditional_kl": 0.40718981246488767,
+      "oracle_kl_per_mutation": 0.785159488792775,
+      "predicted_mutations": 4990.621382513433,
+      "prior_window": null,
+      "shrinkage": 2.0,
+      "sites": 1000000,
+      "validation_nll": 118566.71495635499,
+      "window": [
+        0,
+        0
+      ]
+    },
+    {
+      "burden_relative_error": -0.001116515903742843,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.015194536482590159,
+      "label": "5-mer (-2..+2)",
+      "observed_binary_nll_per_site": 0.031358421109123166,
+      "observed_conditional_nll": 1.0983429343498339,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.03682487389338229,
+      "oracle_binary_kl_per_mutation": 0.3779481659886319,
+      "oracle_brier_excess": 6.416654494697331e-05,
+      "oracle_conditional_kl": 0.4071111321661799,
+      "oracle_kl_per_mutation": 0.7850592981548118,
+      "predicted_mutations": 4990.6390492769915,
+      "prior_window": [
+        0,
+        0
+      ],
+      "shrinkage": 100000.0,
+      "sites": 1000000,
+      "validation_nll": 118564.67832231513,
+      "window": [
+        2,
+        2
+      ]
+    },
+    {
+      "burden_relative_error": -0.001168439561434198,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.015253444606462267,
+      "label": "7-mer (-3..+3)",
+      "observed_binary_nll_per_site": 0.03135162260890961,
+      "observed_conditional_nll": 1.096332841349626,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.0368080711603067,
+      "oracle_binary_kl_per_mutation": 0.37718489332766614,
+      "oracle_brier_excess": 6.408887601614339e-05,
+      "oracle_conditional_kl": 0.40561859539729245,
+      "oracle_kl_per_mutation": 0.7828034887249585,
+      "predicted_mutations": 4990.379627394678,
+      "prior_window": [
+        2,
+        2
+      ],
+      "shrinkage": 10000.0,
+      "sites": 1000000,
+      "validation_nll": 118518.27046341216,
+      "window": [
+        3,
+        3
+      ]
+    },
+    {
+      "burden_relative_error": -0.0011593492375565617,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.015282924325364221,
+      "label": "8-mer (-4..+3)",
+      "observed_binary_nll_per_site": 0.03134386837277343,
+      "observed_conditional_nll": 1.0941054553441116,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.03678923122402107,
+      "oracle_binary_kl_per_mutation": 0.37536387942042426,
+      "oracle_brier_excess": 6.389292711240748e-05,
+      "oracle_conditional_kl": 0.40280392255980374,
+      "oracle_kl_per_mutation": 0.7781678019802281,
+      "predicted_mutations": 4990.425044629057,
+      "prior_window": [
+        3,
+        3
+      ],
+      "shrinkage": 3162.2776601683795,
+      "sites": 1000000,
+      "validation_nll": 118440.1456783542,
+      "window": [
+        4,
+        3
+      ]
+    },
+    {
+      "burden_relative_error": -0.00132087098649325,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.015403240257960587,
+      "label": "9-mer (-4..+4)",
+      "observed_binary_nll_per_site": 0.03131054567607268,
+      "observed_conditional_nll": 1.087371481655836,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.036722393540273776,
+      "oracle_binary_kl_per_mutation": 0.3691333942230307,
+      "oracle_brier_excess": 6.310602818265375e-05,
+      "oracle_conditional_kl": 0.39564214008545157,
+      "oracle_kl_per_mutation": 0.7647755343084823,
+      "predicted_mutations": 4989.618046855658,
+      "prior_window": [
+        4,
+        3
+      ],
+      "shrinkage": 1000.0,
+      "sites": 1000000,
+      "validation_nll": 118244.001045533,
+      "window": [
+        4,
+        4
+      ]
+    },
+    {
+      "burden_relative_error": -0.001437247104945194,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.01573475163773067,
+      "label": "10-mer (-5..+4)",
+      "observed_binary_nll_per_site": 0.031213273310530507,
+      "observed_conditional_nll": 1.0769070058666077,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.036573039478728614,
+      "oracle_binary_kl_per_mutation": 0.3515710308276586,
+      "oracle_brier_excess": 5.957439112238363e-05,
+      "oracle_conditional_kl": 0.3842478420496303,
+      "oracle_kl_per_mutation": 0.735818872877289,
+      "predicted_mutations": 4989.036606467067,
+      "prior_window": [
+        4,
+        4
+      ],
+      "shrinkage": 177.82794100389228,
+      "sites": 1000000,
+      "validation_nll": 117841.88641939199,
+      "window": [
+        5,
+        4
+      ]
+    },
+    {
+      "burden_relative_error": -0.0013371130260468878,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.015396694893640622,
+      "label": "10-mer (-4..+5)",
+      "observed_binary_nll_per_site": 0.03130984648817075,
+      "observed_conditional_nll": 1.0874759202802011,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.03672221414340531,
+      "oracle_binary_kl_per_mutation": 0.36912214799815457,
+      "oracle_brier_excess": 6.309882822956152e-05,
+      "oracle_conditional_kl": 0.39568534070256145,
+      "oracle_kl_per_mutation": 0.764807488700716,
+      "predicted_mutations": 4989.53689809494,
+      "prior_window": [
+        4,
+        4
+      ],
+      "shrinkage": 5623.413251903491,
+      "sites": 1000000,
+      "validation_nll": 118243.06149101994,
+      "window": [
+        4,
+        5
+      ]
+    },
+    {
+      "burden_relative_error": -0.001437247104969619,
+      "expected_mutations": 4996.217405468754,
+      "gc_odds_log_error": -0.015734751637749504,
+      "label": "11-mer (-5..+5)",
+      "observed_binary_nll_per_site": 0.031213273310530608,
+      "observed_conditional_nll": 1.0769070058668595,
+      "observed_mutations": 4977,
+      "observed_nll_per_site": 0.03657303947872997,
+      "oracle_binary_kl_per_mutation": 0.35157103082802105,
+      "oracle_brier_excess": 5.957439112240427e-05,
+      "oracle_conditional_kl": 0.38424784204982704,
+      "oracle_kl_per_mutation": 0.7358188728778481,
+      "predicted_mutations": 4989.036606466945,
+      "prior_window": [
+        5,
+        4
+      ],
+      "shrinkage": 1000000000000.0,
+      "sites": 1000000,
+      "validation_nll": 117841.88641939734,
+      "window": [
+        5,
+        5
+      ]
+    }
+  ],
+  "selected_window": [
+    5,
+    4
+  ],
+  "source_sha256": "00104c532a59bfd539f41a289e38dea24809f1356cabd7496739abee95baf855",
+  "target_fraction_unseen_contexts": 0.0,
+  "validation": "Scaffold index modulo 5 == 0 in each nested prefix; whole scaffolds",
+  "zero_event_channels": 3070105
+}

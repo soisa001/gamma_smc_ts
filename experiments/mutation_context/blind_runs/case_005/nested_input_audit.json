@@ -1,0 +1,24 @@
+{
+  "exact_calibration_prefixes": {
+    "calibration_offspring.fasta": {
+      "prefix_bytes": 4051200,
+      "prefix_sha256": "456b03a01fb44bb9e8172a3de659f8b0b4635bda1da33f54fa7d44b83b3af571"
+    },
+    "calibration_parent.fasta": {
+      "prefix_bytes": 4051200,
+      "prefix_sha256": "47ba6d4036eeae46f8c61f28533b384d6c0a224c046aa1bc90c0d3b017d4ed27"
+    }
+  },
+  "large_task": "/home/mew/mutation_context_mock/ten_64m/seed_000",
+  "shared_files_sha256": {
+    "private/kernel.npy": "5d3ac6d0977ed8f8f218b1e49c8361aaff24d57d9515cf49cc41df388bd5f3a3",
+    "private/kernel_encoding.json": "7828cf05b8020786fe0f462b1e7f6e459983f41fc749c8c9978583aa2d86837c",
+    "private/new_offspring.fasta": "87c5bdd9c5575a7f2709084466719dfaea3ac185396800971cdb9a99b8f042e8",
+    "public/TASK.md": "01e9a24ad8c515f7008a198c88baa920a3dbe5365172eb07b2dc428407f4b11c",
+    "public/metadata.json": "4234a39b2e84b229ee6844dd36767489c2d5fa780a5fcd55920bf6331679eb59",
+    "public/new_parent.fasta": "4b199a9fc0f96ca5bfcf190582a1c49a332b8892a40b5e2210b30904bb84665b",
+    "public/queries.tsv": "5d9e575e3091842cb78a0a39dec4ed3c2f3e21e461c35395d24c1a3473a098aa"
+  },
+  "small_task": "/home/mew/mutation_context_mock/ten/seed_000",
+  "source_sha256": "f8af820545f5abfa24ae7586e9663f6616f9343ebaa0ef7a6c96e269a132693c"
+}

@@ -1,0 +1,73 @@
+{
+  "selected_model": "independent_nonparametric_binomial_prior_on_oriented_10mer",
+  "window": [
+    -5,
+    4
+  ],
+  "assessment_log_likelihood": -463801.61014691973,
+  "pooled_log_likelihood": -474003.86564230657,
+  "assessment_log_likelihood_gain": 10202.255495386522,
+  "gain_standard_error_scaffold_clustered": 184.3581691425234,
+  "assessment_scaffolds": 256,
+  "calibration_bins": [
+    {
+      "lower": 0.0,
+      "upper": 0.002,
+      "sites": 0,
+      "expected_changes": 0.0,
+      "observed_changes": 0
+    },
+    {
+      "lower": 0.002,
+      "upper": 0.004,
+      "sites": 41296,
+      "expected_changes": 163.9869214111035,
+      "observed_changes": 174
+    },
+    {
+      "lower": 0.004,
+      "upper": 0.006,
+      "sites": 10785151,
+      "expected_changes": 45689.52108773409,
+      "observed_changes": 45779
+    },
+    {
+      "lower": 0.006,
+      "upper": 0.01,
+      "sites": 1681864,
+      "expected_changes": 13100.231712792236,
+      "observed_changes": 13025
+    },
+    {
+      "lower": 0.01,
+      "upper": 0.02,
+      "sites": 251492,
+      "expected_changes": 3491.501949637822,
+      "observed_changes": 3668
+    },
+    {
+      "lower": 0.02,
+      "upper": 0.05,
+      "sites": 34967,
+      "expected_changes": 1167.46474533019,
+      "observed_changes": 1072
+    },
+    {
+      "lower": 0.05,
+      "upper": 0.1,
+      "sites": 4296,
+      "expected_changes": 273.8951764415709,
+      "observed_changes": 266
+    },
+    {
+      "lower": 0.1,
+      "upper": 1.0,
+      "sites": 934,
+      "expected_changes": 139.4876165479516,
+      "observed_changes": 135
+    }
+  ],
+  "assessment_expected_changes": 64026.089209894315,
+  "assessment_observed_changes": 64119,
+  "assessment_multiclass_brier": 0.009969573656653487
+}

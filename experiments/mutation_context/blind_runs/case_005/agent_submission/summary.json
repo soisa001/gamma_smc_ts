@@ -1,0 +1,79 @@
+{
+  "model": "Homogeneous Bernoulli mutation rate; uniform among the three non-parent alleles",
+  "seed": 0,
+  "threads": 4,
+  "memory_limit_gb": 26,
+  "calibration_sites": 4000000,
+  "calibration_changed_alleles": 19832,
+  "estimated_mutation_probability": 0.004958,
+  "probability_parent_allele": 0.995042,
+  "probability_each_nonparent_allele": 0.0016526666666666667,
+  "query_count": 1000000,
+  "unique_query_count": 1000000,
+  "duplicate_query_rows": 0,
+  "expected_changed_alleles": 4958.0,
+  "expected_changed_alleles_from_serialized_predictions": 4958.000000000018,
+  "mutation_probability_95_percent_binomial_ci": [
+    0.0048894012639064625,
+    0.0050273168623372584
+  ],
+  "expected_changed_alleles_95_percent_parameter_ci": [
+    4889.401263906462,
+    5027.3168623372585
+  ],
+  "approximate_realized_count_95_percent_predictive_interval": [
+    4804.083547437995,
+    5111.916452562005
+  ],
+  "uncertainty_assumptions": "Homogeneous independent changes and unchanged process; predictive interval adds approximate rate estimation variance. These intervals do not cover model misspecification.",
+  "parent_base_counts_queried": {
+    "A": 249285,
+    "C": 249347,
+    "G": 250686,
+    "T": 250682
+  },
+  "audit": {
+    "rows_checked": 1000000,
+    "query_order_preserved": true,
+    "all_probabilities_finite_nonnegative": true,
+    "maximum_absolute_row_sum_error": 0.0,
+    "minimum_probability": 0.0016526666666666667,
+    "maximum_probability": 0.995042,
+    "six_original_inputs_unchanged": true
+  },
+  "predictions_file": "predictions.tsv",
+  "predictions_sha256": "4bfe3ca7ed8f550d7ab8bd059df33aff3f9586ff2b75d3531f59f5687bd6e7e7",
+  "inputs": {
+    "TASK.md": {
+      "sha256": "01e9a24ad8c515f7008a198c88baa920a3dbe5365172eb07b2dc428407f4b11c",
+      "bytes": 1346
+    },
+    "metadata.json": {
+      "sha256": "4234a39b2e84b229ee6844dd36767489c2d5fa780a5fcd55920bf6331679eb59",
+      "bytes": 158
+    },
+    "calibration_parent.fasta": {
+      "sha256": "47ba6d4036eeae46f8c61f28533b384d6c0a224c046aa1bc90c0d3b017d4ed27",
+      "bytes": 4051200
+    },
+    "calibration_offspring.fasta": {
+      "sha256": "456b03a01fb44bb9e8172a3de659f8b0b4635bda1da33f54fa7d44b83b3af571",
+      "bytes": 4051200
+    },
+    "new_parent.fasta": {
+      "sha256": "4b199a9fc0f96ca5bfcf190582a1c49a332b8892a40b5e2210b30904bb84665b",
+      "bytes": 1012800
+    },
+    "queries.tsv": {
+      "sha256": "5d9e575e3091842cb78a0a39dec4ed3c2f3e21e461c35395d24c1a3473a098aa",
+      "bytes": 19777896
+    }
+  },
+  "runtime": {
+    "python": "3.13.15",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.1",
+    "lightgbm": "4.7.0"
+  }
+}

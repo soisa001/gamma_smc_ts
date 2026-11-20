@@ -1,0 +1,14 @@
+{
+  "query_count": 1000000,
+  "expected_changed_alleles": 4958.0,
+  "audit": {
+    "rows_checked": 1000000,
+    "query_order_preserved": true,
+    "all_probabilities_finite_nonnegative": true,
+    "maximum_absolute_row_sum_error": 0.0,
+    "minimum_probability": 0.0016526666666666667,
+    "maximum_probability": 0.995042,
+    "six_original_inputs_unchanged": true
+  },
+  "predictions_sha256": "4bfe3ca7ed8f550d7ab8bd059df33aff3f9586ff2b75d3531f59f5687bd6e7e7"
+}

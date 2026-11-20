@@ -1,0 +1,537 @@
+{
+  "scaffolds": [
+    {
+      "id": "scaffold_0000",
+      "length": 50000,
+      "changed": 264,
+      "gc": 0.50272
+    },
+    {
+      "id": "scaffold_0001",
+      "length": 50000,
+      "changed": 230,
+      "gc": 0.50064
+    },
+    {
+      "id": "scaffold_0002",
+      "length": 50000,
+      "changed": 239,
+      "gc": 0.49968
+    },
+    {
+      "id": "scaffold_0003",
+      "length": 50000,
+      "changed": 228,
+      "gc": 0.50064
+    },
+    {
+      "id": "scaffold_0004",
+      "length": 50000,
+      "changed": 271,
+      "gc": 0.49882
+    },
+    {
+      "id": "scaffold_0005",
+      "length": 50000,
+      "changed": 233,
+      "gc": 0.50328
+    },
+    {
+      "id": "scaffold_0006",
+      "length": 50000,
+      "changed": 224,
+      "gc": 0.4971
+    },
+    {
+      "id": "scaffold_0007",
+      "length": 50000,
+      "changed": 261,
+      "gc": 0.50342
+    },
+    {
+      "id": "scaffold_0008",
+      "length": 50000,
+      "changed": 248,
+      "gc": 0.4993
+    },
+    {
+      "id": "scaffold_0009",
+      "length": 50000,
+      "changed": 241,
+      "gc": 0.50238
+    },
+    {
+      "id": "scaffold_0010",
+      "length": 50000,
+      "changed": 222,
+      "gc": 0.50332
+    },
+    {
+      "id": "scaffold_0011",
+      "length": 50000,
+      "changed": 225,
+      "gc": 0.4994
+    },
+    {
+      "id": "scaffold_0012",
+      "length": 50000,
+      "changed": 262,
+      "gc": 0.5007
+    },
+    {
+      "id": "scaffold_0013",
+      "length": 50000,
+      "changed": 239,
+      "gc": 0.50238
+    },
+    {
+      "id": "scaffold_0014",
+      "length": 50000,
+      "changed": 260,
+      "gc": 0.49814
+    },
+    {
+      "id": "scaffold_0015",
+      "length": 50000,
+      "changed": 240,
+      "gc": 0.49716
+    },
+    {
+      "id": "scaffold_0016",
+      "length": 50000,
+      "changed": 270,
+      "gc": 0.49478
+    },
+    {
+      "id": "scaffold_0017",
+      "length": 50000,
+      "changed": 239,
+      "gc": 0.50394
+    },
+    {
+      "id": "scaffold_0018",
+      "length": 50000,
+      "changed": 237,
+      "gc": 0.50246
+    },
+    {
+      "id": "scaffold_0019",
+      "length": 50000,
+      "changed": 260,
+      "gc": 0.50238
+    },
+    {
+      "id": "scaffold_0020",
+      "length": 50000,
+      "changed": 240,
+      "gc": 0.49944
+    },
+    {
+      "id": "scaffold_0021",
+      "length": 50000,
+      "changed": 259,
+      "gc": 0.49732
+    },
+    {
+      "id": "scaffold_0022",
+      "length": 50000,
+      "changed": 247,
+      "gc": 0.49844
+    },
+    {
+      "id": "scaffold_0023",
+      "length": 50000,
+      "changed": 285,
+      "gc": 0.49836
+    },
+    {
+      "id": "scaffold_0024",
+      "length": 50000,
+      "changed": 275,
+      "gc": 0.49906
+    },
+    {
+      "id": "scaffold_0025",
+      "length": 50000,
+      "changed": 238,
+      "gc": 0.49824
+    },
+    {
+      "id": "scaffold_0026",
+      "length": 50000,
+      "changed": 230,
+      "gc": 0.50068
+    },
+    {
+      "id": "scaffold_0027",
+      "length": 50000,
+      "changed": 273,
+      "gc": 0.5008
+    },
+    {
+      "id": "scaffold_0028",
+      "length": 50000,
+      "changed": 269,
+      "gc": 0.49992
+    },
+    {
+      "id": "scaffold_0029",
+      "length": 50000,
+      "changed": 253,
+      "gc": 0.5033
+    },
+    {
+      "id": "scaffold_0030",
+      "length": 50000,
+      "changed": 245,
+      "gc": 0.49674
+    },
+    {
+      "id": "scaffold_0031",
+      "length": 50000,
+      "changed": 228,
+      "gc": 0.5039
+    },
+    {
+      "id": "scaffold_0032",
+      "length": 50000,
+      "changed": 222,
+      "gc": 0.49882
+    },
+    {
+      "id": "scaffold_0033",
+      "length": 50000,
+      "changed": 253,
+      "gc": 0.5001
+    },
+    {
+      "id": "scaffold_0034",
+      "length": 50000,
+      "changed": 253,
+      "gc": 0.50174
+    },
+    {
+      "id": "scaffold_0035",
+      "length": 50000,
+      "changed": 244,
+      "gc": 0.49654
+    },
+    {
+      "id": "scaffold_0036",
+      "length": 50000,
+      "changed": 254,
+      "gc": 0.49514
+    },
+    {
+      "id": "scaffold_0037",
+      "length": 50000,
+      "changed": 255,
+      "gc": 0.50172
+    },
+    {
+      "id": "scaffold_0038",
+      "length": 50000,
+      "changed": 241,
+      "gc": 0.5014
+    },
+    {
+      "id": "scaffold_0039",
+      "length": 50000,
+      "changed": 260,
+      "gc": 0.5008
+    },
+    {
+      "id": "scaffold_0040",
+      "length": 50000,
+      "changed": 232,
+      "gc": 0.49618
+    },
+    {
+      "id": "scaffold_0041",
+      "length": 50000,
+      "changed": 254,
+      "gc": 0.50048
+    },
+    {
+      "id": "scaffold_0042",
+      "length": 50000,
+      "changed": 260,
+      "gc": 0.50306
+    },
+    {
+      "id": "scaffold_0043",
+      "length": 50000,
+      "changed": 228,
+      "gc": 0.50156
+    },
+    {
+      "id": "scaffold_0044",
+      "length": 50000,
+      "changed": 242,
+      "gc": 0.50114
+    },
+    {
+      "id": "scaffold_0045",
+      "length": 50000,
+      "changed": 266,
+      "gc": 0.499
+    },
+    {
+      "id": "scaffold_0046",
+      "length": 50000,
+      "changed": 266,
+      "gc": 0.50162
+    },
+    {
+      "id": "scaffold_0047",
+      "length": 50000,
+      "changed": 241,
+      "gc": 0.49844
+    },
+    {
+      "id": "scaffold_0048",
+      "length": 50000,
+      "changed": 248,
+      "gc": 0.50242
+    },
+    {
+      "id": "scaffold_0049",
+      "length": 50000,
+      "changed": 248,
+      "gc": 0.49722
+    },
+    {
+      "id": "scaffold_0050",
+      "length": 50000,
+      "changed": 242,
+      "gc": 0.4976
+    },
+    {
+      "id": "scaffold_0051",
+      "length": 50000,
+      "changed": 266,
+      "gc": 0.4968
+    },
+    {
+      "id": "scaffold_0052",
+      "length": 50000,
+      "changed": 233,
+      "gc": 0.49968
+    },
+    {
+      "id": "scaffold_0053",
+      "length": 50000,
+      "changed": 257,
+      "gc": 0.5016
+    },
+    {
+      "id": "scaffold_0054",
+      "length": 50000,
+      "changed": 250,
+      "gc": 0.50046
+    },
+    {
+      "id": "scaffold_0055",
+      "length": 50000,
+      "changed": 263,
+      "gc": 0.50018
+    },
+    {
+      "id": "scaffold_0056",
+      "length": 50000,
+      "changed": 246,
+      "gc": 0.4999
+    },
+    {
+      "id": "scaffold_0057",
+      "length": 50000,
+      "changed": 207,
+      "gc": 0.49792
+    },
+    {
+      "id": "scaffold_0058",
+      "length": 50000,
+      "changed": 268,
+      "gc": 0.49942
+    },
+    {
+      "id": "scaffold_0059",
+      "length": 50000,
+      "changed": 239,
+      "gc": 0.49882
+    },
+    {
+      "id": "scaffold_0060",
+      "length": 50000,
+      "changed": 251,
+      "gc": 0.50226
+    },
+    {
+      "id": "scaffold_0061",
+      "length": 50000,
+      "changed": 246,
+      "gc": 0.49766
+    },
+    {
+      "id": "scaffold_0062",
+      "length": 50000,
+      "changed": 233,
+      "gc": 0.49872
+    },
+    {
+      "id": "scaffold_0063",
+      "length": 50000,
+      "changed": 234,
+      "gc": 0.49816
+    },
+    {
+      "id": "scaffold_0064",
+      "length": 50000,
+      "changed": 249,
+      "gc": 0.49862
+    },
+    {
+      "id": "scaffold_0065",
+      "length": 50000,
+      "changed": 256,
+      "gc": 0.49596
+    },
+    {
+      "id": "scaffold_0066",
+      "length": 50000,
+      "changed": 260,
+      "gc": 0.49912
+    },
+    {
+      "id": "scaffold_0067",
+      "length": 50000,
+      "changed": 247,
+      "gc": 0.5006
+    },
+    {
+      "id": "scaffold_0068",
+      "length": 50000,
+      "changed": 242,
+      "gc": 0.4993
+    },
+    {
+      "id": "scaffold_0069",
+      "length": 50000,
+      "changed": 264,
+      "gc": 0.49952
+    },
+    {
+      "id": "scaffold_0070",
+      "length": 50000,
+      "changed": 251,
+      "gc": 0.50204
+    },
+    {
+      "id": "scaffold_0071",
+      "length": 50000,
+      "changed": 259,
+      "gc": 0.50236
+    },
+    {
+      "id": "scaffold_0072",
+      "length": 50000,
+      "changed": 257,
+      "gc": 0.4995
+    },
+    {
+      "id": "scaffold_0073",
+      "length": 50000,
+      "changed": 225,
+      "gc": 0.50172
+    },
+    {
+      "id": "scaffold_0074",
+      "length": 50000,
+      "changed": 242,
+      "gc": 0.5027
+    },
+    {
+      "id": "scaffold_0075",
+      "length": 50000,
+      "changed": 251,
+      "gc": 0.50148
+    },
+    {
+      "id": "scaffold_0076",
+      "length": 50000,
+      "changed": 238,
+      "gc": 0.50268
+    },
+    {
+      "id": "scaffold_0077",
+      "length": 50000,
+      "changed": 229,
+      "gc": 0.4992
+    },
+    {
+      "id": "scaffold_0078",
+      "length": 50000,
+      "changed": 238,
+      "gc": 0.50004
+    },
+    {
+      "id": "scaffold_0079",
+      "length": 50000,
+      "changed": 287,
+      "gc": 0.497
+    }
+  ],
+  "n": 4000000,
+  "changed": 19832,
+  "rate": 0.004958,
+  "spectrum": [
+    [
+      996512,
+      1721,
+      1687,
+      1698
+    ],
+    [
+      1703,
+      995895,
+      1667,
+      1636
+    ],
+    [
+      1678,
+      1653,
+      994050,
+      1580
+    ],
+    [
+      1601,
+      1627,
+      1581,
+      993711
+    ]
+  ],
+  "new_scaffolds": {
+    "scaffold_0000": 50000,
+    "scaffold_0001": 50000,
+    "scaffold_0002": 50000,
+    "scaffold_0003": 50000,
+    "scaffold_0004": 50000,
+    "scaffold_0005": 50000,
+    "scaffold_0006": 50000,
+    "scaffold_0007": 50000,
+    "scaffold_0008": 50000,
+    "scaffold_0009": 50000,
+    "scaffold_0010": 50000,
+    "scaffold_0011": 50000,
+    "scaffold_0012": 50000,
+    "scaffold_0013": 50000,
+    "scaffold_0014": 50000,
+    "scaffold_0015": 50000,
+    "scaffold_0016": 50000,
+    "scaffold_0017": 50000,
+    "scaffold_0018": 50000,
+    "scaffold_0019": 50000
+  }
+}
+Offsets [(-30, np.float64(13.0)), (-29, np.float64(16.7)), (-28, np.float64(16.5)), (-27, np.float64(11.4)), (-26, np.float64(6.3)), (-25, np.float64(23.5)), (-24, np.float64(14.6)), (-23, np.float64(12.0)), (-22, np.float64(11.5)), (-21, np.float64(25.2)), (-20, np.float64(6.5)), (-19, np.float64(5.4)), (-18, np.float64(10.6)), (-17, np.float64(8.9)), (-16, np.float64(20.9)), (-15, np.float64(18.5)), (-14, np.float64(12.2)), (-13, np.float64(12.5)), (-12, np.float64(14.6)), (-11, np.float64(16.8)), (-10, np.float64(9.5)), (-9, np.float64(16.7)), (-8, np.float64(14.6)), (-7, np.float64(7.3)), (-6, np.float64(7.3)), (-5, np.float64(15.7)), (-4, np.float64(10.6)), (-3, np.float64(13.7)), (-2, np.float64(6.3)), (-1, np.float64(10.2)), (1, np.float64(14.4)), (2, np.float64(11.6)), (3, np.float64(4.7)), (4, np.float64(11.0)), (5, np.float64(15.7)), (6, np.float64(16.6)), (7, np.float64(6.1)), (8, np.float64(10.4)), (9, np.float64(12.3)), (10, np.float64(10.5)), (11, np.float64(21.8)), (12, np.float64(7.4)), (13, np.float64(14.2)), (14, np.float64(15.9)), (15, np.float64(10.0)), (16, np.float64(11.2)), (17, np.float64(9.5)), (18, np.float64(6.5)), (19, np.float64(7.3)), (20, np.float64(11.2)), (21, np.float64(7.8)), (22, np.float64(12.9)), (23, np.float64(20.8)), (24, np.float64(21.0)), (25, np.float64(5.2)), (26, np.float64(9.8)), (27, np.float64(12.6)), (28, np.float64(19.6)), (29, np.float64(11.6)), (30, np.float64(13.4))]
+Moduli [(2, np.float64(0.9)), (3, np.float64(0.1)), (4, np.float64(4.6)), (5, np.float64(4.7)), (6, np.float64(1.1)), (7, np.float64(13.4)), (8, np.float64(7.7)), (9, np.float64(4.3)), (10, np.float64(9.0)), (11, np.float64(5.4)), (12, np.float64(7.0)), (13, np.float64(25.3)), (14, np.float64(19.7)), (15, np.float64(9.1)), (16, np.float64(16.8)), (17, np.float64(16.1)), (18, np.float64(8.3)), (19, np.float64(12.9)), (20, np.float64(20.7)), (21, np.float64(19.7)), (22, np.float64(20.1)), (23, np.float64(18.8)), (24, np.float64(21.8)), (25, np.float64(32.0)), (26, np.float64(40.1)), (27, np.float64(20.8)), (28, np.float64(40.9)), (29, np.float64(27.1)), (30, np.float64(24.8)), (31, np.float64(33.8)), (32, np.float64(31.3)), (33, np.float64(28.5)), (34, np.float64(29.6)), (35, np.float64(53.3)), (36, np.float64(32.8)), (37, np.float64(33.1)), (38, np.float64(38.4)), (39, np.float64(63.4)), (40, np.float64(45.4))]

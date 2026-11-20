@@ -1,0 +1,98 @@
+{
+  "config": {
+    "method": "nested_hierarchical_tables_v1",
+    "sample_manifest_sha256": "e0eaf4f02b3d2dd2010c13969fae8062d54f25328cfdeb655a69d5ee9c47aea2",
+    "sizes": [
+      4000000,
+      16000000,
+      64000000
+    ],
+    "smoothing_grid": [
+      1.0,
+      1.7782794100389228,
+      3.1622776601683795,
+      5.623413251903491,
+      10.0,
+      17.78279410038923,
+      31.622776601683793,
+      56.23413251903491,
+      100.0,
+      177.82794100389228,
+      316.22776601683796,
+      562.341325190349,
+      1000.0,
+      1778.2794100389228,
+      3162.2776601683795,
+      5623.413251903491,
+      10000.0,
+      17782.794100389227,
+      31622.776601683792,
+      56234.13251903491,
+      100000.0,
+      1000000000000.0
+    ],
+    "windows": [
+      [
+        0,
+        0
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        5
+      ]
+    ]
+  },
+  "memory_budget_gb": 26,
+  "results": [
+    {
+      "calibration_sites": 4000000,
+      "output": "blind_runs/case_005/learning_curve/calibration_4000000.json",
+      "selected_window": [
+        5,
+        5
+      ]
+    },
+    {
+      "calibration_sites": 16000000,
+      "output": "blind_runs/case_005/learning_curve/calibration_16000000.json",
+      "selected_window": [
+        5,
+        4
+      ]
+    },
+    {
+      "calibration_sites": 64000000,
+      "output": "blind_runs/case_005/learning_curve/calibration_64000000.json",
+      "selected_window": [
+        5,
+        5
+      ]
+    }
+  ],
+  "source_sha256": "00104c532a59bfd539f41a289e38dea24809f1356cabd7496739abee95baf855",
+  "workers": 4
+}

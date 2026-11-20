@@ -1,0 +1,260 @@
+scaffold pooled 0 delta NLL 0.0
+scaffold source 0 delta NLL -1.9825
+scaffold source_gc 0 delta NLL 0.6061
+scaffold context_3 0 delta NLL 29.0636
+scaffold context_rc_3 0 delta NLL 17.6698
+scaffold context_5 1000 delta NLL 404.2569
+scaffold context_5 10000 delta NLL 47.4439
+scaffold context_5 100000 delta NLL 2.1813
+scaffold context_rc_5 1000 delta NLL 266.3601
+scaffold context_rc_5 10000 delta NLL 57.6791
+scaffold context_rc_5 100000 delta NLL 2.6891
+scaffold context_7 1000 delta NLL 200.0893
+scaffold context_7 10000 delta NLL -3.9977
+scaffold context_7 100000 delta NLL -0.768
+scaffold context_rc_7 1000 delta NLL 296.5502
+scaffold context_rc_7 10000 delta NLL -6.6133
+scaffold context_rc_7 100000 delta NLL -1.379
+scaffold dinuc_-1 0 delta NLL 7.2046
+scaffold dinuc_1 0 delta NLL -0.09
+scaffold position_bins_10 0 delta NLL 10.5523
+scaffold position_bins_50 0 delta NLL 44.1308
+scaffold position_bins_100 0 delta NLL 73.9371
+scaffold position_mod_2 0 delta NLL 0.6485
+scaffold position_mod_3 0 delta NLL 1.4405
+scaffold position_mod_7 0 delta NLL -0.5955
+scaffold position_mod_13 0 delta NLL 8.7805
+scaffold position_mod_39 0 delta NLL 14.9363
+scaffold gc_window_11 0 delta NLL 7.3234
+scaffold gc_window_51 0 delta NLL 2.6268
+scaffold gc_window_201 0 delta NLL 2.1243
+scaffold gc_window_1001 0 delta NLL 0.7104
+scaffold homopolymer_neighbor 0 delta NLL 1.4002
+scaffold source_spectrum delta NLL 5.6496
+scaffold xor_spectrum delta NLL 4.0393
+scaffold transition_spectrum delta NLL 1.1727
+scaffold source_rate_xor_spectrum delta NLL 2.0568
+contiguous_region pooled 0 delta NLL 0.0
+contiguous_region source 0 delta NLL -2.8811
+contiguous_region source_gc 0 delta NLL 0.546
+contiguous_region context_3 0 delta NLL 29.3032
+contiguous_region context_rc_3 0 delta NLL 20.48
+contiguous_region context_5 1000 delta NLL 411.1334
+contiguous_region context_5 10000 delta NLL 50.6385
+contiguous_region context_5 100000 delta NLL 2.6241
+contiguous_region context_rc_5 1000 delta NLL 263.2653
+contiguous_region context_rc_5 10000 delta NLL 57.0352
+contiguous_region context_rc_5 100000 delta NLL 2.6656
+contiguous_region context_7 1000 delta NLL 216.3429
+contiguous_region context_7 10000 delta NLL -1.3887
+contiguous_region context_7 100000 delta NLL -0.4922
+contiguous_region context_rc_7 1000 delta NLL 315.9023
+contiguous_region context_rc_7 10000 delta NLL -3.6968
+contiguous_region context_rc_7 100000 delta NLL -1.0714
+contiguous_region dinuc_-1 0 delta NLL 1.5881
+contiguous_region dinuc_1 0 delta NLL 3.2862
+contiguous_region position_bins_10 0 delta NLL 0.0
+contiguous_region position_bins_50 0 delta NLL 0.0
+contiguous_region position_bins_100 0 delta NLL 0.0
+contiguous_region position_mod_2 0 delta NLL 0.8925
+contiguous_region position_mod_3 0 delta NLL 1.7918
+contiguous_region position_mod_7 0 delta NLL 0.6512
+contiguous_region position_mod_13 0 delta NLL -1.9163
+contiguous_region position_mod_39 0 delta NLL 12.6586
+contiguous_region gc_window_11 0 delta NLL 9.3825
+contiguous_region gc_window_51 0 delta NLL 2.3777
+contiguous_region gc_window_201 0 delta NLL 2.7405
+contiguous_region gc_window_1001 0 delta NLL 0.397
+contiguous_region homopolymer_neighbor 0 delta NLL 2.5711
+contiguous_region source_spectrum delta NLL 8.2579
+contiguous_region xor_spectrum delta NLL 1.2254
+contiguous_region transition_spectrum delta NLL 0.6222
+contiguous_region source_rate_xor_spectrum delta NLL -1.6558
+{
+  "source": {
+    "chi2": 8.778218136093008,
+    "p": 0.03238965639168078,
+    "dof": 3,
+    "counts": [
+      [
+        996512,
+        5106
+      ],
+      [
+        995895,
+        5006
+      ],
+      [
+        994050,
+        4911
+      ],
+      [
+        993711,
+        4809
+      ]
+    ]
+  },
+  "source_gc": {
+    "chi2": 0.0005749650630510615,
+    "p": 0.9808698148286275,
+    "dof": 1,
+    "counts": [
+      [
+        1990223,
+        9915
+      ],
+      [
+        1989945,
+        9917
+      ]
+    ]
+  },
+  "position_bins_10": {
+    "chi2": 8.9236302081079,
+    "p": 0.44435350890846503,
+    "dof": 9,
+    "counts": [
+      [
+        398031,
+        1969
+      ],
+      [
+        398025,
+        1975
+      ],
+      [
+        398026,
+        1974
+      ],
+      [
+        398075,
+        1925
+      ],
+      [
+        398001,
+        1999
+      ],
+      [
+        397999,
+        2001
+      ],
+      [
+        397945,
+        2055
+      ],
+      [
+        398091,
+        1909
+      ],
+      [
+        397966,
+        2034
+      ],
+      [
+        398009,
+        1991
+      ]
+    ]
+  },
+  "gc_window_1001": {
+    "chi2": 0.197196180710938,
+    "p": 0.6569935905549922,
+    "dof": 1,
+    "counts": [
+      [
+        1994368,
+        9906
+      ],
+      [
+        1985800,
+        9926
+      ]
+    ]
+  },
+  "homopolymer_neighbor": {
+    "chi2": 0.4041525024399635,
+    "p": 0.8170326258324763,
+    "dof": 2,
+    "counts": [
+      [
+        2241528,
+        11183
+      ],
+      [
+        1490913,
+        7397
+      ],
+      [
+        247727,
+        1252
+      ]
+    ]
+  },
+  "scaffold_heterogeneity": {
+    "chi2": 76.17112152743096,
+    "df": 79,
+    "p": 0.5692907011111946,
+    "mean_changes": 247.9,
+    "variance_changes": 237.8379746835443
+  },
+  "xor_spectrum": {
+    "counts": [
+      6585,
+      6628,
+      6619
+    ],
+    "chi2": 0.15560709963695035,
+    "p": 0.9251461538226318
+  },
+  "all_12_substitution_rates": {
+    "chi2": 14.24375637490451,
+    "df": 11,
+    "p": 0.2197977139755887
+  },
+  "mutation_pair_counts": [
+    {
+      "lag": 1,
+      "observed_pairs": 96,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 2,
+      "observed_pairs": 94,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 3,
+      "observed_pairs": 100,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 5,
+      "observed_pairs": 77,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 10,
+      "observed_pairs": 110,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 50,
+      "observed_pairs": 91,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 100,
+      "observed_pairs": 85,
+      "iid_expected_pairs": 98.32705599999998
+    },
+    {
+      "lag": 1000,
+      "observed_pairs": 80,
+      "iid_expected_pairs": 98.32705599999998
+    }
+  ],
+  "rate_ci95": [
+    0.0048894012639064625,
+    0.0050273168623372584
+  ]
+}

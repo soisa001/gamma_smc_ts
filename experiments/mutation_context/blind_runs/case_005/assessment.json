@@ -1,0 +1,24 @@
+{
+  "full_window_discovery": false,
+  "selected_model": "Homogeneous rate and uniform alternative alleles",
+  "true_offsets": [
+    -5,
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "selected_offsets": [
+    0
+  ],
+  "hidden_grading_after_final_submission": true,
+  "scientific_followup_hints": 0,
+  "post_score_revisions": 0,
+  "grade_sha256": "2069f4e475791676233c723a1f671b5d0444cdb3ca61b481b0cedd4867f32034",
+  "scope": "One blind run at this sample size; no population success-rate claim."
+}
