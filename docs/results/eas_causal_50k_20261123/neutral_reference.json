@@ -1,0 +1,9 @@
+{
+  "sha256": "e3832d8ca327900bfef578a224cf9190597147f478a3c5c7b405ac478f266382",
+  "source_bank": "c7707c23569c6db4db4416a0410bb16cdd25cfa1a859cca6e9027aed9aac4aa5",
+  "focal_bp": 500000,
+  "age_years": 50000,
+  "calibration": 100,
+  "heldout": 100,
+  "fixed_in_audited_neutral_proposals": 0
+}

@@ -1,0 +1,13 @@
+origin	window	alpha	fp	n	fpr
+de_novo	10k	0.05	5	100	0.05
+de_novo	10k	0.01	1	100	0.01
+de_novo	50k	0.05	7	100	0.07
+de_novo	50k	0.01	2	100	0.02
+de_novo	50_30k	0.05	3	100	0.03
+de_novo	50_30k	0.01	2	100	0.02
+introgression	10k	0.05	2	100	0.02
+introgression	10k	0.01	0	100	0.0
+introgression	50k	0.05	3	100	0.03
+introgression	50k	0.01	0	100	0.0
+introgression	50_30k	0.05	2	100	0.02
+introgression	50_30k	0.01	0	100	0.0

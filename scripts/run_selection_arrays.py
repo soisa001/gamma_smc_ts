@@ -20,29 +20,42 @@ import run_ongoing_selection_pilot as ancestor
 base=ancestor.base
 
 
-def timing(origin,onset_years=10000):
+def timing(origin,onset_years=10000,allele_age_years=None):
     assert onset_years%25==0 and 0<onset_years<=50000
     selection_generations=onset_years//25
-    age=2000 if origin=='introgression' else selection_generations
+    if allele_age_years is None:
+        age=2000 if origin=='introgression' else selection_generations
+    else:
+        assert allele_age_years%25==0 and allele_age_years>=onset_years
+        age=allele_age_years//25
     first_selected_tick=age-selection_generations+2
     return age,first_selected_tick
 
 
 def simulate(cfg,task,directory):
     started=time.monotonic();origin=task['origin'];label=cfg['seed_namespace']+task['unit']
-    age,first=timing(origin,cfg['selection_start_years']);last=age+1
+    explicit_age=cfg.get('allele_age_years')
+    age,first=timing(origin,cfg['selection_start_years'],explicit_age);last=age+1
     end=cfg['selection_end_years'];assert end%25==0 and 0<=end<cfg['selection_start_years']
     stop=age-end//25+2
     carrier_ids,sizes=ancestor.onset(dict(cfg,ancestry_start_generations=age),origin,label,directory)
     s=task['selection'];selected=task['cohort']=='selected';initial_s=s if first==2 else 0.
     schedules=[f'{i+1} early() {{ p0.setSubpopulationSize({n}); }}' for i,n in enumerate(sizes) if i and n!=sizes[i-1]]
     quote=lambda name:json.dumps(str(directory/name))
+    retain_fixed=cfg.get('retain_fixation',False)
     reject='if (af==0.0 | af==1.0) sim.simulationFinished();' if selected else ''
-    activate=f'''{first} early() {{
+    if retain_fixed:
+        reject='if (copies==0) sim.simulationFinished();'
+    # The explicit-age model changes parental fitness at the boundary before
+    # the next WF offspring generation. Historical runs retain their schedule.
+    activation_tick=first-1 if explicit_age is not None else first
+    stop_tick=stop-1 if explicit_age is not None else stop
+    stage='late' if explicit_age is not None else 'early'
+    activate=f'''{activation_tick} {stage}() {{
  muts=sim.mutationsOfType(m2); if (size(muts)) muts.setSelectionCoeff({s});
  sim.recalculateFitness();
 }}''' if first>2 else ''
-    deactivate=f'{stop} early() {{ muts=sim.mutationsOfType(m2); if (size(muts)) muts.setSelectionCoeff(0.0); sim.recalculateFitness(); }}' if end else ''
+    deactivate=f'{stop_tick} {stage}() {{ muts=sim.mutationsOfType(m2); if (size(muts)) muts.setSelectionCoeff(0.0); sim.recalculateFitness(); }}' if end else ''
     script=f'''initialize() {{
  initializeSLiMOptions(keepPedigrees=T); initializeTreeSeq(); initializeMutationRate(0);
  initializeMutationType("m0",0.5,"f",0.0);
@@ -81,12 +94,12 @@ def simulate(cfg,task,directory):
     np.testing.assert_equal(int(trajectory[0,4]),len(carrier_ids))
     # Initial mutation already has s for a de novo onset; introgressed alleles
     # must remain neutral through the last pre-selection parental generation.
-    expected=np.where(trajectory[:,0]>=stop,0.,np.where(trajectory[:,0]>=first,s,initial_s))
+    expected=np.where((end!=0)&(trajectory[:,0]>=stop_tick),0.,np.where(trajectory[:,0]>=activation_tick,s,initial_s))
     if selected:np.testing.assert_allclose(trajectory[:,3][trajectory[:,4]>0],expected[trajectory[:,4]>0],atol=1e-10)
     else:assert np.all(trajectory[:,3]==0)
     np.savetxt(directory/'trajectory.tsv',np.c_[(last-trajectory[:,0])*25,exact,trajectory[:,2:]],delimiter='\t',
         header='years_ago\taf\tdiploids\tselection_coefficient\tfocal_copies',comments='')
-    accepted=bool(not selected or 0<exact[-1]<1)
+    accepted=bool(exact[-1]>0 if retain_fixed else (not selected or 0<exact[-1]<1))
     at_onset=age-cfg['selection_start_years']//25
     record=dict(accepted=accepted,initial_frequency=float(exact[0]),final_frequency=float(exact[-1]),
         selection_onset_frequency=float(exact[at_onset]) if at_onset<len(exact) else None,

@@ -134,7 +134,7 @@ def report():
     plot(rows)
 
 
-def plot(rows):
+def plot(rows, out=OUT):
     plt.rcParams.update({'font.size':14,'pdf.fonttype':42,'ps.fonttype':42})
     colors=('#145488','#a94621')
     strengths=sorted({r['s'] for r in rows})
@@ -159,7 +159,7 @@ def plot(rows):
             for spine in ax.spines.values():spine.set_visible(False)
         axes[0].set_ylabel('Selection coefficient')
         fig.text(.52,.045,'Each cell uses 100 replicates. Orange shows the held-out neutral FPR for each window.',ha='center',fontsize=13)
-        save_figure(fig,f'heatmap_{a:g}')
+        save_figure(fig,f'heatmap_{a:g}',out)
     fig, axes=plt.subplots(2,3,figsize=(11,8.5),sharex=True,sharey=True)
     fig.subplots_adjust(top=.78,left=.09,right=.98,bottom=.13,wspace=.14,hspace=.26)
     fig.suptitle('Cumulative posterior-mass detection',fontsize=22,y=.975)
@@ -179,12 +179,12 @@ def plot(rows):
     fig.supxlabel('Selection coefficient',fontsize=16,y=.04)
     legend=[Line2D([0],[0],color=c,linewidth=3) for c in colors]+[Line2D([0],[0],color='#333333',marker='o'),Line2D([0],[0],color='#333333',linestyle='--')]
     fig.legend(legend,['De novo','1% introgression','TPR','Neutral FPR'],loc='upper center',bbox_to_anchor=(.5,.92),ncol=4,frameon=False)
-    save_figure(fig,'power_by_strength')
+    save_figure(fig,'power_by_strength',out)
 
 
-def save_figure(fig,name):
+def save_figure(fig,name,out=OUT):
     for ext in ('png','pdf'):
-        fig.savefig(OUT/f'{name}.{ext}',dpi=170)
+        fig.savefig(out/f'{name}.{ext}',dpi=170)
     plt.close(fig)
 
 
