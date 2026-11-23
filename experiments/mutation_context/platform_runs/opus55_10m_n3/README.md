@@ -1,6 +1,6 @@
 # Ten-million-base platform experiment
 
-Status on 2026-11-20: task published and launch plan validated; **no platform rollouts launched**. Automatic approval review rejected the launch tool call with the sole reason `blocked by policy`. A subsequent environment-filtered run listing returned `[]`. No alternate launch route was attempted.
+On November 22, 2026 (Chicago time), the launch retry started **three instances** in Hyperfocal run `run_01a205f5-54b2-7132-911f-9fbcc93a7223`. The start receipt confirmed the requested model and pinned task commit. The environment run list was empty immediately before launch. At the initial status check the worker was running and the problem was pending.
 
 ## Frozen protocol
 
@@ -35,9 +35,9 @@ The author-side reference search is **not a blind agent rollout**. Its configura
 
 The true 10-mer reduces excess log loss by about 4.31% versus the parent-base model. Validation nevertheless selects the 11-mer, with a small 5.51-nat validation advantage over the true window. This fit uses hierarchical shrinkage; the 11-mer inherits the fitted 10-mer. These results show some detectable signal but do not establish that a blind agent will identify the minimal window. An arbitrary independent 10-mer table does not guarantee that a 5-mer will be the best compromise under limited data.
 
-## Launch after the review block is resolved
+## Launch record
 
-The following is the prepared manual command, not an executed run. Requires an authenticated Hyperfocal CLI and access to the private platform repository. Run the start command once; subsequent monitoring should use the returned run ID rather than starting another experiment.
+The start command below documents the launched configuration. To check this experiment use `hyperfocal run status run_01a205f5-54b2-7132-911f-9fbcc93a7223 --json`.
 
 ```bash
 if [ ! -d mew-popgen-inheritance-10mb/.git ]; then
@@ -55,4 +55,4 @@ hyperfocal run start mew-popgen-inheritance-10mb \
   --yes --json
 ```
 
-Record the returned run ID, actual model metadata, grades, verifier scores and submitted reports before drawing any conclusion about Opus 5.5 discovery. There are currently no Opus results for this dataset.
+Grades, verifier scores and submitted reports were pending at launch.
