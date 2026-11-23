@@ -162,6 +162,48 @@ def af_plot(af, origin, s):
     plt.close(fig)
 
 
+def timing_examples(raw):
+    """Pair two identifiable selected histories with their 100 held-out controls."""
+    specs = [("de_novo","10k",3,.01), ("introgression","50_30k",1,.03)]
+    controls = neutral_banks()
+    years = np.arange(50000,-1,-25)/1000
+    plt.rcParams.update({"font.size":15,"pdf.fonttype":42,"ps.fonttype":42})
+    fig,axes = plt.subplots(2,1,figsize=(11,8.5),sharex=True)
+    fig.subplots_adjust(top=.81,left=.12,right=.96,bottom=.11,hspace=.38)
+    fig.suptitle("Focal allele frequency from 50 kya to present",fontsize=22,y=.97)
+    for ax,(origin,window,slot,s) in zip(axes,specs):
+        directory = raw/"groups"/origin/window/f"{slot:03d}"/f"s{s:g}"
+        r = base.read(directory/"complete.json")
+        af, coeff = trajectory(directory/"trajectory.tsv",r["trajectory_sha256"])
+        assert r["position"]==500000 and af[-1]==r["final_frequency"]
+        lo, hi = r["selection_end_years"]/1000, r["selection_start_years"]/1000
+        ax.axvspan(lo,hi,color="#f6dfba",alpha=.6,zorder=0)
+        ax.plot(years,controls[origin+"_test_af"].T,color="#586f83",lw=.6,alpha=.25)
+        ax.plot(years,af,color="#993f23",lw=2.2)
+        if origin=="de_novo":
+            assert np.all(coeff[years>10]==0) and np.all(coeff[years<=10]==s)
+            ax.scatter([10],[af[1600]],s=32,color="#993f23",zorder=4)
+            ax.set_title(f"De novo, s = {s:g}   ·   Selection from 10 kya to present",loc="left",fontsize=16)
+        else:
+            first_fixed = np.flatnonzero(af==1)[0]
+            ax.scatter([years[first_fixed]],[1],s=30,color="#993f23",zorder=4)
+            ax.annotate(f"Fixed at {years[first_fixed]:.1f} kya",(years[first_fixed],1),
+                        xytext=(12,-20),textcoords="offset points",ha="left",fontsize=13)
+            ax.set_title(f"1% introgression, s = {s:g}   ·   Selection from 50 to 30 kya",loc="left",fontsize=16)
+        ax.set(xlim=(50,0),ylim=(-.02,1.045),ylabel="Allele frequency")
+        ax.yaxis.set_major_formatter(PercentFormatter(1))
+        ax.grid(axis="y",alpha=.15)
+        ax.spines[["top","right"]].set_visible(False)
+    from matplotlib.patches import Patch
+    fig.legend([Line2D([],[],color="#586f83",lw=1),Line2D([],[],color="#993f23",lw=2.2),Patch(color="#f6dfba")],
+               ["100 neutral trajectories","One selected trajectory","Selection window"],ncol=3,
+               loc="upper center",bbox_to_anchor=(.51,.914),frameon=False,fontsize=14)
+    axes[-1].set_xlabel("Time before present (kya)")
+    for ext in ("png","pdf"):
+        fig.savefig(OUT/f"timing_examples.{ext}",dpi=175)
+    plt.close(fig)
+
+
 def report():
     for name, digest in base.read(OUT/"inputs.json")["hashes"].items():
         assert base.sha(OUT/name)==digest
@@ -189,12 +231,14 @@ def report():
 
 if __name__=="__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("phase",choices=("null","prepare","report"))
+    p.add_argument("phase",choices=("null","examples","prepare","report"))
     p.add_argument("--raw",type=Path,default=RAW)
     a = p.parse_args()
     if a.phase=="null":
         OUT.mkdir(exist_ok=True,parents=True)
         previous.write_table(OUT/"fpr.tsv",null_rows(neutral_banks()))
+    elif a.phase=="examples":
+        timing_examples(a.raw)
     elif a.phase=="prepare":
         prepare(a.raw)
     else:
