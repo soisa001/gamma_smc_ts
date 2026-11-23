@@ -1,0 +1,14 @@
+# EAS selection strength series
+
+The 72 treatments cross 12 selection coefficients (0.001 to 0.010 in steps of 0.001, then 0.020 and 0.030), three windows (10 kya–present, 50 kya–present and 50–30 kya), and two allele origins. Each treatment contains 100 surviving, scoreable replicates. The de novo allele starts in a single copy at selection onset. The introgressed allele enters with the 1% Neanderthal pulse at 50 kya. The simulation manifest gives the EAS demographic resource, split time, fitness dominance, rates, binaries, seeds and input checksums.
+
+Losses are retried. A focal allele segregating in the present-day population is scored at its simulated coordinate. For a fixed allele, the original forward history is replayed through the present and its copy counts through fixation are verified. At the last pre-fixation generation with focal frequency at or below 80%, up to 1,000 historical diploids are sampled. Historical markers across the megabase are ranked by haplotype r², then distance to the causal site, then coordinate. The first positively associated tag allele that segregates in the 100 present-day sampled diploids supplies the scoring coordinate. Reused mixed-outcome archives follow proposal order and include at most one eligible history per founder in a treatment.
+
+At the scoring coordinate, we average the posterior probability of TMRCA below each cutoff across the same 1,000 haplotype pairs. The cutoffs are 1 through 50 kya at 1-kya steps. For each cutoff the one-sided empirical p-value equals (1 + number of matched reference neutral values at least as large as the query) / 101. A replicate contributes one detection if any cutoff in its designated window passes the strict pointwise threshold. The held-out neutral FPR uses exactly the same window rule, with independent reference and test banks of 100. The de novo banks match introduction age and the introgression banks match the 50-kya pulse. The held-out neutral proposal audit found zero fixations.
+
+- `power.tsv` contains selected and neutral counts, denominators, rates and a breakdown by focal segregation and fixation.
+- `fpr.tsv` lists each unique neutral comparison. Within an origin and window the same neutral comparison applies to every selection coefficient.
+- `mass.npz` stores the replicate-by-cutoff cumulative curves and fixation indicators. `pointwise_p.npz` stores all empirical p-values.
+- `inputs.json` records the individual sources, score checksums for assembled raw histories, tag metadata, cache checksum and neutral fixation audit. `simulation_manifest.json` records the simulation settings and planned source order.
+
+The portable report phase is `python scripts/report_eas_strength_series.py report`. Regenerating the raw simulation phase also requires the archived simulation directories, the matching SLiM and Gamma-SMC binaries and the simulation Python environment.
