@@ -80,7 +80,7 @@ def info_dict(raw):
     return dict((v.split('=',1)+[None])[:2] for v in raw.split(';') if v and v!='.')
 
 
-def profile(pos, ref, alt, tags, long_size=None):
+def profile(pos, ref, alt, tags, long_size=None, *, already_sv=False):
     """Breakpoint is 0-based; ref intervals are half-open. size governs tier ownership."""
     if ',' in alt:
         raise ValueError('Expected biallelic panel records; a multiallelic row requires allele-specific routing')
@@ -93,10 +93,10 @@ def profile(pos, ref, alt, tags, long_size=None):
         size = long_size or (abs(int(svlen)) if svlen and svlen!='.' else (span if span>0 else None))
         interval = (pos,pos+span) if typ in ('DEL','DUP','INV') and span>0 and (not size or size==span) else None
         return ('symbolic_'+typ,size,interval,None,(pos,ref,alt,tags.get('END'),size))
-    if max(len(ref),len(alt)) < 50 and long_size is None:
+    if max(len(ref),len(alt)) < 50 and long_size is None and not already_sv:
         return None
     d,_ = describe(ref,alt)
-    if d is None or max(d['residual_ref_bp'],d['residual_alt_bp'])<50 and long_size is None:
+    if d is None or (max(d['residual_ref_bp'],d['residual_alt_bp'])<50 and long_size is None and not already_sv):
         return None
     prefix = d['shared_prefix_bp']
     a = alt[prefix:prefix+d['residual_alt_bp']].upper()
