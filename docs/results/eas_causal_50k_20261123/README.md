@@ -1,5 +1,9 @@
 # EAS causal-site selection array
 
+All 72 treatments reached 100 retained simulations. Of the 7,200 scored histories, 782 ended with the causal allele fixed. At the strict pointwise 0.05 threshold, selection at s = 0.01 from 10 kya to present was detected in 32 of 100 de novo histories and 15 of 100 introgression histories. With the same coefficient acting from 50 kya to present, detection reached 100 and 94 of 100, respectively. When selection ended at 30 kya, detection was 19 and 17 of 100.
+
+The full replicate counts and denominators at both thresholds are in [power.tsv](power.tsv) and [fpr.tsv](fpr.tsv). Figures include [the 0.05 heatmap](heatmap_0.05.pdf), [the 0.01 heatmap](heatmap_0.01.pdf), [power across strengths](power_by_strength.pdf), and recent-onset allele-frequency trajectories for both origins at s = 0.01 and s = 0.03. Each figure is available as a PDF and PNG.
+
 Every focal allele enters EAS 50,000 years before present at coordinate 500,000 bp in a 1-Mb region. De novo starts in one copy. The introgression model introduces approximately 1% donor haplotypes at the pulse with the focal allele present on all donor haplotypes. The archaic split is at 500 kya. The EAS population-size history, 25-year generation, rates and Gamma-SMC binary match the preceding strength series.
 
 The 72 treatments cross two origins, selection during 10 kya–present, 50 kya–present or 50–30 kya, and coefficients of 0.001–0.010 in steps of 0.001, plus 0.020 and 0.030. Each independent replicate slot retries whole histories from 50 kya until the focal allele has at least one copy in the present-day EAS population. Fixations continue under the demographic model to the present. The retained sample describes survival-conditional detection; it does not estimate the probability that a new mutation survives.
